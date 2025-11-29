@@ -1,9 +1,14 @@
-# serializers.py
+"""
+Serializers for user authentication and management.
+"""
 from django.contrib.auth import authenticate
+from django.contrib.auth.password_validation import validate_password
+from django.core.exceptions import ValidationError as DjangoValidationError
 from rest_framework import serializers
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
-from .models import User
 from django.utils import timezone
+from .models import User
+
 
 class UserSerializer(serializers.ModelSerializer):
     """Serializer for user model (read operations)."""
@@ -11,18 +16,20 @@ class UserSerializer(serializers.ModelSerializer):
     last_login = serializers.DateTimeField(format="%Y-%m-%d %H:%M:%S", read_only=True)
     created_at = serializers.DateTimeField(format="%Y-%m-%d %H:%M:%S", read_only=True)
     updated_at = serializers.DateTimeField(format="%Y-%m-%d %H:%M:%S", read_only=True)
+    date_joined = serializers.DateTimeField(format="%Y-%m-%d %H:%M:%S", read_only=True)
     
     class Meta:
         model = User
         fields = [
-            'id', 'username', 'email', 'address','first_name', 'last_name',
+            'id', 'username', 'email', 'address', 'first_name', 'last_name',
             'is_active', 'is_staff', 'is_superuser', 'date_joined',
             'phone_number', 'profile_image', 'groups', 'user_permissions',
-            'is_verified', 'created_at', 'updated_at' ,'last_login','verification_token'
+            'is_verified', 'created_at', 'updated_at', 'last_login'
         ]
         read_only_fields = [
             'id', 'is_staff', 'is_superuser', 'date_joined',
-            'groups', 'user_permissions', 'is_verified', 'last_login', 'created_at', 'updated_at', 'verification_token',
+            'groups', 'user_permissions', 'is_verified', 'last_login', 
+            'created_at', 'updated_at',
         ]
 
 
@@ -32,11 +39,13 @@ class RegisterSerializer(serializers.ModelSerializer):
     password = serializers.CharField(
         write_only=True, 
         min_length=8,
-        style={'input_type': 'password'}
+        style={'input_type': 'password'},
+        help_text="Password must be at least 8 characters long"
     )
     password_confirm = serializers.CharField(
         write_only=True,
-        style={'input_type': 'password'}
+        style={'input_type': 'password'},
+        help_text="Re-enter your password for confirmation"
     )
 
     class Meta:
@@ -46,9 +55,44 @@ class RegisterSerializer(serializers.ModelSerializer):
             'first_name', 'last_name', 'phone_number', 'profile_image'
         ]
         extra_kwargs = {
-            'email': {'required': True},
-            'username': {'required': True}
+            'email': {
+                'required': True,
+                'help_text': 'A valid email address is required'
+            },
+            'username': {
+                'required': True,
+                'help_text': 'Username must be unique'
+            },
+            'first_name': {'required': False},
+            'last_name': {'required': False},
+            'phone_number': {'required': False},
+            'profile_image': {'required': False},
+            'address': {'required': False},
         }
+
+    def validate_email(self, value):
+        """Validate that email is unique."""
+        if User.objects.filter(email=value).exists():
+            raise serializers.ValidationError(
+                "A user with this email already exists."
+            )
+        return value.lower()
+
+    def validate_username(self, value):
+        """Validate username."""
+        if User.objects.filter(username=value).exists():
+            raise serializers.ValidationError(
+                "A user with this username already exists."
+            )
+        return value
+
+    def validate_password(self, value):
+        """Validate password using Django's password validators."""
+        try:
+            validate_password(value)
+        except DjangoValidationError as e:
+            raise serializers.ValidationError(list(e.messages))
+        return value
 
     def validate(self, attrs):
         """Validate registration data."""
@@ -56,55 +100,66 @@ class RegisterSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError({
                 "password_confirm": "Passwords do not match"
             })
-        
-        if User.objects.filter(email=attrs.get('email')).exists():
-            raise serializers.ValidationError({
-                "email": "A user with this email already exists."
-            })
-            
         return attrs
     
     def create(self, validated_data):
         """Create and return a new user instance."""
+        # Remove password_confirm as it's not a model field
         validated_data.pop('password_confirm')
         password = validated_data.pop('password')
         
+        # Create user
         user = User.objects.create_user(**validated_data)
         user.set_password(password)
         user.save()
         
         # Send verification email after user creation
-        user.send_verification_email()
+        try:
+            user.send_verification_email()
+        except Exception as e:
+            # Log the error but don't fail registration
+            import logging
+            logger = logging.getLogger(__name__)
+            logger.error(f"Failed to send verification email: {e}")
+        
         return user
 
 
-# Email verification serializer
 class EmailVerificationSerializer(serializers.Serializer):
-    token = serializers.UUIDField()
+    """Serializer for email verification."""
+    
+    token = serializers.UUIDField(
+        help_text="Email verification token received via email"
+    )
 
     def validate_token(self, value):
+        """Validate that token exists and is not already verified."""
         try:
             user = User.objects.get(verification_token=value)
             if user.is_verified:
                 raise serializers.ValidationError("Email is already verified")
             return value
         except User.DoesNotExist:
-            raise serializers.ValidationError("Invalid or expired verification token")
+            raise serializers.ValidationError(
+                "Invalid or expired verification token"
+            )
 
 
 class UpdateUserSerializer(serializers.ModelSerializer):
-    """Serializer for updating user profile (including optional password change)."""
+    """Serializer for updating user profile."""
     
     password = serializers.CharField(
         write_only=True, 
         required=False,
         min_length=8,
-        style={'input_type': 'password'}
+        style={'input_type': 'password'},
+        help_text="Leave blank to keep current password"
     )
     password_confirm = serializers.CharField(
         write_only=True, 
         required=False,
-        style={'input_type': 'password'}
+        style={'input_type': 'password'},
+        help_text="Confirm new password"
     )
 
     class Meta:
@@ -113,16 +168,57 @@ class UpdateUserSerializer(serializers.ModelSerializer):
             'username', 'email', 'address', 'first_name', 'last_name',
             'phone_number', 'profile_image', 'password', 'password_confirm'
         ]
+        extra_kwargs = {
+            'username': {'required': False},
+            'email': {'required': False},
+            'first_name': {'required': False},
+            'last_name': {'required': False},
+            'phone_number': {'required': False},
+            'profile_image': {'required': False},
+            'address': {'required': False},
+        }
+
+    def validate_email(self, value):
+        """Validate that email is unique (excluding current user)."""
+        user = self.instance
+        if User.objects.filter(email=value).exclude(id=user.id).exists():
+            raise serializers.ValidationError(
+                "A user with this email already exists."
+            )
+        return value.lower()
+
+    def validate_username(self, value):
+        """Validate that username is unique (excluding current user)."""
+        user = self.instance
+        if User.objects.filter(username=value).exclude(id=user.id).exists():
+            raise serializers.ValidationError(
+                "A user with this username already exists."
+            )
+        return value
+
+    def validate_password(self, value):
+        """Validate password using Django's password validators."""
+        if value:
+            try:
+                validate_password(value)
+            except DjangoValidationError as e:
+                raise serializers.ValidationError(list(e.messages))
+        return value
 
     def validate(self, attrs):
         """Validate update data including optional password change."""
         password = attrs.get('password')
         password_confirm = attrs.get('password_confirm')
         
+        # If either password field is provided, both must be provided
         if password or password_confirm:
+            if not password or not password_confirm:
+                raise serializers.ValidationError({
+                    "password": "Both password and password_confirm are required to change password"
+                })
             if password != password_confirm:
                 raise serializers.ValidationError({
-                    "password": "Passwords do not match"
+                    "password_confirm": "Passwords do not match"
                 })
         
         return attrs
@@ -132,12 +228,14 @@ class UpdateUserSerializer(serializers.ModelSerializer):
         password = validated_data.pop('password', None)
         validated_data.pop('password_confirm', None)
         
+        # Update regular fields
         for attr, value in validated_data.items():
             setattr(instance, attr, value)
-            
+        
+        # Update password if provided
         if password:
             instance.set_password(password)
-            
+        
         instance.save()
         return instance
 
@@ -148,25 +246,22 @@ class ChangePasswordSerializer(serializers.Serializer):
     old_password = serializers.CharField(
         required=True, 
         write_only=True,
-        style={'input_type': 'password'}
+        style={'input_type': 'password'},
+        help_text="Your current password"
     )
     new_password = serializers.CharField(
         required=True, 
         write_only=True, 
         min_length=8,
-        style={'input_type': 'password'}
+        style={'input_type': 'password'},
+        help_text="Your new password (minimum 8 characters)"
     )
     confirm_password = serializers.CharField(
         required=True, 
         write_only=True,
-        style={'input_type': 'password'}
+        style={'input_type': 'password'},
+        help_text="Confirm your new password"
     )
-
-    def validate(self, data):
-        """Validate password change data."""
-        if data['new_password'] != data['confirm_password']:
-            raise serializers.ValidationError("New passwords do not match")
-        return data
 
     def validate_old_password(self, value):
         """Validate that old password is correct."""
@@ -175,36 +270,81 @@ class ChangePasswordSerializer(serializers.Serializer):
             raise serializers.ValidationError("Current password is incorrect")
         return value
 
+    def validate_new_password(self, value):
+        """Validate new password using Django's password validators."""
+        try:
+            validate_password(value)
+        except DjangoValidationError as e:
+            raise serializers.ValidationError(list(e.messages))
+        return value
+
+    def validate(self, data):
+        """Validate password change data."""
+        if data['new_password'] != data['confirm_password']:
+            raise serializers.ValidationError({
+                "confirm_password": "New passwords do not match"
+            })
+        
+        # Ensure new password is different from old password
+        if data['old_password'] == data['new_password']:
+            raise serializers.ValidationError({
+                "new_password": "New password must be different from current password"
+            })
+        
+        return data
+
 
 class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
     """
     Enhanced JWT token serializer supporting email/username login.
+    Accepts both {"email": "...", "password": "..."} and {"username": "...", "password": "..."}
     """
     
+    username_field = 'username'
+    
+    # Add email field to support both username and email
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # Make username not required since we accept email too
+        self.fields['username'].required = False
+        # Add email field
+        self.fields['email'] = serializers.CharField(required=False)
     
     def validate(self, attrs):
         """Authenticate user via username or email."""
-        username_or_email = attrs.get("username")
+        # Get either username or email from request
+        username = attrs.get("username")
+        email = attrs.get("email")
         password = attrs.get("password")
 
-        # Try username authentication first
-        user = authenticate(
-            request=self.context.get("request"),
-            username=username_or_email,
-            password=password
-        )
+        # Determine the credential to use
+        credential = username or email
+        
+        if not credential or not password:
+            raise serializers.ValidationError({
+                "detail": "Username/email and password are required"
+            })
 
-        # Fallback to email authentication
+        user = None
+        
+        # Try to find user by email first (whether it came from 'email' or 'username' field)
+        try:
+            user_obj = User.objects.get(email=credential.lower())
+            # Verify password manually
+            if user_obj.check_password(password):
+                user = user_obj
+        except User.DoesNotExist:
+            pass
+        
+        # If not found by email, try username
         if not user:
             try:
-                user_by_email = User.objects.get(email=username_or_email)
-                user = authenticate(
-                    request=self.context.get("request"),
-                    username=user_by_email.username,
-                    password=password
-                )
+                user_obj = User.objects.get(username=credential)
+                # Verify password manually
+                if user_obj.check_password(password):
+                    user = user_obj
             except User.DoesNotExist:
-                user = None
+                pass
 
         if not user:
             raise serializers.ValidationError({
@@ -213,22 +353,25 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
 
         if not user.is_active:
             raise serializers.ValidationError({
-                "detail": "Account is disabled"
+                "detail": "Account is disabled. Please contact support."
             })
 
-        # # Check if email is verified (optional - you can make this required)
+        # Optional: Check if email is verified
+        # Uncomment the following lines to require email verification before login
         # if not user.is_verified:
         #     raise serializers.ValidationError({
-        #         "detail": "Please verify your email address before logging in"
+        #         "detail": "Please verify your email address before logging in",
+        #         "verification_required": True
         #     })
 
-        # Update the custom last_login field
+        # Update last login timestamp
         user.last_login = timezone.now()
         user.save(update_fields=['last_login', 'updated_at'])
         
-        # Generate tokens
+        # Generate tokens using parent class method
         refresh = self.get_token(user)
         
+        # Serialize user data
         user_data = UserSerializer(user).data
         
         return {
@@ -236,3 +379,15 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
             "access": str(refresh.access_token),
             "user": user_data,
         }
+    
+    @classmethod
+    def get_token(cls, user):
+        """Add custom claims to token."""
+        token = super().get_token(user)
+        
+        # Add custom claims
+        token['username'] = user.username
+        token['email'] = user.email
+        token['is_verified'] = user.is_verified
+        
+        return token

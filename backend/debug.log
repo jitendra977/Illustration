@@ -1,0 +1,76 @@
+INFO 2025-11-29 03:55:13,867 autoreload Watching for file changes with StatReloader
+INFO 2025-11-29 03:55:33,307 autoreload Watching for file changes with StatReloader
+WARNING 2025-11-29 03:55:37,820 log Bad Request: /api/auth/users/register/
+WARNING 2025-11-29 03:55:37,821 basehttp "POST /api/auth/users/register/ HTTP/1.1" 400 48
+WARNING 2025-11-29 03:55:38,749 log Bad Request: /api/auth/users/register/
+WARNING 2025-11-29 03:55:38,750 basehttp "POST /api/auth/users/register/ HTTP/1.1" 400 48
+WARNING 2025-11-29 03:55:50,355 log Bad Request: /api/auth/users/register/
+WARNING 2025-11-29 03:55:50,356 basehttp "POST /api/auth/users/register/ HTTP/1.1" 400 48
+WARNING 2025-11-29 03:56:01,811 log Bad Request: /api/auth/users/register/
+WARNING 2025-11-29 03:56:01,812 basehttp "POST /api/auth/users/register/ HTTP/1.1" 400 107
+INFO 2025-11-29 03:56:48,510 basehttp "POST /api/auth/login/ HTTP/1.1" 200 1106
+INFO 2025-11-29 03:56:56,621 basehttp "GET /admin/accounts/user/ HTTP/1.1" 200 16763
+INFO 2025-11-29 03:56:56,679 basehttp "GET /static/admin/js/theme.js HTTP/1.1" 304 0
+INFO 2025-11-29 03:56:56,679 basehttp "GET /static/admin/css/dark_mode.css HTTP/1.1" 304 0
+INFO 2025-11-29 03:56:56,679 basehttp "GET /static/admin/css/base.css HTTP/1.1" 304 0
+INFO 2025-11-29 03:56:56,680 basehttp "GET /static/admin/css/nav_sidebar.css HTTP/1.1" 304 0
+INFO 2025-11-29 03:56:56,686 basehttp "GET /static/admin/js/core.js HTTP/1.1" 304 0
+INFO 2025-11-29 03:56:56,687 basehttp "GET /static/admin/css/responsive.css HTTP/1.1" 304 0
+INFO 2025-11-29 03:56:56,687 basehttp "GET /static/admin/js/jquery.init.js HTTP/1.1" 304 0
+INFO 2025-11-29 03:56:56,688 basehttp "GET /static/admin/js/actions.js HTTP/1.1" 304 0
+INFO 2025-11-29 03:56:56,688 basehttp "GET /static/admin/css/changelists.css HTTP/1.1" 304 0
+INFO 2025-11-29 03:56:56,691 basehttp "GET /static/admin/js/vendor/jquery/jquery.js HTTP/1.1" 304 0
+INFO 2025-11-29 03:56:56,691 basehttp "GET /static/admin/js/admin/RelatedObjectLookups.js HTTP/1.1" 304 0
+INFO 2025-11-29 03:56:56,695 basehttp "GET /static/admin/js/prepopulate.js HTTP/1.1" 304 0
+INFO 2025-11-29 03:56:56,696 basehttp "GET /static/admin/js/vendor/xregexp/xregexp.js HTTP/1.1" 304 0
+INFO 2025-11-29 03:56:56,697 basehttp "GET /admin/jsi18n/ HTTP/1.1" 200 3342
+INFO 2025-11-29 03:56:56,706 basehttp "GET /static/admin/img/icon-yes.svg HTTP/1.1" 304 0
+INFO 2025-11-29 03:56:56,698 basehttp "GET /static/admin/js/urlify.js HTTP/1.1" 304 0
+INFO 2025-11-29 03:56:56,704 basehttp "GET /static/admin/img/search.svg HTTP/1.1" 304 0
+INFO 2025-11-29 03:56:56,715 basehttp "GET /static/admin/js/nav_sidebar.js HTTP/1.1" 304 0
+INFO 2025-11-29 03:56:56,717 basehttp "GET /static/admin/img/icon-no.svg HTTP/1.1" 304 0
+INFO 2025-11-29 03:56:56,726 basehttp "GET /static/admin/js/filters.js HTTP/1.1" 304 0
+INFO 2025-11-29 03:56:56,744 basehttp "GET /static/admin/img/tooltag-add.svg HTTP/1.1" 304 0
+INFO 2025-11-29 03:56:56,746 basehttp "GET /static/admin/img/icon-viewlink.svg HTTP/1.1" 304 0
+INFO 2025-11-29 03:56:56,746 basehttp "GET /static/admin/img/sorting-icons.svg HTTP/1.1" 304 0
+INFO 2025-11-29 03:56:56,747 basehttp "GET /static/admin/img/icon-addlink.svg HTTP/1.1" 304 0
+INFO 2025-11-29 03:56:58,790 basehttp "GET /admin/accounts/user/ HTTP/1.1" 200 16763
+INFO 2025-11-29 03:56:58,808 basehttp "GET /admin/jsi18n/ HTTP/1.1" 200 3342
+WARNING 2025-11-29 03:57:07,866 log Bad Request: /api/auth/users/register/
+WARNING 2025-11-29 03:57:07,867 basehttp "POST /api/auth/users/register/ HTTP/1.1" 400 107
+INFO 2025-11-29 03:57:17,526 basehttp "GET /admin/accounts/user/ HTTP/1.1" 200 16763
+INFO 2025-11-29 03:57:17,549 basehttp "GET /admin/jsi18n/ HTTP/1.1" 200 3342
+INFO 2025-11-29 03:57:18,173 basehttp "GET /admin/accounts/user/ HTTP/1.1" 200 16763
+INFO 2025-11-29 03:57:18,202 basehttp "GET /admin/jsi18n/ HTTP/1.1" 200 3342
+INFO 2025-11-29 03:57:18,303 basehttp "GET /admin/accounts/user/ HTTP/1.1" 200 16763
+INFO 2025-11-29 03:57:18,319 basehttp "GET /admin/jsi18n/ HTTP/1.1" 200 3342
+INFO 2025-11-29 03:57:18,447 basehttp "GET /admin/accounts/user/ HTTP/1.1" 200 16763
+INFO 2025-11-29 03:57:18,462 basehttp "GET /admin/jsi18n/ HTTP/1.1" 200 3342
+INFO 2025-11-29 03:57:18,589 basehttp "GET /admin/accounts/user/ HTTP/1.1" 200 16763
+INFO 2025-11-29 03:57:18,602 basehttp "GET /admin/jsi18n/ HTTP/1.1" 200 3342
+INFO 2025-11-29 03:57:18,741 basehttp "GET /admin/accounts/user/ HTTP/1.1" 200 16763
+INFO 2025-11-29 03:57:18,758 basehttp "GET /admin/jsi18n/ HTTP/1.1" 200 3342
+INFO 2025-11-29 03:57:25,127 basehttp "GET /admin/token_blacklist/blacklistedtoken/ HTTP/1.1" 200 9729
+INFO 2025-11-29 03:57:25,154 basehttp "GET /admin/jsi18n/ HTTP/1.1" 200 3342
+INFO 2025-11-29 03:57:26,684 basehttp "GET /admin/accounts/user/ HTTP/1.1" 200 16763
+INFO 2025-11-29 03:57:26,710 basehttp "GET /admin/jsi18n/ HTTP/1.1" 200 3342
+INFO 2025-11-29 03:57:42,843 basehttp "POST /admin/logout/ HTTP/1.1" 200 3568
+INFO 2025-11-29 03:57:44,366 basehttp "GET /admin/ HTTP/1.1" 302 0
+INFO 2025-11-29 03:57:44,385 basehttp "GET /admin/login/?next=/admin/ HTTP/1.1" 200 4170
+INFO 2025-11-29 03:57:44,407 basehttp "GET /static/admin/css/login.css HTTP/1.1" 304 0
+INFO 2025-11-29 03:57:46,564 basehttp "POST /admin/login/?next=/admin/ HTTP/1.1" 302 0
+INFO 2025-11-29 03:57:46,576 basehttp "GET /admin/ HTTP/1.1" 200 8423
+INFO 2025-11-29 03:57:46,646 basehttp "GET /static/admin/img/icon-changelink.svg HTTP/1.1" 304 0
+INFO 2025-11-29 03:57:46,646 basehttp "GET /static/admin/css/dashboard.css HTTP/1.1" 304 0
+INFO 2025-11-29 03:57:48,185 basehttp "GET /admin/accounts/user/ HTTP/1.1" 200 16763
+INFO 2025-11-29 03:57:48,220 basehttp "GET /admin/jsi18n/ HTTP/1.1" 200 3342
+INFO 2025-11-29 03:57:54,121 basehttp "POST /admin/accounts/user/ HTTP/1.1" 200 9375
+INFO 2025-11-29 03:57:54,146 basehttp "GET /static/admin/js/cancel.js HTTP/1.1" 200 884
+INFO 2025-11-29 03:57:54,939 basehttp "POST /admin/accounts/user/ HTTP/1.1" 302 0
+INFO 2025-11-29 03:57:54,953 basehttp "GET /admin/accounts/user/ HTTP/1.1" 200 16179
+INFO 2025-11-29 03:57:54,972 basehttp "GET /admin/jsi18n/ HTTP/1.1" 200 3342
+ERROR 2025-11-29 03:58:02,545 models Failed to send verification email: 'Settings' object has no attribute 'FRONTEND_URL'
+INFO 2025-11-29 03:58:02,549 basehttp "POST /api/auth/users/register/ HTTP/1.1" 201 542
+WARNING 2025-11-29 04:04:51,222 log Bad Request: /api/auth/users/register/
+WARNING 2025-11-29 04:04:51,223 basehttp "POST /api/auth/users/register/ HTTP/1.1" 400 48
+INFO 2025-11-29 04:07:02,134 autoreload /Volumes/Programming/React-Python/YAW/Illustration-System/backend/main/settings.py changed, reloading.
