@@ -1,0 +1,65 @@
+version: "3.9"
+
+services:
+  # ------------------------------
+  # Backend (Django or FastAPI)
+  # ------------------------------
+  backend:
+    build: ./backend
+    container_name: illustration_backend
+    volumes:
+      - ./backend:/app
+    expose:
+      - "8000"
+    environment:
+      - DEBUG=1
+      - DJANGO_SETTINGS_MODULE=main.settings
+      - DJANGO_SUPERUSER_USERNAME=admin
+      - DJANGO_SUPERUSER_PASSWORD=adminpass
+      - DJANGO_SUPERUSER_EMAIL=admin@example.com
+    networks:
+      - app-network
+    
+
+  # ------------------------------
+  # Frontend (React / Vite)
+  # ------------------------------
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: illustration_frontend
+    # Mount source code for local dev; for production, you only need dist
+    volumes:
+      - ./frontend:/app       # for dev, sync code
+      - /app/node_modules     # keep node_modules inside container
+    expose:
+      - "3000"                # dev server port
+    environment:
+      - NODE_ENV=development
+      - VITE_API_BASE_URL=/api    # Nginx will proxy /api
+      - VITE_DOCKER_ENV=true      # tells Vite it’s running in Docker
+    depends_on:
+      - backend
+    networks:
+      - app-network
+
+  # ------------------------------
+  # Nginx Reverse Proxy
+  # ------------------------------
+  nginx:
+    image: nginx:alpine
+    container_name: illustration_nginx
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/conf.d:/etc/nginx/conf.d:ro
+    depends_on:
+      - backend
+      - frontend
+    networks:
+      - app-network
+networks:
+  app-network:
+    driver: bridge
