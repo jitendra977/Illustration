@@ -1,239 +1,185 @@
-// Sidebar.jsx
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { useAuth } from '../../context/AuthContext';
-import { usersAPI } from '../../services/users';
 import {
-  Box, Drawer, Typography, Divider, Button, List, ListItemButton,
-  ListItemIcon, ListItemText, Avatar, IconButton, Tooltip, useTheme,
-  alpha, Paper, Chip, Badge, LinearProgress,
-  useMediaQuery, SwipeableDrawer, AppBar, Toolbar
+  Drawer, List, ListItem, ListItemButton, ListItemIcon, ListItemText,
+  Box, Typography, Divider, Avatar, IconButton
 } from '@mui/material';
 import {
-  Dashboard, People, Logout, Settings, Analytics,
-  Notifications, Menu, ChevronLeft, Store, ExpandLess, ExpandMore
+  Home, Receipt, Analytics, Person, Logout, ChevronLeft, Store,
+  Settings, Notifications, Add
 } from '@mui/icons-material';
+import { useAuth } from '../../context/AuthContext';
 
-const DRAWER_WIDTH = 280;
-const DRAWER_WIDTH_COLLAPSED = 70;
-
-const Sidebar = () => {
-  const { user, logout, isAuthenticated } = useAuth();
+const Sidebar = ({ open, onClose }) => {
+  const { user, logout } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
-  const theme = useTheme();
-  
-  const isMobile = useMediaQuery(theme.breakpoints.down('md'));
-  const [mobileOpen, setMobileOpen] = useState(false);
-  const [collapsed, setCollapsed] = useState(false);
-  const [profile, setProfile] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [expandedMenus, setExpandedMenus] = useState({});
 
   const menuItems = [
-    {
-      text: 'Dashboard',
-      icon: <Dashboard />,
-      path: '/',
-    },
-    {
-      text: 'Stores',
-      icon: <Store />,
-      path: '/stores',
-      subItems: [
-        { text: 'All Stores', path: '/stores' },
-        { text: 'Add Store', path: '/stores/add' }
-      ]
-    },
-    {
-      text: 'Analytics',
-      icon: <Analytics />,
-      path: '/analytics',
-      subItems: [
-        { text: 'Overview', path: '/analytics' },
-        { text: 'Reports', path: '/analytics/reports' }
-      ]
-    },
-    {
-      text: 'Users',
-      icon: <People />,
-      path: '/users',
-      requiresAdmin: true
-    },
-    {
-      text: 'Settings',
-      icon: <Settings />,
-      path: '/settings',
-    }
+    { label: 'ホーム', icon: <Home />, path: '/' },
+    { label: 'イラスト', icon: <Receipt />, path: '/illustrations' },
+    { label: '追加', icon: <Add />, path: '/illustrations/new' },
+    { label: '分析', icon: <Analytics />, path: '/analytics' },
+    { label: '通知', icon: <Notifications />, path: '/notifications' },
+    { label: '設定', icon: <Settings />, path: '/settings' },
+    { label: 'プロフィール', icon: <Person />, path: '/profile' },
   ];
 
-  useEffect(() => {
-    const fetchProfile = async () => {
-      if (!isAuthenticated) return setLoading(false);
-      try {
-        const data = await usersAPI.getProfile();
-        setProfile(data);
-      } catch (error) {
-        setProfile(user);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchProfile();
-  }, [isAuthenticated, user]);
-
-  const userProfile = profile || user;
-  const filteredMenuItems = menuItems.filter(item => 
-    !item.requiresAdmin || userProfile?.is_staff || userProfile?.is_superuser
-  );
-
-  const isActive = (path) => location.pathname === path;
-
-  const toggleSubmenu = (text) => {
-    setExpandedMenus(prev => ({ ...prev, [text]: !prev[text] }));
+  const handleNavigation = (path) => {
+    navigate(path);
+    onClose();
   };
 
-  const handleNavigation = (item) => {
-    navigate(item.path);
-    if (isMobile) setMobileOpen(false);
-    if (collapsed) setCollapsed(false);
+  const handleLogout = () => {
+    logout();
+    navigate('/login');
+    onClose();
+  };
+
+  const getUserName = () => {
+    if (user?.first_name && user?.last_name) {
+      return `${user.first_name} ${user.last_name}`;
+    }
+    return user?.username || 'User';
   };
 
   const getUserInitial = () => {
-    if (userProfile?.first_name && userProfile?.last_name) 
-      return `${userProfile.first_name[0]}${userProfile.last_name[0]}`;
-    return userProfile?.username?.[0]?.toUpperCase() || 'U';
+    if (user?.first_name && user?.last_name) {
+      return `${user.first_name[0]}${user.last_name[0]}`;
+    }
+    return user?.username?.[0]?.toUpperCase() || 'U';
   };
 
   const getUserRole = () => {
-    if (userProfile?.is_superuser) return 'Super Admin';
-    if (userProfile?.is_staff) return 'Admin';
+    if (user?.is_superuser) return 'Super Admin';
+    if (user?.is_staff) return 'Admin';
     return 'User';
   };
 
-  if (!isAuthenticated) {
-    navigate('/login');
-    return null;
-  }
-
-  const drawerContent = (
-    <Box sx={{ height: '100%', display: 'flex', flexDirection: 'column', bgcolor: 'background.paper' }}>
-      {/* Header */}
-      <Box sx={{ p: 2 }}>
-        <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 2 }}>
-          {!collapsed && (
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
-              <Avatar sx={{ bgcolor: 'primary.main' }}>
-                🚗
-              </Avatar>
-              <Box>
-                <Typography variant="h6" fontWeight="bold">CashBook</Typography>
-                <Typography variant="caption" color="text.secondary">Car Manager</Typography>
-              </Box>
-            </Box>
-          )}
-          
-          {!isMobile && (
-            <IconButton onClick={() => setCollapsed(!collapsed)} size="small">
-              {collapsed ? <Menu /> : <ChevronLeft />}
-            </IconButton>
-          )}
-        </Box>
-
-        {/* User Profile */}
-        <Paper elevation={1} sx={{ p: 2 }}>
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
-            <Avatar src={userProfile?.profile_image} sx={{ width: 48, height: 48 }}>
-              {getUserInitial()}
-            </Avatar>
-            {!collapsed && (
-              <Box sx={{ flex: 1 }}>
-                <Typography variant="subtitle2" fontWeight="bold">{userProfile?.username}</Typography>
-                <Typography variant="caption" color="text.secondary">{userProfile?.email}</Typography>
-                <Chip label={getUserRole()} size="small" sx={{ mt: 0.5 }} />
-              </Box>
-            )}
-          </Box>
-        </Paper>
-      </Box>
-
-      <Divider />
-
-      {/* Navigation */}
-      <Box sx={{ flex: 1, overflow: 'auto' }}>
-        {loading && <LinearProgress />}
-        <List sx={{ p: 1 }}>
-          {filteredMenuItems.map((item) => (
-            <Box key={item.text}>
-              <ListItemButton
-                onClick={() => item.subItems ? toggleSubmenu(item.text) : handleNavigation(item)}
-                selected={isActive(item.path)}
-                sx={{ borderRadius: 1, mb: 0.5 }}
-              >
-                <ListItemIcon>{item.icon}</ListItemIcon>
-                {!collapsed && (
-                  <>
-                    <ListItemText primary={item.text} />
-                    {item.subItems && (expandedMenus[item.text] ? <ExpandLess /> : <ExpandMore />)}
-                  </>
-                )}
-              </ListItemButton>
-            </Box>
-          ))}
-        </List>
-      </Box>
-
-      {/* Footer */}
-      <Box sx={{ p: 2 }}>
-        <Divider sx={{ mb: 2 }} />
-        <Button
-          fullWidth
-          startIcon={<Logout />}
-          onClick={() => { logout(); navigate('/login'); }}
-          variant="outlined"
-          color="error"
-        >
-          {!collapsed && 'Logout'}
-        </Button>
-      </Box>
-    </Box>
-  );
-
-  if (isMobile) {
-    return (
-      <>
-        <AppBar position="fixed">
-          <Toolbar>
-            <IconButton edge="start" onClick={() => setMobileOpen(true)}>
-              <Menu />
-            </IconButton>
-            <Typography variant="h6" sx={{ flex: 1 }}>CashBook</Typography>
-          </Toolbar>
-        </AppBar>
-        <SwipeableDrawer
-          anchor="left"
-          open={mobileOpen}
-          onClose={() => setMobileOpen(false)}
-          onOpen={() => setMobileOpen(true)}
-        >
-          {drawerContent}
-        </SwipeableDrawer>
-      </>
-    );
-  }
+  console.log('Sidebar user data:', user); // Debug log
 
   return (
-    <Drawer
-      variant="permanent"
+    <Drawer 
+      anchor="left" 
+      open={open} 
+      onClose={onClose}
       sx={{
-        width: collapsed ? DRAWER_WIDTH_COLLAPSED : DRAWER_WIDTH,
         '& .MuiDrawer-paper': {
-          width: collapsed ? DRAWER_WIDTH_COLLAPSED : DRAWER_WIDTH,
-          transition: 'width 0.3s',
+          width: 280,
         },
       }}
     >
-      {drawerContent}
+      <Box sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
+        {/* Header */}
+        <Box sx={{ p: 2, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+            <Store color="primary" />
+            <Typography variant="h6" fontWeight="bold">メニュー</Typography>
+          </Box>
+          <IconButton onClick={onClose}>
+            <ChevronLeft />
+          </IconButton>
+        </Box>
+        
+        <Divider />
+
+        {/* User Info with Profile Photo */}
+        <Box sx={{ p: 2 }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2 }}>
+            <Avatar 
+              src={user?.profile_image}
+              sx={{ 
+                width: 60, 
+                height: 60,
+                bgcolor: user?.profile_image ? 'transparent' : 'primary.main'
+              }}
+            >
+              {getUserInitial()}
+            </Avatar>
+            <Box>
+              <Typography variant="h6" fontWeight="bold">
+                {getUserName()}
+              </Typography>
+              <Typography variant="body2" color="text.secondary">
+                {user?.email}
+              </Typography>
+              <Typography variant="caption" color="primary" sx={{ mt: 0.5, display: 'block' }}>
+                {getUserRole()}
+              </Typography>
+            </Box>
+          </Box>
+          
+          {/* User Stats */}
+          <Box sx={{ display: 'flex', gap: 2, textAlign: 'center' }}>
+            <Box>
+              <Typography variant="h6" fontWeight="bold" color="primary">
+                {user?.illustrations_count || 0}
+              </Typography>
+              <Typography variant="caption" color="text.secondary">
+                イラスト
+              </Typography>
+            </Box>
+            <Box>
+              <Typography variant="h6" fontWeight="bold" color="primary">
+                {user?.followers_count || 0}
+              </Typography>
+              <Typography variant="caption" color="text.secondary">
+                フォロワー
+              </Typography>
+            </Box>
+            <Box>
+              <Typography variant="h6" fontWeight="bold" color="primary">
+                {user?.following_count || 0}
+              </Typography>
+              <Typography variant="caption" color="text.secondary">
+                フォロー中
+              </Typography>
+            </Box>
+          </Box>
+        </Box>
+
+        <Divider />
+
+        {/* Menu Items */}
+        <Box sx={{ flex: 1, overflow: 'auto' }}>
+          <List sx={{ px: 1, py: 2 }}>
+            {menuItems.map((item) => (
+              <ListItem key={item.path} disablePadding>
+                <ListItemButton
+                  onClick={() => handleNavigation(item.path)}
+                  selected={location.pathname === item.path}
+                  sx={{ borderRadius: 1, mb: 0.5 }}
+                >
+                  <ListItemIcon sx={{ minWidth: 40 }}>
+                    {item.icon}
+                  </ListItemIcon>
+                  <ListItemText primary={item.label} />
+                </ListItemButton>
+              </ListItem>
+            ))}
+          </List>
+        </Box>
+
+        <Divider />
+
+        {/* Logout */}
+        <Box sx={{ p: 2 }}>
+          <ListItemButton 
+            onClick={handleLogout} 
+            sx={{ 
+              color: 'error.main', 
+              borderRadius: 1,
+              border: '1px solid',
+              borderColor: 'error.main'
+            }}
+          >
+            <ListItemIcon sx={{ minWidth: 40 }}>
+              <Logout color="error" />
+            </ListItemIcon>
+            <ListItemText primary="ログアウト" />
+          </ListItemButton>
+        </Box>
+      </Box>
     </Drawer>
   );
 };

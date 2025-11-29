@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { authAPI } from '../services/auth';
+import { usersAPI } from '../services/users';
 
 const AuthContext = createContext();
 
@@ -8,6 +9,32 @@ export const useAuth = () => useContext(AuthContext);
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
+
+  // Function to fetch and update user profile
+  const fetchUserProfile = async () => {
+    try {
+      const profile = await usersAPI.getProfile();
+      console.log('Fetched user profile:', profile);
+      
+      // Update user state with complete profile data
+      setUser(prevUser => ({
+        ...prevUser,
+        ...profile,
+        token: prevUser?.token || localStorage.getItem('access_token')
+      }));
+      
+      // Update localStorage with complete profile
+      localStorage.setItem('user_data', JSON.stringify({
+        ...profile,
+        token: user?.token || localStorage.getItem('access_token')
+      }));
+      
+      return profile;
+    } catch (error) {
+      console.error('Error fetching user profile:', error);
+      return null;
+    }
+  };
 
   useEffect(() => {
     const initializeAuth = async () => {
@@ -22,6 +49,9 @@ export const AuthProvider = ({ children }) => {
             const userData = JSON.parse(storedUser);
             setUser({ ...userData, token });
             console.log('Restored user from localStorage:', userData);
+            
+            // Fetch fresh profile data
+            await fetchUserProfile();
           } catch (parseError) {
             console.error('Error parsing stored user data:', parseError);
             // Clear invalid data
@@ -35,16 +65,13 @@ export const AuthProvider = ({ children }) => {
             const refreshResponse = await authAPI.refreshToken(refreshToken);
             localStorage.setItem('access_token', refreshResponse.access);
 
-            // Set minimal user data with token
-            const minimalUserData = {
-              token: refreshResponse.access,
-              username: 'User', // Default values
-              email: 'user@example.com'
-            };
-            setUser(minimalUserData);
-            localStorage.setItem('user_data', JSON.stringify(minimalUserData));
-
-            console.log('Token refreshed successfully');
+            // Fetch complete user profile
+            const profile = await fetchUserProfile();
+            if (!profile) {
+              throw new Error('Failed to fetch user profile');
+            }
+            
+            console.log('Token refreshed and profile fetched successfully');
           } catch (refreshError) {
             console.error('Token refresh failed:', refreshError);
             // Clear invalid tokens
@@ -73,29 +100,28 @@ export const AuthProvider = ({ children }) => {
       localStorage.setItem('access_token', data.access);
       localStorage.setItem('refresh_token', data.refresh);
 
-      // Use the complete user object from API response
-      // The API should already include all user fields including last_login
-      const userData = {
-        // Spread the complete user object from API first
+      // Create initial user object from login response
+      const initialUserData = {
         ...data.user,
-        
-        // Then add the token
         token: data.access,
-
-        // Add timestamp for debugging (optional)
         loginTime: new Date().toISOString()
       };
 
-      console.log('Setting user data with last_login:', userData.last_login);
+      console.log('Setting initial user data:', initialUserData);
 
-      setUser(userData);
-      localStorage.setItem('user_data', JSON.stringify(userData));
+      setUser(initialUserData);
+      localStorage.setItem('user_data', JSON.stringify(initialUserData));
+
+      // Fetch complete user profile after login
+      const completeProfile = await fetchUserProfile();
+      if (completeProfile) {
+        console.log('Complete profile loaded:', completeProfile);
+      }
 
       return { success: true, data };
     } catch (error) {
       console.error('Login error details:', error);
 
-      // Return the enhanced error for detailed handling
       return {
         success: false,
         error: error.details || error.message || 'Login failed',
@@ -114,37 +140,45 @@ export const AuthProvider = ({ children }) => {
     } catch (error) {
       console.error('Registration error:', error);
 
-      // Return enhanced error information
       return {
         success: false,
         error: error.details || error.message || 'Registration failed',
-        originalError: error // Include the original error for detailed handling
+        originalError: error
       };
     }
   };
 
   const logout = () => {
     console.log('Logging out user');
-    authAPI.logout(); // This clears tokens from localStorage
-    localStorage.removeItem('user_data'); // Also clear user data
+    authAPI.logout();
+    localStorage.removeItem('user_data');
     setUser(null);
   };
 
+  const updateUser = (newUserData) => {
+    const updatedUser = { ...user, ...newUserData };
+    console.log('Updating user data:', updatedUser);
+    
+    // Ensure profile_image includes timestamp to prevent caching issues
+    if (newUserData.profile_image) {
+      const timestamp = new Date().getTime();
+      updatedUser.profile_image = `${newUserData.profile_image}${newUserData.profile_image.includes('?') ? '&' : '?'}_t=${timestamp}`;
+    }
+    
+    setUser(updatedUser);
+    localStorage.setItem('user_data', JSON.stringify(updatedUser));
+  };
 
-const updateUser = (newUserData) => {
-  const updatedUser = { ...user, ...newUserData };
-  console.log('Updating user data:', updatedUser);
-  
-  // Ensure profile_image includes timestamp to prevent caching issues
-  if (newUserData.profile_image) {
-    // Add timestamp to force image refresh
-    const timestamp = new Date().getTime();
-    updatedUser.profile_image = `${newUserData.profile_image}${newUserData.profile_image.includes('?') ? '&' : '?'}_t=${timestamp}`;
-  }
-  
-  setUser(updatedUser);
-  localStorage.setItem('user_data', JSON.stringify(updatedUser));
-};
+  // Function to refresh user profile
+  const refreshProfile = async () => {
+    try {
+      const profile = await fetchUserProfile();
+      return { success: true, profile };
+    } catch (error) {
+      console.error('Error refreshing profile:', error);
+      return { success: false, error: 'Failed to refresh profile' };
+    }
+  };
 
   // Function to refresh access token
   const refreshAccessToken = async () => {
@@ -167,7 +201,7 @@ const updateUser = (newUserData) => {
       return response.access;
     } catch (error) {
       console.error('Token refresh failed:', error);
-      logout(); // Force logout if refresh fails
+      logout();
       throw error;
     }
   };
@@ -224,10 +258,9 @@ const updateUser = (newUserData) => {
   // Function to update user profile
   const updateProfile = async (profileData) => {
     try {
-      // This would typically call an API endpoint to update the profile
-      // For now, we'll just update the local state
-      updateUser(profileData);
-      return { success: true };
+      const updatedProfile = await usersAPI.updateProfile(profileData);
+      updateUser(updatedProfile);
+      return { success: true, profile: updatedProfile };
     } catch (error) {
       console.error('Profile update error:', error);
       return {
@@ -238,11 +271,9 @@ const updateUser = (newUserData) => {
   };
 
   // Function to change password
-  const changePassword = async (currentPassword, newPassword) => {
+  const changePassword = async (passwordData) => {
     try {
-      // This would typically call an API endpoint to change password
-      // For now, we'll just return a success message
-      console.log('Password change requested');
+      const result = await usersAPI.changePassword(passwordData);
       return { success: true, message: 'Password changed successfully' };
     } catch (error) {
       console.error('Password change error:', error);
@@ -273,6 +304,7 @@ const updateUser = (newUserData) => {
     updateProfile,
     changePassword,
     refreshAccessToken,
+    refreshProfile,
     validateAuth,
     hasPermission,
     isAuthenticated: isAuthenticated(),

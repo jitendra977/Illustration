@@ -74,3 +74,363 @@ INFO 2025-11-29 03:58:02,549 basehttp "POST /api/auth/users/register/ HTTP/1.1" 
 WARNING 2025-11-29 04:04:51,222 log Bad Request: /api/auth/users/register/
 WARNING 2025-11-29 04:04:51,223 basehttp "POST /api/auth/users/register/ HTTP/1.1" 400 48
 INFO 2025-11-29 04:07:02,134 autoreload /Volumes/Programming/React-Python/YAW/Illustration-System/backend/main/settings.py changed, reloading.
+INFO 2025-11-29 07:51:23,184 autoreload Watching for file changes with StatReloader
+ERROR 2025-11-29 07:51:32,685 log Internal Server Error: /api/auth/login/
+Traceback (most recent call last):
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/db/backends/utils.py", line 105, in _execute
+    return self.cursor.execute(sql, params)
+           ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/db/backends/sqlite3/base.py", line 360, in execute
+    return super().execute(query, params)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+sqlite3.OperationalError: no such table: token_blacklist_outstandingtoken
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/views/decorators/csrf.py", line 65, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/views/generic/base.py", line 105, in view
+    return self.dispatch(request, *args, **kwargs)
+           ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/rest_framework/views.py", line 515, in dispatch
+    response = self.handle_exception(exc)
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/rest_framework/views.py", line 475, in handle_exception
+    self.raise_uncaught_exception(exc)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/rest_framework/views.py", line 486, in raise_uncaught_exception
+    raise exc
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/rest_framework/views.py", line 512, in dispatch
+    response = handler(request, *args, **kwargs)
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/rest_framework_simplejwt/views.py", line 46, in post
+    serializer.is_valid(raise_exception=True)
+    ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/rest_framework/serializers.py", line 225, in is_valid
+    self._validated_data = self.run_validation(self.initial_data)
+                           ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/rest_framework/serializers.py", line 447, in run_validation
+    value = self.validate(value)
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/rest_framework_simplejwt/serializers.py", line 75, in validate
+    refresh = self.get_token(self.user)
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/rest_framework_simplejwt/serializers.py", line 66, in get_token
+    return cls.token_class.for_user(user)  # type: ignore
+           ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/rest_framework_simplejwt/tokens.py", line 344, in for_user
+    OutstandingToken.objects.create(
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        user=user,
+        ^^^^^^^^^^
+    ...<3 lines>...
+        expires_at=datetime_from_epoch(exp),
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/db/models/manager.py", line 87, in manager_method
+    return getattr(self.get_queryset(), name)(*args, **kwargs)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/db/models/query.py", line 665, in create
+    obj.save(force_insert=True, using=self.db)
+    ~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/db/models/base.py", line 902, in save
+    self.save_base(
+    ~~~~~~~~~~~~~~^
+        using=using,
+        ^^^^^^^^^^^^
+    ...<2 lines>...
+        update_fields=update_fields,
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/db/models/base.py", line 1008, in save_base
+    updated = self._save_table(
+        raw,
+    ...<4 lines>...
+        update_fields,
+    )
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/db/models/base.py", line 1169, in _save_table
+    results = self._do_insert(
+        cls._base_manager, using, fields, returning_fields, raw
+    )
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/db/models/base.py", line 1210, in _do_insert
+    return manager._insert(
+           ~~~~~~~~~~~~~~~^
+        [self],
+        ^^^^^^^
+    ...<3 lines>...
+        raw=raw,
+        ^^^^^^^^
+    )
+    ^
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/db/models/manager.py", line 87, in manager_method
+    return getattr(self.get_queryset(), name)(*args, **kwargs)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/db/models/query.py", line 1873, in _insert
+    return query.get_compiler(using=using).execute_sql(returning_fields)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/db/models/sql/compiler.py", line 1882, in execute_sql
+    cursor.execute(sql, params)
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/db/backends/utils.py", line 122, in execute
+    return super().execute(sql, params)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/db/backends/utils.py", line 79, in execute
+    return self._execute_with_wrappers(
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        sql, params, many=False, executor=self._execute
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/db/backends/utils.py", line 92, in _execute_with_wrappers
+    return executor(sql, params, many, context)
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/db/backends/utils.py", line 100, in _execute
+    with self.db.wrap_database_errors:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/db/utils.py", line 91, in __exit__
+    raise dj_exc_value.with_traceback(traceback) from exc_value
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/db/backends/utils.py", line 105, in _execute
+    return self.cursor.execute(sql, params)
+           ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/db/backends/sqlite3/base.py", line 360, in execute
+    return super().execute(query, params)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+django.db.utils.OperationalError: no such table: token_blacklist_outstandingtoken
+ERROR 2025-11-29 07:51:32,691 basehttp "POST /api/auth/login/ HTTP/1.1" 500 213086
+INFO 2025-11-29 07:52:15,750 autoreload Watching for file changes with StatReloader
+INFO 2025-11-29 07:52:51,150 autoreload Watching for file changes with StatReloader
+INFO 2025-11-29 07:52:55,898 basehttp "POST /api/auth/login/ HTTP/1.1" 200 489
+INFO 2025-11-29 07:52:56,181 basehttp "OPTIONS /api/auth/users/profile/ HTTP/1.1" 200 0
+INFO 2025-11-29 07:52:56,185 basehttp "OPTIONS /api/auth/users/profile/ HTTP/1.1" 200 0
+INFO 2025-11-29 07:52:56,199 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 468
+INFO 2025-11-29 07:52:56,204 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 468
+INFO 2025-11-29 07:53:06,292 basehttp "GET /media/users/1/profile/profile_1_037bde83.png HTTP/1.1" 304 0
+INFO 2025-11-29 07:53:55,905 basehttp "GET /api/auth/users/ HTTP/1.1" 200 517
+ERROR 2025-11-29 07:54:02,521 serializers Failed to send verification email: 'Settings' object has no attribute 'FRONTEND_URL'
+INFO 2025-11-29 07:54:02,523 basehttp "POST /api/auth/users/register/ HTTP/1.1" 201 542
+INFO 2025-11-29 07:54:08,029 basehttp "GET /api/auth/users/ HTTP/1.1" 200 917
+WARNING 2025-11-29 07:55:15,582 log Not Found: /accounts/logout/
+WARNING 2025-11-29 07:55:15,583 basehttp "GET /accounts/logout/?next=/swagger/ HTTP/1.1" 404 3404
+INFO 2025-11-29 07:55:20,812 basehttp "GET /swagger/ HTTP/1.1" 200 2223
+INFO 2025-11-29 07:55:20,831 basehttp "GET /static/drf-yasg/swagger-ui-dist/swagger-ui.css HTTP/1.1" 304 0
+INFO 2025-11-29 07:55:20,835 basehttp "GET /static/drf-yasg/swagger-ui-dist/swagger-ui-bundle.js HTTP/1.1" 304 0
+INFO 2025-11-29 07:55:20,836 basehttp "GET /static/drf-yasg/style.css HTTP/1.1" 304 0
+INFO 2025-11-29 07:55:20,837 basehttp "GET /static/drf-yasg/swagger-ui-dist/swagger-ui-standalone-preset.js HTTP/1.1" 304 0
+INFO 2025-11-29 07:55:20,838 basehttp "GET /static/drf-yasg/insQ.min.js HTTP/1.1" 304 0
+INFO 2025-11-29 07:55:20,839 basehttp "GET /static/drf-yasg/swagger-ui-init.js HTTP/1.1" 304 0
+INFO 2025-11-29 07:55:20,843 basehttp "GET /static/drf-yasg/immutable.min.js HTTP/1.1" 304 0
+INFO 2025-11-29 07:55:21,060 basehttp "GET /swagger/?format=openapi HTTP/1.1" 200 15395
+INFO 2025-11-29 07:55:21,060 basehttp "GET /static/drf-yasg/swagger-ui-dist/favicon-32x32.png HTTP/1.1" 304 0
+WARNING 2025-11-29 07:55:39,128 log Not Found: /accounts/login/
+WARNING 2025-11-29 07:55:39,129 basehttp "GET /accounts/login/?next=/swagger/ HTTP/1.1" 404 3401
+INFO 2025-11-29 07:57:38,804 autoreload /Volumes/Programming/React-Python/YAW/Illustration-System/backend/accounts/views.py changed, reloading.
+INFO 2025-11-29 07:57:39,289 autoreload Watching for file changes with StatReloader
+INFO 2025-11-29 07:57:53,922 autoreload /Volumes/Programming/React-Python/YAW/Illustration-System/backend/accounts/views.py changed, reloading.
+INFO 2025-11-29 07:57:54,342 autoreload Watching for file changes with StatReloader
+INFO 2025-11-29 07:59:34,141 autoreload /Volumes/Programming/React-Python/YAW/Illustration-System/backend/main/settings.py changed, reloading.
+INFO 2025-11-29 07:59:34,648 autoreload Watching for file changes with StatReloader
+INFO 2025-11-29 08:01:14,197 autoreload /Volumes/Programming/React-Python/YAW/Illustration-System/backend/accounts/views.py changed, reloading.
+INFO 2025-11-29 08:01:14,669 autoreload Watching for file changes with StatReloader
+INFO 2025-11-29 08:01:15,939 autoreload /Volumes/Programming/React-Python/YAW/Illustration-System/backend/accounts/views.py changed, reloading.
+INFO 2025-11-29 08:01:16,263 autoreload Watching for file changes with StatReloader
+INFO 2025-11-29 08:01:20,604 autoreload /Volumes/Programming/React-Python/YAW/Illustration-System/backend/accounts/views.py changed, reloading.
+INFO 2025-11-29 08:01:20,948 autoreload Watching for file changes with StatReloader
+INFO 2025-11-29 08:01:25,194 autoreload /Volumes/Programming/React-Python/YAW/Illustration-System/backend/accounts/views.py changed, reloading.
+INFO 2025-11-29 08:01:25,592 autoreload Watching for file changes with StatReloader
+INFO 2025-11-29 08:01:38,198 autoreload /Volumes/Programming/React-Python/YAW/Illustration-System/backend/accounts/views.py changed, reloading.
+INFO 2025-11-29 08:01:38,620 autoreload Watching for file changes with StatReloader
+INFO 2025-11-29 08:01:40,914 autoreload /Volumes/Programming/React-Python/YAW/Illustration-System/backend/accounts/views.py changed, reloading.
+INFO 2025-11-29 08:01:41,253 autoreload Watching for file changes with StatReloader
+INFO 2025-11-29 08:01:49,645 basehttp "GET /swagger/ HTTP/1.1" 200 2223
+INFO 2025-11-29 08:01:49,903 basehttp "GET /swagger/?format=openapi HTTP/1.1" 200 15747
+INFO 2025-11-29 08:03:04,497 autoreload /Volumes/Programming/React-Python/YAW/Illustration-System/backend/accounts/urls.py changed, reloading.
+INFO 2025-11-29 08:03:04,961 autoreload Watching for file changes with StatReloader
+INFO 2025-11-29 08:03:06,225 autoreload /Volumes/Programming/React-Python/YAW/Illustration-System/backend/accounts/urls.py changed, reloading.
+INFO 2025-11-29 08:03:06,550 autoreload Watching for file changes with StatReloader
+INFO 2025-11-29 08:06:15,141 autoreload /Volumes/Programming/React-Python/YAW/Illustration-System/backend/accounts/urls.py changed, reloading.
+INFO 2025-11-29 08:06:15,630 autoreload Watching for file changes with StatReloader
+INFO 2025-11-29 08:06:17,938 autoreload /Volumes/Programming/React-Python/YAW/Illustration-System/backend/accounts/urls.py changed, reloading.
+INFO 2025-11-29 08:06:18,276 autoreload Watching for file changes with StatReloader
+INFO 2025-11-29 08:06:23,624 autoreload /Volumes/Programming/React-Python/YAW/Illustration-System/backend/accounts/views.py changed, reloading.
+INFO 2025-11-29 08:06:23,976 autoreload Watching for file changes with StatReloader
+INFO 2025-11-29 08:06:26,230 autoreload /Volumes/Programming/React-Python/YAW/Illustration-System/backend/accounts/views.py changed, reloading.
+INFO 2025-11-29 08:06:26,560 autoreload Watching for file changes with StatReloader
+INFO 2025-11-29 08:06:31,280 basehttp "GET /swagger/ HTTP/1.1" 200 2223
+INFO 2025-11-29 08:06:31,484 basehttp "GET /swagger/?format=openapi HTTP/1.1" 200 15395
+INFO 2025-11-29 08:06:47,464 basehttp "POST /api/auth/login/ HTTP/1.1" 200 489
+INFO 2025-11-29 08:06:47,606 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 468
+INFO 2025-11-29 08:06:47,612 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 468
+INFO 2025-11-29 08:07:06,650 basehttp "GET /admin/accounts/user/ HTTP/1.1" 302 0
+INFO 2025-11-29 08:07:07,037 basehttp "GET /admin/login/?next=/admin/accounts/user/ HTTP/1.1" 200 4201
+WARNING 2025-11-29 08:07:09,196 log Not Found: /favicon.ico
+WARNING 2025-11-29 08:07:09,196 basehttp "GET /favicon.ico HTTP/1.1" 404 3374
+INFO 2025-11-29 08:07:10,083 basehttp "GET /admin/accounts/user/ HTTP/1.1" 302 0
+INFO 2025-11-29 08:07:10,088 basehttp "GET /admin/login/?next=/admin/accounts/user/ HTTP/1.1" 200 4201
+WARNING 2025-11-29 08:07:10,833 log Not Found: /favicon.ico
+WARNING 2025-11-29 08:07:10,833 basehttp "GET /favicon.ico HTTP/1.1" 404 3371
+INFO 2025-11-29 08:07:17,859 basehttp "OPTIONS /api/auth/login/ HTTP/1.1" 200 0
+INFO 2025-11-29 08:07:18,076 basehttp "POST /api/auth/login/ HTTP/1.1" 200 489
+INFO 2025-11-29 08:07:18,256 basehttp "OPTIONS /api/auth/users/profile/ HTTP/1.1" 200 0
+INFO 2025-11-29 08:07:18,265 basehttp "OPTIONS /api/auth/users/profile/ HTTP/1.1" 200 0
+INFO 2025-11-29 08:07:18,273 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 468
+INFO 2025-11-29 08:07:18,291 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 468
+INFO 2025-11-29 08:07:52,197 basehttp "POST /api/auth/login/ HTTP/1.1" 200 489
+INFO 2025-11-29 08:08:03,916 basehttp "POST /api/auth/login/ HTTP/1.1" 200 489
+INFO 2025-11-29 08:08:04,058 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 468
+INFO 2025-11-29 08:08:04,069 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 468
+INFO 2025-11-29 08:10:22,572 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 468
+INFO 2025-11-29 08:10:22,578 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 468
+INFO 2025-11-29 08:13:59,282 basehttp "POST /api/auth/login/ HTTP/1.1" 200 489
+INFO 2025-11-29 08:13:59,392 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 468
+INFO 2025-11-29 08:13:59,397 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 468
+INFO 2025-11-29 08:16:57,807 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 468
+INFO 2025-11-29 08:16:57,815 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 468
+INFO 2025-11-29 08:16:58,998 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 468
+INFO 2025-11-29 08:16:59,001 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 468
+INFO 2025-11-29 08:16:59,605 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 468
+INFO 2025-11-29 08:16:59,609 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 468
+INFO 2025-11-29 08:17:05,554 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 468
+INFO 2025-11-29 08:17:05,558 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 468
+INFO 2025-11-29 08:20:44,781 basehttp "POST /api/auth/login/ HTTP/1.1" 200 489
+INFO 2025-11-29 08:20:45,010 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 468
+INFO 2025-11-29 08:20:45,015 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 468
+INFO 2025-11-29 08:20:53,160 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 468
+INFO 2025-11-29 08:20:53,166 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 468
+INFO 2025-11-29 08:21:03,734 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 468
+INFO 2025-11-29 08:21:03,739 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 468
+INFO 2025-11-29 08:47:17,762 autoreload Watching for file changes with StatReloader
+INFO 2025-11-29 08:47:24,528 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 468
+INFO 2025-11-29 08:47:24,535 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 468
+INFO 2025-11-29 09:00:34,729 basehttp "OPTIONS /api/auth/users/register/ HTTP/1.1" 200 0
+ERROR 2025-11-29 09:00:34,989 serializers Failed to send verification email: 'Settings' object has no attribute 'FRONTEND_URL'
+INFO 2025-11-29 09:00:34,992 basehttp "POST /api/auth/users/register/ HTTP/1.1" 201 556
+INFO 2025-11-29 09:00:50,521 basehttp "POST /api/auth/login/ HTTP/1.1" 200 489
+INFO 2025-11-29 09:01:13,409 basehttp "POST /admin/login/?next=/admin/accounts/user/ HTTP/1.1" 302 0
+INFO 2025-11-29 09:01:13,463 basehttp "GET /admin/accounts/user/ HTTP/1.1" 200 17975
+INFO 2025-11-29 09:01:13,491 basehttp "GET /static/admin/css/base.css HTTP/1.1" 304 0
+INFO 2025-11-29 09:01:13,492 basehttp "GET /static/admin/css/dark_mode.css HTTP/1.1" 304 0
+INFO 2025-11-29 09:01:13,493 basehttp "GET /admin/jsi18n/ HTTP/1.1" 200 3342
+INFO 2025-11-29 09:01:13,494 basehttp "GET /static/admin/js/theme.js HTTP/1.1" 304 0
+INFO 2025-11-29 09:01:13,494 basehttp "GET /static/admin/css/nav_sidebar.css HTTP/1.1" 304 0
+INFO 2025-11-29 09:01:13,494 basehttp "GET /static/admin/css/changelists.css HTTP/1.1" 304 0
+INFO 2025-11-29 09:01:13,516 basehttp "GET /static/admin/js/vendor/jquery/jquery.js HTTP/1.1" 304 0
+INFO 2025-11-29 09:01:13,519 basehttp "GET /static/admin/js/core.js HTTP/1.1" 304 0
+INFO 2025-11-29 09:01:13,519 basehttp "GET /static/admin/js/prepopulate.js HTTP/1.1" 304 0
+INFO 2025-11-29 09:01:13,520 basehttp "GET /static/admin/js/admin/RelatedObjectLookups.js HTTP/1.1" 304 0
+INFO 2025-11-29 09:01:13,520 basehttp "GET /static/admin/js/actions.js HTTP/1.1" 304 0
+INFO 2025-11-29 09:01:13,523 basehttp "GET /static/admin/js/jquery.init.js HTTP/1.1" 304 0
+INFO 2025-11-29 09:01:13,524 basehttp "GET /static/admin/js/vendor/xregexp/xregexp.js HTTP/1.1" 304 0
+INFO 2025-11-29 09:01:13,524 basehttp "GET /static/admin/css/responsive.css HTTP/1.1" 304 0
+INFO 2025-11-29 09:01:13,525 basehttp "GET /static/admin/js/urlify.js HTTP/1.1" 304 0
+INFO 2025-11-29 09:01:13,533 basehttp "GET /static/admin/img/search.svg HTTP/1.1" 304 0
+INFO 2025-11-29 09:01:13,543 basehttp "GET /static/admin/img/icon-no.svg HTTP/1.1" 200 560
+INFO 2025-11-29 09:01:13,549 basehttp "GET /static/admin/img/icon-yes.svg HTTP/1.1" 304 0
+INFO 2025-11-29 09:01:13,551 basehttp "GET /static/admin/js/nav_sidebar.js HTTP/1.1" 304 0
+INFO 2025-11-29 09:01:13,551 basehttp "GET /media/users/1/profile/profile_1_037bde83.png HTTP/1.1" 304 0
+INFO 2025-11-29 09:01:13,552 basehttp "GET /static/admin/js/filters.js HTTP/1.1" 304 0
+INFO 2025-11-29 09:01:13,556 basehttp "GET /static/admin/img/tooltag-add.svg HTTP/1.1" 304 0
+INFO 2025-11-29 09:01:13,556 basehttp "GET /static/admin/img/icon-viewlink.svg HTTP/1.1" 304 0
+INFO 2025-11-29 09:01:13,557 basehttp "GET /static/admin/img/sorting-icons.svg HTTP/1.1" 304 0
+INFO 2025-11-29 09:01:15,393 basehttp "GET /admin/accounts/user/3/change/ HTTP/1.1" 200 28248
+INFO 2025-11-29 09:01:15,421 basehttp "GET /static/admin/js/SelectBox.js HTTP/1.1" 200 4530
+INFO 2025-11-29 09:01:15,422 basehttp "GET /static/admin/css/forms.css HTTP/1.1" 200 8525
+INFO 2025-11-29 09:01:15,425 basehttp "GET /static/admin/js/calendar.js HTTP/1.1" 200 9141
+INFO 2025-11-29 09:01:15,426 basehttp "GET /static/admin/js/admin/DateTimeShortcuts.js HTTP/1.1" 200 19319
+INFO 2025-11-29 09:01:15,427 basehttp "GET /static/admin/js/SelectFilter2.js HTTP/1.1" 200 15845
+INFO 2025-11-29 09:01:15,430 basehttp "GET /admin/jsi18n/ HTTP/1.1" 200 3342
+INFO 2025-11-29 09:01:15,431 basehttp "GET /static/admin/js/prepopulate_init.js HTTP/1.1" 200 586
+INFO 2025-11-29 09:01:15,437 basehttp "GET /static/admin/css/widgets.css HTTP/1.1" 200 11973
+INFO 2025-11-29 09:01:15,438 basehttp "GET /static/admin/img/icon-addlink.svg HTTP/1.1" 304 0
+INFO 2025-11-29 09:01:15,439 basehttp "GET /static/admin/js/change_form.js HTTP/1.1" 200 606
+INFO 2025-11-29 09:01:15,513 basehttp "GET /static/admin/img/selector-icons.svg HTTP/1.1" 200 3291
+INFO 2025-11-29 09:01:15,513 basehttp "GET /static/admin/img/icon-clock.svg HTTP/1.1" 200 677
+INFO 2025-11-29 09:01:15,514 basehttp "GET /static/admin/img/icon-calendar.svg HTTP/1.1" 200 1086
+INFO 2025-11-29 09:01:23,336 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 430
+INFO 2025-11-29 09:01:23,356 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 430
+INFO 2025-11-29 09:01:31,770 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 430
+INFO 2025-11-29 09:01:31,776 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 430
+INFO 2025-11-29 09:01:44,115 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 430
+INFO 2025-11-29 09:01:44,121 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 430
+INFO 2025-11-29 09:01:58,866 basehttp "POST /admin/login/?next=/admin/accounts/user/ HTTP/1.1" 302 0
+INFO 2025-11-29 09:01:58,881 basehttp "GET /admin/accounts/user/ HTTP/1.1" 200 17975
+INFO 2025-11-29 09:01:58,931 basehttp "GET /static/admin/css/dark_mode.css HTTP/1.1" 304 0
+INFO 2025-11-29 09:01:58,932 basehttp "GET /static/admin/css/nav_sidebar.css HTTP/1.1" 304 0
+INFO 2025-11-29 09:01:58,933 basehttp "GET /static/admin/css/base.css HTTP/1.1" 304 0
+INFO 2025-11-29 09:01:58,933 basehttp "GET /static/admin/css/responsive.css HTTP/1.1" 304 0
+INFO 2025-11-29 09:01:58,933 basehttp "GET /static/admin/js/theme.js HTTP/1.1" 304 0
+INFO 2025-11-29 09:01:58,936 basehttp "GET /static/admin/js/jquery.init.js HTTP/1.1" 304 0
+INFO 2025-11-29 09:01:58,940 basehttp "GET /static/admin/js/core.js HTTP/1.1" 304 0
+INFO 2025-11-29 09:01:58,943 basehttp "GET /static/admin/css/changelists.css HTTP/1.1" 304 0
+INFO 2025-11-29 09:01:58,943 basehttp "GET /static/admin/js/admin/RelatedObjectLookups.js HTTP/1.1" 304 0
+INFO 2025-11-29 09:01:58,945 basehttp "GET /static/admin/js/urlify.js HTTP/1.1" 304 0
+INFO 2025-11-29 09:01:58,946 basehttp "GET /static/admin/js/prepopulate.js HTTP/1.1" 304 0
+INFO 2025-11-29 09:01:58,948 basehttp "GET /static/admin/js/vendor/jquery/jquery.js HTTP/1.1" 304 0
+INFO 2025-11-29 09:01:58,949 basehttp "GET /static/admin/js/actions.js HTTP/1.1" 304 0
+INFO 2025-11-29 09:01:58,949 basehttp "GET /static/admin/js/vendor/xregexp/xregexp.js HTTP/1.1" 304 0
+INFO 2025-11-29 09:01:58,952 basehttp "GET /admin/jsi18n/ HTTP/1.1" 200 3342
+INFO 2025-11-29 09:01:58,960 basehttp "GET /static/admin/img/search.svg HTTP/1.1" 304 0
+INFO 2025-11-29 09:01:58,960 basehttp "GET /static/admin/img/icon-no.svg HTTP/1.1" 304 0
+INFO 2025-11-29 09:01:58,969 basehttp "GET /static/admin/js/nav_sidebar.js HTTP/1.1" 304 0
+INFO 2025-11-29 09:01:58,969 basehttp "GET /static/admin/img/icon-yes.svg HTTP/1.1" 304 0
+INFO 2025-11-29 09:01:58,977 basehttp "GET /media/users/1/profile/profile_1_037bde83.png HTTP/1.1" 304 0
+INFO 2025-11-29 09:01:58,977 basehttp "GET /static/admin/js/filters.js HTTP/1.1" 304 0
+INFO 2025-11-29 09:01:58,987 basehttp "GET /static/admin/img/sorting-icons.svg HTTP/1.1" 304 0
+INFO 2025-11-29 09:01:58,988 basehttp "GET /static/admin/img/tooltag-add.svg HTTP/1.1" 304 0
+INFO 2025-11-29 09:01:58,988 basehttp "GET /static/admin/img/icon-viewlink.svg HTTP/1.1" 304 0
+INFO 2025-11-29 09:02:00,643 basehttp "GET /admin/accounts/user/3/change/ HTTP/1.1" 200 28248
+INFO 2025-11-29 09:02:00,665 basehttp "GET /static/admin/js/SelectFilter2.js HTTP/1.1" 304 0
+INFO 2025-11-29 09:02:00,666 basehttp "GET /static/admin/js/calendar.js HTTP/1.1" 304 0
+INFO 2025-11-29 09:02:00,666 basehttp "GET /static/admin/js/SelectBox.js HTTP/1.1" 304 0
+INFO 2025-11-29 09:02:00,667 basehttp "GET /static/admin/js/admin/DateTimeShortcuts.js HTTP/1.1" 304 0
+INFO 2025-11-29 09:02:00,668 basehttp "GET /static/admin/css/forms.css HTTP/1.1" 304 0
+INFO 2025-11-29 09:02:00,671 basehttp "GET /static/admin/js/prepopulate_init.js HTTP/1.1" 304 0
+INFO 2025-11-29 09:02:00,674 basehttp "GET /admin/jsi18n/ HTTP/1.1" 200 3342
+INFO 2025-11-29 09:02:00,682 basehttp "GET /static/admin/css/widgets.css HTTP/1.1" 304 0
+INFO 2025-11-29 09:02:00,683 basehttp "GET /static/admin/img/icon-addlink.svg HTTP/1.1" 304 0
+INFO 2025-11-29 09:02:00,684 basehttp "GET /static/admin/js/change_form.js HTTP/1.1" 304 0
+INFO 2025-11-29 09:02:00,756 basehttp "GET /static/admin/img/selector-icons.svg HTTP/1.1" 304 0
+INFO 2025-11-29 09:02:00,758 basehttp "GET /static/admin/img/icon-calendar.svg HTTP/1.1" 304 0
+INFO 2025-11-29 09:02:00,759 basehttp "GET /static/admin/img/icon-clock.svg HTTP/1.1" 304 0
+INFO 2025-11-29 09:02:12,059 basehttp "POST /admin/accounts/user/3/change/ HTTP/1.1" 302 0
+INFO 2025-11-29 09:02:12,074 basehttp "GET /admin/accounts/user/ HTTP/1.1" 200 18116
+INFO 2025-11-29 09:02:12,108 basehttp "GET /media/users/3/profile/profile_3_13217236.png HTTP/1.1" 200 14103
+INFO 2025-11-29 09:02:12,115 basehttp "GET /admin/jsi18n/ HTTP/1.1" 200 3342
+INFO 2025-11-29 09:02:23,603 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 497
+INFO 2025-11-29 09:02:23,609 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 497
+INFO 2025-11-29 09:02:23,716 basehttp "GET /media/users/3/profile/profile_3_13217236.png HTTP/1.1" 200 14103
+INFO 2025-11-29 09:02:25,224 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 497
+INFO 2025-11-29 09:02:25,254 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 497
+INFO 2025-11-29 09:02:25,283 basehttp "GET /media/users/3/profile/profile_3_13217236.png HTTP/1.1" 304 0
+INFO 2025-11-29 09:03:32,861 basehttp "OPTIONS /api/auth/login/ HTTP/1.1" 200 0
+INFO 2025-11-29 09:03:33,107 basehttp "POST /api/auth/login/ HTTP/1.1" 200 489
+INFO 2025-11-29 09:05:40,883 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 497
+INFO 2025-11-29 09:05:40,893 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 497
+INFO 2025-11-29 09:30:04,674 basehttp "POST /api/auth/login/ HTTP/1.1" 200 489
+INFO 2025-11-29 09:33:45,740 basehttp "OPTIONS /api/auth/users/profile/ HTTP/1.1" 200 0
+INFO 2025-11-29 09:33:45,800 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 468
+INFO 2025-11-29 09:33:48,318 basehttp "GET /media/users/1/profile/profile_1_037bde83.png HTTP/1.1" 304 0
+INFO 2025-11-29 09:34:37,792 basehttp "OPTIONS /api/auth/login/ HTTP/1.1" 200 0
+INFO 2025-11-29 09:34:38,004 basehttp "POST /api/auth/login/ HTTP/1.1" 200 489
+INFO 2025-11-29 09:35:13,846 basehttp "OPTIONS /api/auth/users/profile/ HTTP/1.1" 200 0
+INFO 2025-11-29 09:35:13,847 basehttp "OPTIONS /api/auth/users/profile/ HTTP/1.1" 200 0
+INFO 2025-11-29 09:35:13,864 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 468
+INFO 2025-11-29 09:35:13,872 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 468
+INFO 2025-11-29 09:35:13,947 basehttp "GET /media/users/1/profile/profile_1_037bde83.png HTTP/1.1" 200 1347799
+INFO 2025-11-29 09:35:14,090 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 468
+INFO 2025-11-29 09:36:03,952 basehttp "OPTIONS /api/auth/login/ HTTP/1.1" 200 0
+INFO 2025-11-29 09:36:04,175 basehttp "POST /api/auth/login/ HTTP/1.1" 200 489
+INFO 2025-11-29 09:36:04,180 basehttp "OPTIONS /api/auth/users/profile/ HTTP/1.1" 200 0
+INFO 2025-11-29 09:36:04,187 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 468
+INFO 2025-11-29 09:36:04,238 basehttp "GET /media/users/1/profile/profile_1_037bde83.png HTTP/1.1" 304 0
+INFO 2025-11-29 09:36:31,064 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 468
+INFO 2025-11-29 09:36:31,071 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 468
+INFO 2025-11-29 09:36:31,076 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 468
+INFO 2025-11-29 09:36:31,081 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 468
+INFO 2025-11-29 09:39:52,086 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 468
+INFO 2025-11-29 09:42:24,950 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 468
+INFO 2025-11-29 09:45:22,713 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 468
+INFO 2025-11-29 09:45:22,717 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 468
+INFO 2025-11-29 09:45:22,722 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 468
+INFO 2025-11-29 09:45:22,726 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 468

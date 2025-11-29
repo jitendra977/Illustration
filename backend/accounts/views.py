@@ -163,6 +163,7 @@ class UserViewSet(viewsets.ModelViewSet):
 
         return Response(UserSerializer(request.user).data)
 
+    
     @user_permission_required(action_type='change_password')
     @action(
         detail=False, 

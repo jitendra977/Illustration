@@ -1,4 +1,4 @@
-// users.js
+// src/api/users.js
 import api from './index';
 
 const handleApiError = (error, operation) => {
@@ -6,12 +6,18 @@ const handleApiError = (error, operation) => {
   throw error;
 };
 
-// Get base URL from environment or API instance
+// Get base URL from environment
 const getBaseUrl = () => {
-  return process.env.REACT_APP_API_URL || '';
+  const apiUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000/api';
+  // Remove /api from the end if present to get the base URL
+  return apiUrl.replace('/api', '');
 };
 
 export const usersAPI = {
+  /**
+   * Get current user's profile
+   * @returns {Promise<Object>} User profile data
+   */
   getProfile: async () => {
     try {
       const response = await api.get('auth/users/profile/');
@@ -28,32 +34,30 @@ export const usersAPI = {
     }
   },
 
-  // Add this new method to get the complete user data with proper image URLs
-  getUserWithProfileImage: async () => {
+  /**
+   * Get current user info (alternative endpoint)
+   * @returns {Promise<Object>} User data
+   */
+  getCurrentUser: async () => {
     try {
-      const response = await api.get('auth/users/profile/');
+      const response = await api.get('auth/users/me/');
       const data = response.data;
       
-      // Process user data to ensure profile_image has full URL
-      if (data?.user?.profile_image && !data.user.profile_image.startsWith('http')) {
-        data.user.profile_image = `${getBaseUrl()}${data.user.profile_image}`;
+      if (data?.profile_image && !data.profile_image.startsWith('http')) {
+        data.profile_image = `${getBaseUrl()}${data.profile_image}`;
       }
       
       return data;
     } catch (error) {
-      return handleApiError(error, 'fetching user with profile');
+      return handleApiError(error, 'fetching current user');
     }
   },
 
-  verifyEmail: async (token) => {
-    try {
-      const response = await api.post('auth/users/verify_email/', { token });
-      return response.data;
-    } catch (error) {
-      return handleApiError(error, 'verifying email');
-    }
-  },
-
+  /**
+   * Update user profile
+   * @param {FormData|Object} userData - User data to update
+   * @returns {Promise<Object>} Updated user data
+   */
   updateProfile: async (userData) => {
     try {
       const config = userData instanceof FormData 
@@ -74,16 +78,76 @@ export const usersAPI = {
     }
   },
 
-  updatePassword: async (passwordData) => {
+  /**
+   * Partial update of user profile (PATCH)
+   * @param {FormData|Object} userData - User data to update
+   * @returns {Promise<Object>} Updated user data
+   */
+  patchProfile: async (userData) => {
     try {
-      const response = await api.post('auth/users/change_password/', passwordData);
-      return response.data;
+      const config = userData instanceof FormData 
+        ? { headers: { 'Content-Type': 'multipart/form-data' } }
+        : { headers: { 'Content-Type': 'application/json' } };
+
+      const response = await api.patch('auth/users/profile/', userData, config);
+      const data = response.data;
+      
+      if (data?.profile_image && !data.profile_image.startsWith('http')) {
+        data.profile_image = `${getBaseUrl()}${data.profile_image}`;
+      }
+      
+      return data;
     } catch (error) {
-      return handleApiError(error, 'updating password');
+      return handleApiError(error, 'patching profile');
     }
   },
 
-  // Profile image specific methods
+  /**
+   * Change user password
+   * @param {Object} passwordData - { old_password, new_password, confirm_password }
+   * @returns {Promise<Object>} Success message
+   */
+  changePassword: async (passwordData) => {
+    try {
+      const response = await api.post('auth/users/change-password/', passwordData);
+      return response.data;
+    } catch (error) {
+      return handleApiError(error, 'changing password');
+    }
+  },
+
+  /**
+   * Verify email address
+   * @param {string} token - Verification token (UUID)
+   * @returns {Promise<Object>} Verification response
+   */
+  verifyEmail: async (token) => {
+    try {
+      const response = await api.post('auth/users/verify-email/', { token });
+      return response.data;
+    } catch (error) {
+      return handleApiError(error, 'verifying email');
+    }
+  },
+
+  /**
+   * Resend verification email
+   * @returns {Promise<Object>} Success message
+   */
+  resendVerification: async () => {
+    try {
+      const response = await api.post('auth/users/resend-verification/');
+      return response.data;
+    } catch (error) {
+      return handleApiError(error, 'resending verification');
+    }
+  },
+
+  /**
+   * Upload profile image
+   * @param {File} imageFile - Image file to upload
+   * @returns {Promise<Object>} Updated user data with new image
+   */
   uploadProfileImage: async (imageFile) => {
     try {
       const formData = new FormData();
@@ -94,6 +158,7 @@ export const usersAPI = {
       });
       
       const data = response.data;
+      
       // Convert relative URL to absolute
       if (data?.profile_image && !data.profile_image.startsWith('http')) {
         data.profile_image = `${getBaseUrl()}${data.profile_image}`;
@@ -105,7 +170,138 @@ export const usersAPI = {
     }
   },
 
-  // Helper function to get full image URL
+  /**
+   * Delete profile image
+   * @returns {Promise<Object>} Updated user data
+   */
+  deleteProfileImage: async () => {
+    try {
+      const formData = new FormData();
+      formData.append('profile_image', ''); // Send empty to delete
+
+      const response = await api.patch('auth/users/profile/', formData, {
+        headers: { 'Content-Type': 'multipart/form-data' }
+      });
+      
+      return response.data;
+    } catch (error) {
+      return handleApiError(error, 'deleting profile image');
+    }
+  },
+
+  /**
+   * Get list of all users (admin only)
+   * @param {Object} params - Query parameters (page, search, etc.)
+   * @returns {Promise<Object>} Paginated users list
+   */
+  getAllUsers: async (params = {}) => {
+    try {
+      const response = await api.get('auth/users/', { params });
+      const data = response.data;
+      
+      // Process profile images for all users
+      if (data.results) {
+        data.results = data.results.map(user => {
+          if (user.profile_image && !user.profile_image.startsWith('http')) {
+            user.profile_image = `${getBaseUrl()}${user.profile_image}`;
+          }
+          return user;
+        });
+      }
+      
+      return data;
+    } catch (error) {
+      return handleApiError(error, 'fetching users list');
+    }
+  },
+
+  /**
+   * Get user by ID (admin only)
+   * @param {number} userId - User ID
+   * @returns {Promise<Object>} User data
+   */
+  getUserById: async (userId) => {
+    try {
+      const response = await api.get(`auth/users/${userId}/`);
+      const data = response.data;
+      
+      if (data?.profile_image && !data.profile_image.startsWith('http')) {
+        data.profile_image = `${getBaseUrl()}${data.profile_image}`;
+      }
+      
+      return data;
+    } catch (error) {
+      return handleApiError(error, `fetching user ${userId}`);
+    }
+  },
+
+  /**
+   * Create new user (admin only)
+   * @param {FormData|Object} userData - User data
+   * @returns {Promise<Object>} Created user data
+   */
+  createUser: async (userData) => {
+    try {
+      const config = userData instanceof FormData 
+        ? { headers: { 'Content-Type': 'multipart/form-data' } }
+        : { headers: { 'Content-Type': 'application/json' } };
+
+      const response = await api.post('auth/users/', userData, config);
+      const data = response.data;
+      
+      if (data?.profile_image && !data.profile_image.startsWith('http')) {
+        data.profile_image = `${getBaseUrl()}${data.profile_image}`;
+      }
+      
+      return data;
+    } catch (error) {
+      return handleApiError(error, 'creating user');
+    }
+  },
+
+  /**
+   * Update user (admin only)
+   * @param {number} userId - User ID
+   * @param {FormData|Object} userData - User data to update
+   * @returns {Promise<Object>} Updated user data
+   */
+  updateUser: async (userId, userData) => {
+    try {
+      const config = userData instanceof FormData 
+        ? { headers: { 'Content-Type': 'multipart/form-data' } }
+        : { headers: { 'Content-Type': 'application/json' } };
+
+      const response = await api.put(`auth/users/${userId}/`, userData, config);
+      const data = response.data;
+      
+      if (data?.profile_image && !data.profile_image.startsWith('http')) {
+        data.profile_image = `${getBaseUrl()}${data.profile_image}`;
+      }
+      
+      return data;
+    } catch (error) {
+      return handleApiError(error, `updating user ${userId}`);
+    }
+  },
+
+  /**
+   * Delete user (admin only)
+   * @param {number} userId - User ID
+   * @returns {Promise<void>}
+   */
+  deleteUser: async (userId) => {
+    try {
+      await api.delete(`auth/users/${userId}/`);
+    } catch (error) {
+      return handleApiError(error, `deleting user ${userId}`);
+    }
+  },
+
+  /**
+   * Helper function to get full image URL
+   * @param {string} relativeUrl - Relative image URL
+   * @returns {string|null} Full image URL
+   */
   getFullImageUrl: (relativeUrl) => {
     if (!relativeUrl) return null;
     if (relativeUrl.startsWith('http')) return relativeUrl;
