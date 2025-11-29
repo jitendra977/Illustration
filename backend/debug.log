@@ -434,3 +434,1310 @@ INFO 2025-11-29 09:45:22,713 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 20
 INFO 2025-11-29 09:45:22,717 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 468
 INFO 2025-11-29 09:45:22,722 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 468
 INFO 2025-11-29 09:45:22,726 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 468
+ERROR 2025-11-29 09:48:36,527 serializers Failed to send verification email: 'Settings' object has no attribute 'FRONTEND_URL'
+INFO 2025-11-29 09:48:36,531 basehttp "POST /api/auth/users/register/ HTTP/1.1" 201 613
+INFO 2025-11-29 09:48:59,299 basehttp "GET /admin/accounts/user/ HTTP/1.1" 200 18840
+INFO 2025-11-29 09:48:59,334 basehttp "GET /media/users/3/profile/profile_3_13217236.png HTTP/1.1" 304 0
+INFO 2025-11-29 09:48:59,337 basehttp "GET /media/users/None/profile/profile_None_a4938606.png HTTP/1.1" 200 14103
+INFO 2025-11-29 09:48:59,338 basehttp "GET /admin/jsi18n/ HTTP/1.1" 200 3342
+INFO 2025-11-29 09:49:27,480 basehttp "POST /api/auth/login/ HTTP/1.1" 200 489
+INFO 2025-11-29 09:49:27,504 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 511
+INFO 2025-11-29 09:49:27,545 basehttp "GET /media/users/None/profile/profile_None_a4938606.png HTTP/1.1" 200 14103
+INFO 2025-11-29 09:49:53,010 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 468
+INFO 2025-11-29 09:51:05,380 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 468
+INFO 2025-11-29 09:53:47,741 basehttp "OPTIONS /api/auth/users/ HTTP/1.1" 200 0
+INFO 2025-11-29 09:53:47,754 basehttp "OPTIONS /api/auth/users/ HTTP/1.1" 200 0
+INFO 2025-11-29 09:53:47,763 basehttp "GET /api/auth/users/ HTTP/1.1" 200 1930
+WARNING 2025-11-29 09:53:47,764 log Forbidden: /api/auth/users/
+WARNING 2025-11-29 09:53:47,764 basehttp "GET /api/auth/users/ HTTP/1.1" 403 37
+INFO 2025-11-29 09:53:47,845 basehttp "GET /media/users/None/profile/profile_None_a4938606.png HTTP/1.1" 200 14103
+INFO 2025-11-29 09:53:47,847 basehttp "GET /media/users/3/profile/profile_3_13217236.png HTTP/1.1" 200 14103
+INFO 2025-11-29 09:53:48,410 basehttp "OPTIONS /api/auth/users/profile/ HTTP/1.1" 200 0
+INFO 2025-11-29 09:53:48,457 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 468
+INFO 2025-11-29 09:53:48,585 basehttp "OPTIONS /api/auth/users/ HTTP/1.1" 200 0
+INFO 2025-11-29 09:53:48,653 basehttp "GET /api/auth/users/ HTTP/1.1" 200 1930
+INFO 2025-11-29 09:53:48,701 basehttp "GET /media/users/None/profile/profile_None_a4938606.png HTTP/1.1" 200 14103
+INFO 2025-11-29 09:53:48,729 basehttp "GET /media/users/3/profile/profile_3_13217236.png HTTP/1.1" 200 14103
+INFO 2025-11-29 09:54:50,066 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 511
+INFO 2025-11-29 09:54:50,071 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 511
+INFO 2025-11-29 09:54:50,076 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 511
+INFO 2025-11-29 09:54:50,080 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 511
+INFO 2025-11-29 09:54:50,197 basehttp "GET /media/users/None/profile/profile_None_a4938606.png HTTP/1.1" 304 0
+WARNING 2025-11-29 09:54:50,197 log Forbidden: /api/auth/users/
+WARNING 2025-11-29 09:54:50,198 basehttp "GET /api/auth/users/ HTTP/1.1" 403 37
+WARNING 2025-11-29 09:54:50,201 log Forbidden: /api/auth/users/
+WARNING 2025-11-29 09:54:50,201 basehttp "GET /api/auth/users/ HTTP/1.1" 403 37
+INFO 2025-11-29 09:55:02,735 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 468
+INFO 2025-11-29 09:55:02,741 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 468
+INFO 2025-11-29 09:55:02,747 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 468
+INFO 2025-11-29 09:55:02,751 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 468
+INFO 2025-11-29 09:55:02,973 basehttp "OPTIONS /api/auth/users/ HTTP/1.1" 200 0
+INFO 2025-11-29 09:55:02,974 basehttp "OPTIONS /api/auth/users/ HTTP/1.1" 200 0
+INFO 2025-11-29 09:55:02,978 basehttp "GET /media/users/1/profile/profile_1_037bde83.png HTTP/1.1" 304 0
+INFO 2025-11-29 09:55:02,993 basehttp "GET /api/auth/users/ HTTP/1.1" 200 1930
+INFO 2025-11-29 09:55:03,002 basehttp "GET /api/auth/users/ HTTP/1.1" 200 1930
+INFO 2025-11-29 09:55:03,054 basehttp "GET /media/users/None/profile/profile_None_a4938606.png HTTP/1.1" 200 14103
+INFO 2025-11-29 09:55:03,057 basehttp "GET /media/users/3/profile/profile_3_13217236.png HTTP/1.1" 304 0
+INFO 2025-11-29 09:56:11,003 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 468
+INFO 2025-11-29 09:56:11,135 basehttp "GET /api/auth/users/ HTTP/1.1" 200 1930
+INFO 2025-11-29 09:56:11,167 basehttp "GET /media/users/None/profile/profile_None_a4938606.png HTTP/1.1" 304 0
+INFO 2025-11-29 09:56:41,209 basehttp "GET /api/auth/users/ HTTP/1.1" 200 1930
+INFO 2025-11-29 09:56:41,722 basehttp "GET /api/auth/users/ HTTP/1.1" 200 1930
+INFO 2025-11-29 09:56:41,733 basehttp "GET /api/auth/users/ HTTP/1.1" 200 1930
+INFO 2025-11-29 09:57:44,540 basehttp "GET /api/auth/users/ HTTP/1.1" 200 1930
+INFO 2025-11-29 09:57:44,574 basehttp "GET /media/users/None/profile/profile_None_a4938606.png HTTP/1.1" 304 0
+INFO 2025-11-29 09:57:59,085 basehttp "GET /admin/accounts/user/1/change/ HTTP/1.1" 200 28495
+INFO 2025-11-29 09:57:59,111 basehttp "GET /media/users/1/profile/profile_1_037bde83.png HTTP/1.1" 304 0
+INFO 2025-11-29 09:57:59,119 basehttp "GET /admin/jsi18n/ HTTP/1.1" 200 3342
+INFO 2025-11-29 09:58:10,270 basehttp "POST /admin/accounts/user/1/change/ HTTP/1.1" 302 0
+INFO 2025-11-29 09:58:10,285 basehttp "GET /admin/accounts/user/ HTTP/1.1" 200 19080
+INFO 2025-11-29 09:58:10,310 basehttp "GET /media/users/None/profile/profile_None_a4938606.png HTTP/1.1" 304 0
+INFO 2025-11-29 09:58:10,311 basehttp "GET /media/users/3/profile/profile_3_13217236.png HTTP/1.1" 304 0
+INFO 2025-11-29 09:58:10,316 basehttp "GET /admin/jsi18n/ HTTP/1.1" 200 3342
+INFO 2025-11-29 09:58:17,353 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 467
+INFO 2025-11-29 09:58:17,361 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 467
+INFO 2025-11-29 09:58:17,369 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 467
+INFO 2025-11-29 09:58:17,374 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 467
+INFO 2025-11-29 09:58:17,457 basehttp "GET /api/auth/users/ HTTP/1.1" 200 1929
+INFO 2025-11-29 09:58:17,469 basehttp "GET /api/auth/users/ HTTP/1.1" 200 1929
+INFO 2025-11-29 09:58:17,479 basehttp "GET /media/users/None/profile/profile_None_a4938606.png HTTP/1.1" 304 0
+INFO 2025-11-29 09:58:55,447 basehttp "GET /media/users/None/profile/profile_None_a4938606.png HTTP/1.1" 304 0
+INFO 2025-11-29 10:01:46,039 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 467
+INFO 2025-11-29 10:01:46,122 basehttp "GET /api/auth/users/ HTTP/1.1" 200 1929
+INFO 2025-11-29 10:01:46,150 basehttp "GET /media/users/None/profile/profile_None_a4938606.png HTTP/1.1" 304 0
+INFO 2025-11-29 10:01:46,172 basehttp "GET /media/users/3/profile/profile_3_13217236.png HTTP/1.1" 304 0
+INFO 2025-11-29 10:02:30,973 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 467
+INFO 2025-11-29 10:02:31,126 basehttp "GET /api/auth/users/ HTTP/1.1" 200 1929
+INFO 2025-11-29 10:08:57,509 basehttp "OPTIONS /api/auth/users/ HTTP/1.1" 200 0
+WARNING 2025-11-29 10:08:57,539 log Unauthorized: /api/auth/users/
+WARNING 2025-11-29 10:08:57,539 basehttp "GET /api/auth/users/ HTTP/1.1" 401 172
+INFO 2025-11-29 10:08:57,600 basehttp "OPTIONS /api/token/refresh/ HTTP/1.1" 200 0
+WARNING 2025-11-29 10:08:57,645 log Not Found: /api/token/refresh/
+WARNING 2025-11-29 10:08:57,645 basehttp "POST /api/token/refresh/ HTTP/1.1" 404 3396
+INFO 2025-11-29 10:09:05,270 basehttp "OPTIONS /api/auth/login/ HTTP/1.1" 200 0
+INFO 2025-11-29 10:09:05,600 basehttp "POST /api/auth/login/ HTTP/1.1" 200 489
+INFO 2025-11-29 10:09:05,753 basehttp "OPTIONS /api/auth/users/profile/ HTTP/1.1" 200 0
+INFO 2025-11-29 10:09:05,810 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 467
+INFO 2025-11-29 10:09:05,994 basehttp "GET /api/auth/users/ HTTP/1.1" 200 1929
+INFO 2025-11-29 10:09:06,027 basehttp "GET /media/users/None/profile/profile_None_a4938606.png HTTP/1.1" 304 0
+INFO 2025-11-29 10:09:06,072 basehttp "GET /media/users/3/profile/profile_3_13217236.png HTTP/1.1" 304 0
+INFO 2025-11-29 10:10:23,875 basehttp "GET /api/auth/users/ HTTP/1.1" 200 1929
+INFO 2025-11-29 10:14:05,158 basehttp "OPTIONS /api/auth/users/profile/ HTTP/1.1" 200 0
+INFO 2025-11-29 10:14:05,168 basehttp "OPTIONS /api/auth/users/profile/ HTTP/1.1" 200 0
+INFO 2025-11-29 10:14:05,168 basehttp "OPTIONS /api/auth/users/profile/ HTTP/1.1" 200 0
+INFO 2025-11-29 10:14:05,170 basehttp "OPTIONS /api/auth/users/profile/ HTTP/1.1" 200 0
+INFO 2025-11-29 10:14:05,181 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 467
+INFO 2025-11-29 10:14:05,187 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 467
+INFO 2025-11-29 10:14:05,194 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 467
+INFO 2025-11-29 10:14:05,200 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 467
+INFO 2025-11-29 10:14:05,384 basehttp "GET /api/auth/users/ HTTP/1.1" 200 1929
+INFO 2025-11-29 10:14:05,393 basehttp "GET /api/auth/users/ HTTP/1.1" 200 1929
+INFO 2025-11-29 10:14:05,426 basehttp "GET /media/users/None/profile/profile_None_a4938606.png HTTP/1.1" 304 0
+INFO 2025-11-29 10:14:05,428 basehttp "GET /media/users/3/profile/profile_3_13217236.png HTTP/1.1" 304 0
+INFO 2025-11-29 10:16:01,003 basehttp "GET /api/auth/users/ HTTP/1.1" 200 1929
+INFO 2025-11-29 10:16:22,403 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 467
+INFO 2025-11-29 10:16:22,485 basehttp "GET /api/auth/users/ HTTP/1.1" 200 1929
+INFO 2025-11-29 10:16:22,626 basehttp "GET /media/users/None/profile/profile_None_a4938606.png HTTP/1.1" 304 0
+INFO 2025-11-29 10:16:22,646 basehttp "GET /media/users/3/profile/profile_3_13217236.png HTTP/1.1" 304 0
+INFO 2025-11-29 10:17:46,735 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 467
+INFO 2025-11-29 10:17:46,744 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 467
+INFO 2025-11-29 10:17:46,750 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 467
+INFO 2025-11-29 10:17:46,755 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 467
+INFO 2025-11-29 10:17:46,888 basehttp "GET /api/auth/users/ HTTP/1.1" 200 1929
+INFO 2025-11-29 10:17:46,906 basehttp "GET /api/auth/users/ HTTP/1.1" 200 1929
+INFO 2025-11-29 10:17:46,908 basehttp "GET /media/users/None/profile/profile_None_a4938606.png HTTP/1.1" 304 0
+INFO 2025-11-29 10:17:53,816 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 467
+INFO 2025-11-29 10:17:53,930 basehttp "GET /api/auth/users/ HTTP/1.1" 200 1929
+INFO 2025-11-29 10:18:31,156 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 467
+INFO 2025-11-29 10:18:31,286 basehttp "GET /api/auth/users/ HTTP/1.1" 200 1929
+INFO 2025-11-29 10:18:38,742 basehttp - Broken pipe from ('192.168.0.95', 60003)
+INFO 2025-11-29 10:20:56,528 basehttp "GET /api/auth/users/ HTTP/1.1" 200 1929
+INFO 2025-11-29 10:20:58,614 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 467
+INFO 2025-11-29 10:20:58,621 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 467
+INFO 2025-11-29 10:20:58,629 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 467
+INFO 2025-11-29 10:20:58,633 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 467
+INFO 2025-11-29 10:20:58,668 basehttp "GET /api/auth/users/ HTTP/1.1" 200 1929
+INFO 2025-11-29 10:20:58,680 basehttp "GET /api/auth/users/ HTTP/1.1" 200 1929
+INFO 2025-11-29 10:20:58,701 basehttp "GET /media/users/None/profile/profile_None_a4938606.png HTTP/1.1" 304 0
+INFO 2025-11-29 10:20:58,702 basehttp "GET /media/users/3/profile/profile_3_13217236.png HTTP/1.1" 304 0
+INFO 2025-11-29 10:21:18,451 basehttp "OPTIONS /api/auth/users/profile/ HTTP/1.1" 200 0
+INFO 2025-11-29 10:21:18,528 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 467
+INFO 2025-11-29 10:21:18,634 basehttp "OPTIONS /api/auth/users/ HTTP/1.1" 200 0
+INFO 2025-11-29 10:21:19,060 basehttp "GET /api/auth/users/ HTTP/1.1" 200 1929
+INFO 2025-11-29 10:21:19,281 basehttp "GET /media/users/None/profile/profile_None_a4938606.png HTTP/1.1" 304 0
+INFO 2025-11-29 10:21:42,507 basehttp - Broken pipe from ('192.168.0.95', 60015)
+INFO 2025-11-29 10:24:45,872 basehttp "GET /api/auth/users/ HTTP/1.1" 200 1929
+INFO 2025-11-29 10:24:46,715 basehttp "GET /api/auth/users/ HTTP/1.1" 200 1929
+INFO 2025-11-29 10:24:50,453 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 467
+INFO 2025-11-29 10:24:50,460 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 467
+INFO 2025-11-29 10:24:50,466 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 467
+INFO 2025-11-29 10:24:50,470 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 467
+INFO 2025-11-29 10:24:50,506 basehttp "GET /api/auth/users/ HTTP/1.1" 200 1929
+INFO 2025-11-29 10:24:50,517 basehttp "GET /api/auth/users/ HTTP/1.1" 200 1929
+INFO 2025-11-29 10:24:50,535 basehttp "GET /media/users/None/profile/profile_None_a4938606.png HTTP/1.1" 304 0
+INFO 2025-11-29 10:25:02,546 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 467
+INFO 2025-11-29 10:25:02,617 basehttp "GET /api/auth/users/ HTTP/1.1" 200 1929
+INFO 2025-11-29 10:25:02,724 basehttp "GET /media/users/None/profile/profile_None_a4938606.png HTTP/1.1" 304 0
+INFO 2025-11-29 10:25:02,745 basehttp "GET /media/users/3/profile/profile_3_13217236.png HTTP/1.1" 304 0
+INFO 2025-11-29 10:27:46,683 basehttp "GET /media/users/1/profile/profile_1_037bde83.png HTTP/1.1" 304 0
+INFO 2025-11-29 10:35:27,811 basehttp "OPTIONS /api/auth/users/profile/ HTTP/1.1" 200 0
+INFO 2025-11-29 10:35:27,876 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 467
+INFO 2025-11-29 10:35:27,944 basehttp "OPTIONS /api/auth/users/ HTTP/1.1" 200 0
+INFO 2025-11-29 10:35:28,006 basehttp "GET /api/auth/users/ HTTP/1.1" 200 1929
+INFO 2025-11-29 10:35:28,043 basehttp "GET /media/users/None/profile/profile_None_a4938606.png HTTP/1.1" 304 0
+INFO 2025-11-29 10:35:28,058 basehttp "GET /media/users/3/profile/profile_3_13217236.png HTTP/1.1" 304 0
+INFO 2025-11-29 10:38:06,428 basehttp "OPTIONS /api/auth/login/ HTTP/1.1" 200 0
+INFO 2025-11-29 10:38:06,649 basehttp "POST /api/auth/login/ HTTP/1.1" 200 489
+INFO 2025-11-29 10:38:06,659 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 467
+INFO 2025-11-29 10:38:34,701 basehttp "GET /api/auth/users/ HTTP/1.1" 200 1929
+INFO 2025-11-29 10:38:34,828 basehttp "GET /media/users/None/profile/profile_None_a4938606.png HTTP/1.1" 304 0
+INFO 2025-11-29 10:38:34,829 basehttp "GET /media/users/3/profile/profile_3_13217236.png HTTP/1.1" 304 0
+INFO 2025-11-29 10:38:46,609 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 467
+INFO 2025-11-29 10:38:46,711 basehttp "GET /api/auth/users/ HTTP/1.1" 200 1929
+INFO 2025-11-29 10:43:37,748 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 467
+INFO 2025-11-29 10:43:37,758 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 467
+INFO 2025-11-29 10:43:37,764 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 467
+INFO 2025-11-29 10:43:37,768 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 467
+INFO 2025-11-29 10:43:38,145 basehttp "GET /api/auth/users/ HTTP/1.1" 200 1929
+INFO 2025-11-29 10:43:38,165 basehttp "GET /api/auth/users/ HTTP/1.1" 200 1929
+INFO 2025-11-29 10:43:38,230 basehttp "GET /media/users/None/profile/profile_None_a4938606.png HTTP/1.1" 304 0
+INFO 2025-11-29 10:43:44,009 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 467
+INFO 2025-11-29 10:43:44,078 basehttp "GET /api/auth/users/ HTTP/1.1" 200 1929
+INFO 2025-11-29 10:43:44,222 basehttp "GET /media/users/None/profile/profile_None_a4938606.png HTTP/1.1" 304 0
+INFO 2025-11-29 10:45:00,560 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 467
+INFO 2025-11-29 10:45:00,644 basehttp "GET /api/auth/users/ HTTP/1.1" 200 1929
+INFO 2025-11-29 10:45:00,745 basehttp "GET /media/users/3/profile/profile_3_13217236.png HTTP/1.1" 304 0
+INFO 2025-11-29 10:45:07,740 basehttp - Broken pipe from ('192.168.0.95', 60071)
+INFO 2025-11-29 11:10:14,784 basehttp "GET /api/auth/users/ HTTP/1.1" 200 1929
+INFO 2025-11-29 11:10:14,846 basehttp "GET /media/users/None/profile/profile_None_a4938606.png HTTP/1.1" 304 0
+INFO 2025-11-29 11:10:14,848 basehttp "GET /media/users/3/profile/profile_3_13217236.png HTTP/1.1" 304 0
+INFO 2025-11-29 11:10:14,851 basehttp "GET /media/users/1/profile/profile_1_037bde83.png HTTP/1.1" 304 0
+INFO 2025-11-29 11:16:40,262 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 467
+INFO 2025-11-29 11:16:40,267 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 467
+INFO 2025-11-29 11:16:40,273 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 467
+INFO 2025-11-29 11:16:40,277 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 467
+INFO 2025-11-29 11:16:40,408 basehttp "GET /api/auth/users/ HTTP/1.1" 200 1929
+INFO 2025-11-29 11:16:40,421 basehttp "GET /api/auth/users/ HTTP/1.1" 200 1929
+INFO 2025-11-29 11:25:22,972 autoreload /Volumes/Programming/React-Python/YAW/Illustration-System/backend/main/settings.py changed, reloading.
+INFO 2025-11-29 11:25:23,467 autoreload Watching for file changes with StatReloader
+INFO 2025-11-29 11:25:39,269 autoreload /Volumes/Programming/React-Python/YAW/Illustration-System/backend/illustrations/models.py changed, reloading.
+INFO 2025-11-29 11:25:39,727 autoreload Watching for file changes with StatReloader
+INFO 2025-11-29 11:27:09,071 autoreload /Volumes/Programming/React-Python/YAW/Illustration-System/backend/main/urls.py changed, reloading.
+INFO 2025-11-29 11:27:09,561 autoreload Watching for file changes with StatReloader
+INFO 2025-11-29 11:27:19,345 autoreload /Volumes/Programming/React-Python/YAW/Illustration-System/backend/main/urls.py changed, reloading.
+INFO 2025-11-29 11:27:22,209 autoreload Watching for file changes with StatReloader
+INFO 2025-11-29 11:28:46,330 autoreload /Volumes/Programming/React-Python/YAW/Illustration-System/backend/illustrations/admin.py changed, reloading.
+INFO 2025-11-29 11:28:46,789 autoreload Watching for file changes with StatReloader
+INFO 2025-11-29 11:29:04,652 basehttp "GET /admin/accounts/user/ HTTP/1.1" 200 21258
+INFO 2025-11-29 11:29:04,684 basehttp "GET /static/admin/css/base.css HTTP/1.1" 304 0
+INFO 2025-11-29 11:29:04,686 basehttp "GET /static/admin/css/dark_mode.css HTTP/1.1" 304 0
+INFO 2025-11-29 11:29:04,687 basehttp "GET /static/admin/css/changelists.css HTTP/1.1" 304 0
+INFO 2025-11-29 11:29:04,687 basehttp "GET /static/admin/js/theme.js HTTP/1.1" 304 0
+INFO 2025-11-29 11:29:04,689 basehttp "GET /static/admin/css/nav_sidebar.css HTTP/1.1" 304 0
+INFO 2025-11-29 11:29:04,689 basehttp "GET /static/admin/js/jquery.init.js HTTP/1.1" 304 0
+INFO 2025-11-29 11:29:04,690 basehttp "GET /static/admin/js/admin/RelatedObjectLookups.js HTTP/1.1" 304 0
+INFO 2025-11-29 11:29:04,691 basehttp "GET /static/admin/js/vendor/jquery/jquery.js HTTP/1.1" 304 0
+INFO 2025-11-29 11:29:04,692 basehttp "GET /static/admin/css/responsive.css HTTP/1.1" 304 0
+INFO 2025-11-29 11:29:04,693 basehttp "GET /static/admin/js/core.js HTTP/1.1" 304 0
+INFO 2025-11-29 11:29:04,694 basehttp "GET /static/admin/js/urlify.js HTTP/1.1" 304 0
+INFO 2025-11-29 11:29:04,695 basehttp "GET /static/admin/js/prepopulate.js HTTP/1.1" 304 0
+INFO 2025-11-29 11:29:04,695 basehttp "GET /static/admin/js/actions.js HTTP/1.1" 304 0
+INFO 2025-11-29 11:29:04,695 basehttp "GET /static/admin/js/vendor/xregexp/xregexp.js HTTP/1.1" 304 0
+INFO 2025-11-29 11:29:04,696 basehttp "GET /static/admin/img/search.svg HTTP/1.1" 304 0
+INFO 2025-11-29 11:29:04,697 basehttp "GET /media/users/None/profile/profile_None_a4938606.png HTTP/1.1" 304 0
+INFO 2025-11-29 11:29:04,698 basehttp "GET /static/admin/img/icon-no.svg HTTP/1.1" 304 0
+INFO 2025-11-29 11:29:04,700 basehttp "GET /static/admin/img/icon-yes.svg HTTP/1.1" 304 0
+INFO 2025-11-29 11:29:04,700 basehttp "GET /admin/jsi18n/ HTTP/1.1" 200 3342
+INFO 2025-11-29 11:29:04,701 basehttp "GET /media/users/3/profile/profile_3_13217236.png HTTP/1.1" 304 0
+INFO 2025-11-29 11:29:04,702 basehttp "GET /static/admin/js/nav_sidebar.js HTTP/1.1" 304 0
+INFO 2025-11-29 11:29:04,725 basehttp "GET /static/admin/js/filters.js HTTP/1.1" 304 0
+INFO 2025-11-29 11:29:04,725 basehttp "GET /media/users/1/profile/profile_1_037bde83.png HTTP/1.1" 304 0
+INFO 2025-11-29 11:29:04,731 basehttp "GET /static/admin/img/icon-addlink.svg HTTP/1.1" 304 0
+INFO 2025-11-29 11:29:04,731 basehttp "GET /static/admin/img/sorting-icons.svg HTTP/1.1" 304 0
+INFO 2025-11-29 11:29:04,732 basehttp "GET /static/admin/img/icon-viewlink.svg HTTP/1.1" 304 0
+INFO 2025-11-29 11:29:04,732 basehttp "GET /static/admin/img/tooltag-add.svg HTTP/1.1" 304 0
+INFO 2025-11-29 11:29:06,997 basehttp "GET /admin/illustrations/illustration/ HTTP/1.1" 200 13694
+INFO 2025-11-29 11:29:07,020 basehttp "GET /admin/jsi18n/ HTTP/1.1" 200 3342
+INFO 2025-11-29 11:29:08,723 basehttp "GET /admin/illustrations/carmodel/ HTTP/1.1" 200 11717
+INFO 2025-11-29 11:29:08,745 basehttp "GET /admin/jsi18n/ HTTP/1.1" 200 3342
+INFO 2025-11-29 11:29:10,333 basehttp "GET /admin/illustrations/partcategory/ HTTP/1.1" 200 11745
+INFO 2025-11-29 11:29:10,357 basehttp "GET /admin/jsi18n/ HTTP/1.1" 200 3342
+INFO 2025-11-29 11:29:11,046 basehttp "GET /admin/illustrations/manufacturer/ HTTP/1.1" 200 11740
+INFO 2025-11-29 11:29:11,069 basehttp "GET /admin/jsi18n/ HTTP/1.1" 200 3342
+INFO 2025-11-29 11:29:12,616 basehttp "GET /admin/illustrations/carmodel/ HTTP/1.1" 200 11717
+INFO 2025-11-29 11:29:12,645 basehttp "GET /admin/jsi18n/ HTTP/1.1" 200 3342
+INFO 2025-11-29 11:29:19,853 basehttp "GET /admin/illustrations/illustration/add/ HTTP/1.1" 200 18597
+INFO 2025-11-29 11:29:19,879 basehttp "GET /static/admin/css/forms.css HTTP/1.1" 304 0
+INFO 2025-11-29 11:29:19,880 basehttp "GET /static/admin/js/prepopulate_init.js HTTP/1.1" 304 0
+INFO 2025-11-29 11:29:19,887 basehttp "GET /admin/jsi18n/ HTTP/1.1" 200 3342
+INFO 2025-11-29 11:29:19,892 basehttp "GET /static/admin/css/widgets.css HTTP/1.1" 304 0
+INFO 2025-11-29 11:29:19,894 basehttp "GET /static/admin/js/inlines.js HTTP/1.1" 200 15628
+INFO 2025-11-29 11:29:19,895 basehttp "GET /static/admin/img/icon-changelink.svg HTTP/1.1" 304 0
+INFO 2025-11-29 11:29:19,898 basehttp "GET /static/admin/js/change_form.js HTTP/1.1" 304 0
+INFO 2025-11-29 11:29:19,934 basehttp "GET /static/admin/img/inline-delete.svg HTTP/1.1" 200 537
+INFO 2025-11-29 11:29:29,979 basehttp "GET /admin/illustrations/partcategory/ HTTP/1.1" 200 11745
+INFO 2025-11-29 11:29:30,001 basehttp "GET /admin/jsi18n/ HTTP/1.1" 200 3342
+INFO 2025-11-29 11:29:32,209 basehttp "GET /admin/illustrations/manufacturer/ HTTP/1.1" 200 11740
+INFO 2025-11-29 11:29:32,231 basehttp "GET /admin/jsi18n/ HTTP/1.1" 200 3342
+INFO 2025-11-29 11:29:34,519 basehttp "GET /admin/illustrations/carmodel/add/ HTTP/1.1" 200 15104
+INFO 2025-11-29 11:29:34,548 basehttp "GET /admin/jsi18n/ HTTP/1.1" 200 3342
+INFO 2025-11-29 11:29:39,743 basehttp "GET /admin/illustrations/manufacturer/add/?_to_field=id&_popup=1 HTTP/1.1" 200 5266
+INFO 2025-11-29 11:29:39,758 basehttp "GET /admin/jsi18n/ HTTP/1.1" 200 3342
+INFO 2025-11-29 11:29:46,254 basehttp "POST /admin/illustrations/manufacturer/add/?_to_field=id&_popup=1 HTTP/1.1" 200 324
+INFO 2025-11-29 11:29:46,269 basehttp "GET /static/admin/js/popup_response.js HTTP/1.1" 200 532
+INFO 2025-11-29 11:30:01,428 basehttp "POST /admin/illustrations/carmodel/add/ HTTP/1.1" 302 0
+INFO 2025-11-29 11:30:01,443 basehttp "GET /admin/illustrations/carmodel/ HTTP/1.1" 200 13581
+INFO 2025-11-29 11:30:01,479 basehttp "GET /admin/jsi18n/ HTTP/1.1" 200 3342
+INFO 2025-11-29 11:30:04,521 basehttp "GET /admin/illustrations/partcategory/ HTTP/1.1" 200 11745
+INFO 2025-11-29 11:30:04,551 basehttp "GET /admin/jsi18n/ HTTP/1.1" 200 3342
+INFO 2025-11-29 11:30:05,664 basehttp "GET /admin/illustrations/manufacturer/ HTTP/1.1" 200 13190
+INFO 2025-11-29 11:30:05,692 basehttp "GET /admin/jsi18n/ HTTP/1.1" 200 3342
+INFO 2025-11-29 11:30:06,397 basehttp "GET /admin/illustrations/illustration/ HTTP/1.1" 200 13694
+INFO 2025-11-29 11:30:06,426 basehttp "GET /admin/jsi18n/ HTTP/1.1" 200 3342
+INFO 2025-11-29 11:30:08,245 basehttp "GET /admin/illustrations/partcategory/ HTTP/1.1" 200 11745
+INFO 2025-11-29 11:30:08,273 basehttp "GET /admin/jsi18n/ HTTP/1.1" 200 3342
+INFO 2025-11-29 11:30:09,907 basehttp "GET /admin/illustrations/partcategory/add/ HTTP/1.1" 200 15128
+INFO 2025-11-29 11:30:09,931 basehttp "GET /admin/jsi18n/ HTTP/1.1" 200 3342
+INFO 2025-11-29 11:30:34,830 basehttp "POST /admin/illustrations/partcategory/add/ HTTP/1.1" 302 0
+INFO 2025-11-29 11:30:34,844 basehttp "GET /admin/illustrations/partcategory/ HTTP/1.1" 200 13616
+INFO 2025-11-29 11:30:34,865 basehttp "GET /admin/jsi18n/ HTTP/1.1" 200 3342
+INFO 2025-11-29 11:30:37,121 basehttp "GET /admin/illustrations/illustration/ HTTP/1.1" 200 13694
+INFO 2025-11-29 11:30:37,145 basehttp "GET /admin/jsi18n/ HTTP/1.1" 200 3342
+INFO 2025-11-29 11:30:39,493 basehttp "GET /admin/illustrations/illustration/add/ HTTP/1.1" 200 18634
+INFO 2025-11-29 11:30:39,522 basehttp "GET /admin/jsi18n/ HTTP/1.1" 200 3342
+INFO 2025-11-29 11:31:17,107 basehttp "POST /admin/illustrations/illustration/add/ HTTP/1.1" 302 0
+INFO 2025-11-29 11:31:17,119 basehttp "GET /admin/illustrations/illustration/ HTTP/1.1" 200 15848
+INFO 2025-11-29 11:31:17,141 basehttp "GET /admin/jsi18n/ HTTP/1.1" 200 3342
+INFO 2025-11-29 11:31:29,395 basehttp "GET /admin/illustrations/illustration/1/change/ HTTP/1.1" 200 20953
+INFO 2025-11-29 11:31:29,423 basehttp "GET /admin/jsi18n/ HTTP/1.1" 200 3342
+INFO 2025-11-29 11:31:47,135 basehttp "GET /admin/illustrations/illustration/ HTTP/1.1" 200 15614
+INFO 2025-11-29 11:31:47,160 basehttp "GET /admin/jsi18n/ HTTP/1.1" 200 3342
+INFO 2025-11-29 11:31:48,141 basehttp "GET /admin/illustrations/illustration/add/ HTTP/1.1" 200 18634
+INFO 2025-11-29 11:31:48,163 basehttp "GET /admin/jsi18n/ HTTP/1.1" 200 3342
+INFO 2025-11-29 11:32:09,449 basehttp "POST /admin/illustrations/illustration/add/ HTTP/1.1" 302 0
+INFO 2025-11-29 11:32:09,465 basehttp "GET /admin/illustrations/illustration/ HTTP/1.1" 200 16309
+INFO 2025-11-29 11:32:09,489 basehttp "GET /admin/jsi18n/ HTTP/1.1" 200 3342
+INFO 2025-11-29 11:33:14,605 basehttp "GET /admin/illustrations/carmodel/ HTTP/1.1" 200 13367
+INFO 2025-11-29 11:33:14,631 basehttp "GET /admin/jsi18n/ HTTP/1.1" 200 3342
+INFO 2025-11-29 11:33:16,322 basehttp "GET /admin/illustrations/carmodel/add/ HTTP/1.1" 200 15139
+INFO 2025-11-29 11:33:16,379 basehttp "GET /admin/jsi18n/ HTTP/1.1" 200 3342
+INFO 2025-11-29 11:33:25,407 basehttp "POST /admin/illustrations/carmodel/add/ HTTP/1.1" 302 0
+INFO 2025-11-29 11:33:25,422 basehttp "GET /admin/illustrations/carmodel/ HTTP/1.1" 200 13936
+INFO 2025-11-29 11:33:25,452 basehttp "GET /admin/jsi18n/ HTTP/1.1" 200 3342
+INFO 2025-11-29 11:33:28,564 basehttp "GET /admin/illustrations/carmodel/ HTTP/1.1" 200 13721
+INFO 2025-11-29 11:33:28,587 basehttp "GET /admin/jsi18n/ HTTP/1.1" 200 3342
+INFO 2025-11-29 11:33:31,984 basehttp "GET /admin/illustrations/manufacturer/ HTTP/1.1" 200 13190
+INFO 2025-11-29 11:33:32,009 basehttp "GET /admin/jsi18n/ HTTP/1.1" 200 3342
+INFO 2025-11-29 11:33:33,102 basehttp "GET /admin/illustrations/manufacturer/add/ HTTP/1.1" 200 13365
+INFO 2025-11-29 11:33:33,130 basehttp "GET /admin/jsi18n/ HTTP/1.1" 200 3342
+INFO 2025-11-29 11:33:38,958 basehttp "POST /admin/illustrations/manufacturer/add/ HTTP/1.1" 302 0
+INFO 2025-11-29 11:33:38,974 basehttp "GET /admin/illustrations/manufacturer/ HTTP/1.1" 200 13713
+INFO 2025-11-29 11:33:38,998 basehttp "GET /admin/jsi18n/ HTTP/1.1" 200 3342
+INFO 2025-11-29 11:33:41,105 basehttp "GET /admin/illustrations/manufacturer/add/ HTTP/1.1" 200 13365
+INFO 2025-11-29 11:33:41,133 basehttp "GET /admin/jsi18n/ HTTP/1.1" 200 3342
+INFO 2025-11-29 11:33:47,760 basehttp "POST /admin/illustrations/manufacturer/add/ HTTP/1.1" 302 0
+INFO 2025-11-29 11:33:47,774 basehttp "GET /admin/illustrations/manufacturer/ HTTP/1.1" 200 14014
+INFO 2025-11-29 11:33:47,797 basehttp "GET /admin/jsi18n/ HTTP/1.1" 200 3342
+INFO 2025-11-29 11:33:53,326 basehttp "GET /admin/illustrations/carmodel/add/ HTTP/1.1" 200 15212
+INFO 2025-11-29 11:33:53,354 basehttp "GET /admin/jsi18n/ HTTP/1.1" 200 3342
+INFO 2025-11-29 11:34:03,826 basehttp "POST /admin/illustrations/carmodel/add/ HTTP/1.1" 302 0
+INFO 2025-11-29 11:34:03,843 basehttp "GET /admin/illustrations/carmodel/ HTTP/1.1" 200 15063
+INFO 2025-11-29 11:34:03,875 basehttp "GET /admin/jsi18n/ HTTP/1.1" 200 3342
+INFO 2025-11-29 11:34:14,554 basehttp "GET /admin/illustrations/carmodel/add/ HTTP/1.1" 200 15212
+INFO 2025-11-29 11:34:14,581 basehttp "GET /admin/jsi18n/ HTTP/1.1" 200 3342
+INFO 2025-11-29 11:37:39,869 autoreload /Volumes/Programming/React-Python/YAW/Illustration-System/backend/illustrations/models.py changed, reloading.
+INFO 2025-11-29 11:37:40,384 autoreload Watching for file changes with StatReloader
+INFO 2025-11-29 11:39:21,043 autoreload /Volumes/Programming/React-Python/YAW/Illustration-System/backend/illustrations/admin.py changed, reloading.
+INFO 2025-11-29 11:39:21,503 autoreload Watching for file changes with StatReloader
+ERROR 2025-11-29 11:39:42,669 log Internal Server Error: /admin/illustrations/carmodel/add/
+Traceback (most recent call last):
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/db/backends/utils.py", line 105, in _execute
+    return self.cursor.execute(sql, params)
+           ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/db/backends/sqlite3/base.py", line 360, in execute
+    return super().execute(query, params)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+sqlite3.OperationalError: no such column: illustrations_manufacturer.country
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/core/handlers/base.py", line 220, in _get_response
+    response = response.render()
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/template/response.py", line 114, in render
+    self.content = self.rendered_content
+                   ^^^^^^^^^^^^^^^^^^^^^
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/template/response.py", line 92, in rendered_content
+    return template.render(context, self._request)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/template/backends/django.py", line 107, in render
+    return self.template.render(context)
+           ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/template/base.py", line 171, in render
+    return self._render(context)
+           ~~~~~~~~~~~~^^^^^^^^^
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/template/base.py", line 163, in _render
+    return self.nodelist.render(context)
+           ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/template/base.py", line 1016, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/template/base.py", line 977, in render_annotated
+    return self.render(context)
+           ~~~~~~~~~~~^^^^^^^^^
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/template/loader_tags.py", line 159, in render
+    return compiled_parent._render(context)
+           ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/template/base.py", line 163, in _render
+    return self.nodelist.render(context)
+           ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/template/base.py", line 1016, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/template/base.py", line 977, in render_annotated
+    return self.render(context)
+           ~~~~~~~~~~~^^^^^^^^^
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/template/loader_tags.py", line 159, in render
+    return compiled_parent._render(context)
+           ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/template/base.py", line 163, in _render
+    return self.nodelist.render(context)
+           ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/template/base.py", line 1016, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/template/base.py", line 977, in render_annotated
+    return self.render(context)
+           ~~~~~~~~~~~^^^^^^^^^
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/template/loader_tags.py", line 65, in render
+    result = block.nodelist.render(context)
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/template/base.py", line 1016, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/template/base.py", line 977, in render_annotated
+    return self.render(context)
+           ~~~~~~~~~~~^^^^^^^^^
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/template/loader_tags.py", line 65, in render
+    result = block.nodelist.render(context)
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/template/base.py", line 1016, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/template/base.py", line 977, in render_annotated
+    return self.render(context)
+           ~~~~~~~~~~~^^^^^^^^^
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/template/defaulttags.py", line 243, in render
+    nodelist.append(node.render_annotated(context))
+                    ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/template/base.py", line 977, in render_annotated
+    return self.render(context)
+           ~~~~~~~~~~~^^^^^^^^^
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/template/loader_tags.py", line 210, in render
+    return template.render(context)
+           ~~~~~~~~~~~~~~~^^^^^^^^^
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/template/base.py", line 173, in render
+    return self._render(context)
+           ~~~~~~~~~~~~^^^^^^^^^
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/template/base.py", line 163, in _render
+    return self.nodelist.render(context)
+           ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/template/base.py", line 1016, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/template/base.py", line 977, in render_annotated
+    return self.render(context)
+           ~~~~~~~~~~~^^^^^^^^^
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/template/defaulttags.py", line 243, in render
+    nodelist.append(node.render_annotated(context))
+                    ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/template/base.py", line 977, in render_annotated
+    return self.render(context)
+           ~~~~~~~~~~~^^^^^^^^^
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/template/defaulttags.py", line 243, in render
+    nodelist.append(node.render_annotated(context))
+                    ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/template/base.py", line 977, in render_annotated
+    return self.render(context)
+           ~~~~~~~~~~~^^^^^^^^^
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/template/defaulttags.py", line 327, in render
+    return nodelist.render(context)
+           ~~~~~~~~~~~~~~~^^^^^^^^^
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/template/base.py", line 1016, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/template/base.py", line 977, in render_annotated
+    return self.render(context)
+           ~~~~~~~~~~~^^^^^^^^^
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/template/defaulttags.py", line 327, in render
+    return nodelist.render(context)
+           ~~~~~~~~~~~~~~~^^^^^^^^^
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/template/base.py", line 1016, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/template/base.py", line 977, in render_annotated
+    return self.render(context)
+           ~~~~~~~~~~~^^^^^^^^^
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/template/base.py", line 1081, in render
+    return render_value_in_context(output, context)
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/template/base.py", line 1058, in render_value_in_context
+    value = str(value)
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/forms/utils.py", line 79, in __str__
+    return self.as_widget()
+           ~~~~~~~~~~~~~~^^
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/forms/boundfield.py", line 108, in as_widget
+    return widget.render(
+           ~~~~~~~~~~~~~^
+        name=self.html_initial_name if only_initial else self.html_name,
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<2 lines>...
+        renderer=self.form.renderer,
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/forms/widgets.py", line 329, in render
+    context = self.get_context(name, value, attrs)
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/contrib/admin/widgets.py", line 329, in get_context
+    "rendered_widget": self.widget.render(name, value, attrs),
+                       ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/forms/widgets.py", line 329, in render
+    context = self.get_context(name, value, attrs)
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/forms/widgets.py", line 830, in get_context
+    context = super().get_context(name, value, attrs)
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/forms/widgets.py", line 781, in get_context
+    context["widget"]["optgroups"] = self.optgroups(
+                                     ~~~~~~~~~~~~~~^
+        name, context["widget"]["value"], attrs
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/forms/widgets.py", line 721, in optgroups
+    for index, (option_value, option_label) in enumerate(self.choices):
+                                               ~~~~~~~~~^^^^^^^^^^^^^^
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/forms/models.py", line 1424, in __iter__
+    for obj in queryset:
+               ^^^^^^^^
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/db/models/query.py", line 504, in _iterator
+    yield from iterable
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/db/models/query.py", line 93, in __iter__
+    results = compiler.execute_sql(
+        chunked_fetch=self.chunked_fetch, chunk_size=self.chunk_size
+    )
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/db/models/sql/compiler.py", line 1623, in execute_sql
+    cursor.execute(sql, params)
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/db/backends/utils.py", line 122, in execute
+    return super().execute(sql, params)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/db/backends/utils.py", line 79, in execute
+    return self._execute_with_wrappers(
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        sql, params, many=False, executor=self._execute
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/db/backends/utils.py", line 92, in _execute_with_wrappers
+    return executor(sql, params, many, context)
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/db/backends/utils.py", line 100, in _execute
+    with self.db.wrap_database_errors:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/db/utils.py", line 91, in __exit__
+    raise dj_exc_value.with_traceback(traceback) from exc_value
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/db/backends/utils.py", line 105, in _execute
+    return self.cursor.execute(sql, params)
+           ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/db/backends/sqlite3/base.py", line 360, in execute
+    return super().execute(query, params)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+django.db.utils.OperationalError: no such column: illustrations_manufacturer.country
+ERROR 2025-11-29 11:39:42,678 basehttp "GET /admin/illustrations/carmodel/add/ HTTP/1.1" 500 628098
+WARNING 2025-11-29 11:40:01,593 log Not Found: /
+WARNING 2025-11-29 11:40:01,594 basehttp "GET / HTTP/1.1" 404 3467
+INFO 2025-11-29 11:40:05,756 basehttp "GET /admin/ HTTP/1.1" 200 16648
+INFO 2025-11-29 11:40:05,776 basehttp "GET /static/admin/css/dashboard.css HTTP/1.1" 304 0
+INFO 2025-11-29 11:40:38,512 autoreload /Volumes/Programming/React-Python/YAW/Illustration-System/backend/illustrations/serializers.py changed, reloading.
+INFO 2025-11-29 11:40:39,013 autoreload Watching for file changes with StatReloader
+INFO 2025-11-29 11:40:47,508 autoreload /Volumes/Programming/React-Python/YAW/Illustration-System/backend/illustrations/views.py changed, reloading.
+INFO 2025-11-29 11:40:47,999 autoreload Watching for file changes with StatReloader
+INFO 2025-11-29 11:41:31,545 autoreload Watching for file changes with StatReloader
+INFO 2025-11-29 11:41:59,651 autoreload /Volumes/Programming/React-Python/YAW/Illustration-System/backend/illustrations/urls.py changed, reloading.
+INFO 2025-11-29 11:42:00,011 autoreload Watching for file changes with StatReloader
+INFO 2025-11-29 11:42:06,461 basehttp "GET /admin/ HTTP/1.1" 200 16648
+ERROR 2025-11-29 11:42:11,369 log Internal Server Error: /admin/illustrations/manufacturer/
+Traceback (most recent call last):
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/db/backends/utils.py", line 105, in _execute
+    return self.cursor.execute(sql, params)
+           ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/db/backends/sqlite3/base.py", line 360, in execute
+    return super().execute(query, params)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+sqlite3.OperationalError: no such column: illustrations_manufacturer.country
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/contrib/admin/options.py", line 719, in wrapper
+    return self.admin_site.admin_view(view)(*args, **kwargs)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/utils/decorators.py", line 192, in _view_wrapper
+    result = _process_exception(request, e)
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/utils/decorators.py", line 190, in _view_wrapper
+    response = view_func(request, *args, **kwargs)
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/views/decorators/cache.py", line 80, in _view_wrapper
+    response = view_func(request, *args, **kwargs)
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/contrib/admin/sites.py", line 246, in inner
+    return view(request, *args, **kwargs)
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/utils/decorators.py", line 48, in _wrapper
+    return bound_method(*args, **kwargs)
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/utils/decorators.py", line 192, in _view_wrapper
+    result = _process_exception(request, e)
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/utils/decorators.py", line 190, in _view_wrapper
+    response = view_func(request, *args, **kwargs)
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/contrib/admin/options.py", line 2163, in changelist_view
+    "selection_note": _("0 of %(cnt)s selected") % {"cnt": len(cl.result_list)},
+                                                           ~~~^^^^^^^^^^^^^^^^
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/db/models/query.py", line 368, in __len__
+    self._fetch_all()
+    ~~~~~~~~~~~~~~~^^
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/db/models/query.py", line 1954, in _fetch_all
+    self._result_cache = list(self._iterable_class(self))
+                         ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/db/models/query.py", line 93, in __iter__
+    results = compiler.execute_sql(
+        chunked_fetch=self.chunked_fetch, chunk_size=self.chunk_size
+    )
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/db/models/sql/compiler.py", line 1623, in execute_sql
+    cursor.execute(sql, params)
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/db/backends/utils.py", line 122, in execute
+    return super().execute(sql, params)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/db/backends/utils.py", line 79, in execute
+    return self._execute_with_wrappers(
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        sql, params, many=False, executor=self._execute
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/db/backends/utils.py", line 92, in _execute_with_wrappers
+    return executor(sql, params, many, context)
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/db/backends/utils.py", line 100, in _execute
+    with self.db.wrap_database_errors:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/db/utils.py", line 91, in __exit__
+    raise dj_exc_value.with_traceback(traceback) from exc_value
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/db/backends/utils.py", line 105, in _execute
+    return self.cursor.execute(sql, params)
+           ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/db/backends/sqlite3/base.py", line 360, in execute
+    return super().execute(query, params)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+django.db.utils.OperationalError: no such column: illustrations_manufacturer.country
+ERROR 2025-11-29 11:42:11,374 basehttp "GET /admin/illustrations/manufacturer/ HTTP/1.1" 500 175381
+INFO 2025-11-29 11:42:15,443 basehttp "GET /admin/ HTTP/1.1" 200 16648
+INFO 2025-11-29 11:42:40,346 autoreload Watching for file changes with StatReloader
+ERROR 2025-11-29 11:42:50,781 log Internal Server Error: /admin/illustrations/manufacturer/
+Traceback (most recent call last):
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/db/backends/utils.py", line 105, in _execute
+    return self.cursor.execute(sql, params)
+           ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/db/backends/sqlite3/base.py", line 360, in execute
+    return super().execute(query, params)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+sqlite3.OperationalError: no such column: illustrations_manufacturer.country
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/contrib/admin/options.py", line 719, in wrapper
+    return self.admin_site.admin_view(view)(*args, **kwargs)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/utils/decorators.py", line 192, in _view_wrapper
+    result = _process_exception(request, e)
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/utils/decorators.py", line 190, in _view_wrapper
+    response = view_func(request, *args, **kwargs)
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/views/decorators/cache.py", line 80, in _view_wrapper
+    response = view_func(request, *args, **kwargs)
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/contrib/admin/sites.py", line 246, in inner
+    return view(request, *args, **kwargs)
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/utils/decorators.py", line 48, in _wrapper
+    return bound_method(*args, **kwargs)
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/utils/decorators.py", line 192, in _view_wrapper
+    result = _process_exception(request, e)
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/utils/decorators.py", line 190, in _view_wrapper
+    response = view_func(request, *args, **kwargs)
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/contrib/admin/options.py", line 2163, in changelist_view
+    "selection_note": _("0 of %(cnt)s selected") % {"cnt": len(cl.result_list)},
+                                                           ~~~^^^^^^^^^^^^^^^^
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/db/models/query.py", line 368, in __len__
+    self._fetch_all()
+    ~~~~~~~~~~~~~~~^^
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/db/models/query.py", line 1954, in _fetch_all
+    self._result_cache = list(self._iterable_class(self))
+                         ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/db/models/query.py", line 93, in __iter__
+    results = compiler.execute_sql(
+        chunked_fetch=self.chunked_fetch, chunk_size=self.chunk_size
+    )
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/db/models/sql/compiler.py", line 1623, in execute_sql
+    cursor.execute(sql, params)
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/db/backends/utils.py", line 122, in execute
+    return super().execute(sql, params)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/db/backends/utils.py", line 79, in execute
+    return self._execute_with_wrappers(
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        sql, params, many=False, executor=self._execute
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/db/backends/utils.py", line 92, in _execute_with_wrappers
+    return executor(sql, params, many, context)
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/db/backends/utils.py", line 100, in _execute
+    with self.db.wrap_database_errors:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/db/utils.py", line 91, in __exit__
+    raise dj_exc_value.with_traceback(traceback) from exc_value
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/db/backends/utils.py", line 105, in _execute
+    return self.cursor.execute(sql, params)
+           ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/db/backends/sqlite3/base.py", line 360, in execute
+    return super().execute(query, params)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+django.db.utils.OperationalError: no such column: illustrations_manufacturer.country
+ERROR 2025-11-29 11:42:50,786 basehttp "GET /admin/illustrations/manufacturer/ HTTP/1.1" 500 175381
+INFO 2025-11-29 11:42:59,043 basehttp "GET /admin/ HTTP/1.1" 200 16648
+INFO 2025-11-29 11:45:12,075 autoreload Watching for file changes with StatReloader
+INFO 2025-11-29 11:45:15,881 basehttp "GET /admin/ HTTP/1.1" 200 16648
+ERROR 2025-11-29 11:45:20,625 log Internal Server Error: /admin/illustrations/manufacturer/
+Traceback (most recent call last):
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/db/backends/utils.py", line 105, in _execute
+    return self.cursor.execute(sql, params)
+           ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/db/backends/sqlite3/base.py", line 360, in execute
+    return super().execute(query, params)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+sqlite3.OperationalError: no such column: illustrations_manufacturer.country
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/contrib/admin/options.py", line 719, in wrapper
+    return self.admin_site.admin_view(view)(*args, **kwargs)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/utils/decorators.py", line 192, in _view_wrapper
+    result = _process_exception(request, e)
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/utils/decorators.py", line 190, in _view_wrapper
+    response = view_func(request, *args, **kwargs)
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/views/decorators/cache.py", line 80, in _view_wrapper
+    response = view_func(request, *args, **kwargs)
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/contrib/admin/sites.py", line 246, in inner
+    return view(request, *args, **kwargs)
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/utils/decorators.py", line 48, in _wrapper
+    return bound_method(*args, **kwargs)
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/utils/decorators.py", line 192, in _view_wrapper
+    result = _process_exception(request, e)
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/utils/decorators.py", line 190, in _view_wrapper
+    response = view_func(request, *args, **kwargs)
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/contrib/admin/options.py", line 2163, in changelist_view
+    "selection_note": _("0 of %(cnt)s selected") % {"cnt": len(cl.result_list)},
+                                                           ~~~^^^^^^^^^^^^^^^^
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/db/models/query.py", line 368, in __len__
+    self._fetch_all()
+    ~~~~~~~~~~~~~~~^^
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/db/models/query.py", line 1954, in _fetch_all
+    self._result_cache = list(self._iterable_class(self))
+                         ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/db/models/query.py", line 93, in __iter__
+    results = compiler.execute_sql(
+        chunked_fetch=self.chunked_fetch, chunk_size=self.chunk_size
+    )
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/db/models/sql/compiler.py", line 1623, in execute_sql
+    cursor.execute(sql, params)
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/db/backends/utils.py", line 122, in execute
+    return super().execute(sql, params)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/db/backends/utils.py", line 79, in execute
+    return self._execute_with_wrappers(
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        sql, params, many=False, executor=self._execute
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/db/backends/utils.py", line 92, in _execute_with_wrappers
+    return executor(sql, params, many, context)
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/db/backends/utils.py", line 100, in _execute
+    with self.db.wrap_database_errors:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/db/utils.py", line 91, in __exit__
+    raise dj_exc_value.with_traceback(traceback) from exc_value
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/db/backends/utils.py", line 105, in _execute
+    return self.cursor.execute(sql, params)
+           ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/db/backends/sqlite3/base.py", line 360, in execute
+    return super().execute(query, params)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+django.db.utils.OperationalError: no such column: illustrations_manufacturer.country
+ERROR 2025-11-29 11:45:20,630 basehttp "GET /admin/illustrations/manufacturer/ HTTP/1.1" 500 175381
+INFO 2025-11-29 11:48:05,454 autoreload Watching for file changes with StatReloader
+INFO 2025-11-29 11:48:08,643 basehttp "GET /admin/ HTTP/1.1" 302 0
+INFO 2025-11-29 11:48:08,665 basehttp "GET /admin/login/?next=/admin/ HTTP/1.1" 200 4173
+INFO 2025-11-29 11:48:08,735 basehttp "GET /static/admin/css/login.css HTTP/1.1" 304 0
+INFO 2025-11-29 11:48:10,659 basehttp "POST /admin/login/?next=/admin/ HTTP/1.1" 200 4344
+ERROR 2025-11-29 11:48:38,193 serializers Failed to send verification email: 'Settings' object has no attribute 'FRONTEND_URL'
+INFO 2025-11-29 11:48:38,196 basehttp "POST /api/auth/users/register/ HTTP/1.1" 201 569
+INFO 2025-11-29 11:48:50,569 basehttp "POST /api/auth/login/ HTTP/1.1" 200 489
+INFO 2025-11-29 11:48:50,580 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 443
+WARNING 2025-11-29 11:48:50,646 log Forbidden: /api/auth/users/
+WARNING 2025-11-29 11:48:50,646 basehttp "GET /api/auth/users/ HTTP/1.1" 403 37
+WARNING 2025-11-29 11:48:50,648 log Forbidden: /api/auth/users/
+WARNING 2025-11-29 11:48:50,648 basehttp "GET /api/auth/users/ HTTP/1.1" 403 37
+INFO 2025-11-29 11:49:14,262 basehttp "POST /admin/login/?next=/admin/ HTTP/1.1" 200 4344
+INFO 2025-11-29 11:49:16,278 basehttp "POST /admin/login/?next=/admin/ HTTP/1.1" 200 4344
+INFO 2025-11-29 11:49:30,020 autoreload Watching for file changes with StatReloader
+INFO 2025-11-29 11:49:35,832 basehttp "POST /admin/login/?next=/admin/ HTTP/1.1" 200 4344
+INFO 2025-11-29 11:49:46,295 basehttp "GET /swagger/ HTTP/1.1" 200 2223
+INFO 2025-11-29 11:49:46,318 basehttp "GET /static/drf-yasg/swagger-ui-dist/swagger-ui-bundle.js HTTP/1.1" 304 0
+INFO 2025-11-29 11:49:46,320 basehttp "GET /static/drf-yasg/swagger-ui-dist/swagger-ui.css HTTP/1.1" 304 0
+INFO 2025-11-29 11:49:46,321 basehttp "GET /static/drf-yasg/swagger-ui-dist/swagger-ui-standalone-preset.js HTTP/1.1" 304 0
+INFO 2025-11-29 11:49:46,323 basehttp "GET /static/drf-yasg/style.css HTTP/1.1" 304 0
+INFO 2025-11-29 11:49:46,323 basehttp "GET /static/drf-yasg/insQ.min.js HTTP/1.1" 304 0
+INFO 2025-11-29 11:49:46,326 basehttp "GET /static/drf-yasg/swagger-ui-init.js HTTP/1.1" 304 0
+INFO 2025-11-29 11:49:46,327 basehttp "GET /static/drf-yasg/immutable.min.js HTTP/1.1" 304 0
+INFO 2025-11-29 11:49:46,562 basehttp "GET /swagger/?format=openapi HTTP/1.1" 200 18300
+INFO 2025-11-29 11:49:46,562 basehttp "GET /static/drf-yasg/swagger-ui-dist/favicon-32x32.png HTTP/1.1" 304 0
+INFO 2025-11-29 11:50:00,368 autoreload /Volumes/Programming/React-Python/YAW/Illustration-System/backend/illustrations/urls.py changed, reloading.
+INFO 2025-11-29 11:50:00,780 autoreload Watching for file changes with StatReloader
+INFO 2025-11-29 11:50:03,063 autoreload /Volumes/Programming/React-Python/YAW/Illustration-System/backend/illustrations/urls.py changed, reloading.
+INFO 2025-11-29 11:50:03,395 autoreload Watching for file changes with StatReloader
+INFO 2025-11-29 11:50:07,700 autoreload /Volumes/Programming/React-Python/YAW/Illustration-System/backend/illustrations/urls.py changed, reloading.
+INFO 2025-11-29 11:50:08,036 autoreload Watching for file changes with StatReloader
+INFO 2025-11-29 11:51:14,238 basehttp "GET /admin/ HTTP/1.1" 302 0
+INFO 2025-11-29 11:51:14,268 basehttp "GET /admin/login/?next=/admin/ HTTP/1.1" 200 4173
+INFO 2025-11-29 11:51:14,331 basehttp "GET /static/admin/css/base.css HTTP/1.1" 304 0
+INFO 2025-11-29 11:51:14,333 basehttp "GET /static/admin/css/dark_mode.css HTTP/1.1" 304 0
+INFO 2025-11-29 11:51:14,335 basehttp "GET /static/admin/css/nav_sidebar.css HTTP/1.1" 304 0
+INFO 2025-11-29 11:51:14,336 basehttp "GET /static/admin/css/login.css HTTP/1.1" 304 0
+INFO 2025-11-29 11:51:14,338 basehttp "GET /static/admin/css/responsive.css HTTP/1.1" 304 0
+INFO 2025-11-29 11:51:14,339 basehttp "GET /static/admin/js/theme.js HTTP/1.1" 304 0
+INFO 2025-11-29 11:51:14,348 basehttp "GET /static/admin/js/nav_sidebar.js HTTP/1.1" 304 0
+INFO 2025-11-29 11:51:16,901 basehttp "POST /admin/login/?next=/admin/ HTTP/1.1" 302 0
+INFO 2025-11-29 11:51:16,915 basehttp "GET /admin/ HTTP/1.1" 200 12957
+INFO 2025-11-29 11:51:16,945 basehttp "GET /static/admin/css/dashboard.css HTTP/1.1" 304 0
+INFO 2025-11-29 11:51:16,974 basehttp "GET /static/admin/img/icon-changelink.svg HTTP/1.1" 304 0
+INFO 2025-11-29 11:51:16,975 basehttp "GET /static/admin/img/icon-addlink.svg HTTP/1.1" 304 0
+ERROR 2025-11-29 11:51:38,662 log Internal Server Error: /admin/illustrations/manufacturer/
+Traceback (most recent call last):
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/db/backends/utils.py", line 105, in _execute
+    return self.cursor.execute(sql, params)
+           ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/db/backends/sqlite3/base.py", line 360, in execute
+    return super().execute(query, params)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+sqlite3.OperationalError: no such table: illustrations_manufacturer
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/contrib/admin/options.py", line 719, in wrapper
+    return self.admin_site.admin_view(view)(*args, **kwargs)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/utils/decorators.py", line 192, in _view_wrapper
+    result = _process_exception(request, e)
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/utils/decorators.py", line 190, in _view_wrapper
+    response = view_func(request, *args, **kwargs)
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/views/decorators/cache.py", line 80, in _view_wrapper
+    response = view_func(request, *args, **kwargs)
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/contrib/admin/sites.py", line 246, in inner
+    return view(request, *args, **kwargs)
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/utils/decorators.py", line 48, in _wrapper
+    return bound_method(*args, **kwargs)
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/utils/decorators.py", line 192, in _view_wrapper
+    result = _process_exception(request, e)
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/utils/decorators.py", line 190, in _view_wrapper
+    response = view_func(request, *args, **kwargs)
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/contrib/admin/options.py", line 2024, in changelist_view
+    cl = self.get_changelist_instance(request)
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/contrib/admin/options.py", line 867, in get_changelist_instance
+    return ChangeList(
+        request,
+    ...<12 lines>...
+        self.search_help_text,
+    )
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/contrib/admin/views/main.py", line 146, in __init__
+    self.get_results(request)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/contrib/admin/views/main.py", line 313, in get_results
+    result_count = paginator.count
+                   ^^^^^^^^^^^^^^^
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/utils/functional.py", line 47, in __get__
+    res = instance.__dict__[self.name] = self.func(instance)
+                                         ~~~~~~~~~^^^^^^^^^^
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/core/paginator.py", line 110, in count
+    return c()
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/db/models/query.py", line 606, in count
+    return self.query.get_count(using=self.db)
+           ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/db/models/sql/query.py", line 644, in get_count
+    return obj.get_aggregation(using, {"__count": Count("*")})["__count"]
+           ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/db/models/sql/query.py", line 626, in get_aggregation
+    result = compiler.execute_sql(SINGLE)
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/db/models/sql/compiler.py", line 1623, in execute_sql
+    cursor.execute(sql, params)
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/db/backends/utils.py", line 122, in execute
+    return super().execute(sql, params)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/db/backends/utils.py", line 79, in execute
+    return self._execute_with_wrappers(
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        sql, params, many=False, executor=self._execute
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/db/backends/utils.py", line 92, in _execute_with_wrappers
+    return executor(sql, params, many, context)
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/db/backends/utils.py", line 100, in _execute
+    with self.db.wrap_database_errors:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/db/utils.py", line 91, in __exit__
+    raise dj_exc_value.with_traceback(traceback) from exc_value
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/db/backends/utils.py", line 105, in _execute
+    return self.cursor.execute(sql, params)
+           ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/db/backends/sqlite3/base.py", line 360, in execute
+    return super().execute(query, params)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+django.db.utils.OperationalError: no such table: illustrations_manufacturer
+ERROR 2025-11-29 11:51:38,667 basehttp "GET /admin/illustrations/manufacturer/ HTTP/1.1" 500 196987
+INFO 2025-11-29 11:52:30,307 autoreload /Volumes/Programming/React-Python/YAW/Illustration-System/backend/main/settings.py changed, reloading.
+INFO 2025-11-29 11:52:30,799 autoreload Watching for file changes with StatReloader
+INFO 2025-11-29 11:52:55,419 basehttp "GET /admin/ HTTP/1.1" 200 12957
+ERROR 2025-11-29 11:52:58,839 log Internal Server Error: /admin/illustrations/carmodel/
+Traceback (most recent call last):
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/db/backends/utils.py", line 105, in _execute
+    return self.cursor.execute(sql, params)
+           ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/db/backends/sqlite3/base.py", line 360, in execute
+    return super().execute(query, params)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+sqlite3.OperationalError: no such table: illustrations_manufacturer
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/contrib/admin/options.py", line 719, in wrapper
+    return self.admin_site.admin_view(view)(*args, **kwargs)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/utils/decorators.py", line 192, in _view_wrapper
+    result = _process_exception(request, e)
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/utils/decorators.py", line 190, in _view_wrapper
+    response = view_func(request, *args, **kwargs)
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/views/decorators/cache.py", line 80, in _view_wrapper
+    response = view_func(request, *args, **kwargs)
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/contrib/admin/sites.py", line 246, in inner
+    return view(request, *args, **kwargs)
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/utils/decorators.py", line 48, in _wrapper
+    return bound_method(*args, **kwargs)
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/utils/decorators.py", line 192, in _view_wrapper
+    result = _process_exception(request, e)
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/utils/decorators.py", line 190, in _view_wrapper
+    response = view_func(request, *args, **kwargs)
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/contrib/admin/options.py", line 2024, in changelist_view
+    cl = self.get_changelist_instance(request)
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/contrib/admin/options.py", line 867, in get_changelist_instance
+    return ChangeList(
+        request,
+    ...<12 lines>...
+        self.search_help_text,
+    )
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/contrib/admin/views/main.py", line 145, in __init__
+    self.queryset = self.get_queryset(request)
+                    ~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/contrib/admin/views/main.py", line 545, in get_queryset
+    ) = self.get_filters(request)
+        ~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/contrib/admin/views/main.py", line 216, in get_filters
+    spec = field_list_filter_class(
+        field,
+    ...<4 lines>...
+        field_path=field_path,
+    )
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/contrib/admin/filters.py", line 217, in create
+    return list_filter_class(
+        field, request, params, model, model_admin, field_path=field_path
+    )
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/contrib/admin/filters.py", line 232, in __init__
+    self.lookup_choices = self.field_choices(field, request, model_admin)
+                          ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/contrib/admin/filters.py", line 273, in field_choices
+    return field.get_choices(include_blank=False, ordering=ordering)
+           ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/db/models/fields/__init__.py", line 1083, in get_choices
+    (choice_func(x), str(x)) for x in qs
+                                      ^^
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/db/models/query.py", line 386, in __iter__
+    self._fetch_all()
+    ~~~~~~~~~~~~~~~^^
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/db/models/query.py", line 1954, in _fetch_all
+    self._result_cache = list(self._iterable_class(self))
+                         ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/db/models/query.py", line 93, in __iter__
+    results = compiler.execute_sql(
+        chunked_fetch=self.chunked_fetch, chunk_size=self.chunk_size
+    )
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/db/models/sql/compiler.py", line 1623, in execute_sql
+    cursor.execute(sql, params)
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/db/backends/utils.py", line 122, in execute
+    return super().execute(sql, params)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/db/backends/utils.py", line 79, in execute
+    return self._execute_with_wrappers(
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        sql, params, many=False, executor=self._execute
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/db/backends/utils.py", line 92, in _execute_with_wrappers
+    return executor(sql, params, many, context)
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/db/backends/utils.py", line 100, in _execute
+    with self.db.wrap_database_errors:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/db/utils.py", line 91, in __exit__
+    raise dj_exc_value.with_traceback(traceback) from exc_value
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/db/backends/utils.py", line 105, in _execute
+    return self.cursor.execute(sql, params)
+           ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/db/backends/sqlite3/base.py", line 360, in execute
+    return super().execute(query, params)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+django.db.utils.OperationalError: no such table: illustrations_manufacturer
+ERROR 2025-11-29 11:52:58,845 basehttp "GET /admin/illustrations/carmodel/ HTTP/1.1" 500 214179
+INFO 2025-11-29 11:53:00,638 basehttp "GET /admin/ HTTP/1.1" 200 12957
+INFO 2025-11-29 11:55:22,269 autoreload Watching for file changes with StatReloader
+INFO 2025-11-29 11:55:27,260 basehttp "GET /admin/illustrations/carmodel/ HTTP/1.1" 302 0
+INFO 2025-11-29 11:55:27,281 basehttp "GET /admin/login/?next=/admin/illustrations/carmodel/ HTTP/1.1" 200 4219
+INFO 2025-11-29 11:55:29,461 basehttp "POST /admin/login/?next=/admin/illustrations/carmodel/ HTTP/1.1" 200 4390
+INFO 2025-11-29 11:55:58,892 basehttp "POST /admin/login/?next=/admin/illustrations/carmodel/ HTTP/1.1" 302 0
+ERROR 2025-11-29 11:55:58,930 log Internal Server Error: /admin/illustrations/carmodel/
+Traceback (most recent call last):
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/db/backends/utils.py", line 105, in _execute
+    return self.cursor.execute(sql, params)
+           ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/db/backends/sqlite3/base.py", line 360, in execute
+    return super().execute(query, params)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+sqlite3.OperationalError: no such table: illustrations_manufacturer
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/contrib/admin/options.py", line 719, in wrapper
+    return self.admin_site.admin_view(view)(*args, **kwargs)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/utils/decorators.py", line 192, in _view_wrapper
+    result = _process_exception(request, e)
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/utils/decorators.py", line 190, in _view_wrapper
+    response = view_func(request, *args, **kwargs)
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/views/decorators/cache.py", line 80, in _view_wrapper
+    response = view_func(request, *args, **kwargs)
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/contrib/admin/sites.py", line 246, in inner
+    return view(request, *args, **kwargs)
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/utils/decorators.py", line 48, in _wrapper
+    return bound_method(*args, **kwargs)
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/utils/decorators.py", line 192, in _view_wrapper
+    result = _process_exception(request, e)
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/utils/decorators.py", line 190, in _view_wrapper
+    response = view_func(request, *args, **kwargs)
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/contrib/admin/options.py", line 2024, in changelist_view
+    cl = self.get_changelist_instance(request)
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/contrib/admin/options.py", line 867, in get_changelist_instance
+    return ChangeList(
+        request,
+    ...<12 lines>...
+        self.search_help_text,
+    )
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/contrib/admin/views/main.py", line 145, in __init__
+    self.queryset = self.get_queryset(request)
+                    ~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/contrib/admin/views/main.py", line 545, in get_queryset
+    ) = self.get_filters(request)
+        ~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/contrib/admin/views/main.py", line 216, in get_filters
+    spec = field_list_filter_class(
+        field,
+    ...<4 lines>...
+        field_path=field_path,
+    )
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/contrib/admin/filters.py", line 217, in create
+    return list_filter_class(
+        field, request, params, model, model_admin, field_path=field_path
+    )
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/contrib/admin/filters.py", line 232, in __init__
+    self.lookup_choices = self.field_choices(field, request, model_admin)
+                          ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/contrib/admin/filters.py", line 273, in field_choices
+    return field.get_choices(include_blank=False, ordering=ordering)
+           ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/db/models/fields/__init__.py", line 1083, in get_choices
+    (choice_func(x), str(x)) for x in qs
+                                      ^^
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/db/models/query.py", line 386, in __iter__
+    self._fetch_all()
+    ~~~~~~~~~~~~~~~^^
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/db/models/query.py", line 1954, in _fetch_all
+    self._result_cache = list(self._iterable_class(self))
+                         ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/db/models/query.py", line 93, in __iter__
+    results = compiler.execute_sql(
+        chunked_fetch=self.chunked_fetch, chunk_size=self.chunk_size
+    )
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/db/models/sql/compiler.py", line 1623, in execute_sql
+    cursor.execute(sql, params)
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/db/backends/utils.py", line 122, in execute
+    return super().execute(sql, params)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/db/backends/utils.py", line 79, in execute
+    return self._execute_with_wrappers(
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        sql, params, many=False, executor=self._execute
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/db/backends/utils.py", line 92, in _execute_with_wrappers
+    return executor(sql, params, many, context)
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/db/backends/utils.py", line 100, in _execute
+    with self.db.wrap_database_errors:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/db/utils.py", line 91, in __exit__
+    raise dj_exc_value.with_traceback(traceback) from exc_value
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/db/backends/utils.py", line 105, in _execute
+    return self.cursor.execute(sql, params)
+           ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/db/backends/sqlite3/base.py", line 360, in execute
+    return super().execute(query, params)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+django.db.utils.OperationalError: no such table: illustrations_manufacturer
+ERROR 2025-11-29 11:55:58,935 basehttp "GET /admin/illustrations/carmodel/ HTTP/1.1" 500 214358
+INFO 2025-11-29 11:59:38,810 autoreload Watching for file changes with StatReloader
+WARNING 2025-11-29 11:59:52,827 log Forbidden (CSRF token from POST incorrect.): /admin/login/
+WARNING 2025-11-29 11:59:52,828 basehttp "POST /admin/login/?next=/admin/illustrations/carmodel/ HTTP/1.1" 403 2503
+INFO 2025-11-29 12:00:04,453 basehttp "GET /admin/ HTTP/1.1" 302 0
+INFO 2025-11-29 12:00:04,475 basehttp "GET /admin/login/?next=/admin/ HTTP/1.1" 200 4173
+INFO 2025-11-29 12:00:07,251 basehttp "POST /admin/login/?next=/admin/ HTTP/1.1" 200 4344
+INFO 2025-11-29 12:00:39,682 basehttp "POST /admin/login/?next=/admin/ HTTP/1.1" 302 0
+INFO 2025-11-29 12:00:39,699 basehttp "GET /admin/ HTTP/1.1" 200 12957
+INFO 2025-11-29 12:00:42,578 basehttp "GET /admin/accounts/user/ HTTP/1.1" 200 19431
+INFO 2025-11-29 12:00:42,602 basehttp "GET /static/admin/css/changelists.css HTTP/1.1" 304 0
+INFO 2025-11-29 12:00:42,602 basehttp "GET /static/admin/js/vendor/jquery/jquery.js HTTP/1.1" 304 0
+INFO 2025-11-29 12:00:42,604 basehttp "GET /static/admin/js/actions.js HTTP/1.1" 304 0
+INFO 2025-11-29 12:00:42,605 basehttp "GET /static/admin/js/prepopulate.js HTTP/1.1" 304 0
+INFO 2025-11-29 12:00:42,609 basehttp "GET /admin/jsi18n/ HTTP/1.1" 200 3342
+INFO 2025-11-29 12:00:42,610 basehttp "GET /static/admin/js/admin/RelatedObjectLookups.js HTTP/1.1" 304 0
+INFO 2025-11-29 12:00:42,610 basehttp "GET /static/admin/js/jquery.init.js HTTP/1.1" 304 0
+INFO 2025-11-29 12:00:42,611 basehttp "GET /static/admin/js/core.js HTTP/1.1" 304 0
+INFO 2025-11-29 12:00:42,612 basehttp "GET /static/admin/js/urlify.js HTTP/1.1" 304 0
+INFO 2025-11-29 12:00:42,613 basehttp "GET /static/admin/js/vendor/xregexp/xregexp.js HTTP/1.1" 304 0
+INFO 2025-11-29 12:00:42,616 basehttp "GET /static/admin/img/search.svg HTTP/1.1" 304 0
+INFO 2025-11-29 12:00:42,617 basehttp "GET /static/admin/img/icon-no.svg HTTP/1.1" 304 0
+INFO 2025-11-29 12:00:42,641 basehttp "GET /static/admin/img/icon-yes.svg HTTP/1.1" 304 0
+INFO 2025-11-29 12:00:42,641 basehttp "GET /static/admin/js/filters.js HTTP/1.1" 304 0
+INFO 2025-11-29 12:00:42,661 basehttp "GET /static/admin/img/tooltag-add.svg HTTP/1.1" 304 0
+INFO 2025-11-29 12:00:42,661 basehttp "GET /static/admin/img/icon-viewlink.svg HTTP/1.1" 304 0
+INFO 2025-11-29 12:00:42,661 basehttp "GET /static/admin/img/sorting-icons.svg HTTP/1.1" 304 0
+INFO 2025-11-29 12:00:46,469 basehttp "GET /admin/ HTTP/1.1" 200 12957
+INFO 2025-11-29 12:00:48,663 basehttp "GET /admin/illustrations/enginemodel/add/ HTTP/1.1" 200 16058
+INFO 2025-11-29 12:00:48,683 basehttp "GET /static/admin/css/forms.css HTTP/1.1" 304 0
+INFO 2025-11-29 12:00:48,685 basehttp "GET /static/admin/js/prepopulate_init.js HTTP/1.1" 304 0
+INFO 2025-11-29 12:00:48,685 basehttp "GET /admin/jsi18n/ HTTP/1.1" 200 3342
+INFO 2025-11-29 12:00:48,716 basehttp "GET /static/admin/js/change_form.js HTTP/1.1" 304 0
+INFO 2025-11-29 12:00:48,716 basehttp "GET /static/admin/css/widgets.css HTTP/1.1" 304 0
+INFO 2025-11-29 12:00:51,308 basehttp "GET /admin/ HTTP/1.1" 200 12957
+INFO 2025-11-29 12:00:56,400 basehttp "GET /admin/illustrations/manufacturer/add/ HTTP/1.1" 200 14951
+INFO 2025-11-29 12:00:56,435 basehttp "GET /admin/jsi18n/ HTTP/1.1" 200 3342
+INFO 2025-11-29 12:01:10,912 basehttp "POST /admin/illustrations/manufacturer/add/ HTTP/1.1" 302 0
+INFO 2025-11-29 12:01:10,931 basehttp "GET /admin/illustrations/manufacturer/ HTTP/1.1" 200 14392
+INFO 2025-11-29 12:01:10,959 basehttp "GET /admin/jsi18n/ HTTP/1.1" 200 3342
+INFO 2025-11-29 12:01:15,811 basehttp "GET /admin/illustrations/manufacturer/add/ HTTP/1.1" 200 14951
+INFO 2025-11-29 12:01:15,831 basehttp "GET /admin/jsi18n/ HTTP/1.1" 200 3342
+INFO 2025-11-29 12:01:31,606 basehttp "POST /admin/illustrations/manufacturer/add/ HTTP/1.1" 302 0
+INFO 2025-11-29 12:01:31,624 basehttp "GET /admin/illustrations/manufacturer/ HTTP/1.1" 200 14690
+INFO 2025-11-29 12:01:31,652 basehttp "GET /admin/jsi18n/ HTTP/1.1" 200 3342
+INFO 2025-11-29 12:01:34,034 basehttp "GET /admin/illustrations/manufacturer/add/ HTTP/1.1" 200 14951
+INFO 2025-11-29 12:01:34,064 basehttp "GET /admin/jsi18n/ HTTP/1.1" 200 3342
+INFO 2025-11-29 12:01:42,023 basehttp "POST /admin/illustrations/manufacturer/add/ HTTP/1.1" 302 0
+INFO 2025-11-29 12:01:42,039 basehttp "GET /admin/illustrations/manufacturer/ HTTP/1.1" 200 14993
+INFO 2025-11-29 12:01:42,067 basehttp "GET /admin/jsi18n/ HTTP/1.1" 200 3342
+INFO 2025-11-29 12:01:43,115 basehttp "GET /admin/illustrations/manufacturer/add/ HTTP/1.1" 200 14951
+INFO 2025-11-29 12:01:43,141 basehttp "GET /admin/jsi18n/ HTTP/1.1" 200 3342
+INFO 2025-11-29 12:01:49,491 basehttp "POST /admin/illustrations/manufacturer/add/ HTTP/1.1" 302 0
+INFO 2025-11-29 12:01:49,508 basehttp "GET /admin/illustrations/manufacturer/ HTTP/1.1" 200 15295
+INFO 2025-11-29 12:01:49,538 basehttp "GET /admin/jsi18n/ HTTP/1.1" 200 3342
+INFO 2025-11-29 12:01:58,545 basehttp "GET /admin/illustrations/carmodel/add/ HTTP/1.1" 200 16227
+INFO 2025-11-29 12:01:58,575 basehttp "GET /admin/jsi18n/ HTTP/1.1" 200 3342
+INFO 2025-11-29 12:02:08,126 basehttp "POST /admin/illustrations/carmodel/add/ HTTP/1.1" 302 0
+INFO 2025-11-29 12:02:08,145 basehttp "GET /admin/illustrations/carmodel/ HTTP/1.1" 200 15410
+INFO 2025-11-29 12:02:08,172 basehttp "GET /admin/jsi18n/ HTTP/1.1" 200 3342
+INFO 2025-11-29 12:02:09,850 basehttp "GET /admin/illustrations/carmodel/add/ HTTP/1.1" 200 16227
+INFO 2025-11-29 12:02:09,879 basehttp "GET /admin/jsi18n/ HTTP/1.1" 200 3342
+INFO 2025-11-29 12:02:17,773 basehttp "POST /admin/illustrations/carmodel/add/ HTTP/1.1" 302 0
+INFO 2025-11-29 12:02:17,789 basehttp "GET /admin/illustrations/carmodel/ HTTP/1.1" 200 15759
+INFO 2025-11-29 12:02:17,811 basehttp "GET /admin/jsi18n/ HTTP/1.1" 200 3342
+INFO 2025-11-29 12:02:20,056 basehttp "GET /admin/illustrations/carmodel/add/ HTTP/1.1" 200 16227
+INFO 2025-11-29 12:02:20,083 basehttp "GET /admin/jsi18n/ HTTP/1.1" 200 3342
+INFO 2025-11-29 12:02:33,530 basehttp "POST /admin/illustrations/carmodel/add/ HTTP/1.1" 200 16494
+INFO 2025-11-29 12:02:33,552 basehttp "GET /admin/jsi18n/ HTTP/1.1" 200 3342
+INFO 2025-11-29 12:02:53,610 basehttp "POST /admin/illustrations/carmodel/add/ HTTP/1.1" 200 16493
+INFO 2025-11-29 12:02:53,625 basehttp "GET /admin/jsi18n/ HTTP/1.1" 200 3342
+INFO 2025-11-29 12:02:55,018 basehttp "POST /admin/illustrations/carmodel/add/ HTTP/1.1" 200 16493
+INFO 2025-11-29 12:02:55,039 basehttp "GET /admin/jsi18n/ HTTP/1.1" 200 3342
+INFO 2025-11-29 12:03:03,295 basehttp "POST /admin/illustrations/carmodel/add/ HTTP/1.1" 302 0
+INFO 2025-11-29 12:03:03,311 basehttp "GET /admin/illustrations/carmodel/ HTTP/1.1" 200 16107
+INFO 2025-11-29 12:03:03,338 basehttp "GET /admin/jsi18n/ HTTP/1.1" 200 3342
+INFO 2025-11-29 12:03:08,137 basehttp "GET /admin/illustrations/enginemodel/add/ HTTP/1.1" 200 16183
+INFO 2025-11-29 12:03:08,173 basehttp "GET /admin/jsi18n/ HTTP/1.1" 200 3342
+INFO 2025-11-29 12:03:20,047 basehttp "POST /admin/illustrations/enginemodel/add/ HTTP/1.1" 302 0
+INFO 2025-11-29 12:03:20,066 basehttp "GET /admin/illustrations/enginemodel/ HTTP/1.1" 200 15366
+INFO 2025-11-29 12:03:20,097 basehttp "GET /admin/jsi18n/ HTTP/1.1" 200 3342
+INFO 2025-11-29 12:03:22,443 basehttp "GET /admin/illustrations/enginemodel/add/ HTTP/1.1" 200 16183
+INFO 2025-11-29 12:03:22,470 basehttp "GET /admin/jsi18n/ HTTP/1.1" 200 3342
+INFO 2025-11-29 12:03:30,891 basehttp "POST /admin/illustrations/enginemodel/add/ HTTP/1.1" 200 16451
+INFO 2025-11-29 12:03:30,914 basehttp "GET /admin/jsi18n/ HTTP/1.1" 200 3342
+INFO 2025-11-29 12:03:49,348 basehttp "POST /admin/illustrations/enginemodel/add/ HTTP/1.1" 200 16493
+INFO 2025-11-29 12:03:49,370 basehttp "GET /admin/jsi18n/ HTTP/1.1" 200 3342
+INFO 2025-11-29 12:03:56,365 basehttp "POST /admin/illustrations/enginemodel/add/ HTTP/1.1" 302 0
+INFO 2025-11-29 12:03:56,381 basehttp "GET /admin/illustrations/enginemodel/ HTTP/1.1" 200 15725
+INFO 2025-11-29 12:03:56,404 basehttp "GET /admin/jsi18n/ HTTP/1.1" 200 3342
+INFO 2025-11-29 12:04:03,100 basehttp "GET /admin/illustrations/enginemodel/2/change/ HTTP/1.1" 200 16443
+INFO 2025-11-29 12:04:03,126 basehttp "GET /admin/jsi18n/ HTTP/1.1" 200 3342
+INFO 2025-11-29 12:04:16,522 basehttp "POST /admin/illustrations/enginemodel/2/change/ HTTP/1.1" 302 0
+INFO 2025-11-29 12:04:16,535 basehttp "GET /admin/illustrations/enginemodel/ HTTP/1.1" 200 15732
+INFO 2025-11-29 12:04:16,562 basehttp "GET /admin/jsi18n/ HTTP/1.1" 200 3342
+INFO 2025-11-29 12:04:24,116 basehttp "GET /admin/illustrations/enginemodel/add/ HTTP/1.1" 200 16183
+INFO 2025-11-29 12:04:24,142 basehttp "GET /admin/jsi18n/ HTTP/1.1" 200 3342
+INFO 2025-11-29 12:04:36,720 basehttp "POST /admin/illustrations/enginemodel/add/ HTTP/1.1" 200 16451
+INFO 2025-11-29 12:04:36,741 basehttp "GET /admin/jsi18n/ HTTP/1.1" 200 3342
+INFO 2025-11-29 12:04:40,615 basehttp "GET /admin/illustrations/enginemodel/ HTTP/1.1" 200 15510
+INFO 2025-11-29 12:04:40,645 basehttp "GET /admin/jsi18n/ HTTP/1.1" 200 3342
+INFO 2025-11-29 12:04:48,069 basehttp "GET /admin/illustrations/partcategory/ HTTP/1.1" 200 13442
+INFO 2025-11-29 12:04:48,094 basehttp "GET /admin/jsi18n/ HTTP/1.1" 200 3342
+INFO 2025-11-29 12:04:50,812 basehttp "GET /admin/illustrations/carmodel/ HTTP/1.1" 200 15893
+INFO 2025-11-29 12:04:50,842 basehttp "GET /admin/jsi18n/ HTTP/1.1" 200 3342
+INFO 2025-11-29 12:04:52,370 basehttp "GET /admin/illustrations/enginemodel/ HTTP/1.1" 200 15510
+INFO 2025-11-29 12:04:52,393 basehttp "GET /admin/jsi18n/ HTTP/1.1" 200 3342
+INFO 2025-11-29 12:04:54,391 basehttp "GET /admin/illustrations/partcategory/ HTTP/1.1" 200 13442
+INFO 2025-11-29 12:04:54,423 basehttp "GET /admin/jsi18n/ HTTP/1.1" 200 3342
+INFO 2025-11-29 12:04:57,333 basehttp "GET /admin/illustrations/partcategory/add/ HTTP/1.1" 200 16193
+INFO 2025-11-29 12:04:57,360 basehttp "GET /admin/jsi18n/ HTTP/1.1" 200 3342
+INFO 2025-11-29 12:05:11,386 basehttp "POST /admin/illustrations/partcategory/add/ HTTP/1.1" 302 0
+INFO 2025-11-29 12:05:11,403 basehttp "GET /admin/illustrations/partcategory/ HTTP/1.1" 200 15520
+INFO 2025-11-29 12:05:11,431 basehttp "GET /admin/jsi18n/ HTTP/1.1" 200 3342
+INFO 2025-11-29 12:05:13,480 basehttp "GET /admin/illustrations/partcategory/add/ HTTP/1.1" 200 16193
+INFO 2025-11-29 12:05:13,505 basehttp "GET /admin/jsi18n/ HTTP/1.1" 200 3342
+INFO 2025-11-29 12:05:23,710 basehttp "POST /admin/illustrations/partcategory/add/ HTTP/1.1" 302 0
+INFO 2025-11-29 12:05:23,728 basehttp "GET /admin/illustrations/partcategory/ HTTP/1.1" 200 15932
+INFO 2025-11-29 12:05:23,755 basehttp "GET /admin/jsi18n/ HTTP/1.1" 200 3342
+INFO 2025-11-29 12:05:25,409 basehttp "GET /admin/illustrations/partcategory/add/ HTTP/1.1" 200 16193
+INFO 2025-11-29 12:05:25,435 basehttp "GET /admin/jsi18n/ HTTP/1.1" 200 3342
+INFO 2025-11-29 12:05:45,334 basehttp "POST /admin/illustrations/partcategory/add/ HTTP/1.1" 302 0
+INFO 2025-11-29 12:05:45,351 basehttp "GET /admin/illustrations/partcategory/ HTTP/1.1" 200 16357
+INFO 2025-11-29 12:05:45,376 basehttp "GET /admin/jsi18n/ HTTP/1.1" 200 3342
+INFO 2025-11-29 12:05:52,249 basehttp "GET /admin/illustrations/partsubcategory/ HTTP/1.1" 200 13545
+INFO 2025-11-29 12:05:52,284 basehttp "GET /admin/jsi18n/ HTTP/1.1" 200 3342
+INFO 2025-11-29 12:05:53,957 basehttp "GET /admin/illustrations/partsubcategory/add/ HTTP/1.1" 200 16276
+INFO 2025-11-29 12:05:53,976 basehttp "GET /admin/jsi18n/ HTTP/1.1" 200 3342
+INFO 2025-11-29 12:06:06,733 basehttp "POST /admin/illustrations/partsubcategory/add/ HTTP/1.1" 302 0
+INFO 2025-11-29 12:06:06,746 basehttp "GET /admin/illustrations/partsubcategory/ HTTP/1.1" 200 15272
+INFO 2025-11-29 12:06:06,774 basehttp "GET /admin/jsi18n/ HTTP/1.1" 200 3342
+INFO 2025-11-29 12:06:08,247 basehttp "GET /admin/illustrations/partsubcategory/add/ HTTP/1.1" 200 16276
+INFO 2025-11-29 12:06:08,277 basehttp "GET /admin/jsi18n/ HTTP/1.1" 200 3342
+INFO 2025-11-29 12:06:17,753 basehttp "POST /admin/illustrations/partsubcategory/add/ HTTP/1.1" 302 0
+INFO 2025-11-29 12:06:17,771 basehttp "GET /admin/illustrations/partsubcategory/ HTTP/1.1" 200 15611
+INFO 2025-11-29 12:06:17,796 basehttp "GET /admin/jsi18n/ HTTP/1.1" 200 3342
+INFO 2025-11-29 12:06:19,161 basehttp "GET /admin/illustrations/partsubcategory/add/ HTTP/1.1" 200 16276
+INFO 2025-11-29 12:06:19,187 basehttp "GET /admin/jsi18n/ HTTP/1.1" 200 3342
+INFO 2025-11-29 12:06:40,811 basehttp "GET /admin/illustrations/carmodel/ HTTP/1.1" 200 15893
+INFO 2025-11-29 12:06:40,840 basehttp "GET /admin/jsi18n/ HTTP/1.1" 200 3342
+INFO 2025-11-29 12:06:42,733 basehttp "GET /admin/illustrations/partcategory/ HTTP/1.1" 200 16134
+INFO 2025-11-29 12:06:42,800 basehttp "GET /admin/jsi18n/ HTTP/1.1" 200 3342
+INFO 2025-11-29 12:06:43,945 basehttp "GET /admin/illustrations/partcategory/3/change/ HTTP/1.1" 200 16466
+INFO 2025-11-29 12:06:43,977 basehttp "GET /admin/jsi18n/ HTTP/1.1" 200 3342
+INFO 2025-11-29 12:06:49,042 basehttp "POST /admin/illustrations/partcategory/3/change/ HTTP/1.1" 302 0
+INFO 2025-11-29 12:06:49,059 basehttp "GET /admin/illustrations/partcategory/ HTTP/1.1" 200 16356
+INFO 2025-11-29 12:06:49,086 basehttp "GET /admin/jsi18n/ HTTP/1.1" 200 3342
+INFO 2025-11-29 12:06:50,016 basehttp "GET /admin/illustrations/partsubcategory/ HTTP/1.1" 200 15381
+INFO 2025-11-29 12:06:50,037 basehttp "GET /admin/jsi18n/ HTTP/1.1" 200 3342
+INFO 2025-11-29 12:06:51,449 basehttp "GET /admin/illustrations/partsubcategory/add/ HTTP/1.1" 200 16275
+INFO 2025-11-29 12:06:51,480 basehttp "GET /admin/jsi18n/ HTTP/1.1" 200 3342
+INFO 2025-11-29 12:07:00,165 basehttp "POST /admin/illustrations/partsubcategory/add/ HTTP/1.1" 302 0
+INFO 2025-11-29 12:07:00,182 basehttp "GET /admin/illustrations/partsubcategory/ HTTP/1.1" 200 15949
+INFO 2025-11-29 12:07:00,204 basehttp "GET /admin/jsi18n/ HTTP/1.1" 200 3342
+INFO 2025-11-29 12:07:02,722 basehttp "GET /admin/illustrations/illustration/ HTTP/1.1" 200 14167
+INFO 2025-11-29 12:07:02,749 basehttp "GET /admin/jsi18n/ HTTP/1.1" 200 3342
+INFO 2025-11-29 12:07:04,459 basehttp "GET /admin/illustrations/illustration/add/ HTTP/1.1" 200 24322
+INFO 2025-11-29 12:07:04,495 basehttp "GET /admin/jsi18n/ HTTP/1.1" 200 3342
+INFO 2025-11-29 12:07:04,498 basehttp "GET /static/admin/js/inlines.js HTTP/1.1" 200 15628
+INFO 2025-11-29 12:07:04,500 basehttp "GET /static/admin/img/icon-deletelink.svg HTTP/1.1" 200 392
+INFO 2025-11-29 12:07:04,526 basehttp "GET /static/admin/img/inline-delete.svg HTTP/1.1" 200 537
+INFO 2025-11-29 12:07:55,838 basehttp "POST /admin/illustrations/illustration/add/ HTTP/1.1" 302 0
+INFO 2025-11-29 12:07:55,853 basehttp "GET /admin/illustrations/illustration/ HTTP/1.1" 200 16723
+INFO 2025-11-29 12:07:55,886 basehttp "GET /admin/jsi18n/ HTTP/1.1" 200 3342
+INFO 2025-11-29 12:08:12,539 basehttp "GET /admin/illustrations/illustration/add/ HTTP/1.1" 200 24322
+INFO 2025-11-29 12:08:12,565 basehttp "GET /admin/jsi18n/ HTTP/1.1" 200 3342
+INFO 2025-11-29 12:08:43,079 basehttp "POST /admin/illustrations/illustration/add/ HTTP/1.1" 302 0
+INFO 2025-11-29 12:08:43,095 basehttp "GET /admin/illustrations/illustration/ HTTP/1.1" 200 17326
+INFO 2025-11-29 12:08:43,118 basehttp "GET /admin/jsi18n/ HTTP/1.1" 200 3342
+INFO 2025-11-29 12:09:07,112 basehttp "GET /admin/illustrations/illustration/add/ HTTP/1.1" 200 24322
+INFO 2025-11-29 12:09:07,139 basehttp "GET /admin/jsi18n/ HTTP/1.1" 200 3342
+INFO 2025-11-29 12:09:30,322 basehttp "POST /admin/illustrations/illustration/add/ HTTP/1.1" 302 0
+INFO 2025-11-29 12:09:30,338 basehttp "GET /admin/illustrations/illustration/ HTTP/1.1" 200 17888
+INFO 2025-11-29 12:09:30,360 basehttp "GET /admin/jsi18n/ HTTP/1.1" 200 3342
+INFO 2025-11-29 12:09:51,913 basehttp "GET /admin/illustrations/illustration/add/ HTTP/1.1" 200 24322
+INFO 2025-11-29 12:09:51,987 basehttp "GET /admin/jsi18n/ HTTP/1.1" 200 3342
+INFO 2025-11-29 12:10:04,001 basehttp "GET /admin/illustrations/enginemodel/ HTTP/1.1" 200 15510
+INFO 2025-11-29 12:10:04,025 basehttp "GET /admin/jsi18n/ HTTP/1.1" 200 3342
+INFO 2025-11-29 12:10:06,352 basehttp "GET /admin/illustrations/enginemodel/add/ HTTP/1.1" 200 16183
+INFO 2025-11-29 12:10:06,380 basehttp "GET /admin/jsi18n/ HTTP/1.1" 200 3342
+INFO 2025-11-29 12:10:17,581 basehttp "POST /admin/illustrations/enginemodel/add/ HTTP/1.1" 302 0
+INFO 2025-11-29 12:10:17,600 basehttp "GET /admin/illustrations/enginemodel/ HTTP/1.1" 200 16090
+INFO 2025-11-29 12:10:17,627 basehttp "GET /admin/jsi18n/ HTTP/1.1" 200 3342
+INFO 2025-11-29 12:10:23,854 basehttp "GET /admin/illustrations/manufacturer/ HTTP/1.1" 200 15079
+INFO 2025-11-29 12:10:23,877 basehttp "GET /admin/jsi18n/ HTTP/1.1" 200 3342
+INFO 2025-11-29 12:10:24,740 basehttp "GET /admin/illustrations/partcategory/ HTTP/1.1" 200 16206
+INFO 2025-11-29 12:10:24,761 basehttp "GET /admin/jsi18n/ HTTP/1.1" 200 3342
+INFO 2025-11-29 12:10:25,355 basehttp "GET /admin/illustrations/illustration/ HTTP/1.1" 200 17740
+INFO 2025-11-29 12:10:25,376 basehttp "GET /admin/jsi18n/ HTTP/1.1" 200 3342
+INFO 2025-11-29 12:10:26,525 basehttp "GET /admin/illustrations/illustration/add/ HTTP/1.1" 200 24364
+INFO 2025-11-29 12:10:26,554 basehttp "GET /admin/jsi18n/ HTTP/1.1" 200 3342
+INFO 2025-11-29 12:10:52,487 basehttp "POST /admin/illustrations/illustration/add/ HTTP/1.1" 302 0
+INFO 2025-11-29 12:10:52,505 basehttp "GET /admin/illustrations/illustration/ HTTP/1.1" 200 18515
+INFO 2025-11-29 12:10:52,528 basehttp "GET /admin/jsi18n/ HTTP/1.1" 200 3342

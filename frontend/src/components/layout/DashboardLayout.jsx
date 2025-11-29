@@ -77,14 +77,7 @@ const DashboardLayout = ({ children }) => {
             >
               {getUserInitial()}
             </Avatar>
-            <Box sx={{ display: { xs: 'none', sm: 'block' } }}>
-              <Typography variant="subtitle2" fontWeight="bold">
-                {getUserName()}
-              </Typography>
-              <Typography variant="caption" color="text.secondary">
-                {user?.email}
-              </Typography>
-            </Box>
+           
           </Box>
         </Box>
         
