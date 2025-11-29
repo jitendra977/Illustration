@@ -1,266 +1,114 @@
-// src/api/users.js
-import api from './index.js';
+// users.js
+import api from './index';
+
+const handleApiError = (error, operation) => {
+  console.error(`Error ${operation}:`, error);
+  throw error;
+};
+
+// Get base URL from environment or API instance
+const getBaseUrl = () => {
+  return process.env.REACT_APP_API_URL || '';
+};
 
 export const usersAPI = {
-  // Profile management
   getProfile: async () => {
     try {
       const response = await api.get('auth/users/profile/');
-      return response.data;
-    } catch (error) {
-      console.error('Error fetching profile:', error);
-      throw error;
-    }
-  },
-
-// Email verification methods 
- verifyEmail: async (token) => {
-    try {
-      console.log('Sending verification token:', token);
+      const data = response.data;
       
-      const response = await api.post('auth/users/verify_email/', { 
-        token: token 
-      });
+      // Convert relative profile image URL to absolute URL
+      if (data?.profile_image && !data.profile_image.startsWith('http')) {
+        data.profile_image = `${getBaseUrl()}${data.profile_image}`;
+      }
       
-      console.log('Verification response:', response.data);
-      return response.data;
+      return data;
     } catch (error) {
-      console.error('Verification error details:', {
-        status: error.response?.status,
-        data: error.response?.data,
-        token: token
-      });
-      throw error;
+      return handleApiError(error, 'fetching profile');
     }
   },
 
-  resendVerification: async () => {
+  // Add this new method to get the complete user data with proper image URLs
+  getUserWithProfileImage: async () => {
     try {
-      const response = await api.post('auth/users/resend_verification/');
-      return response.data;
+      const response = await api.get('auth/users/profile/');
+      const data = response.data;
+      
+      // Process user data to ensure profile_image has full URL
+      if (data?.user?.profile_image && !data.user.profile_image.startsWith('http')) {
+        data.user.profile_image = `${getBaseUrl()}${data.user.profile_image}`;
+      }
+      
+      return data;
     } catch (error) {
-      console.error('Error resending verification:', error);
-      throw error;
+      return handleApiError(error, 'fetching user with profile');
     }
   },
 
+  verifyEmail: async (token) => {
+    try {
+      const response = await api.post('auth/users/verify_email/', { token });
+      return response.data;
+    } catch (error) {
+      return handleApiError(error, 'verifying email');
+    }
+  },
 
   updateProfile: async (userData) => {
     try {
-      const config = {};
-
-      if (userData instanceof FormData) {
-        // For FormData (file uploads), let browser set Content-Type with boundary
-        config.headers = {
-          'Content-Type': 'multipart/form-data',
-        };
-      } else {
-        // For JSON data, set Content-Type explicitly
-        config.headers = {
-          'Content-Type': 'application/json',
-        };
-        // Convert object to JSON string
-        userData = JSON.stringify(userData);
-      }
+      const config = userData instanceof FormData 
+        ? { headers: { 'Content-Type': 'multipart/form-data' } }
+        : { headers: { 'Content-Type': 'application/json' } };
 
       const response = await api.put('auth/users/profile/', userData, config);
-      return response.data;
+      const data = response.data;
+      
+      // Convert relative profile image URL to absolute URL
+      if (data?.profile_image && !data.profile_image.startsWith('http')) {
+        data.profile_image = `${getBaseUrl()}${data.profile_image}`;
+      }
+      
+      return data;
     } catch (error) {
-      console.error('Error updating profile:', error);
-      throw error;
+      return handleApiError(error, 'updating profile');
     }
   },
-  // Password management
+
   updatePassword: async (passwordData) => {
     try {
-      // Transform field names to match backend expectations
-      const backendData = {
-        old_password: passwordData.old_password,
-        new_password: passwordData.new_password,
-        confirm_password: passwordData.confirm_password
-      };
-
-      const response = await api.post('auth/users/change_password/', backendData);
+      const response = await api.post('auth/users/change_password/', passwordData);
       return response.data;
     } catch (error) {
-      console.error('Error updating password:', error);
-      throw error;
+      return handleApiError(error, 'updating password');
     }
   },
 
-
-
-  // Profile image management
+  // Profile image specific methods
   uploadProfileImage: async (imageFile) => {
     try {
       const formData = new FormData();
       formData.append('profile_image', imageFile);
 
       const response = await api.patch('auth/users/profile/', formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
-        onUploadProgress: (progressEvent) => {
-          const percentCompleted = Math.round(
-            (progressEvent.loaded * 100) / progressEvent.total
-          );
-          console.log('Upload progress:', percentCompleted);
-        }
+        headers: { 'Content-Type': 'multipart/form-data' }
       });
-
-      return response.data;
-    } catch (error) {
-      console.error('Error uploading profile image:', error);
-      throw error;
-    }
-  },
-
-  deleteProfileImage: async () => {
-    try {
-      const response = await api.patch('auth/users/profile/', {
-        profile_image: null
-      });
-      return response.data;
-    } catch (error) {
-      console.error('Error deleting profile image:', error);
-      throw error;
-    }
-  },
-
-  // User management (for admin users)
-  getAllUsers: async (params = {}) => {
-    try {
-      const queryString = new URLSearchParams(params).toString();
-      const url = queryString ? `auth/users?${queryString}` : 'auth/users/';
-      const response = await api.get(url);
-      return response.data;
-    } catch (error) {
-      console.error('Error fetching users:', error);
-      throw error;
-    }
-  },
-
-  getUser: async (id) => {
-    try {
-      const response = await api.get(`auth/users/${id}/`);
-      return response.data;
-    } catch (error) {
-      console.error('Error fetching user:', error);
-      throw error;
-    }
-  },
-
-  createUser: async (userData) => {
-    try {
-      const config = {};
-
-      if (userData instanceof FormData) {
-        config.headers = {
-          'Content-Type': 'multipart/form-data',
-        };
+      
+      const data = response.data;
+      // Convert relative URL to absolute
+      if (data?.profile_image && !data.profile_image.startsWith('http')) {
+        data.profile_image = `${getBaseUrl()}${data.profile_image}`;
       }
-
-      const response = await api.post('auth/users/', userData, config);
-      return response.data;
+      
+      return data;
     } catch (error) {
-      console.error('Error creating user:', error);
-      throw error;
+      return handleApiError(error, 'uploading profile image');
     }
   },
 
-  updateUser: async (id, userData) => {
-    try {
-      const config = {};
-
-      if (userData instanceof FormData) {
-        config.headers = {
-          'Content-Type': 'multipart/form-data',
-        };
-      }
-
-      const response = await api.patch(`auth/users/${id}/`, userData, config);
-      return response.data;
-    } catch (error) {
-      console.error('Error updating user:', error);
-      throw error;
-    }
-  },
-
-  deleteUser: async (id) => {
-    try {
-      const response = await api.delete(`auth/users/${id}/`);
-      return response.data;
-    } catch (error) {
-      console.error('Error deleting user:', error);
-      throw error;
-    }
-  },
-
-  // Account settings
-  updateAccountSettings: async (settings) => {
-    try {
-      const response = await api.patch('auth/users/settings/', settings);
-      return response.data;
-    } catch (error) {
-      console.error('Error updating account settings:', error);
-      throw error;
-    }
-  },
-
-  getAccountSettings: async () => {
-    try {
-      const response = await api.get('auth/users/settings/');
-      return response.data;
-    } catch (error) {
-      console.error('Error fetching account settings:', error);
-      throw error;
-    }
-  },
-
-  // Account deactivation
-  deactivateAccount: async (password) => {
-    try {
-      const response = await api.post('auth/users/deactivate/', { password });
-      return response.data;
-    } catch (error) {
-      console.error('Error deactivating account:', error);
-      throw error;
-    }
-  },
-
-  // Export user data (GDPR compliance)
-  exportUserData: async () => {
-    try {
-      const response = await api.get('auth/users/export/', {
-        responseType: 'blob'
-      });
-
-      // Create download link
-      const url = window.URL.createObjectURL(new Blob([response.data]));
-      const link = document.createElement('a');
-      link.href = url;
-      link.setAttribute('download', 'user-data.json');
-      document.body.appendChild(link);
-      link.click();
-      link.remove();
-
-      return response.data;
-    } catch (error) {
-      console.error('Error exporting user data:', error);
-      throw error;
-    }
-  }
-};
-export const debugVerification = {
-  checkToken: async (token) => {
-    try {
-      console.log('Verification Token:', token);
-      console.log('Token Type:', typeof token);
-      console.log('API Base URL:', process.env.REACT_APP_API_URL);
-      return true;
-    } catch (error) {
-      console.error('Debug error:', error);
-      return false;
-    }
+  // Helper function to get full image URL
+  getFullImageUrl: (relativeUrl) => {
+    if (!relativeUrl) return null;
+    if (relativeUrl.startsWith('http')) return relativeUrl;
+    return `${getBaseUrl()}${relativeUrl}`;
   }
 };
