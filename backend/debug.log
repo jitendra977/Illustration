@@ -1858,3 +1858,50 @@ WARNING 2025-11-29 13:20:41,264 log Not Found: /api/token/refresh/
 WARNING 2025-11-29 13:20:41,315 log Not Found: /api/token/refresh/
 WARNING 2025-11-29 13:20:41,360 log Not Found: /api/token/refresh/
 WARNING 2025-11-29 13:20:41,485 log Not Found: /api/token/refresh/
+INFO 2025-12-02 13:52:58,187 autoreload Watching for file changes with StatReloader
+INFO 2025-12-02 13:53:51,219 basehttp "GET /admin/accounts/user/ HTTP/1.1" 302 0
+INFO 2025-12-02 13:53:51,255 basehttp "GET /admin/login/?next=/admin/accounts/user/ HTTP/1.1" 200 4201
+INFO 2025-12-02 13:54:58,907 basehttp "OPTIONS /api/auth/login/ HTTP/1.1" 200 0
+INFO 2025-12-02 13:54:59,125 basehttp "POST /api/auth/login/ HTTP/1.1" 200 489
+INFO 2025-12-02 13:54:59,133 basehttp "OPTIONS /api/auth/users/profile/ HTTP/1.1" 200 0
+INFO 2025-12-02 13:54:59,139 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 465
+INFO 2025-12-02 13:54:59,328 basehttp "OPTIONS /api/auth/users/ HTTP/1.1" 200 0
+INFO 2025-12-02 13:54:59,328 basehttp "OPTIONS /api/auth/users/ HTTP/1.1" 200 0
+INFO 2025-12-02 13:54:59,338 basehttp "GET /api/auth/users/ HTTP/1.1" 200 891
+INFO 2025-12-02 13:54:59,349 basehttp "GET /api/auth/users/ HTTP/1.1" 200 891
+WARNING 2025-12-03 12:08:27,006 log Not Found: /
+WARNING 2025-12-03 12:08:27,007 basehttp "GET / HTTP/1.1" 404 3465
+WARNING 2025-12-03 12:08:27,277 log Not Found: /favicon.ico
+WARNING 2025-12-03 12:08:27,278 basehttp "GET /favicon.ico HTTP/1.1" 404 3516
+INFO 2025-12-03 14:06:27,928 basehttp "OPTIONS /api/auth/users/profile/ HTTP/1.1" 200 0
+INFO 2025-12-03 14:06:27,929 basehttp "OPTIONS /api/auth/users/profile/ HTTP/1.1" 200 0
+INFO 2025-12-03 14:06:27,929 basehttp "OPTIONS /api/auth/users/profile/ HTTP/1.1" 200 0
+WARNING 2025-12-03 14:06:27,933 log Unauthorized: /api/auth/users/profile/
+INFO 2025-12-03 14:06:27,933 basehttp "OPTIONS /api/auth/users/profile/ HTTP/1.1" 200 0
+WARNING 2025-12-03 14:06:27,934 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 401 172
+WARNING 2025-12-03 14:06:27,936 log Unauthorized: /api/auth/users/profile/
+WARNING 2025-12-03 14:06:27,937 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 401 172
+WARNING 2025-12-03 14:06:27,938 log Unauthorized: /api/auth/users/profile/
+WARNING 2025-12-03 14:06:27,938 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 401 172
+WARNING 2025-12-03 14:06:27,940 log Unauthorized: /api/auth/users/profile/
+WARNING 2025-12-03 14:06:27,940 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 401 172
+INFO 2025-12-03 14:06:27,988 basehttp "OPTIONS /api/token/refresh/ HTTP/1.1" 200 0
+INFO 2025-12-03 14:06:27,989 basehttp "OPTIONS /api/token/refresh/ HTTP/1.1" 200 0
+INFO 2025-12-03 14:06:27,990 basehttp "OPTIONS /api/token/refresh/ HTTP/1.1" 200 0
+INFO 2025-12-03 14:06:27,990 basehttp "OPTIONS /api/token/refresh/ HTTP/1.1" 200 0
+WARNING 2025-12-03 14:06:27,999 log Not Found: /api/token/refresh/
+WARNING 2025-12-03 14:06:28,004 log Not Found: /api/token/refresh/
+WARNING 2025-12-03 14:06:28,005 basehttp "POST /api/token/refresh/ HTTP/1.1" 404 3677
+WARNING 2025-12-03 14:06:28,005 basehttp "POST /api/token/refresh/ HTTP/1.1" 404 3677
+WARNING 2025-12-03 14:06:28,013 log Not Found: /api/token/refresh/
+WARNING 2025-12-03 14:06:28,014 basehttp "POST /api/token/refresh/ HTTP/1.1" 404 3677
+WARNING 2025-12-03 14:06:28,024 log Not Found: /api/token/refresh/
+WARNING 2025-12-03 14:06:28,024 basehttp "POST /api/token/refresh/ HTTP/1.1" 404 3677
+INFO 2025-12-03 14:06:42,419 basehttp "OPTIONS /api/auth/login/ HTTP/1.1" 200 0
+INFO 2025-12-03 14:06:42,632 basehttp "POST /api/auth/login/ HTTP/1.1" 200 489
+INFO 2025-12-03 14:06:42,641 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 465
+INFO 2025-12-03 14:06:42,683 basehttp "GET /media/users/1/profile/profile_1_55551146.png HTTP/1.1" 304 0
+INFO 2025-12-03 14:06:42,756 basehttp "OPTIONS /api/auth/users/ HTTP/1.1" 200 0
+INFO 2025-12-03 14:06:42,757 basehttp "OPTIONS /api/auth/users/ HTTP/1.1" 200 0
+INFO 2025-12-03 14:06:42,778 basehttp "GET /api/auth/users/ HTTP/1.1" 200 891
+INFO 2025-12-03 14:06:42,785 basehttp "GET /api/auth/users/ HTTP/1.1" 200 891

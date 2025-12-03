@@ -22,12 +22,12 @@ export const usersAPI = {
     try {
       const response = await api.get('auth/users/profile/');
       const data = response.data;
-      
+
       // Convert relative profile image URL to absolute URL
       if (data?.profile_image && !data.profile_image.startsWith('http')) {
         data.profile_image = `${getBaseUrl()}${data.profile_image}`;
       }
-      
+
       return data;
     } catch (error) {
       return handleApiError(error, 'fetching profile');
@@ -42,11 +42,11 @@ export const usersAPI = {
     try {
       const response = await api.get('auth/users/me/');
       const data = response.data;
-      
+
       if (data?.profile_image && !data.profile_image.startsWith('http')) {
         data.profile_image = `${getBaseUrl()}${data.profile_image}`;
       }
-      
+
       return data;
     } catch (error) {
       return handleApiError(error, 'fetching current user');
@@ -60,18 +60,18 @@ export const usersAPI = {
    */
   updateProfile: async (userData) => {
     try {
-      const config = userData instanceof FormData 
+      const config = userData instanceof FormData
         ? { headers: { 'Content-Type': 'multipart/form-data' } }
         : { headers: { 'Content-Type': 'application/json' } };
 
       const response = await api.put('auth/users/profile/', userData, config);
       const data = response.data;
-      
+
       // Convert relative profile image URL to absolute URL
       if (data?.profile_image && !data.profile_image.startsWith('http')) {
         data.profile_image = `${getBaseUrl()}${data.profile_image}`;
       }
-      
+
       return data;
     } catch (error) {
       return handleApiError(error, 'updating profile');
@@ -85,17 +85,17 @@ export const usersAPI = {
    */
   patchProfile: async (userData) => {
     try {
-      const config = userData instanceof FormData 
+      const config = userData instanceof FormData
         ? { headers: { 'Content-Type': 'multipart/form-data' } }
         : { headers: { 'Content-Type': 'application/json' } };
 
       const response = await api.patch('auth/users/profile/', userData, config);
       const data = response.data;
-      
+
       if (data?.profile_image && !data.profile_image.startsWith('http')) {
         data.profile_image = `${getBaseUrl()}${data.profile_image}`;
       }
-      
+
       return data;
     } catch (error) {
       return handleApiError(error, 'patching profile');
@@ -156,14 +156,14 @@ export const usersAPI = {
       const response = await api.patch('auth/users/profile/', formData, {
         headers: { 'Content-Type': 'multipart/form-data' }
       });
-      
+
       const data = response.data;
-      
+
       // Convert relative URL to absolute
       if (data?.profile_image && !data.profile_image.startsWith('http')) {
         data.profile_image = `${getBaseUrl()}${data.profile_image}`;
       }
-      
+
       return data;
     } catch (error) {
       return handleApiError(error, 'uploading profile image');
@@ -182,7 +182,7 @@ export const usersAPI = {
       const response = await api.patch('auth/users/profile/', formData, {
         headers: { 'Content-Type': 'multipart/form-data' }
       });
-      
+
       return response.data;
     } catch (error) {
       return handleApiError(error, 'deleting profile image');
@@ -198,7 +198,7 @@ export const usersAPI = {
     try {
       const response = await api.get('auth/users/', { params });
       const data = response.data;
-      
+
       // Process profile images for all users
       if (data.results) {
         data.results = data.results.map(user => {
@@ -208,7 +208,7 @@ export const usersAPI = {
           return user;
         });
       }
-      
+
       return data;
     } catch (error) {
       return handleApiError(error, 'fetching users list');
@@ -224,11 +224,11 @@ export const usersAPI = {
     try {
       const response = await api.get(`auth/users/${userId}/`);
       const data = response.data;
-      
+
       if (data?.profile_image && !data.profile_image.startsWith('http')) {
         data.profile_image = `${getBaseUrl()}${data.profile_image}`;
       }
-      
+
       return data;
     } catch (error) {
       return handleApiError(error, `fetching user ${userId}`);
@@ -242,17 +242,17 @@ export const usersAPI = {
    */
   createUser: async (userData) => {
     try {
-      const config = userData instanceof FormData 
+      const config = userData instanceof FormData
         ? { headers: { 'Content-Type': 'multipart/form-data' } }
         : { headers: { 'Content-Type': 'application/json' } };
 
       const response = await api.post('auth/users/', userData, config);
       const data = response.data;
-      
+
       if (data?.profile_image && !data.profile_image.startsWith('http')) {
         data.profile_image = `${getBaseUrl()}${data.profile_image}`;
       }
-      
+
       return data;
     } catch (error) {
       return handleApiError(error, 'creating user');
@@ -267,17 +267,17 @@ export const usersAPI = {
    */
   updateUser: async (userId, userData) => {
     try {
-      const config = userData instanceof FormData 
+      const config = userData instanceof FormData
         ? { headers: { 'Content-Type': 'multipart/form-data' } }
         : { headers: { 'Content-Type': 'application/json' } };
 
       const response = await api.put(`auth/users/${userId}/`, userData, config);
       const data = response.data;
-      
+
       if (data?.profile_image && !data.profile_image.startsWith('http')) {
         data.profile_image = `${getBaseUrl()}${data.profile_image}`;
       }
-      
+
       return data;
     } catch (error) {
       return handleApiError(error, `updating user ${userId}`);

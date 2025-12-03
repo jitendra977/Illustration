@@ -28,7 +28,7 @@ export const authAPI = {
       timeout: 10000,
       timeoutErrorMessage: 'Connection timeout. Please try again.'
     };
-    
+
     if (isFormData) {
       config.headers = {
         'Content-Type': 'multipart/form-data',
@@ -51,9 +51,9 @@ export const authAPI = {
 
   refreshToken: async (refreshToken) => {
     try {
-      const response = await api.post('auth/token/refresh/', { refresh: refreshToken }, {
-        timeout: 10000
-      });
+      const response = await axios.post(`${API_BASE_URL}/auth/token/refresh/`, {
+        refresh: refreshToken
+      }, { timeout: 10000 });
       return response.data;
     } catch (error) {
       if (error.code === 'ECONNABORTED' || error.message.includes('timeout')) {
