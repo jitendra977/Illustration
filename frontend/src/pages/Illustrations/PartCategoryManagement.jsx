@@ -1,5 +1,40 @@
 import React, { useState } from 'react';
-import { Plus, Search, Edit2, Trash2, Package, AlertCircle } from 'lucide-react';
+import {
+  Box,
+  Container,
+  Typography,
+  Button,
+  IconButton,
+  TextField,
+  InputAdornment,
+  Paper,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  MenuItem,
+  Alert,
+  CircularProgress,
+  Stack,
+  Chip,
+  alpha,
+  useTheme
+} from '@mui/material';
+import {
+  Add as PlusIcon,
+  Search as SearchIcon,
+  Edit as EditIcon,
+  Delete as DeleteIcon,
+  Category as CategoryIcon,
+  Error as ErrorIcon,
+  Close as CloseIcon
+} from '@mui/icons-material';
 import { usePartCategories, useManufacturers, useCarModels, useEngineModels } from '../../hooks/useIllustrations';
 
 const PartCategoryManagement = () => {
@@ -19,6 +54,8 @@ const PartCategoryManagement = () => {
   const { manufacturers } = useManufacturers();
   const { carModels, fetchCarModels } = useCarModels();
   const { engineModels, fetchEngineModels } = useEngineModels();
+
+  const theme = useTheme();
 
   const filteredCategories = categories.filter(c =>
     c.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -90,238 +127,233 @@ const PartCategoryManagement = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="bg-white border-b border-gray-200 sticky top-0 z-10">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-          <div className="flex items-center justify-between mb-6">
-            <div>
-              <h1 className="text-3xl font-bold text-gray-900">Part Categories</h1>
-              <p className="text-sm text-gray-500 mt-1">Manage part categories</p>
-            </div>
-            <button
-              onClick={() => handleOpenModal()}
-              className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-            >
-              <Plus size={20} />
-              Add Category
-            </button>
-          </div>
+    <Box sx={{ minHeight: '100vh', bgcolor: 'grey.50' }}>
+      {/* Header */}
+      <Paper elevation={0} sx={{ 
+        borderBottom: 1, 
+        borderColor: 'divider',
+        position: 'sticky',
+        top: 0,
+        zIndex: 10,
+        bgcolor: 'background.paper'
+      }}>
+        <Container maxWidth="lg" sx={{ py: 2 }}>
+          <Stack spacing={2}>
+            <Stack direction="row" justifyContent="space-between" alignItems="center">
+              <Box>
+                <Typography variant="h5" fontWeight="bold">
+                  Part Categories
+                </Typography>
+                <Typography variant="body2" color="text.secondary">
+                  Manage part groups
+                </Typography>
+              </Box>
+              <Button
+                variant="contained"
+                startIcon={<PlusIcon />}
+                onClick={() => handleOpenModal()}
+                size="small"
+              >
+                Add Category
+              </Button>
+            </Stack>
 
-          <div className="relative max-w-md">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
-            <input
-              type="text"
+            <TextField
               placeholder="Search categories..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <SearchIcon fontSize="small" />
+                  </InputAdornment>
+                ),
+              }}
+              size="small"
+              fullWidth
             />
-          </div>
-        </div>
-      </div>
+          </Stack>
+        </Container>
+      </Paper>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+      {/* Content */}
+      <Container maxWidth="lg" sx={{ py: 3 }}>
         {loading ? (
-          <div className="flex items-center justify-center h-64">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
-          </div>
+          <Box display="flex" justifyContent="center" py={8}>
+            <CircularProgress />
+          </Box>
         ) : error ? (
-          <div className="bg-red-50 border border-red-200 rounded-lg p-4 flex items-center gap-2 text-red-700">
-            <AlertCircle size={20} />
-            <span>{error}</span>
-          </div>
+          <Alert severity="error" sx={{ mb: 2 }}>
+            {error}
+          </Alert>
         ) : filteredCategories.length === 0 ? (
-          <div className="text-center py-12 bg-white rounded-lg">
-            <Package size={64} className="mx-auto text-gray-300 mb-4" />
-            <h3 className="text-lg font-medium text-gray-900 mb-2">No categories found</h3>
-            <p className="text-gray-500 mb-6">
-              {searchTerm ? 'Try adjusting your search' : 'Get started by adding your first category'}
-            </p>
+          <Paper sx={{ p: 4, textAlign: 'center' }}>
+            <CategoryIcon sx={{ fontSize: 48, color: 'grey.400', mb: 2 }} />
+            <Typography variant="h6" gutterBottom>
+              No categories
+            </Typography>
+            <Typography variant="body2" color="text.secondary" paragraph>
+              {searchTerm ? 'Try different search' : 'Add your first category'}
+            </Typography>
             {!searchTerm && (
-              <button
+              <Button
+                variant="outlined"
+                startIcon={<PlusIcon />}
                 onClick={() => handleOpenModal()}
-                className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
               >
-                <Plus size={20} />
                 Add Category
-              </button>
+              </Button>
             )}
-          </div>
+          </Paper>
         ) : (
-          <div className="bg-white rounded-lg shadow overflow-hidden">
-            <table className="min-w-full divide-y divide-gray-200">
-              <thead className="bg-gray-50">
-                <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Category Name
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Engine Model
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Slug
-                  </th>
-                  <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Actions
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
+          <TableContainer component={Paper} elevation={0} sx={{ border: 1, borderColor: 'divider' }}>
+            <Table size="small">
+              <TableHead sx={{ bgcolor: 'grey.50' }}>
+                <TableRow>
+                  <TableCell sx={{ fontWeight: 'bold', py: 1.5 }}>Category</TableCell>
+                  <TableCell sx={{ fontWeight: 'bold', py: 1.5 }}>Engine Model</TableCell>
+                  <TableCell sx={{ fontWeight: 'bold', py: 1.5 }}>Slug</TableCell>
+                  <TableCell align="right" sx={{ fontWeight: 'bold', py: 1.5 }}>Actions</TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
                 {filteredCategories.map((category) => (
-                  <tr key={category.id} className="hover:bg-gray-50 transition-colors">
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm font-medium text-gray-900">{category.name}</div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm text-gray-500">{category.engine_model_name}</div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm text-gray-500 font-mono">{category.slug}</div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                      <button className="text-blue-600 hover:text-blue-900 mr-4">
-                        <Edit2 size={18} />
-                      </button>
-                      <button className="text-red-600 hover:text-red-900">
-                        <Trash2 size={18} />
-                      </button>
-                    </td>
-                  </tr>
+                  <TableRow key={category.id} hover>
+                    <TableCell sx={{ py: 1.5 }}>
+                      <Typography variant="body2" fontWeight="medium">
+                        {category.name}
+                      </Typography>
+                    </TableCell>
+                    <TableCell sx={{ py: 1.5 }}>
+                      <Chip 
+                        label={category.engine_model_name} 
+                        size="small" 
+                        sx={{ bgcolor: alpha(theme.palette.success.main, 0.1) }}
+                      />
+                    </TableCell>
+                    <TableCell sx={{ py: 1.5 }}>
+                      <Typography variant="caption" sx={{ fontFamily: 'monospace' }}>
+                        {category.slug}
+                      </Typography>
+                    </TableCell>
+                    <TableCell align="right" sx={{ py: 1.5 }}>
+                      <IconButton size="small">
+                        <EditIcon fontSize="small" />
+                      </IconButton>
+                      <IconButton size="small">
+                        <DeleteIcon fontSize="small" />
+                      </IconButton>
+                    </TableCell>
+                  </TableRow>
                 ))}
-              </tbody>
-            </table>
-          </div>
+              </TableBody>
+            </Table>
+          </TableContainer>
         )}
-      </div>
+      </Container>
 
-      {showModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-lg max-w-md w-full">
-            <div className="flex items-center justify-between p-6 border-b">
-              <h2 className="text-xl font-bold text-gray-900">Add Part Category</h2>
-              <button onClick={() => setShowModal(false)} className="text-gray-400 hover:text-gray-600">
-                ×
-              </button>
-            </div>
+      {/* Modal */}
+      <Dialog open={showModal} onClose={() => setShowModal(false)} maxWidth="sm" fullWidth>
+        <DialogTitle>
+          Add Part Category
+          <IconButton
+            onClick={() => setShowModal(false)}
+            sx={{ position: 'absolute', right: 8, top: 8 }}
+          >
+            <CloseIcon />
+          </IconButton>
+        </DialogTitle>
+        <form onSubmit={handleSubmit}>
+          <DialogContent>
+            <Stack spacing={2}>
+              <TextField
+                select
+                label="Manufacturer"
+                name="manufacturer"
+                value={formData.manufacturer}
+                onChange={handleChange}
+                size="small"
+                fullWidth
+              >
+                <MenuItem value="">Select...</MenuItem>
+                {manufacturers.map(m => (
+                  <MenuItem key={m.id} value={m.id}>{m.name}</MenuItem>
+                ))}
+              </TextField>
 
-            <form onSubmit={handleSubmit} className="p-6 space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Manufacturer *
-                </label>
-                <select
-                  name="manufacturer"
-                  value={formData.manufacturer}
-                  onChange={handleChange}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-                >
-                  <option value="">Select manufacturer...</option>
-                  {manufacturers.map(m => (
-                    <option key={m.id} value={m.id}>{m.name}</option>
-                  ))}
-                </select>
-              </div>
+              <TextField
+                select
+                label="Car Model"
+                name="car_model"
+                value={formData.car_model}
+                onChange={handleChange}
+                disabled={!formData.manufacturer}
+                size="small"
+                fullWidth
+              >
+                <MenuItem value="">Select...</MenuItem>
+                {carModels.map(c => (
+                  <MenuItem key={c.id} value={c.id}>{c.name}</MenuItem>
+                ))}
+              </TextField>
 
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Car Model *
-                </label>
-                <select
-                  name="car_model"
-                  value={formData.car_model}
-                  onChange={handleChange}
-                  disabled={!formData.manufacturer}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100"
-                >
-                  <option value="">Select car model...</option>
-                  {carModels.map(c => (
-                    <option key={c.id} value={c.id}>{c.name}</option>
-                  ))}
-                </select>
-              </div>
+              <TextField
+                select
+                label="Engine Model"
+                name="engine_model"
+                value={formData.engine_model}
+                onChange={handleChange}
+                error={!!errors.engine_model}
+                helperText={errors.engine_model}
+                disabled={!formData.car_model}
+                size="small"
+                fullWidth
+              >
+                <MenuItem value="">Select...</MenuItem>
+                {engineModels.map(e => (
+                  <MenuItem key={e.id} value={e.id}>{e.name}</MenuItem>
+                ))}
+              </TextField>
 
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Engine Model *
-                </label>
-                <select
-                  name="engine_model"
-                  value={formData.engine_model}
-                  onChange={handleChange}
-                  disabled={!formData.car_model}
-                  className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 ${
-                    errors.engine_model ? 'border-red-500' : 'border-gray-300'
-                  } disabled:bg-gray-100`}
-                >
-                  <option value="">Select engine model...</option>
-                  {engineModels.map(e => (
-                    <option key={e.id} value={e.id}>{e.name}</option>
-                  ))}
-                </select>
-                {errors.engine_model && <p className="text-red-500 text-sm mt-1">{errors.engine_model}</p>}
-              </div>
+              <TextField
+                label="Category Name"
+                name="name"
+                value={formData.name}
+                onChange={handleChange}
+                error={!!errors.name}
+                helperText={errors.name}
+                placeholder="e.g., Engine Parts"
+                size="small"
+                fullWidth
+              />
 
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Category Name *
-                </label>
-                <input
-                  type="text"
-                  name="name"
-                  value={formData.name}
-                  onChange={handleChange}
-                  className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 ${
-                    errors.name ? 'border-red-500' : 'border-gray-300'
-                  }`}
-                  placeholder="e.g., Engine Parts"
-                />
-                {errors.name && <p className="text-red-500 text-sm mt-1">{errors.name}</p>}
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Slug *
-                </label>
-                <input
-                  type="text"
-                  name="slug"
-                  value={formData.slug}
-                  onChange={handleChange}
-                  className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 font-mono text-sm ${
-                    errors.slug ? 'border-red-500' : 'border-gray-300'
-                  }`}
-                  placeholder="e.g., engine-parts"
-                />
-                {errors.slug && <p className="text-red-500 text-sm mt-1">{errors.slug}</p>}
-              </div>
+              <TextField
+                label="Slug"
+                name="slug"
+                value={formData.slug}
+                onChange={handleChange}
+                error={!!errors.slug}
+                helperText={errors.slug}
+                placeholder="e.g., engine-parts"
+                size="small"
+                fullWidth
+                sx={{ fontFamily: 'monospace' }}
+              />
 
               {errors.submit && (
-                <div className="p-3 bg-red-50 border border-red-200 rounded-lg flex items-center gap-2 text-red-700">
-                  <AlertCircle size={20} />
-                  <span className="text-sm">{errors.submit}</span>
-                </div>
+                <Alert severity="error">{errors.submit}</Alert>
               )}
-
-              <div className="flex gap-3 pt-4">
-                <button
-                  type="button"
-                  onClick={() => setShowModal(false)}
-                  className="flex-1 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
-                >
-                  Create
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
-    </div>
+            </Stack>
+          </DialogContent>
+          <DialogActions sx={{ px: 3, pb: 2 }}>
+            <Button onClick={() => setShowModal(false)}>Cancel</Button>
+            <Button type="submit" variant="contained">
+              Create
+            </Button>
+          </DialogActions>
+        </form>
+      </Dialog>
+    </Box>
   );
 };
 

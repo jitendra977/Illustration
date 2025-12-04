@@ -1,5 +1,21 @@
 import React, { useState, useEffect } from 'react';
-import { X, Filter } from 'lucide-react';
+import {
+  Box,
+  Button,
+  TextField,
+  MenuItem,
+  IconButton,
+  Stack,
+  Typography,
+  Divider,
+  Chip,
+  Paper
+} from '@mui/material';
+import {
+  FilterList as FilterIcon,
+  Close as CloseIcon,
+  Clear as ClearIcon
+} from '@mui/icons-material';
 import {
   useManufacturers,
   useCarModels,
@@ -20,7 +36,6 @@ const FilterPanel = ({ onFilterChange }) => {
   const { engineModels, fetchEngineModels } = useEngineModels();
   const { categories, fetchCategories } = usePartCategories();
 
-  // Fetch dependent data
   useEffect(() => {
     if (filters.manufacturer) {
       fetchCarModels({ manufacturer: filters.manufacturer });
@@ -42,7 +57,6 @@ const FilterPanel = ({ onFilterChange }) => {
   const handleFilterChange = (name, value) => {
     const newFilters = { ...filters, [name]: value };
     
-    // Reset dependent filters
     if (name === 'manufacturer') {
       newFilters.car_model = '';
       newFilters.engine_model = '';
@@ -77,159 +91,141 @@ const FilterPanel = ({ onFilterChange }) => {
 
   const hasActiveFilters = Object.values(filters).some(v => v);
 
+  const getFilterLabel = (type, value) => {
+    const items = {
+      manufacturer: manufacturers,
+      car_model: carModels,
+      engine_model: engineModels,
+      part_category: categories
+    };
+    const item = items[type]?.find(item => item.id == value);
+    return item?.name || value;
+  };
+
   return (
-    <div className="bg-white rounded-lg shadow-md p-4 sticky top-24">
-      {/* Header */}
-      <div className="flex items-center justify-between mb-4">
-        <div className="flex items-center gap-2">
-          <Filter size={20} className="text-gray-700" />
-          <h3 className="font-semibold text-gray-900">Filters</h3>
-        </div>
+    <Paper sx={{ p: 2 }}>
+      <Stack spacing={2}>
+        <Stack direction="row" alignItems="center" justifyContent="space-between">
+          <Stack direction="row" alignItems="center" spacing={1}>
+            <FilterIcon fontSize="small" />
+            <Typography variant="subtitle2" fontWeight="medium">
+              Filters
+            </Typography>
+          </Stack>
+          {hasActiveFilters && (
+            <Button size="small" onClick={handleClearFilters}>
+              Clear
+            </Button>
+          )}
+        </Stack>
+
+        <TextField
+          select
+          label="Manufacturer"
+          value={filters.manufacturer}
+          onChange={(e) => handleFilterChange('manufacturer', e.target.value)}
+          size="small"
+          fullWidth
+        >
+          <MenuItem value="">All manufacturers</MenuItem>
+          {manufacturers.map(m => (
+            <MenuItem key={m.id} value={m.id}>{m.name}</MenuItem>
+          ))}
+        </TextField>
+
+        <TextField
+          select
+          label="Car Model"
+          value={filters.car_model}
+          onChange={(e) => handleFilterChange('car_model', e.target.value)}
+          disabled={!filters.manufacturer}
+          size="small"
+          fullWidth
+        >
+          <MenuItem value="">All models</MenuItem>
+          {carModels.map(c => (
+            <MenuItem key={c.id} value={c.id}>{c.name}</MenuItem>
+          ))}
+        </TextField>
+
+        <TextField
+          select
+          label="Engine Model"
+          value={filters.engine_model}
+          onChange={(e) => handleFilterChange('engine_model', e.target.value)}
+          disabled={!filters.car_model}
+          size="small"
+          fullWidth
+        >
+          <MenuItem value="">All engines</MenuItem>
+          {engineModels.map(e => (
+            <MenuItem key={e.id} value={e.id}>{e.name}</MenuItem>
+          ))}
+        </TextField>
+
+        <TextField
+          select
+          label="Part Category"
+          value={filters.part_category}
+          onChange={(e) => handleFilterChange('part_category', e.target.value)}
+          disabled={!filters.engine_model}
+          size="small"
+          fullWidth
+        >
+          <MenuItem value="">All categories</MenuItem>
+          {categories.map(c => (
+            <MenuItem key={c.id} value={c.id}>{c.name}</MenuItem>
+          ))}
+        </TextField>
+
+        <Button 
+          variant="contained" 
+          onClick={handleApplyFilters}
+          fullWidth
+        >
+          Apply Filters
+        </Button>
+
         {hasActiveFilters && (
-          <button
-            onClick={handleClearFilters}
-            className="text-sm text-blue-600 hover:text-blue-700"
-          >
-            Clear all
-          </button>
+          <Box>
+            <Divider sx={{ my: 1 }} />
+            <Typography variant="caption" color="text.secondary">
+              Active Filters:
+            </Typography>
+            <Stack spacing={0.5} mt={1}>
+              {filters.manufacturer && (
+                <Chip
+                  label={`Manufacturer: ${getFilterLabel('manufacturer', filters.manufacturer)}`}
+                  size="small"
+                  onDelete={() => handleFilterChange('manufacturer', '')}
+                />
+              )}
+              {filters.car_model && (
+                <Chip
+                  label={`Model: ${getFilterLabel('car_model', filters.car_model)}`}
+                  size="small"
+                  onDelete={() => handleFilterChange('car_model', '')}
+                />
+              )}
+              {filters.engine_model && (
+                <Chip
+                  label={`Engine: ${getFilterLabel('engine_model', filters.engine_model)}`}
+                  size="small"
+                  onDelete={() => handleFilterChange('engine_model', '')}
+                />
+              )}
+              {filters.part_category && (
+                <Chip
+                  label={`Category: ${getFilterLabel('part_category', filters.part_category)}`}
+                  size="small"
+                  onDelete={() => handleFilterChange('part_category', '')}
+                />
+              )}
+            </Stack>
+          </Box>
         )}
-      </div>
-
-      {/* Filter Options */}
-      <div className="space-y-4">
-        {/* Manufacturer */}
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            Manufacturer
-          </label>
-          <select
-            value={filters.manufacturer}
-            onChange={(e) => handleFilterChange('manufacturer', e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-sm"
-          >
-            <option value="">All manufacturers</option>
-            {manufacturers.map(m => (
-              <option key={m.id} value={m.id}>{m.name}</option>
-            ))}
-          </select>
-        </div>
-
-        {/* Car Model */}
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            Car Model
-          </label>
-          <select
-            value={filters.car_model}
-            onChange={(e) => handleFilterChange('car_model', e.target.value)}
-            disabled={!filters.manufacturer}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-sm disabled:bg-gray-100"
-          >
-            <option value="">All models</option>
-            {carModels.map(c => (
-              <option key={c.id} value={c.id}>{c.name}</option>
-            ))}
-          </select>
-        </div>
-
-        {/* Engine Model */}
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            Engine Model
-          </label>
-          <select
-            value={filters.engine_model}
-            onChange={(e) => handleFilterChange('engine_model', e.target.value)}
-            disabled={!filters.car_model}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-sm disabled:bg-gray-100"
-          >
-            <option value="">All engines</option>
-            {engineModels.map(e => (
-              <option key={e.id} value={e.id}>{e.name}</option>
-            ))}
-          </select>
-        </div>
-
-        {/* Part Category */}
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            Part Category
-          </label>
-          <select
-            value={filters.part_category}
-            onChange={(e) => handleFilterChange('part_category', e.target.value)}
-            disabled={!filters.engine_model}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-sm disabled:bg-gray-100"
-          >
-            <option value="">All categories</option>
-            {categories.map(c => (
-              <option key={c.id} value={c.id}>{c.name}</option>
-            ))}
-          </select>
-        </div>
-      </div>
-
-      {/* Apply Button */}
-      <button
-        onClick={handleApplyFilters}
-        className="w-full mt-6 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium"
-      >
-        Apply Filters
-      </button>
-
-      {/* Active Filters Summary */}
-      {hasActiveFilters && (
-        <div className="mt-4 pt-4 border-t">
-          <p className="text-xs font-medium text-gray-500 mb-2">Active Filters:</p>
-          <div className="space-y-1">
-            {filters.manufacturer && (
-              <div className="flex items-center justify-between text-xs">
-                <span className="text-gray-600">Manufacturer</span>
-                <button
-                  onClick={() => handleFilterChange('manufacturer', '')}
-                  className="text-red-500 hover:text-red-700"
-                >
-                  <X size={14} />
-                </button>
-              </div>
-            )}
-            {filters.car_model && (
-              <div className="flex items-center justify-between text-xs">
-                <span className="text-gray-600">Car Model</span>
-                <button
-                  onClick={() => handleFilterChange('car_model', '')}
-                  className="text-red-500 hover:text-red-700"
-                >
-                  <X size={14} />
-                </button>
-              </div>
-            )}
-            {filters.engine_model && (
-              <div className="flex items-center justify-between text-xs">
-                <span className="text-gray-600">Engine Model</span>
-                <button
-                  onClick={() => handleFilterChange('engine_model', '')}
-                  className="text-red-500 hover:text-red-700"
-                >
-                  <X size={14} />
-                </button>
-              </div>
-            )}
-            {filters.part_category && (
-              <div className="flex items-center justify-between text-xs">
-                <span className="text-gray-600">Category</span>
-                <button
-                  onClick={() => handleFilterChange('part_category', '')}
-                  className="text-red-500 hover:text-red-700"
-                >
-                  <X size={14} />
-                </button>
-              </div>
-            )}
-          </div>
-        </div>
-      )}
-    </div>
+      </Stack>
+    </Paper>
   );
 };
 

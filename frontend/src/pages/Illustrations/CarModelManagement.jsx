@@ -1,27 +1,69 @@
 import React, { useState } from 'react';
-import { Plus, Search, Edit2, Trash2, Car, AlertCircle } from 'lucide-react';
+import {
+  Box,
+  Container,
+  Typography,
+  Button,
+  IconButton,
+  TextField,
+  InputAdornment,
+  Paper,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  MenuItem,
+  Alert,
+  CircularProgress,
+  Stack,
+  Chip,
+  alpha,
+  useTheme
+} from '@mui/material';
+import {
+  Add as PlusIcon,
+  Search as SearchIcon,
+  Edit as EditIcon,
+  Delete as DeleteIcon,
+  DirectionsCar as CarIcon,
+  Error as ErrorIcon,
+  Close as CloseIcon
+} from '@mui/icons-material';
 import { useCarModels, useManufacturers } from '../../hooks/useIllustrations';
 
 const CarModelManagement = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [showModal, setShowModal] = useState(false);
   const [editingCarModel, setEditingCarModel] = useState(null);
-  const [formData, setFormData] = useState({ manufacturer: '', name: '', slug: '' });
+  const [formData, setFormData] = useState({
+    manufacturer: '',
+    name: '',
+    slug: ''
+  });
   const [errors, setErrors] = useState({});
 
   const { carModels, loading, error, createCarModel, updateCarModel, deleteCarModel } = useCarModels();
   const { manufacturers } = useManufacturers();
 
-  const filteredCarModels = carModels.filter(c =>
-    c.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    c.manufacturer_name?.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const theme = useTheme();
+
+const filteredCarModels = carModels.filter(c =>
+  c.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+  c.manufacturer_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+  (c.manufacturer?.name && c.manufacturer.name.toLowerCase().includes(searchTerm.toLowerCase()))
+);
 
   const handleOpenModal = (carModel = null) => {
     if (carModel) {
       setEditingCarModel(carModel);
       setFormData({
-        manufacturer: carModel.manufacturer,
+        manufacturer: carModel.manufacturer || carModel.manufacturer_id, // Handle both field names
         name: carModel.name,
         slug: carModel.slug,
       });
@@ -36,256 +78,294 @@ const CarModelManagement = () => {
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
-    
+
+    // Only auto-generate slug for new entries (not when editing)
     if (name === 'name' && !editingCarModel) {
-      const slug = value.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+      const slug = value.toLowerCase()
+        .replace(/[^a-z0-9\s]+/g, '')
+        .replace(/\s+/g, '-')
+        .replace(/(^-|-$)/g, '');
       setFormData(prev => ({ ...prev, slug }));
     }
-    
+
     setErrors(prev => ({ ...prev, [name]: '' }));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     const newErrors = {};
     if (!formData.manufacturer) newErrors.manufacturer = 'Manufacturer is required';
-    if (!formData.name.trim()) newErrors.name = 'Name is required';
-    if (!formData.slug.trim()) newErrors.slug = 'Slug is required';
-    
+    if (!formData.name?.trim()) newErrors.name = 'Name is required';
+    if (!formData.slug?.trim()) newErrors.slug = 'Slug is required';
+
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors);
       return;
     }
 
     try {
+      const payload = {
+        manufacturer: formData.manufacturer,
+        name: formData.name.trim(),
+        slug: formData.slug.trim()
+      };
+
       if (editingCarModel) {
-        await updateCarModel(editingCarModel.slug, formData);
+        await updateCarModel(editingCarModel.slug, payload);
       } else {
-        await createCarModel(formData);
+        await createCarModel(payload);
       }
       setShowModal(false);
       setFormData({ manufacturer: '', name: '', slug: '' });
+      setEditingCarModel(null);
     } catch (err) {
-      setErrors({ submit: err.response?.data?.message || 'Operation failed' });
+      // Handle API validation errors
+      const apiError = err.response?.data;
+      if (apiError) {
+        const fieldErrors = {};
+
+        // Check for common error field names
+        const errorFields = {
+          'manufacturer': 'manufacturer',
+          'name': 'name',
+          'slug': 'slug',
+          'manufacturer_id': 'manufacturer',
+          'manufacturer_name': 'manufacturer'
+        };
+
+        Object.keys(apiError).forEach(key => {
+          if (errorFields[key]) {
+            fieldErrors[errorFields[key]] = Array.isArray(apiError[key])
+              ? apiError[key].join(', ')
+              : apiError[key];
+          } else if (key === 'non_field_errors') {
+            fieldErrors.submit = Array.isArray(apiError[key])
+              ? apiError[key].join(', ')
+              : apiError[key];
+          } else if (typeof apiError === 'string') {
+            fieldErrors.submit = apiError;
+          }
+        });
+
+        // If no specific field errors but there's a detail message
+        if (Object.keys(fieldErrors).length === 0 && apiError.detail) {
+          fieldErrors.submit = apiError.detail;
+        }
+
+        setErrors(fieldErrors);
+      } else {
+        setErrors({ submit: err.message || 'Operation failed' });
+      }
     }
   };
 
   const handleDelete = async (carModel) => {
-    if (window.confirm(`Are you sure you want to delete ${carModel.name}?`)) {
+    if (window.confirm(`Are you sure you want to delete "${carModel.name}"? This action cannot be undone.`)) {
       try {
         await deleteCarModel(carModel.slug);
       } catch (err) {
-        alert('Failed to delete car model');
+        alert(`Delete failed: ${err.response?.data?.message || err.message}`);
       }
     }
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="bg-white border-b border-gray-200 sticky top-0 z-10">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-          <div className="flex items-center justify-between mb-6">
-            <div>
-              <h1 className="text-3xl font-bold text-gray-900">Car Models</h1>
-              <p className="text-sm text-gray-500 mt-1">Manage vehicle models</p>
-            </div>
-            <button
-              onClick={() => handleOpenModal()}
-              className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-            >
-              <Plus size={20} />
-              Add Car Model
-            </button>
-          </div>
+    <Box sx={{ minHeight: '100vh', bgcolor: 'grey.50' }}>
+      {/* Header */}
+      <Paper elevation={0} sx={{
+        borderBottom: 1,
+        borderColor: 'divider',
+        position: 'sticky',
+        top: 0,
+        zIndex: 10,
+        bgcolor: 'background.paper'
+      }}>
+        <Container maxWidth="lg" sx={{ py: 2 }}>
+          <Stack spacing={2}>
+            <Stack direction="row" justifyContent="space-between" alignItems="center">
+              <Box>
+                <Typography variant="h5" fontWeight="bold">
+                  Car Models
+                </Typography>
+                <Typography variant="body2" color="text.secondary">
+                  Manage vehicle models
+                </Typography>
+              </Box>
+              <Button
+                variant="contained"
+                startIcon={<PlusIcon />}
+                onClick={() => handleOpenModal()}
+                size="small"
+              >
+                Add Model
+              </Button>
+            </Stack>
 
-          <div className="relative max-w-md">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
-            <input
-              type="text"
-              placeholder="Search car models..."
+            <TextField
+              placeholder="Search models..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <SearchIcon fontSize="small" />
+                  </InputAdornment>
+                ),
+              }}
+              size="small"
+              fullWidth
             />
-          </div>
-        </div>
-      </div>
+          </Stack>
+        </Container>
+      </Paper>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+      {/* Content */}
+      <Container maxWidth="lg" sx={{ py: 3 }}>
         {loading ? (
-          <div className="flex items-center justify-center h-64">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
-          </div>
+          <Box display="flex" justifyContent="center" py={8}>
+            <CircularProgress />
+          </Box>
         ) : error ? (
-          <div className="bg-red-50 border border-red-200 rounded-lg p-4 flex items-center gap-2 text-red-700">
-            <AlertCircle size={20} />
-            <span>{error}</span>
-          </div>
+          <Alert severity="error" sx={{ mb: 2 }}>
+            {error}
+          </Alert>
         ) : filteredCarModels.length === 0 ? (
-          <div className="text-center py-12 bg-white rounded-lg">
-            <Car size={64} className="mx-auto text-gray-300 mb-4" />
-            <h3 className="text-lg font-medium text-gray-900 mb-2">No car models found</h3>
-            <p className="text-gray-500 mb-6">
-              {searchTerm ? 'Try adjusting your search' : 'Get started by adding your first car model'}
-            </p>
+          <Paper sx={{ p: 4, textAlign: 'center' }}>
+            <CarIcon sx={{ fontSize: 48, color: 'grey.400', mb: 2 }} />
+            <Typography variant="h6" gutterBottom>
+              No car models found
+            </Typography>
+            <Typography variant="body2" color="text.secondary" paragraph>
+              {searchTerm ? 'Try different search' : 'Add your first car model'}
+            </Typography>
             {!searchTerm && (
-              <button
+              <Button
+                variant="outlined"
+                startIcon={<PlusIcon />}
                 onClick={() => handleOpenModal()}
-                className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
               >
-                <Plus size={20} />
                 Add Car Model
-              </button>
+              </Button>
             )}
-          </div>
+          </Paper>
         ) : (
-          <div className="bg-white rounded-lg shadow overflow-hidden">
-            <table className="min-w-full divide-y divide-gray-200">
-              <thead className="bg-gray-50">
-                <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Model Name
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Manufacturer
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Slug
-                  </th>
-                  <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Actions
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
+          <TableContainer component={Paper} elevation={0} sx={{ border: 1, borderColor: 'divider' }}>
+            <Table size="small">
+              <TableHead sx={{ bgcolor: 'grey.50' }}>
+                <TableRow>
+                  <TableCell sx={{ fontWeight: 'bold', py: 1.5 }}>Model</TableCell>
+                  <TableCell sx={{ fontWeight: 'bold', py: 1.5 }}>Manufacturer</TableCell>
+                  <TableCell sx={{ fontWeight: 'bold', py: 1.5 }}>Slug</TableCell>
+                  <TableCell align="right" sx={{ fontWeight: 'bold', py: 1.5 }}>Actions</TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
                 {filteredCarModels.map((carModel) => (
-                  <tr key={carModel.id} className="hover:bg-gray-50 transition-colors">
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm font-medium text-gray-900">{carModel.name}</div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm text-gray-500">{carModel.manufacturer_name}</div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm text-gray-500 font-mono">{carModel.slug}</div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                      <button
-                        onClick={() => handleOpenModal(carModel)}
-                        className="text-blue-600 hover:text-blue-900 mr-4"
-                      >
-                        <Edit2 size={18} />
-                      </button>
-                      <button
-                        onClick={() => handleDelete(carModel)}
-                        className="text-red-600 hover:text-red-900"
-                      >
-                        <Trash2 size={18} />
-                      </button>
-                    </td>
-                  </tr>
+                  <TableRow key={carModel.id} hover>
+                    <TableCell sx={{ py: 1.5 }}>
+                      <Typography variant="body2" fontWeight="medium">
+                        {carModel.name}
+                      </Typography>
+                    </TableCell>
+                    <TableCell sx={{ py: 1.5 }}>
+                      <Chip
+                        label={carModel.manufacturer_name}
+                        size="small"
+                        sx={{ bgcolor: alpha(theme.palette.primary.main, 0.1) }}
+                      />
+                    </TableCell>
+                    <TableCell sx={{ py: 1.5 }}>
+                      <Typography variant="caption" sx={{ fontFamily: 'monospace' }}>
+                        {carModel.slug}
+                      </Typography>
+                    </TableCell>
+                    <TableCell align="right" sx={{ py: 1.5 }}>
+                      <IconButton size="small" onClick={() => handleOpenModal(carModel)}>
+                        <EditIcon fontSize="small" />
+                      </IconButton>
+                      <IconButton size="small" onClick={() => handleDelete(carModel)}>
+                        <DeleteIcon fontSize="small" />
+                      </IconButton>
+                    </TableCell>
+                  </TableRow>
                 ))}
-              </tbody>
-            </table>
-          </div>
+              </TableBody>
+            </Table>
+          </TableContainer>
         )}
-      </div>
+      </Container>
 
-      {showModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-lg max-w-md w-full">
-            <div className="flex items-center justify-between p-6 border-b">
-              <h2 className="text-xl font-bold text-gray-900">
-                {editingCarModel ? 'Edit Car Model' : 'Add Car Model'}
-              </h2>
-              <button onClick={() => setShowModal(false)} className="text-gray-400 hover:text-gray-600">
-                ×
-              </button>
-            </div>
+      {/* Modal */}
+      <Dialog open={showModal} onClose={() => setShowModal(false)} maxWidth="sm" fullWidth>
+        <DialogTitle>
+          {editingCarModel ? 'Edit Car Model' : 'Add Car Model'}
+          <IconButton
+            onClick={() => setShowModal(false)}
+            sx={{ position: 'absolute', right: 8, top: 8 }}
+          >
+            <CloseIcon />
+          </IconButton>
+        </DialogTitle>
+        <form onSubmit={handleSubmit}>
+          <DialogContent>
+            <Stack spacing={2}>
+              <TextField
+                select
+                label="Manufacturer"
+                name="manufacturer"
+                value={formData.manufacturer}
+                onChange={handleChange}
+                error={!!errors.manufacturer}
+                helperText={errors.manufacturer}
+                size="small"
+                fullWidth
+              >
+                <MenuItem value="">Select...</MenuItem>
+                {manufacturers.map(m => (
+                  <MenuItem key={m.id} value={m.id}>{m.name}</MenuItem>
+                ))}
+              </TextField>
 
-            <form onSubmit={handleSubmit} className="p-6 space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Manufacturer *
-                </label>
-                <select
-                  name="manufacturer"
-                  value={formData.manufacturer}
-                  onChange={handleChange}
-                  className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 ${
-                    errors.manufacturer ? 'border-red-500' : 'border-gray-300'
-                  }`}
-                >
-                  <option value="">Select manufacturer...</option>
-                  {manufacturers.map(m => (
-                    <option key={m.id} value={m.id}>{m.name}</option>
-                  ))}
-                </select>
-                {errors.manufacturer && <p className="text-red-500 text-sm mt-1">{errors.manufacturer}</p>}
-              </div>
+              <TextField
+                label="Model Name"
+                name="name"
+                value={formData.name}
+                onChange={handleChange}
+                error={!!errors.name}
+                helperText={errors.name}
+                placeholder="e.g., Corolla"
+                size="small"
+                fullWidth
+              />
 
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Model Name *
-                </label>
-                <input
-                  type="text"
-                  name="name"
-                  value={formData.name}
-                  onChange={handleChange}
-                  className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 ${
-                    errors.name ? 'border-red-500' : 'border-gray-300'
-                  }`}
-                  placeholder="e.g., Corolla"
-                />
-                {errors.name && <p className="text-red-500 text-sm mt-1">{errors.name}</p>}
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Slug *
-                </label>
-                <input
-                  type="text"
-                  name="slug"
-                  value={formData.slug}
-                  onChange={handleChange}
-                  className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 font-mono text-sm ${
-                    errors.slug ? 'border-red-500' : 'border-gray-300'
-                  }`}
-                  placeholder="e.g., corolla"
-                />
-                {errors.slug && <p className="text-red-500 text-sm mt-1">{errors.slug}</p>}
-              </div>
+              <TextField
+                label="Slug"
+                name="slug"
+                value={formData.slug}
+                onChange={handleChange}
+                error={!!errors.slug}
+                helperText={errors.slug}
+                placeholder="e.g., corolla"
+                size="small"
+                fullWidth
+                sx={{ fontFamily: 'monospace' }}
+              />
 
               {errors.submit && (
-                <div className="p-3 bg-red-50 border border-red-200 rounded-lg flex items-center gap-2 text-red-700">
-                  <AlertCircle size={20} />
-                  <span className="text-sm">{errors.submit}</span>
-                </div>
+                <Alert severity="error">{errors.submit}</Alert>
               )}
-
-              <div className="flex gap-3 pt-4">
-                <button
-                  type="button"
-                  onClick={() => setShowModal(false)}
-                  className="flex-1 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
-                >
-                  {editingCarModel ? 'Update' : 'Create'}
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
-    </div>
+            </Stack>
+          </DialogContent>
+          <DialogActions sx={{ px: 3, pb: 2 }}>
+            <Button onClick={() => setShowModal(false)}>Cancel</Button>
+            <Button type="submit" variant="contained">
+              {editingCarModel ? 'Update' : 'Create'}
+            </Button>
+          </DialogActions>
+        </form>
+      </Dialog>
+    </Box>
   );
 };
 

@@ -1,20 +1,70 @@
-import React, { useState } from 'react';
-import { Plus, Search, Edit2, Trash2, Gauge, AlertCircle } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import {
+  Box,
+  Container,
+  Typography,
+  Button,
+  IconButton,
+  TextField,
+  InputAdornment,
+  Paper,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  MenuItem,
+  Alert,
+  CircularProgress,
+  Stack,
+  Chip,
+  alpha,
+  useTheme
+} from '@mui/material';
+import {
+  Add as PlusIcon,
+  Search as SearchIcon,
+  Edit as EditIcon,
+  Delete as DeleteIcon,
+  Speed as SpeedIcon,
+  Error as ErrorIcon,
+  Close as CloseIcon
+} from '@mui/icons-material';
 import { useEngineModels, useManufacturers, useCarModels } from '../../hooks/useIllustrations';
 
 const EngineModelManagement = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [showModal, setShowModal] = useState(false);
   const [editingEngine, setEditingEngine] = useState(null);
-  const [formData, setFormData] = useState({ manufacturer: '', car_model: '', name: '', slug: '' });
+  const [formData, setFormData] = useState({ 
+    manufacturer: '', 
+    car_model: '', 
+    name: '', 
+    slug: '' 
+  });
   const [errors, setErrors] = useState({});
 
-  const { engineModels, loading, error, createEngineModel, deleteEngineModel } = useEngineModels();
+  const { 
+    engineModels, 
+    loading, 
+    error, 
+    createEngineModel, 
+    updateEngineModel,  // Added update function
+    deleteEngineModel 
+  } = useEngineModels();
+  
   const { manufacturers } = useManufacturers();
   const { carModels, fetchCarModels } = useCarModels();
 
+  const theme = useTheme();
+
   const filteredEngines = engineModels.filter(e =>
-    e.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    e.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
     e.car_model_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
     e.manufacturer_name?.toLowerCase().includes(searchTerm.toLowerCase())
   );
@@ -23,8 +73,8 @@ const EngineModelManagement = () => {
     if (engine) {
       setEditingEngine(engine);
       setFormData({
-        manufacturer: '',
-        car_model: engine.car_model,
+        manufacturer: engine.car_model?.manufacturer || engine.car_model_manufacturer || '',
+        car_model: engine.car_model || engine.car_model_id,
         name: engine.name,
         slug: engine.slug,
       });
@@ -45,8 +95,12 @@ const EngineModelManagement = () => {
       fetchCarModels({ manufacturer: value });
     }
     
+    // Auto-generate slug only for new entries
     if (name === 'name' && !editingEngine) {
-      const slug = value.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+      const slug = value.toLowerCase()
+        .replace(/[^a-z0-9\s]+/g, '')
+        .replace(/\s+/g, '-')
+        .replace(/(^-|-$)/g, '');
       setFormData(prev => ({ ...prev, slug }));
     }
     
@@ -58,8 +112,8 @@ const EngineModelManagement = () => {
     
     const newErrors = {};
     if (!formData.car_model) newErrors.car_model = 'Car model is required';
-    if (!formData.name.trim()) newErrors.name = 'Name is required';
-    if (!formData.slug.trim()) newErrors.slug = 'Slug is required';
+    if (!formData.name?.trim()) newErrors.name = 'Name is required';
+    if (!formData.slug?.trim()) newErrors.slug = 'Slug is required';
     
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors);
@@ -67,245 +121,277 @@ const EngineModelManagement = () => {
     }
 
     try {
-      await createEngineModel({ car_model: formData.car_model, name: formData.name, slug: formData.slug });
+      const payload = {
+        car_model: formData.car_model,
+        name: formData.name.trim(),
+        slug: formData.slug.trim()
+      };
+      
+      if (editingEngine) {
+        await updateEngineModel(editingEngine.slug, payload);
+      } else {
+        await createEngineModel(payload);
+      }
       setShowModal(false);
       setFormData({ manufacturer: '', car_model: '', name: '', slug: '' });
+      setEditingEngine(null);
     } catch (err) {
-      setErrors({ submit: err.response?.data?.message || 'Operation failed' });
-    }
-  };
-
-  const handleDelete = async (engine) => {
-    if (window.confirm(`Are you sure you want to delete ${engine.name}?`)) {
-      try {
-        await deleteEngineModel(engine.slug);
-      } catch (err) {
-        alert('Failed to delete engine model');
+      // Handle API validation errors
+      const apiError = err.response?.data;
+      if (apiError) {
+        const fieldErrors = {};
+        Object.keys(apiError).forEach(key => {
+          if (['slug', 'name', 'car_model'].includes(key)) {
+            fieldErrors[key] = Array.isArray(apiError[key]) 
+              ? apiError[key].join(', ') 
+              : apiError[key];
+          } else if (key === 'non_field_errors') {
+            fieldErrors.submit = apiError[key];
+          }
+        });
+        setErrors(fieldErrors);
+      } else {
+        setErrors({ submit: err.message || 'Operation failed' });
       }
     }
   };
 
-  return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="bg-white border-b border-gray-200 sticky top-0 z-10">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-          <div className="flex items-center justify-between mb-6">
-            <div>
-              <h1 className="text-3xl font-bold text-gray-900">Engine Models</h1>
-              <p className="text-sm text-gray-500 mt-1">Manage engine specifications</p>
-            </div>
-            <button
-              onClick={() => handleOpenModal()}
-              className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-            >
-              <Plus size={20} />
-              Add Engine Model
-            </button>
-          </div>
+  const handleDelete = async (engine) => {
+    if (window.confirm(`Are you sure you want to delete "${engine.name}"? This action cannot be undone.`)) {
+      try {
+        await deleteEngineModel(engine.slug);
+      } catch (err) {
+        alert(`Delete failed: ${err.response?.data?.message || err.message}`);
+      }
+    }
+  };
 
-          <div className="relative max-w-md">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
-            <input
-              type="text"
-              placeholder="Search engine models..."
+  // Filter car models by selected manufacturer
+  const filteredCarModels = formData.manufacturer 
+    ? carModels.filter(c => c.manufacturer === formData.manufacturer || c.manufacturer_id === formData.manufacturer)
+    : carModels;
+
+  return (
+    <Box sx={{ minHeight: '100vh', bgcolor: 'grey.50' }}>
+      {/* Header */}
+      <Paper elevation={0} sx={{ 
+        borderBottom: 1, 
+        borderColor: 'divider',
+        position: 'sticky',
+        top: 0,
+        zIndex: 10,
+        bgcolor: 'background.paper'
+      }}>
+        <Container maxWidth="lg" sx={{ py: 2 }}>
+          <Stack spacing={2}>
+            <Stack direction="row" justifyContent="space-between" alignItems="center">
+              <Box>
+                <Typography variant="h5" fontWeight="bold">
+                  Engine Models
+                </Typography>
+                <Typography variant="body2" color="text.secondary">
+                  Manage engine specs
+                </Typography>
+              </Box>
+              <Button
+                variant="contained"
+                startIcon={<PlusIcon />}
+                onClick={() => handleOpenModal()}
+                size="small"
+              >
+                Add Engine
+              </Button>
+            </Stack>
+
+            <TextField
+              placeholder="Search engines..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <SearchIcon fontSize="small" />
+                  </InputAdornment>
+                ),
+              }}
+              size="small"
+              fullWidth
             />
-          </div>
-        </div>
-      </div>
+          </Stack>
+        </Container>
+      </Paper>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+      {/* Content */}
+      <Container maxWidth="lg" sx={{ py: 3 }}>
         {loading ? (
-          <div className="flex items-center justify-center h-64">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
-          </div>
+          <Box display="flex" justifyContent="center" py={8}>
+            <CircularProgress />
+          </Box>
         ) : error ? (
-          <div className="bg-red-50 border border-red-200 rounded-lg p-4 flex items-center gap-2 text-red-700">
-            <AlertCircle size={20} />
-            <span>{error}</span>
-          </div>
+          <Alert severity="error" sx={{ mb: 2 }}>
+            {error}
+          </Alert>
         ) : filteredEngines.length === 0 ? (
-          <div className="text-center py-12 bg-white rounded-lg">
-            <Gauge size={64} className="mx-auto text-gray-300 mb-4" />
-            <h3 className="text-lg font-medium text-gray-900 mb-2">No engine models found</h3>
-            <p className="text-gray-500 mb-6">
-              {searchTerm ? 'Try adjusting your search' : 'Get started by adding your first engine model'}
-            </p>
+          <Paper sx={{ p: 4, textAlign: 'center' }}>
+            <SpeedIcon sx={{ fontSize: 48, color: 'grey.400', mb: 2 }} />
+            <Typography variant="h6" gutterBottom>
+              No engine models
+            </Typography>
+            <Typography variant="body2" color="text.secondary" paragraph>
+              {searchTerm ? 'Try different search' : 'Add your first engine'}
+            </Typography>
             {!searchTerm && (
-              <button
+              <Button
+                variant="outlined"
+                startIcon={<PlusIcon />}
                 onClick={() => handleOpenModal()}
-                className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
               >
-                <Plus size={20} />
                 Add Engine Model
-              </button>
+              </Button>
             )}
-          </div>
+          </Paper>
         ) : (
-          <div className="bg-white rounded-lg shadow overflow-hidden">
-            <table className="min-w-full divide-y divide-gray-200">
-              <thead className="bg-gray-50">
-                <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Engine Name
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Car Model
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Manufacturer
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Slug
-                  </th>
-                  <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Actions
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
+          <TableContainer component={Paper} elevation={0} sx={{ border: 1, borderColor: 'divider' }}>
+            <Table size="small">
+              <TableHead sx={{ bgcolor: 'grey.50' }}>
+                <TableRow>
+                  <TableCell sx={{ fontWeight: 'bold', py: 1.5 }}>Engine</TableCell>
+                  <TableCell sx={{ fontWeight: 'bold', py: 1.5 }}>Car Model</TableCell>
+                  <TableCell sx={{ fontWeight: 'bold', py: 1.5 }}>Manufacturer</TableCell>
+                  <TableCell sx={{ fontWeight: 'bold', py: 1.5 }}>Slug</TableCell>
+                  <TableCell align="right" sx={{ fontWeight: 'bold', py: 1.5 }}>Actions</TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
                 {filteredEngines.map((engine) => (
-                  <tr key={engine.id} className="hover:bg-gray-50 transition-colors">
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm font-medium text-gray-900">{engine.name}</div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm text-gray-500">{engine.car_model_name}</div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm text-gray-500">{engine.manufacturer_name}</div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm text-gray-500 font-mono">{engine.slug}</div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                      <button
-                        onClick={() => handleDelete(engine)}
-                        className="text-red-600 hover:text-red-900"
-                      >
-                        <Trash2 size={18} />
-                      </button>
-                    </td>
-                  </tr>
+                  <TableRow key={engine.id} hover>
+                    <TableCell sx={{ py: 1.5 }}>
+                      <Typography variant="body2" fontWeight="medium">
+                        {engine.name}
+                      </Typography>
+                    </TableCell>
+                    <TableCell sx={{ py: 1.5 }}>
+                      <Chip 
+                        label={engine.car_model_name || engine.car_model?.name} 
+                        size="small" 
+                        sx={{ bgcolor: alpha(theme.palette.info.main, 0.1) }}
+                      />
+                    </TableCell>
+                    <TableCell sx={{ py: 1.5 }}>
+                      <Typography variant="body2">
+                        {engine.manufacturer_name || engine.car_model?.manufacturer?.name}
+                      </Typography>
+                    </TableCell>
+                    <TableCell sx={{ py: 1.5 }}>
+                      <Typography variant="caption" sx={{ fontFamily: 'monospace' }}>
+                        {engine.slug}
+                      </Typography>
+                    </TableCell>
+                    <TableCell align="right" sx={{ py: 1.5 }}>
+                      <IconButton size="small" onClick={() => handleOpenModal(engine)}>
+                        <EditIcon fontSize="small" />
+                      </IconButton>
+                      <IconButton size="small" onClick={() => handleDelete(engine)}>
+                        <DeleteIcon fontSize="small" />
+                      </IconButton>
+                    </TableCell>
+                  </TableRow>
                 ))}
-              </tbody>
-            </table>
-          </div>
+              </TableBody>
+            </Table>
+          </TableContainer>
         )}
-      </div>
+      </Container>
 
-      {showModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-lg max-w-md w-full">
-            <div className="flex items-center justify-between p-6 border-b">
-              <h2 className="text-xl font-bold text-gray-900">Add Engine Model</h2>
-              <button onClick={() => setShowModal(false)} className="text-gray-400 hover:text-gray-600">
-                ×
-              </button>
-            </div>
+      {/* Modal */}
+      <Dialog open={showModal} onClose={() => setShowModal(false)} maxWidth="sm" fullWidth>
+        <DialogTitle>
+          {editingEngine ? 'Edit Engine Model' : 'Add Engine Model'}
+          <IconButton
+            onClick={() => setShowModal(false)}
+            sx={{ position: 'absolute', right: 8, top: 8 }}
+          >
+            <CloseIcon />
+          </IconButton>
+        </DialogTitle>
+        <form onSubmit={handleSubmit}>
+          <DialogContent>
+            <Stack spacing={2}>
+              <TextField
+                select
+                label="Manufacturer"
+                name="manufacturer"
+                value={formData.manufacturer}
+                onChange={handleChange}
+                size="small"
+                fullWidth
+              >
+                <MenuItem value="">Select...</MenuItem>
+                {manufacturers.map(m => (
+                  <MenuItem key={m.id} value={m.id}>{m.name}</MenuItem>
+                ))}
+              </TextField>
 
-            <form onSubmit={handleSubmit} className="p-6 space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Manufacturer *
-                </label>
-                <select
-                  name="manufacturer"
-                  value={formData.manufacturer}
-                  onChange={handleChange}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-                >
-                  <option value="">Select manufacturer...</option>
-                  {manufacturers.map(m => (
-                    <option key={m.id} value={m.id}>{m.name}</option>
-                  ))}
-                </select>
-              </div>
+              <TextField
+                select
+                label="Car Model"
+                name="car_model"
+                value={formData.car_model}
+                onChange={handleChange}
+                error={!!errors.car_model}
+                helperText={errors.car_model}
+                disabled={!formData.manufacturer}
+                size="small"
+                fullWidth
+              >
+                <MenuItem value="">Select...</MenuItem>
+                {filteredCarModels.map(c => (
+                  <MenuItem key={c.id} value={c.id}>
+                    {c.name}
+                  </MenuItem>
+                ))}
+              </TextField>
 
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Car Model *
-                </label>
-                <select
-                  name="car_model"
-                  value={formData.car_model}
-                  onChange={handleChange}
-                  disabled={!formData.manufacturer}
-                  className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 ${
-                    errors.car_model ? 'border-red-500' : 'border-gray-300'
-                  } disabled:bg-gray-100`}
-                >
-                  <option value="">Select car model...</option>
-                  {carModels.map(c => (
-                    <option key={c.id} value={c.id}>{c.name}</option>
-                  ))}
-                </select>
-                {errors.car_model && <p className="text-red-500 text-sm mt-1">{errors.car_model}</p>}
-              </div>
+              <TextField
+                label="Engine Name"
+                name="name"
+                value={formData.name}
+                onChange={handleChange}
+                error={!!errors.name}
+                helperText={errors.name}
+                placeholder="e.g., 2.0L Turbo"
+                size="small"
+                fullWidth
+              />
 
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Engine Name *
-                </label>
-                <input
-                  type="text"
-                  name="name"
-                  value={formData.name}
-                  onChange={handleChange}
-                  className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 ${
-                    errors.name ? 'border-red-500' : 'border-gray-300'
-                  }`}
-                  placeholder="e.g., 2.0L Turbo"
-                />
-                {errors.name && <p className="text-red-500 text-sm mt-1">{errors.name}</p>}
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Slug *
-                </label>
-                <input
-                  type="text"
-                  name="slug"
-                  value={formData.slug}
-                  onChange={handleChange}
-                  className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 font-mono text-sm ${
-                    errors.slug ? 'border-red-500' : 'border-gray-300'
-                  }`}
-                  placeholder="e.g., 2-0l-turbo"
-                />
-                {errors.slug && <p className="text-red-500 text-sm mt-1">{errors.slug}</p>}
-              </div>
+              <TextField
+                label="Slug"
+                name="slug"
+                value={formData.slug}
+                onChange={handleChange}
+                error={!!errors.slug}
+                helperText={errors.slug}
+                placeholder="e.g., 2-0l-turbo"
+                size="small"
+                fullWidth
+                sx={{ fontFamily: 'monospace' }}
+                disabled={!!editingEngine} // Disable slug editing for existing engines
+              />
 
               {errors.submit && (
-                <div className="p-3 bg-red-50 border border-red-200 rounded-lg flex items-center gap-2 text-red-700">
-                  <AlertCircle size={20} />
-                  <span className="text-sm">{errors.submit}</span>
-                </div>
+                <Alert severity="error">{errors.submit}</Alert>
               )}
-
-              <div className="flex gap-3 pt-4">
-                <button
-                  type="button"
-                  onClick={() => setShowModal(false)}
-                  className="flex-1 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
-                >
-                  Create
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
-    </div>
+            </Stack>
+          </DialogContent>
+          <DialogActions sx={{ px: 3, pb: 2 }}>
+            <Button onClick={() => setShowModal(false)}>Cancel</Button>
+            <Button type="submit" variant="contained">
+              {editingEngine ? 'Update' : 'Create'}
+            </Button>
+          </DialogActions>
+        </form>
+      </Dialog>
+    </Box>
   );
 };
 

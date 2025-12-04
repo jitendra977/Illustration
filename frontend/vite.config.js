@@ -7,7 +7,7 @@ export default defineConfig({
     port: 3000,
     host: true,
     allowedHosts: [
-      'cashbook.local',
+      
       'localhost',
       '192.168.0.92',
       '.local',
@@ -17,13 +17,13 @@ export default defineConfig({
       ...(process.env.DOCKER_ENV && {
         clientPort: 8443,
         protocol: 'wss',
-        host: 'cashbook.local',
+        host: 'localshot',
       }),
     },
     proxy: {
       '/api': {
         // Use local backend when not in Docker
-        target: process.env.VITE_API_BASE_URL || 'http://192.168.0.92:8000',
+        target: process.env.VITE_API_BASE_URL || 'http://localhost:8000',
         changeOrigin: true,
         secure: false,
         rewrite: (path) => path.replace(/^\/api/, '/api'),

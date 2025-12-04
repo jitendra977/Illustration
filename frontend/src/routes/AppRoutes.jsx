@@ -15,6 +15,7 @@ import PartCategoryManagement from '../pages/Illustrations/PartCategoryManagemen
 
 const AppRoutes = () => {
   const router = createBrowserRouter([
+    // ==================== DASHBOARD ====================
     {
       path: "/",
       element: (
@@ -25,6 +26,8 @@ const AppRoutes = () => {
         </ProtectedRoute>
       ),
     },
+    
+    // ==================== EMAIL VERIFICATION ====================
     {
       path: "/verify-email/:token",
       element: (
@@ -57,10 +60,40 @@ const AppRoutes = () => {
         </ProtectedRoute>
       ),
     },
+    {
+      path: "/illustrations/create",
+      element: (
+        <ProtectedRoute>
+          <DashboardLayout>
+            <IllustrationDashboard />
+          </DashboardLayout>
+        </ProtectedRoute>
+      ),
+    },
+    {
+      path: "/illustrations/:id",
+      element: (
+        <ProtectedRoute>
+          <DashboardLayout>
+            <IllustrationDashboard />
+          </DashboardLayout>
+        </ProtectedRoute>
+      ),
+    },
     
     // ==================== MANAGEMENT ROUTES ====================
     {
       path: "/manufacturers",
+      element: (
+        <ProtectedRoute>
+          <DashboardLayout>
+            <ManufacturerManagement />
+          </DashboardLayout>
+        </ProtectedRoute>
+      ),
+    },
+    {
+      path: "/manufacturers/create",
       element: (
         <ProtectedRoute>
           <DashboardLayout>
@@ -80,6 +113,16 @@ const AppRoutes = () => {
       ),
     },
     {
+      path: "/car-models/create",
+      element: (
+        <ProtectedRoute>
+          <DashboardLayout>
+            <CarModelManagement />
+          </DashboardLayout>
+        </ProtectedRoute>
+      ),
+    },
+    {
       path: "/engine-models",
       element: (
         <ProtectedRoute>
@@ -90,7 +133,27 @@ const AppRoutes = () => {
       ),
     },
     {
+      path: "/engine-models/create",
+      element: (
+        <ProtectedRoute>
+          <DashboardLayout>
+            <EngineModelManagement />
+          </DashboardLayout>
+        </ProtectedRoute>
+      ),
+    },
+    {
       path: "/part-categories",
+      element: (
+        <ProtectedRoute>
+          <DashboardLayout>
+            <PartCategoryManagement />
+          </DashboardLayout>
+        </ProtectedRoute>
+      ),
+    },
+    {
+      path: "/part-categories/create",
       element: (
         <ProtectedRoute>
           <DashboardLayout>

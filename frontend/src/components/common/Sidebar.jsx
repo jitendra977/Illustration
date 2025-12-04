@@ -5,8 +5,19 @@ import {
   Box, Typography, Divider, Avatar, IconButton
 } from '@mui/material';
 import {
-  Home, Receipt, Analytics, Person, Logout, ChevronLeft, Store,
-  Settings, Notifications, Add
+  Home as HomeIcon,
+  Dashboard as DashboardIcon,
+  Receipt as ReceiptIcon,
+  Store as StoreIcon,
+  DirectionsCar as CarIcon,
+  Build as BuildIcon,
+  Category as CategoryIcon,
+  Person as PersonIcon,
+  Logout as LogoutIcon,
+  ChevronLeft as ChevronLeftIcon,
+  Settings as SettingsIcon,
+  Analytics as AnalyticsIcon,
+  Add as AddIcon
 } from '@mui/icons-material';
 import { useAuth } from '../../context/AuthContext';
 
@@ -16,13 +27,18 @@ const Sidebar = ({ open, onClose }) => {
   const location = useLocation();
 
   const menuItems = [
-    { label: 'ホーム', icon: <Home />, path: '/' },
-    { label: 'イラスト', icon: <Receipt />, path: '/illustrations' },
-    { label: '追加', icon: <Add />, path: '/illustrations/new' },
-    { label: '分析', icon: <Analytics />, path: '/analytics' },
-    { label: '通知', icon: <Notifications />, path: '/notifications' },
-    { label: '設定', icon: <Settings />, path: '/settings' },
-    { label: 'プロフィール', icon: <Person />, path: '/profile' },
+    { label: 'Dashboard', icon: <HomeIcon />, path: '/' },
+    { label: 'Illustrations', icon: <DashboardIcon />, path: '/illustrations' },
+    { label: 'Manufacturers', icon: <StoreIcon />, path: '/manufacturers' },
+    { label: 'Car Models', icon: <CarIcon />, path: '/car-models' },
+    { label: 'Engine Models', icon: <BuildIcon />, path: '/engine-models' },
+    { label: 'Part Categories', icon: <CategoryIcon />, path: '/part-categories' },
+  ];
+
+  const secondaryMenuItems = [
+    { label: 'Settings', icon: <SettingsIcon />, path: '/settings' },
+    { label: 'Analytics', icon: <AnalyticsIcon />, path: '/analytics' },
+    { label: 'Profile', icon: <PersonIcon />, path: '/profile' },
   ];
 
   const handleNavigation = (path) => {
@@ -56,8 +72,6 @@ const Sidebar = ({ open, onClose }) => {
     return 'User';
   };
 
-  console.log('Sidebar user data:', user); // Debug log
-
   return (
     <Drawer 
       anchor="left" 
@@ -66,6 +80,7 @@ const Sidebar = ({ open, onClose }) => {
       sx={{
         '& .MuiDrawer-paper': {
           width: 280,
+          backgroundColor: 'background.paper',
         },
       }}
     >
@@ -73,17 +88,17 @@ const Sidebar = ({ open, onClose }) => {
         {/* Header */}
         <Box sx={{ p: 2, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-            <Store color="primary" />
-            <Typography variant="h6" fontWeight="bold">メニュー</Typography>
+            <StoreIcon color="primary" />
+            <Typography variant="h6" fontWeight="bold">Menu</Typography>
           </Box>
           <IconButton onClick={onClose}>
-            <ChevronLeft />
+            <ChevronLeftIcon />
           </IconButton>
         </Box>
         
         <Divider />
 
-        {/* User Info with Profile Photo */}
+        {/* User Info */}
         <Box sx={{ p: 2 }}>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2 }}>
             <Avatar 
@@ -97,7 +112,7 @@ const Sidebar = ({ open, onClose }) => {
               {getUserInitial()}
             </Avatar>
             <Box>
-              <Typography variant="h6" fontWeight="bold">
+              <Typography variant="subtitle1" fontWeight="bold">
                 {getUserName()}
               </Typography>
               <Typography variant="body2" color="text.secondary">
@@ -109,30 +124,22 @@ const Sidebar = ({ open, onClose }) => {
             </Box>
           </Box>
           
-          {/* User Stats */}
+          {/* Quick Stats */}
           <Box sx={{ display: 'flex', gap: 2, textAlign: 'center' }}>
             <Box>
               <Typography variant="h6" fontWeight="bold" color="primary">
                 {user?.illustrations_count || 0}
               </Typography>
               <Typography variant="caption" color="text.secondary">
-                イラスト
+                Illustrations
               </Typography>
             </Box>
             <Box>
               <Typography variant="h6" fontWeight="bold" color="primary">
-                {user?.followers_count || 0}
+                {user?.uploads_count || 0}
               </Typography>
               <Typography variant="caption" color="text.secondary">
-                フォロワー
-              </Typography>
-            </Box>
-            <Box>
-              <Typography variant="h6" fontWeight="bold" color="primary">
-                {user?.following_count || 0}
-              </Typography>
-              <Typography variant="caption" color="text.secondary">
-                フォロー中
+                Uploads
               </Typography>
             </Box>
           </Box>
@@ -140,20 +147,61 @@ const Sidebar = ({ open, onClose }) => {
 
         <Divider />
 
-        {/* Menu Items */}
-        <Box sx={{ flex: 1, overflow: 'auto' }}>
-          <List sx={{ px: 1, py: 2 }}>
+        {/* Main Menu Items */}
+        <Box sx={{ flex: 1, overflow: 'auto', py: 2 }}>
+          <Typography variant="caption" color="text.secondary" sx={{ px: 3, mb: 1, display: 'block' }}>
+            MANAGEMENT
+          </Typography>
+          <List sx={{ px: 1 }}>
             {menuItems.map((item) => (
               <ListItem key={item.path} disablePadding>
                 <ListItemButton
                   onClick={() => handleNavigation(item.path)}
                   selected={location.pathname === item.path}
-                  sx={{ borderRadius: 1, mb: 0.5 }}
+                  sx={{ 
+                    borderRadius: 1, 
+                    mb: 0.5,
+                    backgroundColor: location.pathname === item.path ? 'action.selected' : 'transparent'
+                  }}
                 >
                   <ListItemIcon sx={{ minWidth: 40 }}>
                     {item.icon}
                   </ListItemIcon>
-                  <ListItemText primary={item.label} />
+                  <ListItemText 
+                    primary={item.label}
+                    primaryTypographyProps={{
+                      fontWeight: location.pathname === item.path ? 'bold' : 'normal'
+                    }}
+                  />
+                </ListItemButton>
+              </ListItem>
+            ))}
+          </List>
+
+          <Typography variant="caption" color="text.secondary" sx={{ px: 3, mt: 3, mb: 1, display: 'block' }}>
+            ACCOUNT
+          </Typography>
+          <List sx={{ px: 1 }}>
+            {secondaryMenuItems.map((item) => (
+              <ListItem key={item.path} disablePadding>
+                <ListItemButton
+                  onClick={() => handleNavigation(item.path)}
+                  selected={location.pathname === item.path}
+                  sx={{ 
+                    borderRadius: 1, 
+                    mb: 0.5,
+                    backgroundColor: location.pathname === item.path ? 'action.selected' : 'transparent'
+                  }}
+                >
+                  <ListItemIcon sx={{ minWidth: 40 }}>
+                    {item.icon}
+                  </ListItemIcon>
+                  <ListItemText 
+                    primary={item.label}
+                    primaryTypographyProps={{
+                      fontWeight: location.pathname === item.path ? 'bold' : 'normal'
+                    }}
+                  />
                 </ListItemButton>
               </ListItem>
             ))}
@@ -170,13 +218,17 @@ const Sidebar = ({ open, onClose }) => {
               color: 'error.main', 
               borderRadius: 1,
               border: '1px solid',
-              borderColor: 'error.main'
+              borderColor: 'error.main',
+              '&:hover': {
+                backgroundColor: 'error.light',
+                color: 'white'
+              }
             }}
           >
             <ListItemIcon sx={{ minWidth: 40 }}>
-              <Logout color="error" />
+              <LogoutIcon color="error" />
             </ListItemIcon>
-            <ListItemText primary="ログアウト" />
+            <ListItemText primary="Logout" />
           </ListItemButton>
         </Box>
       </Box>

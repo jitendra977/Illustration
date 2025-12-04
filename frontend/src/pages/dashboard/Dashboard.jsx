@@ -1,640 +1,802 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   Box,
+  Container,
+  Grid,
+  Paper,
+  Typography,
   Card,
   CardContent,
-  Typography,
-  Avatar,
-  Chip,
-  IconButton,
   Stack,
-  Divider,
-  CircularProgress,
-  Alert,
-  Badge,
+  Chip,
   Button,
+  IconButton,
+  LinearProgress,
+  Alert,
+  alpha,
   useTheme,
-  useMediaQuery,
+  CircularProgress,
+  Skeleton,
+  Tooltip
 } from '@mui/material';
 import {
-  People,
-  Verified,
-  SupervisorAccount,
-  PersonAdd,
-  Email,
-  Refresh,
-  CheckCircle,
-  ArrowForward,
-  TrendingUp,
-  Settings,
-  Home,
-  Receipt,
-  Add,
-  Analytics,
-  Person,
+  TrendingUp as TrendingUpIcon,
+  Store as StoreIcon,
+  DirectionsCar as CarIcon,
+  Build as BuildIcon,
+  Image as ImageIcon,
+  Person as PersonIcon,
+  Refresh as RefreshIcon,
+  ArrowForward as ArrowForwardIcon,
+  MoreVert as MoreIcon,
+  FileUpload as UploadIcon,
+  Add as AddIcon,
+  Dashboard as DashboardIcon
 } from '@mui/icons-material';
-import { usersAPI } from '../../services/users';
+import { illustrationAPI, manufacturerAPI, carModelAPI, engineModelAPI, partCategoryAPI } from '../../api/illustrations';
 import { useAuth } from '../../context/AuthContext';
+import { useNavigate } from 'react-router-dom';
+import CreateIllustrationModal from '../../components/forms/CreateIllustrationModal';
+
 
 const Dashboard = () => {
-  const { user: currentUser } = useAuth();
-  const [users, setUsers] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const [stats, setStats] = useState({
+    totalIllustrations: 0,
+    totalManufacturers: 0,
+    totalCarModels: 0,
+    totalEngineModels: 0,
+    totalPartCategories: 0,
+    recentIllustrations: [],
+    loading: true,
+    error: null,
+    lastUpdated: null
+  });
+  
   const [refreshing, setRefreshing] = useState(false);
-
+  const [createModalOpen, setCreateModalOpen] = useState(false);
+  const { user, logout } = useAuth();
+  const navigate = useNavigate();
   const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+  
+  // Use ref to track if data has been fetched
+  const hasFetchedRef = useRef(false);
+  const isFetchingRef = useRef(false);
 
-  useEffect(() => {
-    fetchUsers();
-  }, []);
-
-  const fetchUsers = async () => {
+  // Fetch dashboard data - NOT memoized to prevent dependency issues
+  const fetchDashboardData = async (showRefresh = false) => {
+    // Prevent multiple simultaneous requests
+    if (isFetchingRef.current) {
+      console.log('Fetch already in progress, skipping...');
+      return;
+    }
+    
+    if (showRefresh) {
+      setRefreshing(true);
+    } else {
+      setStats(prev => ({ ...prev, loading: true, error: null }));
+    }
+    
+    isFetchingRef.current = true;
+    
     try {
-      setLoading(true);
-      setError(null);
-      const usersData = await usersAPI.getAllUsers();
-      setUsers(usersData.results || usersData || []);
-    } catch (err) {
-      console.error('Error fetching users:', err);
-      setError('Failed to load users. Please try again.');
+      // Fetch all data in parallel with timeout protection
+      const timeoutPromise = new Promise((_, reject) => 
+        setTimeout(() => reject(new Error('Request timeout')), 15000)
+      );
+      
+      const fetchPromises = Promise.allSettled([
+        illustrationAPI.getAll({ limit: 5, ordering: '-created_at' }),
+        manufacturerAPI.getAll({ limit: 1 }),
+        carModelAPI.getAll({ limit: 1 }),
+        engineModelAPI.getAll({ limit: 1 }),
+        partCategoryAPI.getAll({ limit: 1 })
+      ]);
+      
+      const results = await Promise.race([fetchPromises, timeoutPromise]);
+
+      // Handle responses
+      const getData = (result) => {
+        if (result.status === 'rejected') {
+          console.warn('API request rejected:', result.reason);
+          return [];
+        }
+        const data = result.value.data;
+        return data.results || data || [];
+      };
+
+      const getCount = (result, index) => {
+        if (result.status === 'rejected') {
+          console.warn(`Failed to fetch count for index ${index}:`, result.reason);
+          return 0;
+        }
+        const data = result.value.data;
+        if (typeof data === 'object') {
+          if (data.count !== undefined) return data.count;
+          if (data.results && Array.isArray(data.results)) return data.results.length;
+          if (Array.isArray(data)) return data.length;
+        }
+        return 0;
+      };
+
+      const newStats = {
+        totalIllustrations: getCount(results[0], 0),
+        totalManufacturers: getCount(results[1], 1),
+        totalCarModels: getCount(results[2], 2),
+        totalEngineModels: getCount(results[3], 3),
+        totalPartCategories: getCount(results[4], 4),
+        recentIllustrations: getData(results[0]),
+        loading: false,
+        error: null,
+        lastUpdated: new Date()
+      };
+
+      setStats(newStats);
+      hasFetchedRef.current = true;
+      
+      // Store dashboard stats in localStorage for offline view
+      try {
+        localStorage.setItem('dashboardStats', JSON.stringify({
+          ...newStats,
+          lastUpdated: newStats.lastUpdated.toISOString()
+        }));
+      } catch (e) {
+        console.warn('Failed to cache dashboard stats:', e);
+      }
+    } catch (error) {
+      console.error('Dashboard fetch error:', error);
+      
+      // Try to load cached data if available
+      try {
+        const cached = localStorage.getItem('dashboardStats');
+        if (cached) {
+          const parsed = JSON.parse(cached);
+          setStats({
+            ...parsed,
+            lastUpdated: new Date(parsed.lastUpdated),
+            loading: false,
+            error: 'Using cached data (offline mode)'
+          });
+          return;
+        }
+      } catch (e) {
+        console.warn('Failed to load cached data:', e);
+      }
+      
+      setStats(prev => ({
+        ...prev,
+        loading: false,
+        error: error.message || 'Failed to load dashboard data',
+        lastUpdated: new Date()
+      }));
     } finally {
-      setLoading(false);
+      isFetchingRef.current = false;
+      setRefreshing(false);
     }
   };
 
-  const handleRefresh = async () => {
-    setRefreshing(true);
-    await fetchUsers();
-    setTimeout(() => setRefreshing(false), 500);
-  };
-
-  // V Point inspired stats with your brand colors
-  const stats = [
-    { 
-      title: 'Total Users', 
-      value: users.length, 
-      icon: People,
-      color: '#004A8F', // vpoint-blue
-      gradient: 'linear-gradient(135deg, #004A8F 0%, #003366 100%)',
-      change: '+12%'
-    },
-    { 
-      title: 'Active', 
-      value: users.filter(u => u.is_active).length, 
-      icon: CheckCircle,
-      color: '#22c55e',
-      gradient: 'linear-gradient(135deg, #22c55e 0%, #16a34a 100%)',
-      change: '+8%'
-    },
-    { 
-      title: 'Verified', 
-      value: users.filter(u => u.is_verified).length, 
-      icon: Verified,
-      color: '#FFD500', // vpoint-yellow
-      gradient: 'linear-gradient(135deg, #FFD500 0%, #E6BE00 100%)',
-      change: '+5%'
-    },
-    { 
-      title: 'Staff', 
-      value: users.filter(u => u.is_staff).length, 
-      icon: SupervisorAccount,
-      color: '#00445C', // card-blue
-      gradient: 'linear-gradient(135deg, #00445C 0%, #003344 100%)',
-      change: '+2%'
-    },
-  ];
-
-  const getUserInitial = (user) => {
-    if (user?.first_name && user?.last_name) {
-      return `${user.first_name[0]}${user.last_name[0]}`;
+  // Load data only once on mount
+  useEffect(() => {
+    if (!hasFetchedRef.current) {
+      console.log('Initial dashboard load...');
+      fetchDashboardData();
     }
-    return user?.username?.[0]?.toUpperCase() || 'U';
+    
+    // Cleanup function
+    return () => {
+      // Reset refs on unmount
+      hasFetchedRef.current = false;
+      isFetchingRef.current = false;
+    };
+  }, []); // Empty dependency array - only run once on mount
+
+  const handleRefresh = () => {
+    console.log('Manual refresh triggered');
+    fetchDashboardData(true);
   };
 
-  const getUserName = (user) => {
-    if (user?.first_name && user?.last_name) {
-      return `${user.first_name} ${user.last_name}`;
+  const handleCreateSuccess = () => {
+    // Refresh dashboard data after successful creation
+    fetchDashboardData(true);
+  };
+
+  const StatCard = ({ title, value, icon, color, onClick, loading }) => (
+    <Card 
+      sx={{ 
+        height: '100%',
+        cursor: onClick ? 'pointer' : 'default',
+        transition: 'all 0.3s ease',
+        position: 'relative',
+        overflow: 'hidden',
+        '&:hover': onClick ? {
+          transform: 'translateY(-4px)',
+          boxShadow: theme.shadows[8],
+          backgroundColor: alpha(color, 0.05)
+        } : {},
+        '&::before': {
+          content: '""',
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          right: 0,
+          height: 4,
+          backgroundColor: color,
+          transform: 'scaleX(0)',
+          transition: 'transform 0.3s ease',
+        },
+        '&:hover::before': {
+          transform: 'scaleX(1)'
+        }
+      }}
+      onClick={onClick}
+    >
+      <CardContent sx={{ position: 'relative', zIndex: 1 }}>
+        <Stack direction="row" alignItems="center" justifyContent="space-between" mb={2}>
+          <Box sx={{ 
+            p: 1.5, 
+            borderRadius: 2, 
+            backgroundColor: alpha(color, 0.1),
+            color: color,
+            transition: 'all 0.3s ease',
+          }}>
+            {icon}
+          </Box>
+          <Tooltip title="More options">
+            <IconButton size="small" onClick={(e) => { e.stopPropagation(); }}>
+              <MoreIcon />
+            </IconButton>
+          </Tooltip>
+        </Stack>
+        
+        {loading ? (
+          <Skeleton variant="text" width="60%" height={40} />
+        ) : (
+          <Typography variant="h3" fontWeight="bold" gutterBottom>
+            {value.toLocaleString()}
+          </Typography>
+        )}
+        
+        <Typography variant="body2" color="text.secondary" fontWeight="medium">
+          {title}
+        </Typography>
+        
+        <Box sx={{ mt: 2, display: 'flex', alignItems: 'center', gap: 1 }}>
+          <TrendingUpIcon fontSize="small" color="success" />
+          <Typography variant="caption" color="success.main" fontWeight="medium">
+            Live
+          </Typography>
+        </Box>
+      </CardContent>
+    </Card>
+  );
+
+  const RecentIllustrationCard = ({ illustration, loading }) => {
+    if (loading) {
+      return (
+        <Paper sx={{ p: 2, mb: 1, borderRadius: 2 }}>
+          <Stack direction="row" alignItems="center" spacing={2}>
+            <Skeleton variant="rectangular" width={48} height={48} sx={{ borderRadius: 2 }} />
+            <Box sx={{ flex: 1 }}>
+              <Skeleton variant="text" width="60%" />
+              <Skeleton variant="text" width="40%" />
+            </Box>
+          </Stack>
+        </Paper>
+      );
     }
-    return user?.username || 'Unknown User';
-  };
 
-  const getUserRole = (user) => {
-    if (user?.is_superuser) return 'Admin';
-    if (user?.is_staff) return 'Staff';
-    return 'User';
-  };
-
-  const getRoleColor = (user) => {
-    if (user?.is_superuser) return 'error';
-    if (user?.is_staff) return 'warning';
-    return 'default';
-  };
-
-  if (loading) {
+    const firstFile = illustration.files?.[0];
+    const createdDate = new Date(illustration.created_at);
+    const timeAgo = getTimeAgo(createdDate);
+    
     return (
-      <Box sx={{ 
-        display: 'flex', 
-        justifyContent: 'center', 
-        alignItems: 'center', 
-        minHeight: '60vh'
-      }}>
-        <CircularProgress size={40} />
-      </Box>
+      <Tooltip title="Click to view details" arrow>
+        <Paper sx={{ 
+          p: 2, 
+          mb: 1, 
+          borderRadius: 2,
+          cursor: 'pointer',
+          transition: 'all 0.2s ease',
+          '&:hover': {
+            backgroundColor: 'action.hover',
+            transform: 'translateY(-2px)',
+            boxShadow: theme.shadows[4]
+          }
+        }}
+        onClick={() => navigate(`/illustrations/${illustration.id}`)}
+        >
+          <Stack direction="row" alignItems="center" spacing={2}>
+            <Box sx={{ 
+              width: 48, 
+              height: 48, 
+              borderRadius: 2,
+              backgroundColor: firstFile ? 'transparent' : alpha(theme.palette.primary.main, 0.1),
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              color: firstFile ? 'transparent' : theme.palette.primary.main,
+              overflow: 'hidden',
+              flexShrink: 0
+            }}>
+              {firstFile ? (
+                <img 
+                  src={firstFile.file} 
+                  alt={illustration.title}
+                  style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                  onError={(e) => {
+                    e.target.style.display = 'none';
+                  }}
+                />
+              ) : (
+                <ImageIcon />
+              )}
+            </Box>
+            
+            <Box sx={{ flex: 1, minWidth: 0 }}>
+              <Typography variant="subtitle2" fontWeight="bold" gutterBottom noWrap>
+                {illustration.title || 'Untitled'}
+              </Typography>
+              <Stack direction="row" spacing={1} alignItems="center" flexWrap="wrap" useFlexGap>
+                {illustration.part_category?.name && (
+                  <Chip 
+                    label={illustration.part_category.name}
+                    size="small"
+                    sx={{ 
+                      height: 20, 
+                      fontSize: '0.65rem',
+                      backgroundColor: alpha(theme.palette.primary.main, 0.1)
+                    }}
+                  />
+                )}
+                <Typography variant="caption" color="text.secondary">
+                  {timeAgo}
+                </Typography>
+                {illustration.files?.length > 0 && (
+                  <Typography variant="caption" color="text.secondary">
+                    • {illustration.files.length} file{illustration.files.length > 1 ? 's' : ''}
+                  </Typography>
+                )}
+              </Stack>
+            </Box>
+            
+            <IconButton size="small">
+              <ArrowForwardIcon />
+            </IconButton>
+          </Stack>
+        </Paper>
+      </Tooltip>
+    );
+  };
+
+  const QuickActionCard = ({ title, description, icon, buttonText, onClick, color, disabled }) => (
+    <Card sx={{ 
+      height: '100%',
+      opacity: disabled ? 0.6 : 1,
+      transition: 'all 0.3s ease',
+      '&:hover': !disabled && {
+        transform: 'translateY(-2px)',
+        boxShadow: theme.shadows[6]
+      }
+    }}>
+      <CardContent sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
+        <Box sx={{ 
+          p: 1.5, 
+          borderRadius: 2, 
+          backgroundColor: alpha(color, 0.1),
+          color: color,
+          width: 'fit-content',
+          mb: 2
+        }}>
+          {icon}
+        </Box>
+        
+        <Typography variant="h6" fontWeight="bold" gutterBottom>
+          {title}
+        </Typography>
+        
+        <Typography variant="body2" color="text.secondary" paragraph sx={{ flex: 1 }}>
+          {description}
+        </Typography>
+        
+        <Button 
+          variant="contained" 
+          startIcon={icon}
+          onClick={onClick}
+          fullWidth
+          disabled={disabled}
+          sx={{
+            backgroundColor: color,
+            '&:hover': {
+              backgroundColor: color,
+              opacity: 0.9
+            }
+          }}
+        >
+          {buttonText}
+        </Button>
+      </CardContent>
+    </Card>
+  );
+
+  const getTimeAgo = (date) => {
+    const seconds = Math.floor((new Date() - date) / 1000);
+    
+    let interval = seconds / 31536000;
+    if (interval > 1) return Math.floor(interval) + ' years ago';
+    
+    interval = seconds / 2592000;
+    if (interval > 1) return Math.floor(interval) + ' months ago';
+    
+    interval = seconds / 86400;
+    if (interval > 1) return Math.floor(interval) + ' days ago';
+    
+    interval = seconds / 3600;
+    if (interval > 1) return Math.floor(interval) + ' hours ago';
+    
+    interval = seconds / 60;
+    if (interval > 1) return Math.floor(interval) + ' minutes ago';
+    
+    return Math.floor(seconds) + ' seconds ago';
+  };
+
+  if (stats.loading && !refreshing) {
+    return (
+      <Container maxWidth="xl" sx={{ py: 4 }}>
+        <Box display="flex" justifyContent="center" alignItems="center" minHeight="60vh">
+          <Stack spacing={2} alignItems="center">
+            <CircularProgress size={60} />
+            <Typography variant="body1" color="text.secondary">
+              Loading dashboard...
+            </Typography>
+          </Stack>
+        </Box>
+      </Container>
     );
   }
 
   return (
-    <Box sx={{ 
-      width: '100%',
-      p: { xs: 2, sm: 3, md: 4 },
-      minHeight: '100vh',
-      bgcolor: '#E8EBF0', // page-bg from V Point
-      pb: 8, // Space for bottom navigation
-    }}>
-      {/* Welcome Header with V Point Style */}
-      <Box sx={{ mb: 3 }}>
-        <Box sx={{ 
-          display: 'flex', 
-          justifyContent: 'space-between', 
-          alignItems: 'flex-start',
-          mb: 1
-        }}>
-          <Box sx={{ flex: 1 }}>
-            <Typography 
-              variant={isMobile ? 'h5' : 'h4'} 
-              fontWeight="bold" 
-              sx={{ mb: 0.5, color: '#004A8F' }} // vpoint-blue
-            >
-              User Management Dashboard
+    <Container maxWidth="xl" sx={{ py: 4 }}>
+      {/* Header */}
+      <Box mb={4}>
+        <Stack direction="row" justifyContent="space-between" alignItems="center" mb={2}>
+          <Box>
+            <Typography variant="h3" fontWeight="bold" gutterBottom>
+              <DashboardIcon sx={{ verticalAlign: 'middle', mr: 1 }} />
+              Dashboard
             </Typography>
-            <Typography variant="body2" color="text.secondary">
-              Welcome back, {currentUser?.username || 'User'}! 
-              <span role="img" aria-label="wave"> 👋</span>
+            <Typography variant="body1" color="text.secondary">
+              Welcome back, {user?.first_name || user?.username || 'User'}! Here's your overview.
             </Typography>
           </Box>
-          <IconButton 
-            onClick={handleRefresh}
-            disabled={refreshing}
-            size={isMobile ? 'small' : 'medium'}
-            sx={{
-              bgcolor: 'white',
-              boxShadow: 1,
-              p: 1.5,
-              borderRadius: '50%',
-              transform: refreshing ? 'rotate(360deg)' : 'none',
-              transition: 'transform 0.5s ease-in-out',
-              '&:hover': { bgcolor: '#f5f5f5' }
-            }}
-          >
-            <Refresh sx={{ fontSize: 20, color: '#004A8F' }} />
-          </IconButton>
-        </Box>
+          <Stack direction="row" spacing={1}>
+            <Button
+              variant="outlined"
+              startIcon={refreshing ? <CircularProgress size={16} /> : <RefreshIcon />}
+              onClick={handleRefresh}
+              disabled={refreshing || isFetchingRef.current}
+            >
+              {refreshing ? 'Refreshing...' : 'Refresh'}
+            </Button>
+            <Button
+              variant="contained"
+              startIcon={<AddIcon />}
+              onClick={() => setCreateModalOpen(true)}
+              disabled={isFetchingRef.current}
+            >
+              New Illustration
+            </Button>
+          </Stack>
+        </Stack>
+        
+        <LinearProgress 
+          variant="determinate" 
+          value={100} 
+          sx={{ 
+            height: 4, 
+            borderRadius: 2,
+            background: `linear-gradient(90deg, ${theme.palette.primary.main}, ${theme.palette.secondary.main})`
+          }} 
+        />
       </Box>
 
       {/* Error Alert */}
-      {error && (
+      {stats.error && (
         <Alert 
-          severity="error" 
-          sx={{ mb: 3, borderRadius: 2 }}
+          severity={stats.error.includes('cached') ? 'warning' : 'error'}
           action={
-            <Button 
-              color="inherit" 
-              size="small" 
-              onClick={fetchUsers}
-            >
+            <Button color="inherit" size="small" onClick={handleRefresh}>
               Retry
             </Button>
           }
+          sx={{ mb: 3 }}
         >
-          {error}
+          {stats.error}
         </Alert>
       )}
 
-      {/* Stats Grid - V Point Style */}
-      <Box sx={{ 
-        display: 'grid',
-        gridTemplateColumns: { 
-          xs: 'repeat(2, 1fr)', 
-          sm: 'repeat(2, 1fr)', 
-          md: 'repeat(4, 1fr)' 
-        },
-        gap: { xs: 1.5, sm: 2 },
-        mb: 3
-      }}>
-        {stats.map((stat, index) => {
-          const Icon = stat.icon;
-          return (
-            <Card 
-              key={index}
-              elevation={3}
-              sx={{ 
-                background: stat.gradient,
-                color: 'white',
-                position: 'relative',
-                overflow: 'hidden',
-                minHeight: { xs: 110, sm: 120 },
-                borderRadius: 3,
-                cursor: 'pointer',
-                transition: 'transform 0.2s, box-shadow 0.2s',
-                '&:hover': {
-                  transform: 'translateY(-4px)',
-                  boxShadow: 6,
-                },
-              }}
-            >
-              {/* Background Pattern Icon */}
-              <Box sx={{
-                position: 'absolute',
-                top: -10,
-                right: -10,
-                opacity: 0.2,
-              }}>
-                <Icon sx={{ fontSize: 100 }} />
-              </Box>
+      {/* Stats Grid */}
+      <Grid container spacing={3} mb={4}>
+        {[
+          {
+            title: "Total Illustrations",
+            value: stats.totalIllustrations,
+            icon: <ImageIcon />,
+            color: theme.palette.primary.main,
+            onClick: () => navigate('/illustrations')
+          },
+          {
+            title: "Manufacturers",
+            value: stats.totalManufacturers,
+            icon: <StoreIcon />,
+            color: theme.palette.success.main,
+            onClick: () => navigate('/manufacturers')
+          },
+          {
+            title: "Car Models",
+            value: stats.totalCarModels,
+            icon: <CarIcon />,
+            color: theme.palette.warning.main,
+            onClick: () => navigate('/car-models')
+          },
+          {
+            title: "Engine Models",
+            value: stats.totalEngineModels,
+            icon: <BuildIcon />,
+            color: theme.palette.error.main,
+            onClick: () => navigate('/engine-models')
+          }
+        ].map((stat, index) => (
+          <Grid item xs={12} sm={6} lg={3} key={index}>
+            <StatCard {...stat} loading={stats.loading && !refreshing} />
+          </Grid>
+        ))}
+      </Grid>
 
-              <CardContent sx={{ 
-                p: { xs: 1.5, sm: 2 },
-                position: 'relative',
-                zIndex: 1,
-                height: '100%',
-                display: 'flex',
-                flexDirection: 'column',
-                justifyContent: 'space-between',
-                '&:last-child': { pb: { xs: 1.5, sm: 2 } }
-              }}>
+      {/* Main Content Grid */}
+      <Grid container spacing={3}>
+        {/* Left Column - Recent Illustrations */}
+        <Grid item xs={12} lg={8}>
+          <Paper sx={{ p: 3, borderRadius: 3, height: '100%' }}>
+            <Stack direction="row" justifyContent="space-between" alignItems="center" mb={3}>
+              <Typography variant="h5" fontWeight="bold">
+                Recent Illustrations
+              </Typography>
+              <Button 
+                endIcon={<ArrowForwardIcon />}
+                onClick={() => navigate('/illustrations')}
+                disabled={isFetchingRef.current}
+              >
+                View All
+              </Button>
+            </Stack>
+
+            {stats.loading && !refreshing ? (
+              Array.from({ length: 3 }).map((_, index) => (
+                <RecentIllustrationCard key={index} loading />
+              ))
+            ) : stats.recentIllustrations.length > 0 ? (
+              <Box>
+                {stats.recentIllustrations.slice(0, 5).map((illustration) => (
+                  <RecentIllustrationCard key={illustration.id} illustration={illustration} />
+                ))}
+              </Box>
+            ) : (
+              <Box textAlign="center" py={4}>
+                <ImageIcon sx={{ fontSize: 64, color: 'grey.300', mb: 2 }} />
+                <Typography variant="h6" color="text.secondary" gutterBottom>
+                  No illustrations yet
+                </Typography>
+                <Typography variant="body2" color="text.secondary" paragraph>
+                  Create your first illustration to get started
+                </Typography>
+                <Button
+                  variant="contained"
+                  startIcon={<ImageIcon />}
+                  onClick={() => setCreateModalOpen(true)}
+                  disabled={isFetchingRef.current}
+                >
+                  Create Illustration
+                </Button>
+              </Box>
+            )}
+          </Paper>
+        </Grid>
+
+        {/* Right Column - Quick Actions & Stats */}
+        <Grid item xs={12} lg={4}>
+          <Stack spacing={3}>
+            {/* Quick Actions */}
+            <Paper sx={{ p: 3, borderRadius: 3 }}>
+              <Typography variant="h5" fontWeight="bold" mb={3}>
+                Quick Actions
+              </Typography>
+              
+              <Grid container spacing={2}>
+                <Grid item xs={12}>
+                  <QuickActionCard
+                    title="Add Illustration"
+                    description="Create a new illustration with images and descriptions"
+                    icon={<UploadIcon />}
+                    buttonText="Create New"
+                    onClick={() => setCreateModalOpen(true)}
+                    color={theme.palette.primary.main}
+                    disabled={isFetchingRef.current}
+                  />
+                </Grid>
+                <Grid item xs={12}>
+                  <QuickActionCard
+                    title="Add Manufacturer"
+                    description="Add a new vehicle manufacturer to the system"
+                    icon={<StoreIcon />}
+                    buttonText="Add Brand"
+                    onClick={() => navigate('/manufacturers/create')}
+                    color={theme.palette.success.main}
+                    disabled={isFetchingRef.current}
+                  />
+                </Grid>
+              </Grid>
+            </Paper>
+
+            {/* System Stats */}
+            <Paper sx={{ p: 3, borderRadius: 3 }}>
+              <Typography variant="h5" fontWeight="bold" mb={3}>
+                System Stats
+              </Typography>
+              
+              <Stack spacing={2}>
                 <Box>
-                  <Box sx={{ 
-                    bgcolor: 'rgba(255,255,255,0.2)', 
-                    borderRadius: 1.5, 
-                    p: 0.8,
-                    display: 'inline-flex',
-                    mb: 1
-                  }}>
-                    <Icon sx={{ fontSize: 24 }} />
-                  </Box>
-                  <Typography 
-                    variant="caption" 
-                    sx={{ 
-                      display: 'block',
-                      opacity: 0.9,
-                      fontSize: { xs: '0.7rem', sm: '0.75rem' },
-                      mb: 0.5
-                    }}
-                  >
-                    {stat.title}
-                  </Typography>
+                  <Stack direction="row" justifyContent="space-between" alignItems="center" mb={0.5}>
+                    <Typography variant="body2">Part Categories</Typography>
+                    <Chip 
+                      label={stats.totalPartCategories} 
+                      size="small"
+                      color="primary"
+                      variant="outlined"
+                    />
+                  </Stack>
+                  <LinearProgress 
+                    variant="determinate" 
+                    value={Math.min((stats.totalPartCategories / 100) * 100, 100)} 
+                    sx={{ height: 6, borderRadius: 3 }}
+                  />
                 </Box>
                 
-                <Box sx={{ 
-                  display: 'flex', 
-                  justifyContent: 'space-between',
-                  alignItems: 'flex-end'
-                }}>
-                  <Typography 
-                    variant="h4" 
-                    fontWeight="bold"
-                    sx={{ fontSize: { xs: '1.75rem', sm: '2rem' } }}
-                  >
-                    {stat.value}
-                  </Typography>
-                  <Box sx={{ 
-                    display: 'flex', 
-                    alignItems: 'center',
-                    bgcolor: 'rgba(255,255,255,0.2)',
-                    borderRadius: 1,
-                    px: 0.75,
-                    py: 0.25
-                  }}>
-                    <TrendingUp sx={{ fontSize: 12 }} />
-                    <Typography variant="caption" sx={{ fontSize: '0.7rem', fontWeight: 600, ml: 0.5 }}>
-                      {stat.change}
-                    </Typography>
-                  </Box>
+                <Box>
+                  <Stack direction="row" justifyContent="space-between" alignItems="center" mb={0.5}>
+                    <Typography variant="body2">Database Usage</Typography>
+                    <Chip 
+                      label={`${Math.round((stats.totalIllustrations / 1000) * 100)}%`} 
+                      size="small"
+                      color="secondary"
+                      variant="outlined"
+                    />
+                  </Stack>
+                  <LinearProgress 
+                    variant="determinate" 
+                    value={Math.min((stats.totalIllustrations / 1000) * 100, 100)} 
+                    sx={{ height: 6, borderRadius: 3 }}
+                    color="secondary"
+                  />
                 </Box>
-              </CardContent>
-            </Card>
-          );
-        })}
-      </Box>
+                
+                <Box>
+                  <Stack direction="row" justifyContent="space-between" alignItems="center" mb={0.5}>
+                    <Typography variant="body2">System Health</Typography>
+                    <Chip 
+                      label="Good" 
+                      size="small"
+                      color="success"
+                      variant="outlined"
+                    />
+                  </Stack>
+                  <LinearProgress 
+                    variant="determinate" 
+                    value={85} 
+                    sx={{ height: 6, borderRadius: 3 }}
+                    color="success"
+                  />
+                </Box>
+              </Stack>
+            </Paper>
 
-      {/* Main Content: Recent Users & Quick Actions */}
-      <Box sx={{ 
-        display: 'grid',
-        gridTemplateColumns: { 
-          xs: '1fr', 
-          md: '2fr 1fr'
-        },
-        gap: { xs: 2, sm: 3 }
-      }}>
-
-        {/* Recent Users List */}
-        <Card elevation={0} sx={{ 
-          border: '1px solid', 
-          borderColor: 'divider',
-          borderRadius: 3,
-          bgcolor: 'white'
-        }}>
-          <CardContent sx={{ p: 0 }}>
-            {/* Header */}
-            <Box sx={{ 
-              px: { xs: 2, sm: 3 }, 
-              py: { xs: 1.5, sm: 2 }, 
-              display: 'flex', 
-              justifyContent: 'space-between',
-              alignItems: 'center'
+            {/* User Info Card */}
+            <Paper sx={{ 
+              p: 3, 
+              borderRadius: 3, 
+              background: `linear-gradient(135deg, ${alpha(theme.palette.primary.main, 0.1)} 0%, ${alpha(theme.palette.secondary.main, 0.1)} 100%)`,
+              border: `1px solid ${alpha(theme.palette.primary.main, 0.2)}`
             }}>
-              <Box>
-                <Typography variant="h6" fontWeight="bold" color="#004A8F">
-                  Recent Users
-                </Typography>
-                <Typography variant="caption" color="text.secondary">
-                  Showing {users.slice(0, isMobile ? 5 : 8).length} of {users.length} total users
-                </Typography>
-              </Box>
-              <Button 
-                size="medium" 
-                startIcon={<PersonAdd sx={{ fontSize: 20 }} />}
-                variant="contained"
-                disableElevation
-                sx={{ 
-                  borderRadius: 2,
-                  textTransform: 'none',
-                  minWidth: { xs: 'auto', sm: 'auto' },
-                  px: { xs: 1.5, sm: 2 },
-                  py: 1,
-                  bgcolor: '#004A8F',
-                  '&:hover': { bgcolor: '#003366' }
-                }}
-              >
-                {isMobile ? '' : 'Add User'}
-              </Button>
-            </Box>
-
-            <Divider />
-
-            {/* Users List */}
-            <Stack spacing={0}>
-              {users.slice(0, isMobile ? 5 : 8).map((user, index) => (
-                <React.Fragment key={user.id}>
-                  <Box 
-                    sx={{ 
-                      p: { xs: 1.5, sm: 2 },
-                      cursor: 'pointer',
-                      transition: 'background-color 0.2s',
-                      '&:hover': {
-                        bgcolor: 'action.hover',
-                      }
-                    }}
-                  >
-                    <Box sx={{ 
-                      display: 'flex', 
-                      gap: { xs: 1.5, sm: 2 },
-                      alignItems: 'center'
-                    }}>
-                      {/* Avatar */}
-                      <Badge
-                        color={user.is_active ? 'success' : 'error'}
-                        variant="dot"
-                        anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
-                        overlap="circular"
-                        sx={{ '& .MuiBadge-dot': { width: 10, height: 10, borderRadius: '50%', border: '2px solid white' } }}
-                      >
-                        <Avatar 
-                          src={user.profile_image}
-                          sx={{ 
-                            width: { xs: 48, sm: 56 }, 
-                            height: { xs: 48, sm: 56 },
-                            bgcolor: '#004A8F',
-                            fontWeight: 600,
-                            fontSize: { xs: '1rem', sm: '1.1rem' }
-                          }}
-                        >
-                          {getUserInitial(user)}
-                        </Avatar>
-                      </Badge>
-
-                      {/* User Info */}
-                      <Box sx={{ flex: 1, minWidth: 0 }}>
-                        <Box sx={{ 
-                          display: 'flex', 
-                          alignItems: 'center', 
-                          gap: 0.5, 
-                          mb: 0.25
-                        }}>
-                          <Typography 
-                            variant="subtitle1" 
-                            fontWeight="600"
-                            sx={{ 
-                              overflow: 'hidden',
-                              textOverflow: 'ellipsis',
-                              whiteSpace: 'nowrap',
-                              fontSize: { xs: '0.9rem', sm: '1rem' }
-                            }}
-                          >
-                            {getUserName(user)}
-                          </Typography>
-                          {user.is_verified && (
-                            <Verified sx={{ fontSize: 16, color: '#FFD500' }} />
-                          )}
-                        </Box>
-
-                        <Typography 
-                          variant="body2" 
-                          color="text.secondary"
-                          sx={{ 
-                            overflow: 'hidden',
-                            textOverflow: 'ellipsis',
-                            whiteSpace: 'nowrap',
-                            display: 'block',
-                            mb: 0.75,
-                            fontSize: { xs: '0.75rem', sm: '0.875rem' }
-                          }}
-                        >
-                          {user.email}
-                        </Typography>
-
-                        {/* Chips */}
-                        <Box sx={{ display: 'flex', gap: 0.75, flexWrap: 'wrap' }}>
-                          <Chip 
-                            label={getUserRole(user)} 
-                            size="small" 
-                            color={getRoleColor(user)}
-                            sx={{ 
-                              height: { xs: 20, sm: 24 }, 
-                              fontSize: { xs: '0.7rem', sm: '0.75rem' },
-                              fontWeight: 600,
-                              '& .MuiChip-label': { px: 1 }
-                            }}
-                          />
-                          {!user.is_verified && (
-                            <Chip 
-                              label="Unverified" 
-                              size="small" 
-                              color="warning"
-                              variant="outlined"
-                              sx={{ 
-                                height: { xs: 20, sm: 24 }, 
-                                fontSize: { xs: '0.7rem', sm: '0.75rem' },
-                                fontWeight: 600,
-                                '& .MuiChip-label': { px: 1 }
-                              }}
-                            />
-                          )}
-                        </Box>
-                      </Box>
-
-                      {/* Arrow Button */}
-                      <IconButton 
-                        size="small"
-                        sx={{ 
-                          color: '#004A8F',
-                          display: { xs: 'flex', sm: 'flex' }
-                        }}
-                      >
-                        <ArrowForward sx={{ fontSize: 20 }} />
-                      </IconButton>
-                    </Box>
-                  </Box>
-                  {index < users.slice(0, isMobile ? 5 : 8).length - 1 && <Divider />}
-                </React.Fragment>
-              ))}
-
-              {users.length === 0 && (
-                <Box sx={{ p: 6, textAlign: 'center' }}>
-                  <People sx={{ fontSize: 48, color: theme.palette.text.disabled, mb: 2 }} />
-                  <Typography variant="body1" color="text.secondary" gutterBottom>
-                    No users found
-                  </Typography>
-                  <Button 
-                    variant="outlined" 
-                    size="small" 
-                    onClick={fetchUsers}
-                    sx={{ 
-                      mt: 2, 
-                      borderRadius: 2, 
-                      textTransform: 'none',
-                      borderColor: '#004A8F',
-                      color: '#004A8F',
-                      '&:hover': {
-                        borderColor: '#003366',
-                        bgcolor: 'rgba(0, 74, 143, 0.04)'
-                      }
-                    }}
-                  >
-                    Reload
-                  </Button>
+              <Stack direction="row" alignItems="center" spacing={2} mb={2}>
+                <Box sx={{ 
+                  p: 1.5, 
+                  borderRadius: 2, 
+                  backgroundColor: theme.palette.primary.main,
+                  color: 'white',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center'
+                }}>
+                  <PersonIcon />
                 </Box>
+                <Box>
+                  <Typography variant="subtitle1" fontWeight="bold">
+                    {user?.first_name || user?.username || 'User'}
+                  </Typography>
+                  <Typography variant="caption" color="text.secondary">
+                    {user?.email || 'No email'}
+                  </Typography>
+                </Box>
+              </Stack>
+              
+              <Stack direction="row" spacing={1}>
+                <Button
+                  variant="outlined"
+                  fullWidth
+                  startIcon={<PersonIcon />}
+                  onClick={() => navigate('/profile')}
+                  disabled={isFetchingRef.current}
+                >
+                  Profile
+                </Button>
+                <Button
+                  variant="outlined"
+                  color="error"
+                  onClick={logout}
+                  disabled={isFetchingRef.current}
+                >
+                  Logout
+                </Button>
+              </Stack>
+            </Paper>
+          </Stack>
+        </Grid>
+      </Grid>
+
+      {/* Bottom Info Bar */}
+      <Box mt={4}>
+        <Paper sx={{ 
+          p: 2, 
+          borderRadius: 2, 
+          backgroundColor: alpha(theme.palette.primary.main, 0.03),
+          border: `1px solid ${alpha(theme.palette.primary.main, 0.1)}`
+        }}>
+          <Stack direction="row" justifyContent="space-between" alignItems="center">
+            <Typography variant="body2" color="text.secondary">
+              {stats.lastUpdated ? `Last updated: ${getTimeAgo(stats.lastUpdated)}` : 'Never updated'}
+            </Typography>
+            <Stack direction="row" spacing={1} alignItems="center">
+              <Chip 
+                icon={<TrendingUpIcon />}
+                label={`${stats.totalIllustrations} illustrations`} 
+                size="small" 
+                variant="outlined"
+              />
+              <Chip 
+                label="API: Online" 
+                size="small" 
+                color="success" 
+                variant="outlined"
+              />
+              {isFetchingRef.current && (
+                <Chip 
+                  icon={<CircularProgress size={16} />}
+                  label="Syncing..." 
+                  size="small" 
+                  variant="outlined"
+                  color="info"
+                />
               )}
             </Stack>
-
-            {/* View All Button */}
-            {users.length > (isMobile ? 5 : 8) && (
-              <>
-                <Divider />
-                <Box sx={{ p: 2 }}>
-                  <Button 
-                    variant="text" 
-                    fullWidth
-                    endIcon={<ArrowForward sx={{ fontSize: 20 }} />}
-                    sx={{ 
-                      borderRadius: 2,
-                      textTransform: 'none',
-                      fontWeight: 600,
-                      py: 1,
-                      color: '#004A8F',
-                      '&:hover': {
-                        bgcolor: 'rgba(0, 74, 143, 0.04)'
-                      }
-                    }}
-                  >
-                    View All {users.length} Users
-                  </Button>
-                </Box>
-              </>
-            )}
-          </CardContent>
-        </Card>
-
-        {/* Quick Actions - V Point Style */}
-        <Card elevation={0} sx={{ 
-          border: '1px solid', 
-          borderColor: 'divider',
-          borderRadius: 3,
-          minHeight: { md: 'min-content' },
-          bgcolor: 'white'
-        }}>
-          <CardContent sx={{ p: { xs: 2, sm: 3 } }}>
-            <Typography variant="h6" fontWeight="bold" sx={{ mb: 2, color: '#004A8F' }}>
-              Quick Actions
-            </Typography>
-            <Stack spacing={1.5}>
-              <Button 
-                variant="outlined" 
-                fullWidth 
-                startIcon={<PersonAdd sx={{ fontSize: 20 }} />}
-                sx={{ 
-                  justifyContent: 'flex-start', 
-                  borderRadius: 2,
-                  textTransform: 'none',
-                  py: 1.25,
-                  fontSize: { xs: '0.875rem', sm: '0.9375rem' },
-                  borderColor: '#004A8F',
-                  color: '#004A8F',
-                  '&:hover': {
-                    borderColor: '#003366',
-                    bgcolor: 'rgba(0, 74, 143, 0.04)'
-                  }
-                }}
-              >
-                Add New User
-              </Button>
-              <Button 
-                variant="outlined" 
-                fullWidth 
-                startIcon={<Email sx={{ fontSize: 20 }} />}
-                sx={{ 
-                  justifyContent: 'flex-start', 
-                  borderRadius: 2,
-                  textTransform: 'none',
-                  py: 1.25,
-                  fontSize: { xs: '0.875rem', sm: '0.9375rem' },
-                  borderColor: '#004A8F',
-                  color: '#004A8F',
-                  '&:hover': {
-                    borderColor: '#003366',
-                    bgcolor: 'rgba(0, 74, 143, 0.04)'
-                  }
-                }}
-              >
-                Send Bulk Email
-              </Button>
-              <Button 
-                variant="outlined" 
-                fullWidth 
-                startIcon={<Settings sx={{ fontSize: 20 }} />}
-                sx={{ 
-                  justifyContent: 'flex-start', 
-                  borderRadius: 2,
-                  textTransform: 'none',
-                  py: 1.25,
-                  fontSize: { xs: '0.875rem', sm: '0.9375rem' },
-                  borderColor: '#004A8F',
-                  color: '#004A8F',
-                  '&:hover': {
-                    borderColor: '#003366',
-                    bgcolor: 'rgba(0, 74, 143, 0.04)'
-                  }
-                }}
-              >
-                System Settings
-              </Button>
-            </Stack>
-          </CardContent>
-        </Card>
+          </Stack>
+        </Paper>
       </Box>
-    </Box>
+
+      {/* Create Illustration Modal */}
+      <CreateIllustrationModal
+        open={createModalOpen}
+        onClose={() => setCreateModalOpen(false)}
+        onSuccess={handleCreateSuccess}
+      />
+    </Container>
   );
 };
 

@@ -1,5 +1,39 @@
-import React, { useState } from 'react';
-import { Plus, Search, Edit2, Trash2, Globe, AlertCircle } from 'lucide-react';
+import React, { useState ,useEffect} from 'react';
+import {
+  Box,
+  Container,
+  Typography,
+  Button,
+  IconButton,
+  TextField,
+  InputAdornment,
+  Paper,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  Alert,
+  CircularProgress,
+  Stack,
+  Chip,
+  alpha,
+  useTheme
+} from '@mui/material';
+import {
+  Add as PlusIcon,
+  Search as SearchIcon,
+  Edit as EditIcon,
+  Delete as DeleteIcon,
+  Public as PublicIcon,
+  Error as ErrorIcon,
+  Close as CloseIcon
+} from '@mui/icons-material';
 import { useManufacturers } from '../../hooks/useIllustrations';
 
 const ManufacturerManagement = () => {
@@ -9,6 +43,11 @@ const ManufacturerManagement = () => {
   const [formData, setFormData] = useState({ name: '', country: '', slug: '' });
   const [errors, setErrors] = useState({});
 
+  useEffect(() => {
+  const handleOpenModal = () => handleOpenModal();
+  window.addEventListener('openManufacturerModal', handleOpenModal);
+  return () => window.removeEventListener('openManufacturerModal', handleOpenModal);
+}, []);
   const {
     manufacturers,
     loading,
@@ -17,6 +56,8 @@ const ManufacturerManagement = () => {
     updateManufacturer,
     deleteManufacturer,
   } = useManufacturers();
+
+  const theme = useTheme();
 
   const filteredManufacturers = manufacturers.filter(m =>
     m.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -43,7 +84,6 @@ const ManufacturerManagement = () => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
     
-    // Auto-generate slug from name
     if (name === 'name' && !editingManufacturer) {
       const slug = value.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
       setFormData(prev => ({ ...prev, slug }));
@@ -78,223 +118,208 @@ const ManufacturerManagement = () => {
   };
 
   const handleDelete = async (manufacturer) => {
-    if (window.confirm(`Are you sure you want to delete ${manufacturer.name}?`)) {
+    if (window.confirm(`Delete ${manufacturer.name}?`)) {
       try {
         await deleteManufacturer(manufacturer.slug);
       } catch (err) {
-        alert('Failed to delete manufacturer');
+        alert('Delete failed');
       }
     }
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <Box sx={{ minHeight: '100vh', bgcolor: 'grey.50' }}>
       {/* Header */}
-      <div className="bg-white border-b border-gray-200 sticky top-0 z-10">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-          <div className="flex items-center justify-between mb-6">
-            <div>
-              <h1 className="text-3xl font-bold text-gray-900">Manufacturers</h1>
-              <p className="text-sm text-gray-500 mt-1">
-                Manage vehicle manufacturers
-              </p>
-            </div>
-            <button
-              onClick={() => handleOpenModal()}
-              className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-            >
-              <Plus size={20} />
-              Add Manufacturer
-            </button>
-          </div>
+      <Paper elevation={0} sx={{ 
+        borderBottom: 1, 
+        borderColor: 'divider',
+        position: 'sticky',
+        top: 0,
+        zIndex: 10,
+        bgcolor: 'background.paper'
+      }}>
+        <Container maxWidth="lg" sx={{ py: 2 }}>
+          <Stack spacing={2}>
+            <Stack direction="row" justifyContent="space-between" alignItems="center">
+              <Box>
+                <Typography variant="h5" fontWeight="bold">
+                  Manufacturers
+                </Typography>
+                <Typography variant="body2" color="text.secondary">
+                  Manage vehicle brands
+                </Typography>
+              </Box>
+              <Button
+                variant="contained"
+                startIcon={<PlusIcon />}
+                onClick={() => handleOpenModal()}
+                size="small"
+              >
+                Add Brand
+              </Button>
+            </Stack>
 
-          {/* Search */}
-          <div className="relative max-w-md">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
-            <input
-              type="text"
+            <TextField
               placeholder="Search manufacturers..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <SearchIcon fontSize="small" />
+                  </InputAdornment>
+                ),
+              }}
+              size="small"
+              fullWidth
             />
-          </div>
-        </div>
-      </div>
+          </Stack>
+        </Container>
+      </Paper>
 
       {/* Content */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+      <Container maxWidth="lg" sx={{ py: 3 }}>
         {loading ? (
-          <div className="flex items-center justify-center h-64">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
-          </div>
+          <Box display="flex" justifyContent="center" py={8}>
+            <CircularProgress />
+          </Box>
         ) : error ? (
-          <div className="bg-red-50 border border-red-200 rounded-lg p-4 flex items-center gap-2 text-red-700">
-            <AlertCircle size={20} />
-            <span>{error}</span>
-          </div>
+          <Alert severity="error" sx={{ mb: 2 }}>
+            {error}
+          </Alert>
         ) : filteredManufacturers.length === 0 ? (
-          <div className="text-center py-12 bg-white rounded-lg">
-            <Globe size={64} className="mx-auto text-gray-300 mb-4" />
-            <h3 className="text-lg font-medium text-gray-900 mb-2">No manufacturers found</h3>
-            <p className="text-gray-500 mb-6">
-              {searchTerm ? 'Try adjusting your search' : 'Get started by adding your first manufacturer'}
-            </p>
+          <Paper sx={{ p: 4, textAlign: 'center' }}>
+            <PublicIcon sx={{ fontSize: 48, color: 'grey.400', mb: 2 }} />
+            <Typography variant="h6" gutterBottom>
+              No manufacturers
+            </Typography>
+            <Typography variant="body2" color="text.secondary" paragraph>
+              {searchTerm ? 'Try different search' : 'Add your first brand'}
+            </Typography>
             {!searchTerm && (
-              <button
+              <Button
+                variant="outlined"
+                startIcon={<PlusIcon />}
                 onClick={() => handleOpenModal()}
-                className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
               >
-                <Plus size={20} />
                 Add Manufacturer
-              </button>
+              </Button>
             )}
-          </div>
+          </Paper>
         ) : (
-          <div className="bg-white rounded-lg shadow overflow-hidden">
-            <table className="min-w-full divide-y divide-gray-200">
-              <thead className="bg-gray-50">
-                <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Name
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Country
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Slug
-                  </th>
-                  <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Actions
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
+          <TableContainer component={Paper} elevation={0} sx={{ border: 1, borderColor: 'divider' }}>
+            <Table size="small">
+              <TableHead sx={{ bgcolor: 'grey.50' }}>
+                <TableRow>
+                  <TableCell sx={{ fontWeight: 'bold', py: 1.5 }}>Name</TableCell>
+                  <TableCell sx={{ fontWeight: 'bold', py: 1.5 }}>Country</TableCell>
+                  <TableCell sx={{ fontWeight: 'bold', py: 1.5 }}>Slug</TableCell>
+                  <TableCell align="right" sx={{ fontWeight: 'bold', py: 1.5 }}>Actions</TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
                 {filteredManufacturers.map((manufacturer) => (
-                  <tr key={manufacturer.id} className="hover:bg-gray-50 transition-colors">
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm font-medium text-gray-900">{manufacturer.name}</div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm text-gray-500">{manufacturer.country || '-'}</div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm text-gray-500 font-mono">{manufacturer.slug}</div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                      <button
-                        onClick={() => handleOpenModal(manufacturer)}
-                        className="text-blue-600 hover:text-blue-900 mr-4"
-                      >
-                        <Edit2 size={18} />
-                      </button>
-                      <button
-                        onClick={() => handleDelete(manufacturer)}
-                        className="text-red-600 hover:text-red-900"
-                      >
-                        <Trash2 size={18} />
-                      </button>
-                    </td>
-                  </tr>
+                  <TableRow key={manufacturer.id} hover>
+                    <TableCell sx={{ py: 1.5 }}>
+                      <Typography variant="body2" fontWeight="medium">
+                        {manufacturer.name}
+                      </Typography>
+                    </TableCell>
+                    <TableCell sx={{ py: 1.5 }}>
+                      {manufacturer.country ? (
+                        <Chip 
+                          label={manufacturer.country} 
+                          size="small" 
+                          sx={{ bgcolor: alpha(theme.palette.secondary.main, 0.1) }}
+                        />
+                      ) : (
+                        <Typography variant="body2" color="text.secondary">-</Typography>
+                      )}
+                    </TableCell>
+                    <TableCell sx={{ py: 1.5 }}>
+                      <Typography variant="caption" sx={{ fontFamily: 'monospace' }}>
+                        {manufacturer.slug}
+                      </Typography>
+                    </TableCell>
+                    <TableCell align="right" sx={{ py: 1.5 }}>
+                      <IconButton size="small" onClick={() => handleOpenModal(manufacturer)}>
+                        <EditIcon fontSize="small" />
+                      </IconButton>
+                      <IconButton size="small" onClick={() => handleDelete(manufacturer)}>
+                        <DeleteIcon fontSize="small" />
+                      </IconButton>
+                    </TableCell>
+                  </TableRow>
                 ))}
-              </tbody>
-            </table>
-          </div>
+              </TableBody>
+            </Table>
+          </TableContainer>
         )}
-      </div>
+      </Container>
 
-      {/* Create/Edit Modal */}
-      {showModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-lg max-w-md w-full">
-            <div className="flex items-center justify-between p-6 border-b">
-              <h2 className="text-xl font-bold text-gray-900">
-                {editingManufacturer ? 'Edit Manufacturer' : 'Add Manufacturer'}
-              </h2>
-              <button
-                onClick={() => setShowModal(false)}
-                className="text-gray-400 hover:text-gray-600"
-              >
-                ×
-              </button>
-            </div>
+      {/* Modal */}
+      <Dialog open={showModal} onClose={() => setShowModal(false)} maxWidth="sm" fullWidth>
+        <DialogTitle>
+          {editingManufacturer ? 'Edit Manufacturer' : 'Add Manufacturer'}
+          <IconButton
+            onClick={() => setShowModal(false)}
+            sx={{ position: 'absolute', right: 8, top: 8 }}
+          >
+            <CloseIcon />
+          </IconButton>
+        </DialogTitle>
+        <form onSubmit={handleSubmit}>
+          <DialogContent>
+            <Stack spacing={2}>
+              <TextField
+                label="Name"
+                name="name"
+                value={formData.name}
+                onChange={handleChange}
+                error={!!errors.name}
+                helperText={errors.name}
+                placeholder="e.g., Toyota"
+                size="small"
+                fullWidth
+              />
 
-            <form onSubmit={handleSubmit} className="p-6 space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Name *
-                </label>
-                <input
-                  type="text"
-                  name="name"
-                  value={formData.name}
-                  onChange={handleChange}
-                  className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 ${
-                    errors.name ? 'border-red-500' : 'border-gray-300'
-                  }`}
-                  placeholder="e.g., Toyota"
-                />
-                {errors.name && <p className="text-red-500 text-sm mt-1">{errors.name}</p>}
-              </div>
+              <TextField
+                label="Country"
+                name="country"
+                value={formData.country}
+                onChange={handleChange}
+                placeholder="e.g., Japan"
+                size="small"
+                fullWidth
+              />
 
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Country
-                </label>
-                <input
-                  type="text"
-                  name="country"
-                  value={formData.country}
-                  onChange={handleChange}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-                  placeholder="e.g., Japan"
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Slug *
-                </label>
-                <input
-                  type="text"
-                  name="slug"
-                  value={formData.slug}
-                  onChange={handleChange}
-                  className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 font-mono text-sm ${
-                    errors.slug ? 'border-red-500' : 'border-gray-300'
-                  }`}
-                  placeholder="e.g., toyota"
-                />
-                {errors.slug && <p className="text-red-500 text-sm mt-1">{errors.slug}</p>}
-              </div>
+              <TextField
+                label="Slug"
+                name="slug"
+                value={formData.slug}
+                onChange={handleChange}
+                error={!!errors.slug}
+                helperText={errors.slug}
+                placeholder="e.g., toyota"
+                size="small"
+                fullWidth
+                sx={{ fontFamily: 'monospace' }}
+              />
 
               {errors.submit && (
-                <div className="p-3 bg-red-50 border border-red-200 rounded-lg flex items-center gap-2 text-red-700">
-                  <AlertCircle size={20} />
-                  <span className="text-sm">{errors.submit}</span>
-                </div>
+                <Alert severity="error">{errors.submit}</Alert>
               )}
-
-              <div className="flex gap-3 pt-4">
-                <button
-                  type="button"
-                  onClick={() => setShowModal(false)}
-                  className="flex-1 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
-                >
-                  {editingManufacturer ? 'Update' : 'Create'}
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
-    </div>
+            </Stack>
+          </DialogContent>
+          <DialogActions sx={{ px: 3, pb: 2 }}>
+            <Button onClick={() => setShowModal(false)}>Cancel</Button>
+            <Button type="submit" variant="contained">
+              {editingManufacturer ? 'Update' : 'Create'}
+            </Button>
+          </DialogActions>
+        </form>
+      </Dialog>
+    </Box>
   );
 };
 

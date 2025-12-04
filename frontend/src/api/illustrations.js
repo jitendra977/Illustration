@@ -1,10 +1,14 @@
 import axios from 'axios';
 
+// Use environment variable or default to localhost with /api prefix
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000/api';
 
 // Create axios instance with auth token
 const api = axios.create({
   baseURL: API_BASE_URL,
+  headers: {
+    'Content-Type': 'application/json',
+  },
 });
 
 // Add token to requests
@@ -44,78 +48,78 @@ api.interceptors.response.use(
 // MANUFACTURERS
 // ============================================================================
 export const manufacturerAPI = {
-  getAll: (params) => api.get('/illustrations/manufacturers/', { params }),
-  getBySlug: (slug) => api.get(`/illustrations/manufacturers/${slug}/`),
-  create: (data) => api.post('/illustrations/manufacturers/', data),
-  update: (slug, data) => api.put(`/illustrations/manufacturers/${slug}/`, data),
-  partialUpdate: (slug, data) => api.patch(`/illustrations/manufacturers/${slug}/`, data),
-  delete: (slug) => api.delete(`/illustrations/manufacturers/${slug}/`),
+  getAll: (params) => api.get('/manufacturers/', { params }),
+  getBySlug: (slug) => api.get(`/manufacturers/${slug}/`),
+  create: (data) => api.post('/manufacturers/', data),
+  update: (slug, data) => api.put(`/manufacturers/${slug}/`, data),
+  partialUpdate: (slug, data) => api.patch(`/manufacturers/${slug}/`, data),
+  delete: (slug) => api.delete(`/manufacturers/${slug}/`),
 };
 
 // ============================================================================
 // CAR MODELS
 // ============================================================================
 export const carModelAPI = {
-  getAll: (params) => api.get('/illustrations/car-models/', { params }),
-  getBySlug: (slug) => api.get(`/illustrations/car-models/${slug}/`),
+  getAll: (params) => api.get('/car-models/', { params }),
+  getBySlug: (slug) => api.get(`/car-models/${slug}/`),
   getByManufacturer: (manufacturerId) => 
-    api.get('/illustrations/car-models/', { params: { manufacturer: manufacturerId } }),
-  create: (data) => api.post('/illustrations/car-models/', data),
-  update: (slug, data) => api.put(`/illustrations/car-models/${slug}/`, data),
-  partialUpdate: (slug, data) => api.patch(`/illustrations/car-models/${slug}/`, data),
-  delete: (slug) => api.delete(`/illustrations/car-models/${slug}/`),
+    api.get('/car-models/', { params: { manufacturer: manufacturerId } }),
+  create: (data) => api.post('/car-models/', data),
+  update: (slug, data) => api.put(`/car-models/${slug}/`, data),
+  partialUpdate: (slug, data) => api.patch(`/car-models/${slug}/`, data),
+  delete: (slug) => api.delete(`/car-models/${slug}/`),
 };
 
 // ============================================================================
 // ENGINE MODELS
 // ============================================================================
 export const engineModelAPI = {
-  getAll: (params) => api.get('/illustrations/engine-models/', { params }),
-  getBySlug: (slug) => api.get(`/illustrations/engine-models/${slug}/`),
+  getAll: (params) => api.get('/engine-models/', { params }),
+  getBySlug: (slug) => api.get(`/engine-models/${slug}/`),
   getByCarModel: (carModelId) => 
-    api.get('/illustrations/engine-models/', { params: { car_model: carModelId } }),
+    api.get('/engine-models/', { params: { car_model: carModelId } }),
   getByManufacturer: (manufacturerId) => 
-    api.get('/illustrations/engine-models/', { params: { car_model__manufacturer: manufacturerId } }),
-  create: (data) => api.post('/illustrations/engine-models/', data),
-  update: (slug, data) => api.put(`/illustrations/engine-models/${slug}/`, data),
-  partialUpdate: (slug, data) => api.patch(`/illustrations/engine-models/${slug}/`, data),
-  delete: (slug) => api.delete(`/illustrations/engine-models/${slug}/`),
+    api.get('/engine-models/', { params: { car_model__manufacturer: manufacturerId } }),
+  create: (data) => api.post('/engine-models/', data),
+  update: (slug, data) => api.put(`/engine-models/${slug}/`, data),
+  partialUpdate: (slug, data) => api.patch(`/engine-models/${slug}/`, data),
+  delete: (slug) => api.delete(`/engine-models/${slug}/`),
 };
 
 // ============================================================================
 // PART CATEGORIES
 // ============================================================================
 export const partCategoryAPI = {
-  getAll: (params) => api.get('/illustrations/part-categories/', { params }),
-  getById: (id) => api.get(`/illustrations/part-categories/${id}/`),
+  getAll: (params) => api.get('/part-categories/', { params }),
+  getById: (id) => api.get(`/part-categories/${id}/`),
   getByEngineModel: (engineModelId) => 
-    api.get('/illustrations/part-categories/', { params: { engine_model: engineModelId } }),
-  create: (data) => api.post('/illustrations/part-categories/', data),
-  update: (id, data) => api.put(`/illustrations/part-categories/${id}/`, data),
-  partialUpdate: (id, data) => api.patch(`/illustrations/part-categories/${id}/`, data),
-  delete: (id) => api.delete(`/illustrations/part-categories/${id}/`),
+    api.get('/part-categories/', { params: { engine_model: engineModelId } }),
+  create: (data) => api.post('/part-categories/', data),
+  update: (id, data) => api.put(`/part-categories/${id}/`, data),
+  partialUpdate: (id, data) => api.patch(`/part-categories/${id}/`, data),
+  delete: (id) => api.delete(`/part-categories/${id}/`),
 };
 
 // ============================================================================
 // PART SUBCATEGORIES
 // ============================================================================
 export const partSubCategoryAPI = {
-  getAll: (params) => api.get('/illustrations/part-subcategories/', { params }),
-  getById: (id) => api.get(`/illustrations/part-subcategories/${id}/`),
+  getAll: (params) => api.get('/part-subcategories/', { params }),
+  getById: (id) => api.get(`/part-subcategories/${id}/`),
   getByCategory: (categoryId) => 
-    api.get('/illustrations/part-subcategories/', { params: { part_category: categoryId } }),
-  create: (data) => api.post('/illustrations/part-subcategories/', data),
-  update: (id, data) => api.put(`/illustrations/part-subcategories/${id}/`, data),
-  partialUpdate: (id, data) => api.patch(`/illustrations/part-subcategories/${id}/`, data),
-  delete: (id) => api.delete(`/illustrations/part-subcategories/${id}/`),
+    api.get('/part-subcategories/', { params: { part_category: categoryId } }),
+  create: (data) => api.post('/part-subcategories/', data),
+  update: (id, data) => api.put(`/part-subcategories/${id}/`, data),
+  partialUpdate: (id, data) => api.patch(`/part-subcategories/${id}/`, data),
+  delete: (id) => api.delete(`/part-subcategories/${id}/`),
 };
 
 // ============================================================================
 // ILLUSTRATIONS
 // ============================================================================
 export const illustrationAPI = {
-  getAll: (params) => api.get('/illustrations/illustrations/', { params }),
-  getById: (id) => api.get(`/illustrations/illustrations/${id}/`),
+  getAll: (params) => api.get('/illustrations/', { params }),
+  getById: (id) => api.get(`/illustrations/${id}/`),
   create: (data) => {
     const formData = new FormData();
     
@@ -133,7 +137,7 @@ export const illustrationAPI = {
       });
     }
     
-    return api.post('/illustrations/illustrations/', formData, {
+    return api.post('/illustrations/', formData, {
       headers: { 'Content-Type': 'multipart/form-data' }
     });
   },
@@ -144,28 +148,59 @@ export const illustrationAPI = {
         formData.append(key, data[key]);
       }
     });
-    return api.put(`/illustrations/illustrations/${id}/`, formData, {
+    
+    // Use PUT for full updates
+    return api.put(`/illustrations/${id}/`, formData, {
       headers: { 'Content-Type': 'multipart/form-data' }
     });
   },
-  partialUpdate: (id, data) => api.patch(`/illustrations/illustrations/${id}/`, data),
-  delete: (id) => api.delete(`/illustrations/illustrations/${id}/`),
+  partialUpdate: (id, data) => {
+    // Handle both FormData and regular JSON for PATCH
+    if (data instanceof FormData || (data.uploaded_files && data.uploaded_files.length > 0)) {
+      const formData = data instanceof FormData ? data : new FormData();
+      
+      if (!(data instanceof FormData)) {
+        Object.keys(data).forEach(key => {
+          if (key !== 'uploaded_files' && data[key] !== null && data[key] !== undefined) {
+            formData.append(key, data[key]);
+          }
+        });
+        
+        if (data.uploaded_files && data.uploaded_files.length > 0) {
+          data.uploaded_files.forEach(file => {
+            formData.append('uploaded_files', file);
+          });
+        }
+      }
+      
+      return api.patch(`/illustrations/${id}/`, formData, {
+        headers: { 'Content-Type': 'multipart/form-data' }
+      });
+    } else {
+      return api.patch(`/illustrations/${id}/`, data);
+    }
+  },
+  delete: (id) => api.delete(`/illustrations/${id}/`),
 };
 
 // ============================================================================
 // ILLUSTRATION FILES
 // ============================================================================
 export const illustrationFileAPI = {
-  getAll: (params) => api.get('/illustrations/illustration-files/', { params }),
+  getAll: (params) => api.get('/illustration-files/', { params }),
+  getById: (id) => api.get(`/illustration-files/${id}/`),
   create: (illustrationId, file) => {
     const formData = new FormData();
     formData.append('illustration', illustrationId);
     formData.append('file', file);
-    return api.post('/illustrations/illustration-files/', formData, {
+    return api.post('/illustration-files/', formData, {
       headers: { 'Content-Type': 'multipart/form-data' }
     });
   },
-  delete: (id) => api.delete(`/illustrations/illustration-files/${id}/`),
+  update: (id, data) => api.patch(`/illustration-files/${id}/`, data),
+  delete: (id) => api.delete(`/illustration-files/${id}/`),
 };
+
+
 
 export default api;

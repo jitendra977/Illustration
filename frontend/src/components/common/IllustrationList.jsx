@@ -1,13 +1,33 @@
+// IllustrationList.jsx
 import React from 'react';
-import { Eye, Download, Trash2, FileImage, Calendar, User, Paperclip } from 'lucide-react';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Paper,
+  IconButton,
+  Box,
+  Typography,
+  Avatar,
+  Chip,
+  Stack
+} from '@mui/material';
+import {
+  Visibility as EyeIcon,
+  Download as DownloadIcon,
+  Delete as DeleteIcon,
+  Image as ImageIcon,
+  CalendarToday as CalendarIcon,
+  Person as PersonIcon,
+  AttachFile as AttachIcon
+} from '@mui/icons-material';
 
-const IllustrationList = ({ illustrations, onDelete }) => {
+const IllustrationList = ({ illustrations, onDelete, onView }) => {
   const formatDate = (dateString) => {
-    return new Date(dateString).toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
-    });
+    return new Date(dateString).toLocaleDateString();
   };
 
   const getImageUrl = (illustration) => {
@@ -17,132 +37,152 @@ const IllustrationList = ({ illustrations, onDelete }) => {
     return null;
   };
 
+  const handleRowClick = (illustration) => {
+    if (onView) {
+      onView(illustration);
+    }
+  };
+
+  const handleDownload = (e, illustration) => {
+    e.stopPropagation();
+    const imageUrl = getImageUrl(illustration);
+    if (imageUrl) {
+      const link = document.createElement('a');
+      link.href = imageUrl;
+      link.download = `${illustration.title}_1`;
+      link.target = '_blank';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+  };
+
+  const handleDelete = (e, id) => {
+    e.stopPropagation();
+    onDelete?.(id);
+  };
+
   return (
-    <div className="bg-white rounded-lg shadow overflow-hidden">
-      <table className="min-w-full divide-y divide-gray-200">
-        <thead className="bg-gray-50">
-          <tr>
-            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-              Preview
-            </th>
-            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-              Title
-            </th>
-            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-              Engine / Category
-            </th>
-            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-              Files
-            </th>
-            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-              Created
-            </th>
-            <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-              Actions
-            </th>
-          </tr>
-        </thead>
-        <tbody className="bg-white divide-y divide-gray-200">
+    <TableContainer component={Paper}>
+      <Table size="small">
+        <TableHead sx={{ bgcolor: 'grey.50' }}>
+          <TableRow>
+            <TableCell sx={{ fontWeight: 'bold', py: 1.5 }}>Preview</TableCell>
+            <TableCell sx={{ fontWeight: 'bold', py: 1.5 }}>Title</TableCell>
+            <TableCell sx={{ fontWeight: 'bold', py: 1.5 }}>Details</TableCell>
+            <TableCell sx={{ fontWeight: 'bold', py: 1.5 }}>Files</TableCell>
+            <TableCell sx={{ fontWeight: 'bold', py: 1.5 }}>Created</TableCell>
+            <TableCell align="right" sx={{ fontWeight: 'bold', py: 1.5 }}>Actions</TableCell>
+          </TableRow>
+        </TableHead>
+        <TableBody>
           {illustrations.map((illustration) => (
-            <tr key={illustration.id} className="hover:bg-gray-50 transition-colors">
-              {/* Preview */}
-              <td className="px-6 py-4 whitespace-nowrap">
-                <div className="w-16 h-16 bg-gray-100 rounded overflow-hidden flex items-center justify-center">
-                  {getImageUrl(illustration) ? (
-                    <img
-                      src={getImageUrl(illustration)}
-                      alt={illustration.title}
-                      className="w-full h-full object-cover"
-                    />
-                  ) : (
-                    <FileImage size={32} className="text-gray-300" />
-                  )}
-                </div>
-              </td>
+            <TableRow 
+              key={illustration.id} 
+              hover
+              sx={{ 
+                cursor: 'pointer',
+                '&:hover': {
+                  backgroundColor: 'action.hover'
+                }
+              }}
+              onClick={() => handleRowClick(illustration)}
+            >
+              <TableCell sx={{ py: 1.5 }}>
+                <Avatar
+                  variant="rounded"
+                  src={getImageUrl(illustration)}
+                  sx={{ width: 48, height: 48, bgcolor: 'grey.100' }}
+                >
+                  <ImageIcon />
+                </Avatar>
+              </TableCell>
 
-              {/* Title & Description */}
-              <td className="px-6 py-4">
-                <div className="max-w-xs">
-                  <div className="text-sm font-medium text-gray-900 mb-1">
+              <TableCell sx={{ py: 1.5 }}>
+                <Box>
+                  <Typography variant="body2" fontWeight="medium" noWrap>
                     {illustration.title}
-                  </div>
+                  </Typography>
                   {illustration.description && (
-                    <div className="text-xs text-gray-500 line-clamp-2">
+                    <Typography variant="caption" color="text.secondary" noWrap>
                       {illustration.description}
-                    </div>
+                    </Typography>
                   )}
-                  <div className="flex items-center gap-1 text-xs text-gray-400 mt-1">
-                    <User size={12} />
-                    <span>{illustration.user_name}</span>
-                  </div>
-                </div>
-              </td>
+                  <Stack direction="row" alignItems="center" spacing={0.5} mt={0.5}>
+                    <PersonIcon fontSize="small" sx={{ color: 'text.secondary' }} />
+                    <Typography variant="caption" color="text.secondary">
+                      {illustration.user_name}
+                    </Typography>
+                  </Stack>
+                </Box>
+              </TableCell>
 
-              {/* Engine & Category */}
-              <td className="px-6 py-4">
-                <div className="text-xs space-y-1">
-                  <div className="text-gray-700">
-                    <span className="font-medium">Engine:</span>{' '}
-                    {illustration.engine_model?.name || illustration.engine_model_name}
-                  </div>
-                  <div className="text-gray-700">
-                    <span className="font-medium">Category:</span>{' '}
-                    {illustration.part_category?.name || illustration.part_category_name}
-                  </div>
-                  {(illustration.part_subcategory?.name || illustration.part_subcategory_name) && (
-                    <div className="text-gray-500">
-                      <span className="font-medium">Sub:</span>{' '}
-                      {illustration.part_subcategory?.name || illustration.part_subcategory_name}
-                    </div>
-                  )}
-                </div>
-              </td>
+              <TableCell sx={{ py: 1.5 }}>
+                <Stack spacing={0.5}>
+                  <Typography variant="caption">
+                    <strong>Engine:</strong> {illustration.engine_model?.name || illustration.engine_model_name}
+                  </Typography>
+                  <Typography variant="caption">
+                    <strong>Category:</strong> {illustration.part_category?.name || illustration.part_category_name}
+                  </Typography>
+                </Stack>
+              </TableCell>
 
-              {/* Files Count */}
-              <td className="px-6 py-4 whitespace-nowrap">
-                <div className="flex items-center gap-1 text-sm text-gray-600">
-                  <Paperclip size={16} />
-                  <span>{illustration.files?.length || 0}</span>
-                </div>
-              </td>
+              <TableCell sx={{ py: 1.5 }}>
+                <Stack direction="row" alignItems="center" spacing={0.5}>
+                  <AttachIcon fontSize="small" />
+                  <Typography variant="caption">
+                    {illustration.files?.length || 0}
+                  </Typography>
+                </Stack>
+              </TableCell>
 
-              {/* Created Date */}
-              <td className="px-6 py-4 whitespace-nowrap">
-                <div className="flex items-center gap-1 text-xs text-gray-500">
-                  <Calendar size={14} />
-                  <span>{formatDate(illustration.created_at)}</span>
-                </div>
-              </td>
+              <TableCell sx={{ py: 1.5 }}>
+                <Stack direction="row" alignItems="center" spacing={0.5}>
+                  <CalendarIcon fontSize="small" />
+                  <Typography variant="caption">
+                    {formatDate(illustration.created_at)}
+                  </Typography>
+                </Stack>
+              </TableCell>
 
-              {/* Actions */}
-              <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                <div className="flex items-center justify-end gap-2">
-                  <button className="p-2 text-blue-600 hover:bg-blue-50 rounded transition-colors">
-                    <Eye size={18} />
-                  </button>
-                  <button className="p-2 text-green-600 hover:bg-green-50 rounded transition-colors">
-                    <Download size={18} />
-                  </button>
-                  <button
-                    onClick={() => onDelete?.(illustration.id)}
-                    className="p-2 text-red-600 hover:bg-red-50 rounded transition-colors"
+              <TableCell align="right" sx={{ py: 1.5 }}>
+                <Stack direction="row" spacing={0.5} justifyContent="flex-end">
+                  <IconButton 
+                    size="small"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      if (onView) onView(illustration);
+                    }}
                   >
-                    <Trash2 size={18} />
-                  </button>
-                </div>
-              </td>
-            </tr>
+                    <EyeIcon fontSize="small" />
+                  </IconButton>
+                  <IconButton 
+                    size="small"
+                    onClick={(e) => handleDownload(e, illustration)}
+                  >
+                    <DownloadIcon fontSize="small" />
+                  </IconButton>
+                  <IconButton 
+                    size="small" 
+                    onClick={(e) => handleDelete(e, illustration.id)}
+                  >
+                    <DeleteIcon fontSize="small" />
+                  </IconButton>
+                </Stack>
+              </TableCell>
+            </TableRow>
           ))}
-        </tbody>
-      </table>
+        </TableBody>
+      </Table>
 
       {illustrations.length === 0 && (
-        <div className="text-center py-12">
-          <FileImage size={48} className="mx-auto text-gray-300 mb-3" />
-          <p className="text-gray-500">No illustrations to display</p>
-        </div>
+        <Box sx={{ p: 4, textAlign: 'center' }}>
+          <ImageIcon sx={{ fontSize: 48, color: 'grey.400', mb: 2 }} />
+          <Typography color="text.secondary">No illustrations</Typography>
+        </Box>
       )}
-    </div>
+    </TableContainer>
   );
 };
 

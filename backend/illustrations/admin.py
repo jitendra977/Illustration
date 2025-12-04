@@ -3,11 +3,14 @@ from django.utils.html import format_html
 from django.utils.text import Truncator
 from django.urls import reverse
 from django.db.models import Count
+from django.contrib.auth import get_user_model
 from .models import (
     Manufacturer, CarModel, EngineModel,
     PartCategory, PartSubCategory,
     Illustration, IllustrationFile
 )
+
+User = get_user_model()
 
 
 # ==========================================
@@ -48,7 +51,7 @@ class CarModelAdmin(admin.ModelAdmin):
         )
     
     def manufacturer_link(self, obj):
-        url = reverse('admin:app_manufacturer_change', args=[obj.manufacturer.id])
+        url = reverse('admin:illustrations_manufacturer_change', args=[obj.manufacturer.id])
         return format_html('<a href="{}">{}</a>', url, obj.manufacturer.name)
     manufacturer_link.short_description = 'Manufacturer'
     manufacturer_link.admin_order_field = 'manufacturer__name'
@@ -79,7 +82,7 @@ class EngineModelAdmin(admin.ModelAdmin):
         )
     
     def car_model_link(self, obj):
-        url = reverse('admin:app_carmodel_change', args=[obj.car_model.id])
+        url = reverse('admin:illustrations_carmodel_change', args=[obj.car_model.id])
         return format_html('<a href="{}">{}</a>', url, obj.car_model.name)
     car_model_link.short_description = 'Car Model'
     car_model_link.admin_order_field = 'car_model__name'
@@ -114,7 +117,7 @@ class PartCategoryAdmin(admin.ModelAdmin):
         )
     
     def engine_model_link(self, obj):
-        url = reverse('admin:app_enginemodel_change', args=[obj.engine_model.id])
+        url = reverse('admin:illustrations_enginemodel_change', args=[obj.engine_model.id])
         return format_html('<a href="{}">{}</a>', url, obj.engine_model.name)
     engine_model_link.short_description = 'Engine Model'
     engine_model_link.admin_order_field = 'engine_model__name'
@@ -148,7 +151,7 @@ class PartSubCategoryAdmin(admin.ModelAdmin):
         )
     
     def part_category_link(self, obj):
-        url = reverse('admin:app_partcategory_change', args=[obj.part_category.id])
+        url = reverse('admin:illustrations_partcategory_change', args=[obj.part_category.id])
         return format_html('<a href="{}">{}</a>', url, obj.part_category.name)
     part_category_link.short_description = 'Part Category'
     part_category_link.admin_order_field = 'part_category__name'
@@ -190,7 +193,7 @@ class IllustrationFileInline(admin.TabularInline):
 @admin.register(Illustration)
 class IllustrationAdmin(admin.ModelAdmin):
     list_display = [
-        'title', 'user_link', 'engine_model_link', 
+        'title', 'user_display', 'engine_model_link', 
         'part_category_link', 'part_subcategory_link', 
         'file_count', 'created_at'
     ]
@@ -226,27 +229,27 @@ class IllustrationAdmin(admin.ModelAdmin):
             _file_count=Count('files')
         )
     
-    def user_link(self, obj):
-        url = reverse('admin:auth_user_change', args=[obj.user.id])
-        return format_html('<a href="{}">{}</a>', url, obj.user.username)
-    user_link.short_description = 'User'
-    user_link.admin_order_field = 'user__username'
+    def user_display(self, obj):
+        # Simple display without link to avoid URL errors
+        return f"{obj.user.username} ({obj.user.email})"
+    user_display.short_description = 'User'
+    user_display.admin_order_field = 'user__username'
     
     def engine_model_link(self, obj):
-        url = reverse('admin:app_enginemodel_change', args=[obj.engine_model.id])
+        url = reverse('admin:illustrations_enginemodel_change', args=[obj.engine_model.id])
         return format_html('<a href="{}">{}</a>', url, obj.engine_model.name)
     engine_model_link.short_description = 'Engine Model'
     engine_model_link.admin_order_field = 'engine_model__name'
     
     def part_category_link(self, obj):
-        url = reverse('admin:app_partcategory_change', args=[obj.part_category.id])
+        url = reverse('admin:illustrations_partcategory_change', args=[obj.part_category.id])
         return format_html('<a href="{}">{}</a>', url, obj.part_category.name)
     part_category_link.short_description = 'Part Category'
     part_category_link.admin_order_field = 'part_category__name'
     
     def part_subcategory_link(self, obj):
         if obj.part_subcategory:
-            url = reverse('admin:app_partsubcategory_change', args=[obj.part_subcategory.id])
+            url = reverse('admin:illustrations_partsubcategory_change', args=[obj.part_subcategory.id])
             return format_html('<a href="{}">{}</a>', url, obj.part_subcategory.name)
         return "-"
     part_subcategory_link.short_description = 'Part Subcategory'
@@ -268,7 +271,7 @@ class IllustrationAdmin(admin.ModelAdmin):
 @admin.register(IllustrationFile)
 class IllustrationFileAdmin(admin.ModelAdmin):
     list_display = [
-        'id', 'illustration_link', 'user_name', 
+        'id', 'illustration_link', 'user_display', 
         'file_preview', 'file_name', 'uploaded_at'
     ]
     list_filter = ['uploaded_at', 'illustration__engine_model']
@@ -292,16 +295,16 @@ class IllustrationFileAdmin(admin.ModelAdmin):
         )
     
     def illustration_link(self, obj):
-        url = reverse('admin:app_illustration_change', args=[obj.illustration.id])
+        url = reverse('admin:illustrations_illustration_change', args=[obj.illustration.id])
         return format_html('<a href="{}">{}</a>', url, obj.illustration.title)
     illustration_link.short_description = 'Illustration'
     illustration_link.admin_order_field = 'illustration__title'
     
-    def user_name(self, obj):
-        url = reverse('admin:auth_user_change', args=[obj.illustration.user.id])
-        return format_html('<a href="{}">{}</a>', url, obj.illustration.user.username)
-    user_name.short_description = 'User'
-    user_name.admin_order_field = 'illustration__user__username'
+    def user_display(self, obj):
+        # Simple display without link to avoid URL errors
+        return f"{obj.illustration.user.username} ({obj.illustration.user.email})"
+    user_display.short_description = 'User'
+    user_display.admin_order_field = 'illustration__user__username'
     
     def file_name(self, obj):
         return obj.file.name.split('/')[-1]

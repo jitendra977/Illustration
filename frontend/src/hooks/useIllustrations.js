@@ -90,9 +90,8 @@ export const useManufacturers = () => {
     deleteManufacturer,
   };
 };
-
 // ============================================================================
-// CAR MODELS HOOK
+// CAR MODELS HOOK - CORRECTED
 // ============================================================================
 export const useCarModels = (manufacturerId = null) => {
   const [carModels, setCarModels] = useState([]);
@@ -109,7 +108,10 @@ export const useCarModels = (manufacturerId = null) => {
       setCarModels(data.results || data);
       return data;
     } catch (err) {
-      setError(err.response?.data?.message || 'Failed to fetch car models');
+      const errorMessage = err.response?.data?.detail || 
+                          err.response?.data?.message || 
+                          'Failed to fetch car models';
+      setError(errorMessage);
       throw err;
     } finally {
       setLoading(false);
@@ -124,7 +126,10 @@ export const useCarModels = (manufacturerId = null) => {
       setCarModels(prev => [data, ...prev]);
       return data;
     } catch (err) {
-      setError(err.response?.data?.message || 'Failed to create car model');
+      const errorMessage = err.response?.data?.detail || 
+                          err.response?.data?.message || 
+                          'Failed to create car model';
+      setError(errorMessage);
       throw err;
     } finally {
       setLoading(false);
@@ -135,11 +140,28 @@ export const useCarModels = (manufacturerId = null) => {
     setLoading(true);
     setError(null);
     try {
-      const { data } = await carModelAPI.update(slug, carModelData);
-      setCarModels(prev => prev.map(c => c.slug === slug ? data : c));
-      return data;
+      // Try PATCH first (for partial updates), fall back to PUT
+      let response;
+      try {
+        response = await carModelAPI.partialUpdate(slug, carModelData);
+      } catch (patchError) {
+        // If PATCH fails, try PUT
+        if (patchError.response?.status === 405 || patchError.response?.status === 404) {
+          response = await carModelAPI.update(slug, carModelData);
+        } else {
+          throw patchError;
+        }
+      }
+      
+      const updatedData = response.data;
+      setCarModels(prev => prev.map(c => c.slug === slug ? updatedData : c));
+      return updatedData;
     } catch (err) {
-      setError(err.response?.data?.message || 'Failed to update car model');
+      const errorMessage = err.response?.data?.detail || 
+                          err.response?.data?.message || 
+                          Object.values(err.response?.data || {}).join(', ') ||
+                          'Failed to update car model';
+      setError(errorMessage);
       throw err;
     } finally {
       setLoading(false);
@@ -153,7 +175,10 @@ export const useCarModels = (manufacturerId = null) => {
       await carModelAPI.delete(slug);
       setCarModels(prev => prev.filter(c => c.slug !== slug));
     } catch (err) {
-      setError(err.response?.data?.message || 'Failed to delete car model');
+      const errorMessage = err.response?.data?.detail || 
+                          err.response?.data?.message || 
+                          'Failed to delete car model';
+      setError(errorMessage);
       throw err;
     } finally {
       setLoading(false);
@@ -161,10 +186,8 @@ export const useCarModels = (manufacturerId = null) => {
   }, []);
 
   useEffect(() => {
-    if (manufacturerId) {
-      fetchCarModels();
-    }
-  }, [manufacturerId, fetchCarModels]);
+    fetchCarModels();
+  }, [fetchCarModels]);
 
   return {
     carModels,
@@ -178,11 +201,11 @@ export const useCarModels = (manufacturerId = null) => {
 };
 
 // ============================================================================
-// ENGINE MODELS HOOK
+// ENGINE MODELS HOOK - CORRECTED VERSION
 // ============================================================================
 export const useEngineModels = (carModelId = null) => {
   const [engineModels, setEngineModels] = useState([]);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true); // Changed to true initially
   const [error, setError] = useState(null);
 
   const fetchEngineModels = useCallback(async (params = {}) => {
@@ -190,12 +213,15 @@ export const useEngineModels = (carModelId = null) => {
     setError(null);
     try {
       const { data } = carModelId
-        ? await engineModelAPI.getByCarModel(carModelId)
+        ? await engineModelAPI.getByCarModel(carModelId, params)
         : await engineModelAPI.getAll(params);
       setEngineModels(data.results || data);
       return data;
     } catch (err) {
-      setError(err.response?.data?.message || 'Failed to fetch engine models');
+      const errorMessage = err.response?.data?.detail || 
+                          err.response?.data?.message || 
+                          'Failed to fetch engine models';
+      setError(errorMessage);
       throw err;
     } finally {
       setLoading(false);
@@ -210,7 +236,28 @@ export const useEngineModels = (carModelId = null) => {
       setEngineModels(prev => [data, ...prev]);
       return data;
     } catch (err) {
-      setError(err.response?.data?.message || 'Failed to create engine model');
+      const errorMessage = err.response?.data?.detail || 
+                          err.response?.data?.message || 
+                          'Failed to create engine model';
+      setError(errorMessage);
+      throw err;
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  const updateEngineModel = useCallback(async (slug, engineModelData) => {
+    setLoading(true);
+    setError(null);
+    try {
+      const { data } = await engineModelAPI.update(slug, engineModelData);
+      setEngineModels(prev => prev.map(e => e.slug === slug ? data : e));
+      return data;
+    } catch (err) {
+      const errorMessage = err.response?.data?.detail || 
+                          err.response?.data?.message || 
+                          'Failed to update engine model';
+      setError(errorMessage);
       throw err;
     } finally {
       setLoading(false);
@@ -224,18 +271,20 @@ export const useEngineModels = (carModelId = null) => {
       await engineModelAPI.delete(slug);
       setEngineModels(prev => prev.filter(e => e.slug !== slug));
     } catch (err) {
-      setError(err.response?.data?.message || 'Failed to delete engine model');
+      const errorMessage = err.response?.data?.detail || 
+                          err.response?.data?.message || 
+                          'Failed to delete engine model';
+      setError(errorMessage);
       throw err;
     } finally {
       setLoading(false);
     }
   }, []);
 
+  // Fetch engine models on initial load
   useEffect(() => {
-    if (carModelId) {
-      fetchEngineModels();
-    }
-  }, [carModelId, fetchEngineModels]);
+    fetchEngineModels();
+  }, [fetchEngineModels]);
 
   return {
     engineModels,
@@ -243,6 +292,7 @@ export const useEngineModels = (carModelId = null) => {
     error,
     fetchEngineModels,
     createEngineModel,
+    updateEngineModel,
     deleteEngineModel,
   };
 };
@@ -260,7 +310,7 @@ export const usePartCategories = (engineModelId = null) => {
     setError(null);
     try {
       const { data } = engineModelId
-        ? await partCategoryAPI.getByEngineModel(engineModelId)
+        ? await partCategoryAPI.getByEngineModel(engineModelId, params)
         : await partCategoryAPI.getAll(params);
       setCategories(data.results || data);
       return data;
@@ -357,9 +407,6 @@ export const usePartSubCategories = (categoryId = null) => {
   };
 };
 
-// ============================================================================
-// ILLUSTRATIONS HOOK
-// ============================================================================
 export const useIllustrations = (filters = {}) => {
   const [illustrations, setIllustrations] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -388,7 +435,10 @@ export const useIllustrations = (filters = {}) => {
       setIllustrations(prev => [data, ...prev]);
       return data;
     } catch (err) {
-      setError(err.response?.data?.message || 'Failed to create illustration');
+      const errorMessage = err.response?.data?.message || 
+                          err.response?.data?.detail || 
+                          'Failed to create illustration';
+      setError(errorMessage);
       throw err;
     } finally {
       setLoading(false);
@@ -436,5 +486,6 @@ export const useIllustrations = (filters = {}) => {
     createIllustration,
     updateIllustration,
     deleteIllustration,
+    
   };
 };

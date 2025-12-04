@@ -20,7 +20,8 @@ ALLOWED_HOSTS = ['api.yaw.nishanaweb.cloud', 'yaw.nishanaweb.cloud', 'localhost'
 # Add or update CORS settings (add these if not present)
 CORS_ALLOWED_ORIGINS = [
     "https://yaw.nishanaweb.cloud",
-    "http://localhost:5173",  # for local development
+    "http://localhost:55173",  # for local development
+    "http://localhost:3000",  # for local development
 ]
 
 # CORS_ALLOW_ALL_ORIGINS = True
@@ -42,6 +43,7 @@ INSTALLED_APPS = [
     'corsheaders',
     'django_filters',
     'drf_yasg',
+    'django_extensions',
 
     # Local apps
     'accounts',

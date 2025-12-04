@@ -1,449 +1,568 @@
 import React, { useState, useEffect } from 'react';
-import { X, Upload, AlertCircle, CheckCircle } from 'lucide-react';
 import {
-  useManufacturers,
-  useCarModels,
-  useEngineModels,
-  usePartCategories,
-  usePartSubCategories,
-} from '../../hooks/useIllustrations';
-import { illustrationAPI } from '../../api/illustrations';
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  Button,
+  TextField,
+  MenuItem,
+  Stack,
+  Typography,
+  Box,
+  IconButton,
+  Alert,
+  CircularProgress,
+  FormHelperText
+} from '@mui/material';
+import {
+  Close as CloseIcon,
+  Upload as UploadIcon,
+  Delete as DeleteIcon
+} from '@mui/icons-material';
+import { 
+  illustrationAPI, 
+  manufacturerAPI, 
+  carModelAPI, 
+  engineModelAPI, 
+  partCategoryAPI 
+} from '../../api/illustrations';
 
-const CreateIllustrationModal = ({ onClose, onSuccess }) => {
-  const [step, setStep] = useState(1);
+const CreateIllustrationModal = ({ open, onClose, onSuccess }) => {
   const [formData, setFormData] = useState({
+    title: '',
+    description: '',
     manufacturer: '',
     car_model: '',
     engine_model: '',
     part_category: '',
-    part_subcategory: '',
-    title: '',
-    description: '',
-    files: [],
+    uploaded_files: []
   });
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
-  const [success, setSuccess] = useState(false);
+  
+  // Data states
+  const [manufacturers, setManufacturers] = useState([]);
+  const [carModels, setCarModels] = useState([]);
+  const [engineModels, setEngineModels] = useState([]);
+  const [categories, setCategories] = useState([]);
+  
+  // Loading states
+  const [loadingManufacturers, setLoadingManufacturers] = useState(false);
+  const [loadingCarModels, setLoadingCarModels] = useState(false);
+  const [loadingEngineModels, setLoadingEngineModels] = useState(false);
+  const [loadingCategories, setLoadingCategories] = useState(false);
 
-  // Fetch data hooks
-  const { manufacturers } = useManufacturers();
-  const { carModels, fetchCarModels } = useCarModels();
-  const { engineModels, fetchEngineModels } = useEngineModels();
-  const { categories, fetchCategories } = usePartCategories();
-  const { subCategories, fetchSubCategories } = usePartSubCategories();
-
-  // Load dependent dropdowns
+  // Fetch manufacturers on mount
   useEffect(() => {
-    if (formData.manufacturer) {
-      fetchCarModels({ manufacturer: formData.manufacturer });
+    if (open) {
+      fetchManufacturers();
     }
-  }, [formData.manufacturer]);
+  }, [open]);
 
-  useEffect(() => {
-    if (formData.car_model) {
-      fetchEngineModels({ car_model: formData.car_model });
+  const fetchManufacturers = async () => {
+    setLoadingManufacturers(true);
+    try {
+      const response = await manufacturerAPI.getAll();
+      setManufacturers(response.data.results || response.data || []);
+    } catch (error) {
+      console.error('Failed to fetch manufacturers:', error);
+      setErrors(prev => ({ ...prev, manufacturers: 'Failed to load manufacturers' }));
+    } finally {
+      setLoadingManufacturers(false);
     }
-  }, [formData.car_model]);
+  };
 
-  useEffect(() => {
-    if (formData.engine_model) {
-      fetchCategories({ engine_model: formData.engine_model });
+  const fetchCarModels = async (manufacturerId) => {
+    if (!manufacturerId) {
+      setCarModels([]);
+      return;
     }
-  }, [formData.engine_model]);
+    
+    setLoadingCarModels(true);
+    try {
+      const response = await carModelAPI.getAll({ manufacturer: manufacturerId });
+      setCarModels(response.data.results || response.data || []);
+    } catch (error) {
+      console.error('Failed to fetch car models:', error);
+      setErrors(prev => ({ ...prev, car_models: 'Failed to load car models' }));
+    } finally {
+      setLoadingCarModels(false);
+    }
+  };
 
-  useEffect(() => {
-    if (formData.part_category) {
-      fetchSubCategories({ part_category: formData.part_category });
+  const fetchEngineModels = async (carModelId) => {
+    if (!carModelId) {
+      setEngineModels([]);
+      return;
     }
-  }, [formData.part_category]);
+    
+    setLoadingEngineModels(true);
+    try {
+      const response = await engineModelAPI.getAll({ car_model: carModelId });
+      setEngineModels(response.data.results || response.data || []);
+    } catch (error) {
+      console.error('Failed to fetch engine models:', error);
+      setErrors(prev => ({ ...prev, engine_models: 'Failed to load engine models' }));
+    } finally {
+      setLoadingEngineModels(false);
+    }
+  };
+
+  const fetchCategories = async (engineModelId) => {
+    if (!engineModelId) {
+      setCategories([]);
+      return;
+    }
+    
+    setLoadingCategories(true);
+    try {
+      const response = await partCategoryAPI.getAll({ engine_model: engineModelId });
+      setCategories(response.data.results || response.data || []);
+    } catch (error) {
+      console.error('Failed to fetch part categories:', error);
+      setErrors(prev => ({ ...prev, categories: 'Failed to load part categories' }));
+    } finally {
+      setLoadingCategories(false);
+    }
+  };
+
+  // Reset form when modal opens/closes
+  useEffect(() => {
+    if (open) {
+      setFormData({
+        title: '',
+        description: '',
+        manufacturer: '',
+        car_model: '',
+        engine_model: '',
+        part_category: '',
+        uploaded_files: []
+      });
+      setErrors({});
+      setCarModels([]);
+      setEngineModels([]);
+      setCategories([]);
+    }
+  }, [open]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
-    setErrors(prev => ({ ...prev, [name]: '' }));
-
-    // Reset dependent fields
+    
     if (name === 'manufacturer') {
-      setFormData(prev => ({
-        ...prev,
-        car_model: '',
-        engine_model: '',
-        part_category: '',
-        part_subcategory: '',
+      setFormData(prev => ({ 
+        ...prev, 
+        car_model: '', 
+        engine_model: '', 
+        part_category: '' 
       }));
+      setEngineModels([]);
+      setCategories([]);
+      fetchCarModels(value);
     } else if (name === 'car_model') {
-      setFormData(prev => ({
-        ...prev,
-        engine_model: '',
-        part_category: '',
-        part_subcategory: '',
+      setFormData(prev => ({ 
+        ...prev, 
+        engine_model: '', 
+        part_category: '' 
       }));
+      setCategories([]);
+      fetchEngineModels(value);
     } else if (name === 'engine_model') {
-      setFormData(prev => ({
-        ...prev,
-        part_category: '',
-        part_subcategory: '',
-      }));
-    } else if (name === 'part_category') {
-      setFormData(prev => ({ ...prev, part_subcategory: '' }));
+      setFormData(prev => ({ ...prev, part_category: '' }));
+      fetchCategories(value);
+    }
+    
+    // Clear error for this field
+    if (errors[name]) {
+      setErrors(prev => ({ ...prev, [name]: '' }));
     }
   };
 
   const handleFileChange = (e) => {
     const files = Array.from(e.target.files);
-    setFormData(prev => ({ ...prev, files: [...prev.files, ...files] }));
+    
+    // Validate file types
+    const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'application/pdf'];
+    const invalidFiles = files.filter(file => !validTypes.includes(file.type));
+    
+    if (invalidFiles.length > 0) {
+      setErrors(prev => ({ 
+        ...prev, 
+        files: `Invalid file types: ${invalidFiles.map(f => f.name).join(', ')}` 
+      }));
+      return;
+    }
+    
+    // Validate file sizes (max 10MB per file)
+    const maxSize = 10 * 1024 * 1024; // 10MB
+    const oversizedFiles = files.filter(file => file.size > maxSize);
+    
+    if (oversizedFiles.length > 0) {
+      setErrors(prev => ({ 
+        ...prev, 
+        files: `Files too large (max 10MB): ${oversizedFiles.map(f => f.name).join(', ')}` 
+      }));
+      return;
+    }
+    
+    setFormData(prev => ({ 
+      ...prev, 
+      uploaded_files: [...prev.uploaded_files, ...files] 
+    }));
+    
+    // Clear file error
+    if (errors.files) {
+      setErrors(prev => ({ ...prev, files: '' }));
+    }
   };
 
   const removeFile = (index) => {
     setFormData(prev => ({
       ...prev,
-      files: prev.files.filter((_, i) => i !== index),
+      uploaded_files: prev.uploaded_files.filter((_, i) => i !== index)
     }));
-  };
-
-  const validateStep = () => {
-    const newErrors = {};
-
-    if (step === 1) {
-      if (!formData.manufacturer) newErrors.manufacturer = 'Required';
-      if (!formData.car_model) newErrors.car_model = 'Required';
-      if (!formData.engine_model) newErrors.engine_model = 'Required';
-    } else if (step === 2) {
-      if (!formData.part_category) newErrors.part_category = 'Required';
-    } else if (step === 3) {
-      if (!formData.title) newErrors.title = 'Required';
-      if (formData.files.length === 0) newErrors.files = 'At least one file required';
-    }
-
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
-
-  const handleNext = () => {
-    if (validateStep()) {
-      setStep(step + 1);
-    }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     
-    if (!validateStep()) return;
+    // Validation
+    const newErrors = {};
+    if (!formData.title.trim()) newErrors.title = 'Title is required';
+    if (!formData.engine_model) newErrors.engine_model = 'Engine model is required';
+    if (!formData.part_category) newErrors.part_category = 'Part category is required';
+    if (formData.uploaded_files.length === 0) newErrors.files = 'At least one file is required';
+    
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors);
+      return;
+    }
 
     setLoading(true);
     try {
-      const data = {
+      // Prepare data object (not FormData) - the API will handle FormData creation
+      const dataToSend = {
+        title: formData.title.trim(),
         engine_model: formData.engine_model,
         part_category: formData.part_category,
-        part_subcategory: formData.part_subcategory || undefined,
-        title: formData.title,
-        description: formData.description,
-        uploaded_files: formData.files,
+        uploaded_files: formData.uploaded_files
       };
-
-      await illustrationAPI.create(data);
-      setSuccess(true);
-      setTimeout(() => {
+      
+      // Add optional description
+      if (formData.description && formData.description.trim()) {
+        dataToSend.description = formData.description.trim();
+      }
+      
+      // Create the illustration - let the API handle FormData creation
+      await illustrationAPI.create(dataToSend);
+      
+      // Call success callback
+      if (onSuccess) {
         onSuccess();
-      }, 1500);
+      }
+      
+      // Close the modal
+      handleClose();
     } catch (err) {
-      setErrors({ submit: err.response?.data?.message || 'Failed to create illustration' });
+      console.error('Create illustration error:', err);
+      
+      // Handle API validation errors
+      const apiError = err.response?.data;
+      if (apiError) {
+        const fieldErrors = {};
+        Object.keys(apiError).forEach(key => {
+          if (['title', 'description', 'engine_model', 'part_category'].includes(key)) {
+            fieldErrors[key] = Array.isArray(apiError[key]) 
+              ? apiError[key].join(', ') 
+              : apiError[key];
+          } else if (key === 'non_field_errors' || key === 'detail') {
+            fieldErrors.submit = Array.isArray(apiError[key])
+              ? apiError[key].join(', ')
+              : apiError[key];
+          } else if (key === 'uploaded_files' || key === 'files') {
+            fieldErrors.files = Array.isArray(apiError[key]) 
+              ? apiError[key].join(', ') 
+              : apiError[key];
+          } else {
+            // Catch any other field errors
+            fieldErrors[key] = Array.isArray(apiError[key]) 
+              ? apiError[key].join(', ') 
+              : apiError[key];
+          }
+        });
+        
+        // If there are field errors but no specific mapping, show as general error
+        if (Object.keys(fieldErrors).length === 0) {
+          fieldErrors.submit = JSON.stringify(apiError);
+        }
+        
+        setErrors(fieldErrors);
+      } else {
+        setErrors({ submit: err.message || 'Failed to create illustration' });
+      }
     } finally {
       setLoading(false);
     }
   };
 
-  if (success) {
-    return (
-      <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-        <div className="bg-white rounded-lg p-8 max-w-md w-full text-center">
-          <CheckCircle size={64} className="text-green-500 mx-auto mb-4" />
-          <h3 className="text-2xl font-bold text-gray-900 mb-2">Success!</h3>
-          <p className="text-gray-600">Illustration created successfully</p>
-        </div>
-      </div>
-    );
-  }
+  const handleClose = () => {
+    if (loading) return; // Prevent closing while loading
+    
+    setFormData({
+      title: '',
+      description: '',
+      manufacturer: '',
+      car_model: '',
+      engine_model: '',
+      part_category: '',
+      uploaded_files: []
+    });
+    setErrors({});
+    setLoading(false);
+    setCarModels([]);
+    setEngineModels([]);
+    setCategories([]);
+    onClose();
+  };
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-lg max-w-2xl w-full max-h-[90vh] overflow-hidden flex flex-col">
-        {/* Header */}
-        <div className="flex items-center justify-between p-6 border-b">
-          <div>
-            <h2 className="text-2xl font-bold text-gray-900">Create Illustration</h2>
-            <p className="text-sm text-gray-500 mt-1">Step {step} of 3</p>
-          </div>
-          <button
-            onClick={onClose}
-            className="text-gray-400 hover:text-gray-600 transition-colors"
-          >
-            <X size={24} />
-          </button>
-        </div>
-
-        {/* Progress Bar */}
-        <div className="px-6 pt-4">
-          <div className="flex items-center justify-between mb-2">
-            <span className="text-xs font-medium text-gray-600">
-              {step === 1 ? 'Vehicle Details' : step === 2 ? 'Part Selection' : 'Illustration Details'}
-            </span>
-            <span className="text-xs text-gray-500">{Math.round((step / 3) * 100)}%</span>
-          </div>
-          <div className="w-full bg-gray-200 rounded-full h-2">
-            <div
-              className="bg-blue-600 h-2 rounded-full transition-all duration-300"
-              style={{ width: `${(step / 3) * 100}%` }}
-            />
-          </div>
-        </div>
-
-        {/* Form Content */}
-        <form onSubmit={handleSubmit} className="flex-1 overflow-y-auto p-6">
-          {/* Step 1: Vehicle Selection */}
-          {step === 1 && (
-            <div className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Manufacturer *
-                </label>
-                <select
-                  name="manufacturer"
-                  value={formData.manufacturer}
-                  onChange={handleChange}
-                  className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 ${
-                    errors.manufacturer ? 'border-red-500' : 'border-gray-300'
-                  }`}
-                >
-                  <option value="">Select manufacturer...</option>
-                  {manufacturers.map(m => (
-                    <option key={m.id} value={m.id}>{m.name}</option>
-                  ))}
-                </select>
-                {errors.manufacturer && (
-                  <p className="text-red-500 text-sm mt-1">{errors.manufacturer}</p>
-                )}
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Car Model *
-                </label>
-                <select
-                  name="car_model"
-                  value={formData.car_model}
-                  onChange={handleChange}
-                  disabled={!formData.manufacturer}
-                  className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 ${
-                    errors.car_model ? 'border-red-500' : 'border-gray-300'
-                  } disabled:bg-gray-100`}
-                >
-                  <option value="">Select car model...</option>
-                  {carModels.map(c => (
-                    <option key={c.id} value={c.id}>{c.name}</option>
-                  ))}
-                </select>
-                {errors.car_model && (
-                  <p className="text-red-500 text-sm mt-1">{errors.car_model}</p>
-                )}
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Engine Model *
-                </label>
-                <select
-                  name="engine_model"
-                  value={formData.engine_model}
-                  onChange={handleChange}
-                  disabled={!formData.car_model}
-                  className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 ${
-                    errors.engine_model ? 'border-red-500' : 'border-gray-300'
-                  } disabled:bg-gray-100`}
-                >
-                  <option value="">Select engine model...</option>
-                  {engineModels.map(e => (
-                    <option key={e.id} value={e.id}>{e.name}</option>
-                  ))}
-                </select>
-                {errors.engine_model && (
-                  <p className="text-red-500 text-sm mt-1">{errors.engine_model}</p>
-                )}
-              </div>
-            </div>
-          )}
-
-          {/* Step 2: Part Selection */}
-          {step === 2 && (
-            <div className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Part Category *
-                </label>
-                <select
-                  name="part_category"
-                  value={formData.part_category}
-                  onChange={handleChange}
-                  className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 ${
-                    errors.part_category ? 'border-red-500' : 'border-gray-300'
-                  }`}
-                >
-                  <option value="">Select category...</option>
-                  {categories.map(c => (
-                    <option key={c.id} value={c.id}>{c.name}</option>
-                  ))}
-                </select>
-                {errors.part_category && (
-                  <p className="text-red-500 text-sm mt-1">{errors.part_category}</p>
-                )}
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Part Subcategory (Optional)
-                </label>
-                <select
-                  name="part_subcategory"
-                  value={formData.part_subcategory}
-                  onChange={handleChange}
-                  disabled={!formData.part_category}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100"
-                >
-                  <option value="">Select subcategory...</option>
-                  {subCategories.map(s => (
-                    <option key={s.id} value={s.id}>{s.name}</option>
-                  ))}
-                </select>
-              </div>
-            </div>
-          )}
-
-          {/* Step 3: Illustration Details */}
-          {step === 3 && (
-            <div className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Title *
-                </label>
-                <input
-                  type="text"
-                  name="title"
-                  value={formData.title}
-                  onChange={handleChange}
-                  className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 ${
-                    errors.title ? 'border-red-500' : 'border-gray-300'
-                  }`}
-                  placeholder="e.g., Engine Assembly Diagram"
-                />
-                {errors.title && (
-                  <p className="text-red-500 text-sm mt-1">{errors.title}</p>
-                )}
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Description
-                </label>
-                <textarea
-                  name="description"
-                  value={formData.description}
-                  onChange={handleChange}
-                  rows={4}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-                  placeholder="Add details about this illustration..."
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Upload Files *
-                </label>
-                <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-blue-500 transition-colors">
-                  <Upload size={48} className="mx-auto text-gray-400 mb-2" />
-                  <p className="text-sm text-gray-600 mb-2">
-                    Click to upload or drag and drop
-                  </p>
-                  <p className="text-xs text-gray-500 mb-4">
-                    PNG, JPG, PDF up to 10MB
-                  </p>
-                  <input
-                    type="file"
-                    multiple
-                    onChange={handleFileChange}
-                    className="hidden"
-                    id="file-upload"
-                    accept="image/*,.pdf"
-                  />
-                  <label
-                    htmlFor="file-upload"
-                    className="inline-block px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 cursor-pointer"
-                  >
-                    Choose Files
-                  </label>
-                </div>
-                {errors.files && (
-                  <p className="text-red-500 text-sm mt-1">{errors.files}</p>
-                )}
-
-                {/* File List */}
-                {formData.files.length > 0 && (
-                  <div className="mt-4 space-y-2">
-                    {formData.files.map((file, index) => (
-                      <div key={index} className="flex items-center justify-between p-2 bg-gray-50 rounded">
-                        <span className="text-sm text-gray-700 truncate">{file.name}</span>
-                        <button
-                          type="button"
-                          onClick={() => removeFile(index)}
-                          className="text-red-500 hover:text-red-700"
-                        >
-                          <X size={18} />
-                        </button>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
-            </div>
-          )}
-
-          {errors.submit && (
-            <div className="mt-4 p-3 bg-red-50 border border-red-200 rounded-lg flex items-center gap-2 text-red-700">
-              <AlertCircle size={20} />
-              <span className="text-sm">{errors.submit}</span>
-            </div>
-          )}
-        </form>
-
-        {/* Footer */}
-        <div className="flex items-center justify-between p-6 border-t bg-gray-50">
-          <button
-            type="button"
-            onClick={step === 1 ? onClose : () => setStep(step - 1)}
-            className="px-4 py-2 text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-100"
-          >
-            {step === 1 ? 'Cancel' : 'Back'}
-          </button>
-
-          {step < 3 ? (
-            <button
-              type="button"
-              onClick={handleNext}
-              className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
-            >
-              Next
-            </button>
-          ) : (
-            <button
-              onClick={handleSubmit}
+    <Dialog 
+      open={open} 
+      onClose={handleClose} 
+      maxWidth="sm" 
+      fullWidth
+      disableEscapeKeyDown={loading}
+    >
+      <DialogTitle>
+        <Stack direction="row" justifyContent="space-between" alignItems="center">
+          <Typography variant="h6">New Illustration</Typography>
+          <IconButton onClick={handleClose} disabled={loading}>
+            <CloseIcon />
+          </IconButton>
+        </Stack>
+      </DialogTitle>
+      
+      <form onSubmit={handleSubmit}>
+        <DialogContent>
+          <Stack spacing={2} sx={{ pt: 1 }}>
+            <TextField
+              label="Title *"
+              name="title"
+              value={formData.title}
+              onChange={handleChange}
+              error={!!errors.title}
+              helperText={errors.title}
+              size="small"
+              fullWidth
               disabled={loading}
-              className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
+              autoFocus
+            />
+
+            <TextField
+              label="Description"
+              name="description"
+              value={formData.description}
+              onChange={handleChange}
+              error={!!errors.description}
+              helperText={errors.description}
+              multiline
+              rows={2}
+              size="small"
+              fullWidth
+              disabled={loading}
+            />
+
+            {/* Manufacturer selection (optional, for filtering) */}
+            <TextField
+              select
+              label="Manufacturer"
+              name="manufacturer"
+              value={formData.manufacturer}
+              onChange={handleChange}
+              error={!!errors.manufacturers}
+              helperText={errors.manufacturers}
+              size="small"
+              fullWidth
+              disabled={loading || loadingManufacturers || manufacturers.length === 0}
             >
-              {loading ? 'Creating...' : 'Create Illustration'}
-            </button>
-          )}
-        </div>
-      </div>
-    </div>
+              <MenuItem value="">
+                {loadingManufacturers ? 'Loading...' : 'Select manufacturer (optional)'}
+              </MenuItem>
+              {manufacturers.map(m => (
+                <MenuItem key={m.id} value={m.id}>{m.name}</MenuItem>
+              ))}
+            </TextField>
+
+            {/* Car Model selection */}
+            <TextField
+              select
+              label="Car Model"
+              name="car_model"
+              value={formData.car_model}
+              onChange={handleChange}
+              error={!!errors.car_model}
+              helperText={errors.car_model || 'Select a manufacturer first'}
+              disabled={loading || loadingCarModels || !formData.manufacturer}
+              size="small"
+              fullWidth
+            >
+              <MenuItem value="">
+                {loadingCarModels ? 'Loading...' : 'Select car model'}
+              </MenuItem>
+              {carModels.map(c => (
+                <MenuItem key={c.id} value={c.id}>
+                  {c.name}
+                </MenuItem>
+              ))}
+            </TextField>
+
+            {/* Engine Model selection */}
+            <TextField
+              select
+              label="Engine Model *"
+              name="engine_model"
+              value={formData.engine_model}
+              onChange={handleChange}
+              error={!!errors.engine_model}
+              helperText={errors.engine_model || 'Select a car model first'}
+              disabled={loading || loadingEngineModels || !formData.car_model}
+              size="small"
+              fullWidth
+            >
+              <MenuItem value="">
+                {loadingEngineModels ? 'Loading...' : 'Select engine model'}
+              </MenuItem>
+              {engineModels.map(e => (
+                <MenuItem key={e.id} value={e.id}>
+                  {e.name}
+                </MenuItem>
+              ))}
+            </TextField>
+
+            {/* Part Category selection */}
+            <TextField
+              select
+              label="Part Category *"
+              name="part_category"
+              value={formData.part_category}
+              onChange={handleChange}
+              error={!!errors.part_category}
+              helperText={errors.part_category || 'Select an engine model first'}
+              disabled={loading || loadingCategories || !formData.engine_model}
+              size="small"
+              fullWidth
+            >
+              <MenuItem value="">
+                {loadingCategories ? 'Loading...' : 'Select part category'}
+              </MenuItem>
+              {categories.map(c => (
+                <MenuItem key={c.id} value={c.id}>
+                  {c.name}
+                </MenuItem>
+              ))}
+            </TextField>
+
+            {/* File Upload Section */}
+            <Box>
+              <input
+                accept="image/*,.pdf,.png,.jpg,.jpeg"
+                style={{ display: 'none' }}
+                id="illustration-file-upload"
+                type="file"
+                multiple
+                onChange={handleFileChange}
+                disabled={loading}
+              />
+              <label htmlFor="illustration-file-upload">
+                <Button
+                  component="span"
+                  variant="outlined"
+                  startIcon={<UploadIcon />}
+                  fullWidth
+                  disabled={loading}
+                >
+                  Upload Files
+                </Button>
+              </label>
+              {errors.files && (
+                <FormHelperText error>{errors.files}</FormHelperText>
+              )}
+              <Typography variant="caption" color="text.secondary" display="block" sx={{ mt: 0.5 }}>
+                Supported: Images (PNG, JPG, JPEG), PDF. Max 10MB per file.
+              </Typography>
+            </Box>
+
+            {/* File List */}
+            {formData.uploaded_files.length > 0 && (
+              <Box>
+                <Typography variant="body2" fontWeight="medium" sx={{ mb: 1 }}>
+                  Selected Files ({formData.uploaded_files.length})
+                </Typography>
+                <Stack spacing={1}>
+                  {formData.uploaded_files.map((file, index) => (
+                    <Stack 
+                      key={index} 
+                      direction="row" 
+                      alignItems="center" 
+                      justifyContent="space-between"
+                      sx={{ 
+                        p: 1, 
+                        bgcolor: 'grey.50', 
+                        borderRadius: 1,
+                        border: '1px solid',
+                        borderColor: 'divider'
+                      }}
+                    >
+                      <Box sx={{ flex: 1, minWidth: 0 }}>
+                        <Typography variant="body2" noWrap>
+                          {file.name}
+                        </Typography>
+                        <Typography variant="caption" color="text.secondary">
+                          {(file.size / 1024).toFixed(2)} KB
+                        </Typography>
+                      </Box>
+                      <IconButton 
+                        size="small" 
+                        onClick={() => removeFile(index)}
+                        disabled={loading}
+                        color="error"
+                      >
+                        <DeleteIcon fontSize="small" />
+                      </IconButton>
+                    </Stack>
+                  ))}
+                </Stack>
+              </Box>
+            )}
+
+            {/* Error Alert */}
+            {errors.submit && (
+              <Alert severity="error" sx={{ mt: 2 }}>
+                {errors.submit}
+              </Alert>
+            )}
+          </Stack>
+        </DialogContent>
+
+        <DialogActions sx={{ p: 2, pt: 0 }}>
+          <Button 
+            onClick={handleClose} 
+            disabled={loading}
+          >
+            Cancel
+          </Button>
+          <Button 
+            type="submit" 
+            variant="contained"
+            disabled={loading || formData.uploaded_files.length === 0}
+            startIcon={loading ? <CircularProgress size={16} color="inherit" /> : null}
+          >
+            {loading ? 'Creating...' : 'Create Illustration'}
+          </Button>
+        </DialogActions>
+      </form>
+    </Dialog>
   );
 };
 
