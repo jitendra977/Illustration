@@ -27,18 +27,18 @@ const Sidebar = ({ open, onClose }) => {
   const location = useLocation();
 
   const menuItems = [
-    { label: 'Dashboard', icon: <HomeIcon />, path: '/' },
-    { label: 'Illustrations', icon: <DashboardIcon />, path: '/illustrations' },
-    { label: 'Manufacturers', icon: <StoreIcon />, path: '/manufacturers' },
-    { label: 'Car Models', icon: <CarIcon />, path: '/car-models' },
-    { label: 'Engine Models', icon: <BuildIcon />, path: '/engine-models' },
-    { label: 'Part Categories', icon: <CategoryIcon />, path: '/part-categories' },
+    { label: 'ダッシュボード', icon: <HomeIcon />, path: '/' },
+    { label: '図面', icon: <DashboardIcon />, path: '/illustrations' },
+    { label: 'メーカー', icon: <StoreIcon />, path: '/manufacturers' },
+    { label: '車種', icon: <CarIcon />, path: '/car-models' },
+    { label: 'エンジン型式', icon: <BuildIcon />, path: '/engine-models' },
+    { label: '部品カテゴリー', icon: <CategoryIcon />, path: '/part-categories' },
   ];
 
   const secondaryMenuItems = [
-    { label: 'Settings', icon: <SettingsIcon />, path: '/settings' },
-    { label: 'Analytics', icon: <AnalyticsIcon />, path: '/analytics' },
-    { label: 'Profile', icon: <PersonIcon />, path: '/profile' },
+    { label: '設定', icon: <SettingsIcon />, path: '/settings' },
+    { label: '分析', icon: <AnalyticsIcon />, path: '/analytics' },
+    { label: 'プロフィール', icon: <PersonIcon />, path: '/profile' },
   ];
 
   const handleNavigation = (path) => {
@@ -56,7 +56,7 @@ const Sidebar = ({ open, onClose }) => {
     if (user?.first_name && user?.last_name) {
       return `${user.first_name} ${user.last_name}`;
     }
-    return user?.username || 'User';
+    return user?.username || 'ユーザー';
   };
 
   const getUserInitial = () => {
@@ -67,9 +67,9 @@ const Sidebar = ({ open, onClose }) => {
   };
 
   const getUserRole = () => {
-    if (user?.is_superuser) return 'Super Admin';
-    if (user?.is_staff) return 'Admin';
-    return 'User';
+    if (user?.is_superuser) return 'スーパー管理者';
+    if (user?.is_staff) return '管理者';
+    return 'ユーザー';
   };
 
   return (
@@ -85,11 +85,11 @@ const Sidebar = ({ open, onClose }) => {
       }}
     >
       <Box sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
-        {/* Header */}
+        {/* Header - ヘッダー */}
         <Box sx={{ p: 2, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
             <StoreIcon color="primary" />
-            <Typography variant="h6" fontWeight="bold">Menu</Typography>
+            <Typography variant="h6" fontWeight="bold">メニュー</Typography>
           </Box>
           <IconButton onClick={onClose}>
             <ChevronLeftIcon />
@@ -98,7 +98,7 @@ const Sidebar = ({ open, onClose }) => {
         
         <Divider />
 
-        {/* User Info */}
+        {/* User Info - ユーザー情報 */}
         <Box sx={{ p: 2 }}>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2 }}>
             <Avatar 
@@ -124,14 +124,14 @@ const Sidebar = ({ open, onClose }) => {
             </Box>
           </Box>
           
-          {/* Quick Stats */}
+          {/* Quick Stats - クイック統計 */}
           <Box sx={{ display: 'flex', gap: 2, textAlign: 'center' }}>
             <Box>
               <Typography variant="h6" fontWeight="bold" color="primary">
                 {user?.illustrations_count || 0}
               </Typography>
               <Typography variant="caption" color="text.secondary">
-                Illustrations
+                図面数
               </Typography>
             </Box>
             <Box>
@@ -139,7 +139,7 @@ const Sidebar = ({ open, onClose }) => {
                 {user?.uploads_count || 0}
               </Typography>
               <Typography variant="caption" color="text.secondary">
-                Uploads
+                アップロード数
               </Typography>
             </Box>
           </Box>
@@ -147,10 +147,10 @@ const Sidebar = ({ open, onClose }) => {
 
         <Divider />
 
-        {/* Main Menu Items */}
+        {/* Main Menu Items - メインメニュー */}
         <Box sx={{ flex: 1, overflow: 'auto', py: 2 }}>
           <Typography variant="caption" color="text.secondary" sx={{ px: 3, mb: 1, display: 'block' }}>
-            MANAGEMENT
+            管理
           </Typography>
           <List sx={{ px: 1 }}>
             {menuItems.map((item) => (
@@ -179,7 +179,7 @@ const Sidebar = ({ open, onClose }) => {
           </List>
 
           <Typography variant="caption" color="text.secondary" sx={{ px: 3, mt: 3, mb: 1, display: 'block' }}>
-            ACCOUNT
+            アカウント
           </Typography>
           <List sx={{ px: 1 }}>
             {secondaryMenuItems.map((item) => (
@@ -210,7 +210,7 @@ const Sidebar = ({ open, onClose }) => {
 
         <Divider />
 
-        {/* Logout */}
+        {/* Logout - ログアウト */}
         <Box sx={{ p: 2 }}>
           <ListItemButton 
             onClick={handleLogout} 
@@ -228,7 +228,7 @@ const Sidebar = ({ open, onClose }) => {
             <ListItemIcon sx={{ minWidth: 40 }}>
               <LogoutIcon color="error" />
             </ListItemIcon>
-            <ListItemText primary="Logout" />
+            <ListItemText primary="ログアウト" />
           </ListItemButton>
         </Box>
       </Box>

@@ -6,7 +6,6 @@ import {
   partCategoryAPI,
   partSubCategoryAPI,
   illustrationAPI,
-  illustrationFileAPI,
 } from '../api/illustrations';
 
 // ============================================================================
@@ -90,8 +89,9 @@ export const useManufacturers = () => {
     deleteManufacturer,
   };
 };
+
 // ============================================================================
-// CAR MODELS HOOK - CORRECTED
+// CAR MODELS HOOK
 // ============================================================================
 export const useCarModels = (manufacturerId = null) => {
   const [carModels, setCarModels] = useState([]);
@@ -140,12 +140,10 @@ export const useCarModels = (manufacturerId = null) => {
     setLoading(true);
     setError(null);
     try {
-      // Try PATCH first (for partial updates), fall back to PUT
       let response;
       try {
         response = await carModelAPI.partialUpdate(slug, carModelData);
       } catch (patchError) {
-        // If PATCH fails, try PUT
         if (patchError.response?.status === 405 || patchError.response?.status === 404) {
           response = await carModelAPI.update(slug, carModelData);
         } else {
@@ -201,11 +199,11 @@ export const useCarModels = (manufacturerId = null) => {
 };
 
 // ============================================================================
-// ENGINE MODELS HOOK - CORRECTED VERSION
+// ENGINE MODELS HOOK
 // ============================================================================
 export const useEngineModels = (carModelId = null) => {
   const [engineModels, setEngineModels] = useState([]);
-  const [loading, setLoading] = useState(true); // Changed to true initially
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
   const fetchEngineModels = useCallback(async (params = {}) => {
@@ -281,7 +279,6 @@ export const useEngineModels = (carModelId = null) => {
     }
   }, []);
 
-  // Fetch engine models on initial load
   useEffect(() => {
     fetchEngineModels();
   }, [fetchEngineModels]);
@@ -298,7 +295,7 @@ export const useEngineModels = (carModelId = null) => {
 };
 
 // ============================================================================
-// PART CATEGORIES HOOK
+// PART CATEGORIES HOOK - COMPLETE
 // ============================================================================
 export const usePartCategories = (engineModelId = null) => {
   const [categories, setCategories] = useState([]);
@@ -315,7 +312,10 @@ export const usePartCategories = (engineModelId = null) => {
       setCategories(data.results || data);
       return data;
     } catch (err) {
-      setError(err.response?.data?.message || 'Failed to fetch categories');
+      const errorMessage = err.response?.data?.detail || 
+                          err.response?.data?.message || 
+                          'Failed to fetch categories';
+      setError(errorMessage);
       throw err;
     } finally {
       setLoading(false);
@@ -330,7 +330,45 @@ export const usePartCategories = (engineModelId = null) => {
       setCategories(prev => [data, ...prev]);
       return data;
     } catch (err) {
-      setError(err.response?.data?.message || 'Failed to create category');
+      const errorMessage = err.response?.data?.detail || 
+                          err.response?.data?.message || 
+                          'Failed to create category';
+      setError(errorMessage);
+      throw err;
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  const updateCategory = useCallback(async (id, categoryData) => {
+    setLoading(true);
+    setError(null);
+    try {
+      const { data } = await partCategoryAPI.update(id, categoryData);
+      setCategories(prev => prev.map(c => c.id === id ? data : c));
+      return data;
+    } catch (err) {
+      const errorMessage = err.response?.data?.detail || 
+                          err.response?.data?.message || 
+                          'Failed to update category';
+      setError(errorMessage);
+      throw err;
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  const deleteCategory = useCallback(async (id) => {
+    setLoading(true);
+    setError(null);
+    try {
+      await partCategoryAPI.delete(id);
+      setCategories(prev => prev.filter(c => c.id !== id));
+    } catch (err) {
+      const errorMessage = err.response?.data?.detail || 
+                          err.response?.data?.message || 
+                          'Failed to delete category';
+      setError(errorMessage);
       throw err;
     } finally {
       setLoading(false);
@@ -338,10 +376,8 @@ export const usePartCategories = (engineModelId = null) => {
   }, []);
 
   useEffect(() => {
-    if (engineModelId) {
-      fetchCategories();
-    }
-  }, [engineModelId, fetchCategories]);
+    fetchCategories();
+  }, [fetchCategories]);
 
   return {
     categories,
@@ -349,11 +385,13 @@ export const usePartCategories = (engineModelId = null) => {
     error,
     fetchCategories,
     createCategory,
+    updateCategory,
+    deleteCategory,
   };
 };
 
 // ============================================================================
-// PART SUBCATEGORIES HOOK
+// PART SUBCATEGORIES HOOK - COMPLETE
 // ============================================================================
 export const usePartSubCategories = (categoryId = null) => {
   const [subCategories, setSubCategories] = useState([]);
@@ -370,7 +408,10 @@ export const usePartSubCategories = (categoryId = null) => {
       setSubCategories(data.results || data);
       return data;
     } catch (err) {
-      setError(err.response?.data?.message || 'Failed to fetch subcategories');
+      const errorMessage = err.response?.data?.detail || 
+                          err.response?.data?.message || 
+                          'Failed to fetch subcategories';
+      setError(errorMessage);
       throw err;
     } finally {
       setLoading(false);
@@ -385,7 +426,45 @@ export const usePartSubCategories = (categoryId = null) => {
       setSubCategories(prev => [data, ...prev]);
       return data;
     } catch (err) {
-      setError(err.response?.data?.message || 'Failed to create subcategory');
+      const errorMessage = err.response?.data?.detail || 
+                          err.response?.data?.message || 
+                          'Failed to create subcategory';
+      setError(errorMessage);
+      throw err;
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  const updateSubCategory = useCallback(async (id, subCategoryData) => {
+    setLoading(true);
+    setError(null);
+    try {
+      const { data } = await partSubCategoryAPI.update(id, subCategoryData);
+      setSubCategories(prev => prev.map(s => s.id === id ? data : s));
+      return data;
+    } catch (err) {
+      const errorMessage = err.response?.data?.detail || 
+                          err.response?.data?.message || 
+                          'Failed to update subcategory';
+      setError(errorMessage);
+      throw err;
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  const deleteSubCategory = useCallback(async (id) => {
+    setLoading(true);
+    setError(null);
+    try {
+      await partSubCategoryAPI.delete(id);
+      setSubCategories(prev => prev.filter(s => s.id !== id));
+    } catch (err) {
+      const errorMessage = err.response?.data?.detail || 
+                          err.response?.data?.message || 
+                          'Failed to delete subcategory';
+      setError(errorMessage);
       throw err;
     } finally {
       setLoading(false);
@@ -393,10 +472,8 @@ export const usePartSubCategories = (categoryId = null) => {
   }, []);
 
   useEffect(() => {
-    if (categoryId) {
-      fetchSubCategories();
-    }
-  }, [categoryId, fetchSubCategories]);
+    fetchSubCategories();
+  }, [fetchSubCategories]);
 
   return {
     subCategories,
@@ -404,9 +481,14 @@ export const usePartSubCategories = (categoryId = null) => {
     error,
     fetchSubCategories,
     createSubCategory,
+    updateSubCategory,
+    deleteSubCategory,
   };
 };
 
+// ============================================================================
+// ILLUSTRATIONS HOOK - COMPLETE
+// ============================================================================
 export const useIllustrations = (filters = {}) => {
   const [illustrations, setIllustrations] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -420,7 +502,10 @@ export const useIllustrations = (filters = {}) => {
       setIllustrations(data.results || data);
       return data;
     } catch (err) {
-      setError(err.response?.data?.message || 'Failed to fetch illustrations');
+      const errorMessage = err.response?.data?.detail || 
+                          err.response?.data?.message || 
+                          'Failed to fetch illustrations';
+      setError(errorMessage);
       throw err;
     } finally {
       setLoading(false);
@@ -453,7 +538,10 @@ export const useIllustrations = (filters = {}) => {
       setIllustrations(prev => prev.map(i => i.id === id ? data : i));
       return data;
     } catch (err) {
-      setError(err.response?.data?.message || 'Failed to update illustration');
+      const errorMessage = err.response?.data?.detail || 
+                          err.response?.data?.message || 
+                          'Failed to update illustration';
+      setError(errorMessage);
       throw err;
     } finally {
       setLoading(false);
@@ -467,7 +555,10 @@ export const useIllustrations = (filters = {}) => {
       await illustrationAPI.delete(id);
       setIllustrations(prev => prev.filter(i => i.id !== id));
     } catch (err) {
-      setError(err.response?.data?.message || 'Failed to delete illustration');
+      const errorMessage = err.response?.data?.detail || 
+                          err.response?.data?.message || 
+                          'Failed to delete illustration';
+      setError(errorMessage);
       throw err;
     } finally {
       setLoading(false);
@@ -486,6 +577,5 @@ export const useIllustrations = (filters = {}) => {
     createIllustration,
     updateIllustration,
     deleteIllustration,
-    
   };
 };

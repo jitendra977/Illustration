@@ -2,13 +2,17 @@ import React from 'react';
 import { useLocation } from 'react-router-dom';
 import Navbar from '../common/Navbar';
 import Sidebar from '../common/Sidebar';
-import { Box, Container, Fab, Zoom, IconButton, Typography, Avatar } from '@mui/material';
+import { Box, Container, Fab, Zoom, IconButton, Typography, Avatar, useMediaQuery, useTheme } from '@mui/material';
 import { KeyboardArrowUp, Menu, Store } from '@mui/icons-material';
 import { useAuth } from '../../context/AuthContext';
 
 const DashboardLayout = ({ children }) => {
   const location = useLocation();
   const { user } = useAuth();
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+  const isTablet = useMediaQuery(theme.breakpoints.down('md'));
+  
   const [sidebarOpen, setSidebarOpen] = React.useState(false);
   const [mainContentRef, setMainContentRef] = React.useState(null);
   const [showScrollTop, setShowScrollTop] = React.useState(false);
@@ -53,31 +57,59 @@ const DashboardLayout = ({ children }) => {
         <Box sx={{ 
           display: 'flex', 
           alignItems: 'center', 
-          p: 2, 
+          px: { xs: 1, sm: 2 },
+          py: { xs: 1, sm: 2 },
           borderBottom: '1px solid',
           borderColor: 'divider',
-          backgroundColor: 'background.paper'
+          backgroundColor: 'background.paper',
+          minHeight: { xs: 56, sm: 64 }
         }}>
           {/* Menu Button */}
-          <IconButton onClick={() => setSidebarOpen(true)}>
+          <IconButton 
+            onClick={() => setSidebarOpen(true)}
+            sx={{ mr: { xs: 0.5, sm: 1 } }}
+          >
             <Menu />
           </IconButton>
           
           {/* App Title */}
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, flex: 1, ml: 1 }}>
-            <Store color="primary" />
-            <Typography variant="h6" fontWeight="bold">YAWイラストシステム</Typography>
+          <Box sx={{ 
+            display: 'flex', 
+            alignItems: 'center', 
+            gap: { xs: 0.5, sm: 1 }, 
+            flex: 1, 
+            ml: { xs: 0.5, sm: 1 },
+            overflow: 'hidden'
+          }}>
+            <Store 
+              color="primary" 
+              sx={{ fontSize: { xs: 20, sm: 24 } }}
+            />
+            <Typography 
+              variant={isMobile ? 'subtitle1' : 'h6'} 
+              fontWeight="bold"
+              sx={{
+                overflow: 'hidden',
+                textOverflow: 'ellipsis',
+                whiteSpace: 'nowrap'
+              }}
+            >
+              {isMobile ? 'YAWシステム' : 'YAWイラストシステム'}
+            </Typography>
           </Box>
 
           {/* User Profile */}
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: { xs: 0.5, sm: 1 } }}>
             <Avatar 
               src={user?.profile_image} 
-              sx={{ width: 40, height: 40 }}
+              sx={{ 
+                width: { xs: 32, sm: 40 }, 
+                height: { xs: 32, sm: 40 },
+                fontSize: { xs: '0.875rem', sm: '1rem' }
+              }}
             >
               {getUserInitial()}
             </Avatar>
-           
           </Box>
         </Box>
         
@@ -94,22 +126,30 @@ const DashboardLayout = ({ children }) => {
           sx={{ 
             flex: 1, 
             overflowY: 'auto', 
-            pb: 8 // Space for bottom navigation
+            overflowX: 'hidden',
+            pb: { xs: 7, sm: 8 }, // Space for bottom navigation
+            WebkitOverflowScrolling: 'touch' // Smooth scrolling on iOS
           }}
         >
-          <Container maxWidth="xl" sx={{ py: 3 }}>
+          <Container 
+            maxWidth="xl" 
+            sx={{ 
+              py: { xs: 2, sm: 3 },
+              px: { xs: 2, sm: 3 }
+            }}
+          >
             {children}
           </Container>
 
           {/* Scroll to Top Button */}
           <Zoom in={showScrollTop}>
             <Fab 
-              size="small" 
+              size={isMobile ? 'small' : 'medium'}
               onClick={handleScrollTop}
               sx={{ 
                 position: 'fixed', 
-                bottom: 80, // Above bottom navigation
-                right: 16 
+                bottom: { xs: 70, sm: 80 }, // Above bottom navigation
+                right: { xs: 12, sm: 16 }
               }}
             >
               <KeyboardArrowUp />

@@ -17,7 +17,8 @@ import {
   useTheme,
   CircularProgress,
   Skeleton,
-  Tooltip
+  Avatar,
+  useMediaQuery
 } from '@mui/material';
 import {
   TrendingUp as TrendingUpIcon,
@@ -28,16 +29,13 @@ import {
   Person as PersonIcon,
   Refresh as RefreshIcon,
   ArrowForward as ArrowForwardIcon,
-  MoreVert as MoreIcon,
-  FileUpload as UploadIcon,
   Add as AddIcon,
-  Dashboard as DashboardIcon
+  Storage as StorageIcon
 } from '@mui/icons-material';
-import { illustrationAPI, manufacturerAPI, carModelAPI, engineModelAPI, partCategoryAPI } from '../../api/illustrations';
+import { illustrationAPI, manufacturerAPI, carModelAPI, engineModelAPI } from '../../api/illustrations';
 import { useAuth } from '../../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import CreateIllustrationModal from '../../components/forms/CreateIllustrationModal';
-
 
 const Dashboard = () => {
   const [stats, setStats] = useState({
@@ -45,7 +43,6 @@ const Dashboard = () => {
     totalManufacturers: 0,
     totalCarModels: 0,
     totalEngineModels: 0,
-    totalPartCategories: 0,
     recentIllustrations: [],
     loading: true,
     error: null,
@@ -54,21 +51,17 @@ const Dashboard = () => {
   
   const [refreshing, setRefreshing] = useState(false);
   const [createModalOpen, setCreateModalOpen] = useState(false);
-  const { user, logout } = useAuth();
+  const { user } = useAuth();
   const navigate = useNavigate();
   const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+  const isTablet = useMediaQuery(theme.breakpoints.down('md'));
   
-  // Use ref to track if data has been fetched
   const hasFetchedRef = useRef(false);
   const isFetchingRef = useRef(false);
 
-  // Fetch dashboard data - NOT memoized to prevent dependency issues
   const fetchDashboardData = async (showRefresh = false) => {
-    // Prevent multiple simultaneous requests
-    if (isFetchingRef.current) {
-      console.log('Fetch already in progress, skipping...');
-      return;
-    }
+    if (isFetchingRef.current) return;
     
     if (showRefresh) {
       setRefreshing(true);
@@ -79,94 +72,42 @@ const Dashboard = () => {
     isFetchingRef.current = true;
     
     try {
-      // Fetch all data in parallel with timeout protection
-      const timeoutPromise = new Promise((_, reject) => 
-        setTimeout(() => reject(new Error('Request timeout')), 15000)
-      );
-      
-      const fetchPromises = Promise.allSettled([
+      const results = await Promise.allSettled([
         illustrationAPI.getAll({ limit: 5, ordering: '-created_at' }),
         manufacturerAPI.getAll({ limit: 1 }),
         carModelAPI.getAll({ limit: 1 }),
-        engineModelAPI.getAll({ limit: 1 }),
-        partCategoryAPI.getAll({ limit: 1 })
+        engineModelAPI.getAll({ limit: 1 })
       ]);
-      
-      const results = await Promise.race([fetchPromises, timeoutPromise]);
 
-      // Handle responses
       const getData = (result) => {
-        if (result.status === 'rejected') {
-          console.warn('API request rejected:', result.reason);
-          return [];
-        }
+        if (result.status === 'rejected') return [];
         const data = result.value.data;
         return data.results || data || [];
       };
 
-      const getCount = (result, index) => {
-        if (result.status === 'rejected') {
-          console.warn(`Failed to fetch count for index ${index}:`, result.reason);
-          return 0;
-        }
+      const getCount = (result) => {
+        if (result.status === 'rejected') return 0;
         const data = result.value.data;
-        if (typeof data === 'object') {
-          if (data.count !== undefined) return data.count;
-          if (data.results && Array.isArray(data.results)) return data.results.length;
-          if (Array.isArray(data)) return data.length;
-        }
-        return 0;
+        return data.count || (Array.isArray(data) ? data.length : 0);
       };
 
-      const newStats = {
-        totalIllustrations: getCount(results[0], 0),
-        totalManufacturers: getCount(results[1], 1),
-        totalCarModels: getCount(results[2], 2),
-        totalEngineModels: getCount(results[3], 3),
-        totalPartCategories: getCount(results[4], 4),
+      setStats({
+        totalIllustrations: getCount(results[0]),
+        totalManufacturers: getCount(results[1]),
+        totalCarModels: getCount(results[2]),
+        totalEngineModels: getCount(results[3]),
         recentIllustrations: getData(results[0]),
         loading: false,
         error: null,
         lastUpdated: new Date()
-      };
-
-      setStats(newStats);
+      });
+      
       hasFetchedRef.current = true;
-      
-      // Store dashboard stats in localStorage for offline view
-      try {
-        localStorage.setItem('dashboardStats', JSON.stringify({
-          ...newStats,
-          lastUpdated: newStats.lastUpdated.toISOString()
-        }));
-      } catch (e) {
-        console.warn('Failed to cache dashboard stats:', e);
-      }
     } catch (error) {
-      console.error('Dashboard fetch error:', error);
-      
-      // Try to load cached data if available
-      try {
-        const cached = localStorage.getItem('dashboardStats');
-        if (cached) {
-          const parsed = JSON.parse(cached);
-          setStats({
-            ...parsed,
-            lastUpdated: new Date(parsed.lastUpdated),
-            loading: false,
-            error: 'Using cached data (offline mode)'
-          });
-          return;
-        }
-      } catch (e) {
-        console.warn('Failed to load cached data:', e);
-      }
-      
       setStats(prev => ({
         ...prev,
         loading: false,
-        error: error.message || 'Failed to load dashboard data',
-        lastUpdated: new Date()
+        error: 'データの読み込みに失敗しました'
       }));
     } finally {
       isFetchingRef.current = false;
@@ -174,29 +115,18 @@ const Dashboard = () => {
     }
   };
 
-  // Load data only once on mount
   useEffect(() => {
     if (!hasFetchedRef.current) {
-      console.log('Initial dashboard load...');
       fetchDashboardData();
     }
-    
-    // Cleanup function
-    return () => {
-      // Reset refs on unmount
-      hasFetchedRef.current = false;
-      isFetchingRef.current = false;
-    };
-  }, []); // Empty dependency array - only run once on mount
+  }, []);
 
-  const handleRefresh = () => {
-    console.log('Manual refresh triggered');
-    fetchDashboardData(true);
-  };
-
-  const handleCreateSuccess = () => {
-    // Refresh dashboard data after successful creation
-    fetchDashboardData(true);
+  const getTimeAgo = (date) => {
+    const seconds = Math.floor((new Date() - date) / 1000);
+    if (seconds < 60) return '数秒前';
+    if (seconds < 3600) return Math.floor(seconds / 60) + '分前';
+    if (seconds < 86400) return Math.floor(seconds / 3600) + '時間前';
+    return Math.floor(seconds / 86400) + '日前';
   };
 
   const StatCard = ({ title, value, icon, color, onClick, loading }) => (
@@ -204,599 +134,661 @@ const Dashboard = () => {
       sx={{ 
         height: '100%',
         cursor: onClick ? 'pointer' : 'default',
-        transition: 'all 0.3s ease',
-        position: 'relative',
-        overflow: 'hidden',
-        '&:hover': onClick ? {
-          transform: 'translateY(-4px)',
-          boxShadow: theme.shadows[8],
-          backgroundColor: alpha(color, 0.05)
+        background: isMobile 
+          ? `linear-gradient(135deg, ${color} 0%, ${alpha(color, 0.9)} 100%)`
+          : `linear-gradient(135deg, ${color} 0%, ${alpha(color, 0.85)} 100%)`,
+        color: 'white',
+        transition: 'all 0.2s ease',
+        borderRadius: isMobile ? 3 : 2,
+        boxShadow: isMobile ? 2 : 1,
+        '&:active': onClick ? {
+          transform: 'scale(0.97)',
         } : {},
-        '&::before': {
-          content: '""',
-          position: 'absolute',
-          top: 0,
-          left: 0,
-          right: 0,
-          height: 4,
-          backgroundColor: color,
-          transform: 'scaleX(0)',
-          transition: 'transform 0.3s ease',
-        },
-        '&:hover::before': {
-          transform: 'scaleX(1)'
-        }
+        '&:hover': !isMobile && onClick ? {
+          transform: 'translateY(-4px)',
+          boxShadow: 6
+        } : {}
       }}
       onClick={onClick}
     >
-      <CardContent sx={{ position: 'relative', zIndex: 1 }}>
-        <Stack direction="row" alignItems="center" justifyContent="space-between" mb={2}>
+      <CardContent sx={{ p: isMobile ? 2 : 3 }}>
+        <Stack direction={isMobile ? 'row' : 'column'} spacing={isMobile ? 1.5 : 2} alignItems={isMobile ? 'center' : 'flex-start'}>
           <Box sx={{ 
-            p: 1.5, 
-            borderRadius: 2, 
-            backgroundColor: alpha(color, 0.1),
-            color: color,
-            transition: 'all 0.3s ease',
+            opacity: 0.95,
+            bgcolor: 'rgba(255,255,255,0.2)',
+            borderRadius: isMobile ? 2 : 1,
+            p: isMobile ? 1 : 0.5,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center'
           }}>
-            {icon}
+            {React.cloneElement(icon, { 
+              sx: { fontSize: isMobile ? 28 : 40 } 
+            })}
           </Box>
-          <Tooltip title="More options">
-            <IconButton size="small" onClick={(e) => { e.stopPropagation(); }}>
-              <MoreIcon />
-            </IconButton>
-          </Tooltip>
+          
+          <Stack spacing={0.5} flex={1}>
+            {loading ? (
+              <Skeleton 
+                variant="text" 
+                width={isMobile ? '80px' : '60%'}
+                height={isMobile ? 32 : 40} 
+                sx={{ bgcolor: 'rgba(255,255,255,0.3)' }} 
+              />
+            ) : (
+              <Typography 
+                variant={isMobile ? 'h5' : 'h3'} 
+                fontWeight="bold"
+                sx={{ lineHeight: 1 }}
+              >
+                {value.toLocaleString()}
+              </Typography>
+            )}
+            
+            <Typography 
+              variant={isMobile ? 'caption' : 'body1'} 
+              sx={{ opacity: 0.9, fontWeight: isMobile ? 600 : 500 }}
+            >
+              {title}
+            </Typography>
+          </Stack>
         </Stack>
-        
-        {loading ? (
-          <Skeleton variant="text" width="60%" height={40} />
-        ) : (
-          <Typography variant="h3" fontWeight="bold" gutterBottom>
-            {value.toLocaleString()}
-          </Typography>
-        )}
-        
-        <Typography variant="body2" color="text.secondary" fontWeight="medium">
-          {title}
-        </Typography>
-        
-        <Box sx={{ mt: 2, display: 'flex', alignItems: 'center', gap: 1 }}>
-          <TrendingUpIcon fontSize="small" color="success" />
-          <Typography variant="caption" color="success.main" fontWeight="medium">
-            Live
-          </Typography>
-        </Box>
       </CardContent>
     </Card>
   );
 
-  const RecentIllustrationCard = ({ illustration, loading }) => {
-    if (loading) {
-      return (
-        <Paper sx={{ p: 2, mb: 1, borderRadius: 2 }}>
-          <Stack direction="row" alignItems="center" spacing={2}>
-            <Skeleton variant="rectangular" width={48} height={48} sx={{ borderRadius: 2 }} />
-            <Box sx={{ flex: 1 }}>
-              <Skeleton variant="text" width="60%" />
-              <Skeleton variant="text" width="40%" />
-            </Box>
-          </Stack>
-        </Paper>
-      );
-    }
-
+  const IllustrationCard = ({ illustration }) => {
     const firstFile = illustration.files?.[0];
-    const createdDate = new Date(illustration.created_at);
-    const timeAgo = getTimeAgo(createdDate);
+    const timeAgo = getTimeAgo(new Date(illustration.created_at));
     
     return (
-      <Tooltip title="Click to view details" arrow>
-        <Paper sx={{ 
-          p: 2, 
-          mb: 1, 
-          borderRadius: 2,
+      <Paper 
+        sx={{ 
+          p: isMobile ? 1.5 : 2.5,
+          borderRadius: isMobile ? 3 : 2,
           cursor: 'pointer',
           transition: 'all 0.2s ease',
-          '&:hover': {
-            backgroundColor: 'action.hover',
-            transform: 'translateY(-2px)',
-            boxShadow: theme.shadows[4]
-          }
+          border: isMobile ? `1px solid ${theme.palette.divider}` : 'none',
+          boxShadow: isMobile ? 0 : 1,
+          '&:active': isMobile ? {
+            bgcolor: alpha(theme.palette.primary.main, 0.04),
+            transform: 'scale(0.98)'
+          } : {},
+          '&:hover': !isMobile ? {
+            boxShadow: 4,
+            transform: 'translateY(-2px)'
+          } : {}
         }}
         onClick={() => navigate(`/illustrations/${illustration.id}`)}
-        >
-          <Stack direction="row" alignItems="center" spacing={2}>
-            <Box sx={{ 
-              width: 48, 
-              height: 48, 
-              borderRadius: 2,
-              backgroundColor: firstFile ? 'transparent' : alpha(theme.palette.primary.main, 0.1),
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              color: firstFile ? 'transparent' : theme.palette.primary.main,
-              overflow: 'hidden',
-              flexShrink: 0
-            }}>
-              {firstFile ? (
-                <img 
-                  src={firstFile.file} 
-                  alt={illustration.title}
-                  style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                  onError={(e) => {
-                    e.target.style.display = 'none';
+      >
+        <Stack direction="row" spacing={isMobile ? 1.5 : 2} alignItems="center">
+          <Box sx={{ 
+            width: isMobile ? 60 : 64,
+            height: isMobile ? 60 : 64,
+            borderRadius: isMobile ? 2.5 : 2,
+            backgroundColor: firstFile ? 'transparent' : alpha(theme.palette.primary.main, 0.08),
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            overflow: 'hidden',
+            flexShrink: 0,
+            border: isMobile && !firstFile ? `2px dashed ${alpha(theme.palette.primary.main, 0.3)}` : 'none'
+          }}>
+            {firstFile ? (
+              <img 
+                src={firstFile.file} 
+                alt={illustration.title}
+                style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+              />
+            ) : (
+              <ImageIcon color="primary" sx={{ fontSize: isMobile ? 26 : 32 }} />
+            )}
+          </Box>
+          
+          <Box sx={{ flex: 1, minWidth: 0 }}>
+            <Typography 
+              variant={isMobile ? 'body1' : 'h6'} 
+              fontWeight={isMobile ? 600 : 'bold'}
+              gutterBottom 
+              noWrap
+              sx={{ mb: isMobile ? 0.5 : 1 }}
+            >
+              {illustration.title || 'タイトルなし'}
+            </Typography>
+            <Stack direction="row" spacing={1} alignItems="center" flexWrap="wrap" sx={{ gap: 0.5 }}>
+              {illustration.part_category?.name && (
+                <Chip 
+                  label={illustration.part_category.name}
+                  size="small"
+                  sx={{ 
+                    height: isMobile ? 22 : 24,
+                    fontSize: isMobile ? '0.7rem' : '0.75rem',
+                    fontWeight: 600,
+                    borderRadius: isMobile ? 1.5 : 1
                   }}
                 />
-              ) : (
-                <ImageIcon />
               )}
-            </Box>
-            
-            <Box sx={{ flex: 1, minWidth: 0 }}>
-              <Typography variant="subtitle2" fontWeight="bold" gutterBottom noWrap>
-                {illustration.title || 'Untitled'}
+              <Typography 
+                variant="caption" 
+                color="text.secondary"
+                sx={{ 
+                  fontSize: isMobile ? '0.7rem' : '0.75rem',
+                  fontWeight: 500 
+                }}
+              >
+                {timeAgo}
               </Typography>
-              <Stack direction="row" spacing={1} alignItems="center" flexWrap="wrap" useFlexGap>
-                {illustration.part_category?.name && (
-                  <Chip 
-                    label={illustration.part_category.name}
-                    size="small"
-                    sx={{ 
-                      height: 20, 
-                      fontSize: '0.65rem',
-                      backgroundColor: alpha(theme.palette.primary.main, 0.1)
-                    }}
-                  />
-                )}
-                <Typography variant="caption" color="text.secondary">
-                  {timeAgo}
-                </Typography>
-                {illustration.files?.length > 0 && (
-                  <Typography variant="caption" color="text.secondary">
-                    • {illustration.files.length} file{illustration.files.length > 1 ? 's' : ''}
-                  </Typography>
-                )}
-              </Stack>
-            </Box>
-            
-            <IconButton size="small">
-              <ArrowForwardIcon />
-            </IconButton>
-          </Stack>
-        </Paper>
-      </Tooltip>
+            </Stack>
+          </Box>
+          
+          {!isMobile && (
+            <ArrowForwardIcon 
+              color="action" 
+              sx={{ fontSize: 24 }} 
+            />
+          )}
+        </Stack>
+      </Paper>
     );
-  };
-
-  const QuickActionCard = ({ title, description, icon, buttonText, onClick, color, disabled }) => (
-    <Card sx={{ 
-      height: '100%',
-      opacity: disabled ? 0.6 : 1,
-      transition: 'all 0.3s ease',
-      '&:hover': !disabled && {
-        transform: 'translateY(-2px)',
-        boxShadow: theme.shadows[6]
-      }
-    }}>
-      <CardContent sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
-        <Box sx={{ 
-          p: 1.5, 
-          borderRadius: 2, 
-          backgroundColor: alpha(color, 0.1),
-          color: color,
-          width: 'fit-content',
-          mb: 2
-        }}>
-          {icon}
-        </Box>
-        
-        <Typography variant="h6" fontWeight="bold" gutterBottom>
-          {title}
-        </Typography>
-        
-        <Typography variant="body2" color="text.secondary" paragraph sx={{ flex: 1 }}>
-          {description}
-        </Typography>
-        
-        <Button 
-          variant="contained" 
-          startIcon={icon}
-          onClick={onClick}
-          fullWidth
-          disabled={disabled}
-          sx={{
-            backgroundColor: color,
-            '&:hover': {
-              backgroundColor: color,
-              opacity: 0.9
-            }
-          }}
-        >
-          {buttonText}
-        </Button>
-      </CardContent>
-    </Card>
-  );
-
-  const getTimeAgo = (date) => {
-    const seconds = Math.floor((new Date() - date) / 1000);
-    
-    let interval = seconds / 31536000;
-    if (interval > 1) return Math.floor(interval) + ' years ago';
-    
-    interval = seconds / 2592000;
-    if (interval > 1) return Math.floor(interval) + ' months ago';
-    
-    interval = seconds / 86400;
-    if (interval > 1) return Math.floor(interval) + ' days ago';
-    
-    interval = seconds / 3600;
-    if (interval > 1) return Math.floor(interval) + ' hours ago';
-    
-    interval = seconds / 60;
-    if (interval > 1) return Math.floor(interval) + ' minutes ago';
-    
-    return Math.floor(seconds) + ' seconds ago';
   };
 
   if (stats.loading && !refreshing) {
     return (
-      <Container maxWidth="xl" sx={{ py: 4 }}>
-        <Box display="flex" justifyContent="center" alignItems="center" minHeight="60vh">
-          <Stack spacing={2} alignItems="center">
-            <CircularProgress size={60} />
-            <Typography variant="body1" color="text.secondary">
-              Loading dashboard...
-            </Typography>
-          </Stack>
-        </Box>
-      </Container>
+      <Box sx={{ 
+        minHeight: '100vh',
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        background: `linear-gradient(135deg, ${theme.palette.primary.main} 0%, ${theme.palette.primary.dark} 100%)`
+      }}>
+        <Stack spacing={2} alignItems="center">
+          <CircularProgress size={60} sx={{ color: 'white' }} />
+          <Typography variant="body1" color="white">
+            読み込み中...
+          </Typography>
+        </Stack>
+      </Box>
     );
   }
 
   return (
-    <Container maxWidth="xl" sx={{ py: 4 }}>
-      {/* Header */}
-      <Box mb={4}>
-        <Stack direction="row" justifyContent="space-between" alignItems="center" mb={2}>
-          <Box>
-            <Typography variant="h3" fontWeight="bold" gutterBottom>
-              <DashboardIcon sx={{ verticalAlign: 'middle', mr: 1 }} />
-              Dashboard
-            </Typography>
-            <Typography variant="body1" color="text.secondary">
-              Welcome back, {user?.first_name || user?.username || 'User'}! Here's your overview.
-            </Typography>
-          </Box>
-          <Stack direction="row" spacing={1}>
-            <Button
-              variant="outlined"
-              startIcon={refreshing ? <CircularProgress size={16} /> : <RefreshIcon />}
-              onClick={handleRefresh}
-              disabled={refreshing || isFetchingRef.current}
-            >
-              {refreshing ? 'Refreshing...' : 'Refresh'}
-            </Button>
-            <Button
-              variant="contained"
-              startIcon={<AddIcon />}
-              onClick={() => setCreateModalOpen(true)}
-              disabled={isFetchingRef.current}
-            >
-              New Illustration
-            </Button>
-          </Stack>
-        </Stack>
-        
-        <LinearProgress 
-          variant="determinate" 
-          value={100} 
-          sx={{ 
-            height: 4, 
-            borderRadius: 2,
-            background: `linear-gradient(90deg, ${theme.palette.primary.main}, ${theme.palette.secondary.main})`
-          }} 
-        />
-      </Box>
-
-      {/* Error Alert */}
-      {stats.error && (
-        <Alert 
-          severity={stats.error.includes('cached') ? 'warning' : 'error'}
-          action={
-            <Button color="inherit" size="small" onClick={handleRefresh}>
-              Retry
-            </Button>
-          }
-          sx={{ mb: 3 }}
-        >
-          {stats.error}
-        </Alert>
-      )}
-
-      {/* Stats Grid */}
-      <Grid container spacing={3} mb={4}>
-        {[
-          {
-            title: "Total Illustrations",
-            value: stats.totalIllustrations,
-            icon: <ImageIcon />,
-            color: theme.palette.primary.main,
-            onClick: () => navigate('/illustrations')
-          },
-          {
-            title: "Manufacturers",
-            value: stats.totalManufacturers,
-            icon: <StoreIcon />,
-            color: theme.palette.success.main,
-            onClick: () => navigate('/manufacturers')
-          },
-          {
-            title: "Car Models",
-            value: stats.totalCarModels,
-            icon: <CarIcon />,
-            color: theme.palette.warning.main,
-            onClick: () => navigate('/car-models')
-          },
-          {
-            title: "Engine Models",
-            value: stats.totalEngineModels,
-            icon: <BuildIcon />,
-            color: theme.palette.error.main,
-            onClick: () => navigate('/engine-models')
-          }
-        ].map((stat, index) => (
-          <Grid item xs={12} sm={6} lg={3} key={index}>
-            <StatCard {...stat} loading={stats.loading && !refreshing} />
-          </Grid>
-        ))}
-      </Grid>
-
-      {/* Main Content Grid */}
-      <Grid container spacing={3}>
-        {/* Left Column - Recent Illustrations */}
-        <Grid item xs={12} lg={8}>
-          <Paper sx={{ p: 3, borderRadius: 3, height: '100%' }}>
-            <Stack direction="row" justifyContent="space-between" alignItems="center" mb={3}>
-              <Typography variant="h5" fontWeight="bold">
-                Recent Illustrations
-              </Typography>
-              <Button 
-                endIcon={<ArrowForwardIcon />}
-                onClick={() => navigate('/illustrations')}
-                disabled={isFetchingRef.current}
+    <Box sx={{ 
+      minHeight: '100vh',
+      bgcolor: 'background.default',
+      pb: { xs: 2, sm: 4 }
+    }}>
+      {/* ヘッダー */}
+      <Paper 
+        elevation={0}
+        sx={{ 
+          borderRadius: 0,
+          borderBottom: `1px solid ${theme.palette.divider}`,
+          mb: isMobile ? 2 : 3,
+          background: isMobile 
+            ? `linear-gradient(135deg, ${theme.palette.primary.main} 0%, ${theme.palette.primary.dark} 100%)` 
+            : 'transparent',
+          color: isMobile ? 'white' : 'inherit'
+        }}
+      >
+        <Container maxWidth="xl">
+          <Stack 
+            direction="row" 
+            justifyContent="space-between" 
+            alignItems="center"
+            py={isMobile ? 2.5 : 3}
+          >
+            <Box>
+              <Typography 
+                variant={isMobile ? 'h5' : 'h5'} 
+                fontWeight="bold"
+                sx={{ mb: isMobile ? 0.5 : 0 }}
               >
-                View All
+                ダッシュボード
+              </Typography>
+              <Typography 
+                variant="caption" 
+                sx={{ 
+                  fontSize: isMobile ? '0.8rem' : '0.875rem',
+                  opacity: isMobile ? 0.95 : 0.7,
+                  color: isMobile ? 'inherit' : 'text.secondary',
+                  fontWeight: isMobile ? 500 : 400
+                }}
+              >
+                {user?.first_name || user?.username || 'ゲスト'}さん、ようこそ！
+              </Typography>
+            </Box>
+            
+            <IconButton 
+              onClick={() => fetchDashboardData(true)} 
+              disabled={refreshing}
+              size="medium"
+              sx={{
+                bgcolor: isMobile ? 'rgba(255,255,255,0.2)' : 'transparent',
+                color: isMobile ? 'white' : 'inherit',
+                '&:hover': {
+                  bgcolor: isMobile ? 'rgba(255,255,255,0.3)' : 'action.hover'
+                }
+              }}
+            >
+              <RefreshIcon 
+                sx={{ 
+                  animation: refreshing ? 'spin 1s linear infinite' : 'none',
+                  fontSize: 24
+                }} 
+              />
+            </IconButton>
+          </Stack>
+        </Container>
+      </Paper>
+
+      <Container maxWidth="xl">
+        {/* エラーアラート */}
+        {stats.error && (
+          <Alert 
+            severity="error"
+            sx={{ mb: { xs: 2, sm: 3 } }}
+            action={
+              <Button color="inherit" size="small" onClick={() => fetchDashboardData(true)}>
+                再試行
               </Button>
-            </Stack>
+            }
+          >
+            {stats.error}
+          </Alert>
+        )}
 
-            {stats.loading && !refreshing ? (
-              Array.from({ length: 3 }).map((_, index) => (
-                <RecentIllustrationCard key={index} loading />
-              ))
-            ) : stats.recentIllustrations.length > 0 ? (
-              <Box>
-                {stats.recentIllustrations.slice(0, 5).map((illustration) => (
-                  <RecentIllustrationCard key={illustration.id} illustration={illustration} />
-                ))}
-              </Box>
-            ) : (
-              <Box textAlign="center" py={4}>
-                <ImageIcon sx={{ fontSize: 64, color: 'grey.300', mb: 2 }} />
-                <Typography variant="h6" color="text.secondary" gutterBottom>
-                  No illustrations yet
-                </Typography>
-                <Typography variant="body2" color="text.secondary" paragraph>
-                  Create your first illustration to get started
-                </Typography>
-                <Button
-                  variant="contained"
-                  startIcon={<ImageIcon />}
-                  onClick={() => setCreateModalOpen(true)}
-                  disabled={isFetchingRef.current}
-                >
-                  Create Illustration
-                </Button>
-              </Box>
-            )}
-          </Paper>
+        {/* 統計カード */}
+        <Grid container spacing={isMobile ? 1.5 : 3} mb={isMobile ? 2.5 : 4}>
+          <Grid item xs={12} sm={6} md={3}>
+            <StatCard
+              title="イラスト"
+              value={stats.totalIllustrations}
+              icon={<ImageIcon />}
+              color={theme.palette.primary.main}
+              onClick={() => navigate('/illustrations')}
+              loading={stats.loading}
+            />
+          </Grid>
+          <Grid item xs={12} sm={6} md={3}>
+            <StatCard
+              title="メーカー"
+              value={stats.totalManufacturers}
+              icon={<StoreIcon />}
+              color={theme.palette.success.main}
+              onClick={() => navigate('/manufacturers')}
+              loading={stats.loading}
+            />
+          </Grid>
+          <Grid item xs={12} sm={6} md={3}>
+            <StatCard
+              title="車種"
+              value={stats.totalCarModels}
+              icon={<CarIcon />}
+              color={theme.palette.warning.main}
+              onClick={() => navigate('/car-models')}
+              loading={stats.loading}
+            />
+          </Grid>
+          <Grid item xs={12} sm={6} md={3}>
+            <StatCard
+              title="エンジン"
+              value={stats.totalEngineModels}
+              icon={<BuildIcon />}
+              color={theme.palette.error.main}
+              onClick={() => navigate('/engine-models')}
+              loading={stats.loading}
+            />
+          </Grid>
         </Grid>
 
-        {/* Right Column - Quick Actions & Stats */}
-        <Grid item xs={12} lg={4}>
-          <Stack spacing={3}>
-            {/* Quick Actions */}
-            <Paper sx={{ p: 3, borderRadius: 3 }}>
-              <Typography variant="h5" fontWeight="bold" mb={3}>
-                Quick Actions
-              </Typography>
-              
-              <Grid container spacing={2}>
-                <Grid item xs={12}>
-                  <QuickActionCard
-                    title="Add Illustration"
-                    description="Create a new illustration with images and descriptions"
-                    icon={<UploadIcon />}
-                    buttonText="Create New"
-                    onClick={() => setCreateModalOpen(true)}
-                    color={theme.palette.primary.main}
-                    disabled={isFetchingRef.current}
-                  />
-                </Grid>
-                <Grid item xs={12}>
-                  <QuickActionCard
-                    title="Add Manufacturer"
-                    description="Add a new vehicle manufacturer to the system"
-                    icon={<StoreIcon />}
-                    buttonText="Add Brand"
-                    onClick={() => navigate('/manufacturers/create')}
-                    color={theme.palette.success.main}
-                    disabled={isFetchingRef.current}
-                  />
-                </Grid>
-              </Grid>
-            </Paper>
+        {/* クイックアクション */}
+        <Box mb={isMobile ? 2.5 : 4}>
+          <Typography 
+            variant={isMobile ? 'body1' : 'h6'} 
+            fontWeight="bold" 
+            mb={isMobile ? 1.5 : 2}
+          >
+            クイックアクション
+          </Typography>
+          <Grid container spacing={isMobile ? 1.5 : 2}>
+            <Grid item xs={12} sm={6}>
+              <Button
+                fullWidth
+                variant="contained"
+                size="large"
+                startIcon={<AddIcon />}
+                onClick={() => setCreateModalOpen(true)}
+                sx={{ 
+                  py: isMobile ? 1.75 : 2,
+                  background: `linear-gradient(135deg, ${theme.palette.primary.main}, ${theme.palette.primary.dark})`,
+                  fontSize: isMobile ? '0.95rem' : '1rem',
+                  fontWeight: 600,
+                  borderRadius: isMobile ? 3 : 1,
+                  textTransform: 'none',
+                  boxShadow: isMobile ? 3 : 2
+                }}
+              >
+                新規イラスト作成
+              </Button>
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <Button
+                fullWidth
+                variant="outlined"
+                size="large"
+                startIcon={<ImageIcon />}
+                onClick={() => navigate('/illustrations')}
+                sx={{ 
+                  py: isMobile ? 1.75 : 2,
+                  fontSize: isMobile ? '0.95rem' : '1rem',
+                  fontWeight: 600,
+                  borderRadius: isMobile ? 3 : 1,
+                  borderWidth: isMobile ? 2 : 1,
+                  textTransform: 'none'
+                }}
+              >
+                すべて表示
+              </Button>
+            </Grid>
+          </Grid>
+        </Box>
 
-            {/* System Stats */}
-            <Paper sx={{ p: 3, borderRadius: 3 }}>
-              <Typography variant="h5" fontWeight="bold" mb={3}>
-                System Stats
-              </Typography>
-              
-              <Stack spacing={2}>
-                <Box>
-                  <Stack direction="row" justifyContent="space-between" alignItems="center" mb={0.5}>
-                    <Typography variant="body2">Part Categories</Typography>
-                    <Chip 
-                      label={stats.totalPartCategories} 
-                      size="small"
-                      color="primary"
-                      variant="outlined"
-                    />
-                  </Stack>
-                  <LinearProgress 
-                    variant="determinate" 
-                    value={Math.min((stats.totalPartCategories / 100) * 100, 100)} 
-                    sx={{ height: 6, borderRadius: 3 }}
-                  />
-                </Box>
-                
-                <Box>
-                  <Stack direction="row" justifyContent="space-between" alignItems="center" mb={0.5}>
-                    <Typography variant="body2">Database Usage</Typography>
-                    <Chip 
-                      label={`${Math.round((stats.totalIllustrations / 1000) * 100)}%`} 
-                      size="small"
-                      color="secondary"
-                      variant="outlined"
-                    />
-                  </Stack>
-                  <LinearProgress 
-                    variant="determinate" 
-                    value={Math.min((stats.totalIllustrations / 1000) * 100, 100)} 
-                    sx={{ height: 6, borderRadius: 3 }}
-                    color="secondary"
-                  />
-                </Box>
-                
-                <Box>
-                  <Stack direction="row" justifyContent="space-between" alignItems="center" mb={0.5}>
-                    <Typography variant="body2">System Health</Typography>
-                    <Chip 
-                      label="Good" 
-                      size="small"
-                      color="success"
-                      variant="outlined"
-                    />
-                  </Stack>
-                  <LinearProgress 
-                    variant="determinate" 
-                    value={85} 
-                    sx={{ height: 6, borderRadius: 3 }}
-                    color="success"
-                  />
-                </Box>
-              </Stack>
-            </Paper>
-
-            {/* User Info Card */}
+        <Grid container spacing={isMobile ? 2 : 3}>
+          {/* 最近のイラスト */}
+          <Grid item xs={12} lg={8}>
             <Paper sx={{ 
-              p: 3, 
-              borderRadius: 3, 
-              background: `linear-gradient(135deg, ${alpha(theme.palette.primary.main, 0.1)} 0%, ${alpha(theme.palette.secondary.main, 0.1)} 100%)`,
-              border: `1px solid ${alpha(theme.palette.primary.main, 0.2)}`
+              p: isMobile ? 2 : 3,
+              borderRadius: isMobile ? 3 : 2,
+              boxShadow: isMobile ? 1 : 'inherit'
             }}>
-              <Stack direction="row" alignItems="center" spacing={2} mb={2}>
-                <Box sx={{ 
-                  p: 1.5, 
-                  borderRadius: 2, 
-                  backgroundColor: theme.palette.primary.main,
-                  color: 'white',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center'
-                }}>
-                  <PersonIcon />
-                </Box>
-                <Box>
-                  <Typography variant="subtitle1" fontWeight="bold">
-                    {user?.first_name || user?.username || 'User'}
-                  </Typography>
-                  <Typography variant="caption" color="text.secondary">
-                    {user?.email || 'No email'}
-                  </Typography>
-                </Box>
+              <Stack 
+                direction="row" 
+                justifyContent="space-between" 
+                alignItems="center" 
+                mb={isMobile ? 2 : 3}
+              >
+                <Typography 
+                  variant={isMobile ? 'body1' : 'h6'} 
+                  fontWeight="bold"
+                >
+                  最近のイラスト
+                </Typography>
+                <Button 
+                  size="small"
+                  endIcon={<ArrowForwardIcon />}
+                  onClick={() => navigate('/illustrations')}
+                  sx={{
+                    fontSize: isMobile ? '0.8rem' : '0.875rem',
+                    fontWeight: 600,
+                    textTransform: 'none'
+                  }}
+                >
+                  すべて
+                </Button>
               </Stack>
-              
-              <Stack direction="row" spacing={1}>
-                <Button
-                  variant="outlined"
-                  fullWidth
-                  startIcon={<PersonIcon />}
-                  onClick={() => navigate('/profile')}
-                  disabled={isFetchingRef.current}
-                >
-                  Profile
-                </Button>
-                <Button
-                  variant="outlined"
-                  color="error"
-                  onClick={logout}
-                  disabled={isFetchingRef.current}
-                >
-                  Logout
-                </Button>
+
+              <Stack spacing={isMobile ? 1.5 : 2}>
+                {stats.loading ? (
+                  Array.from({ length: 3 }).map((_, i) => (
+                    <Skeleton 
+                      key={i} 
+                      variant="rectangular" 
+                      height={isMobile ? 76 : 96} 
+                      sx={{ borderRadius: isMobile ? 3 : 2 }} 
+                    />
+                  ))
+                ) : stats.recentIllustrations.length > 0 ? (
+                  stats.recentIllustrations.map((illustration) => (
+                    <IllustrationCard key={illustration.id} illustration={illustration} />
+                  ))
+                ) : (
+                  <Box sx={{ textAlign: 'center', py: isMobile ? 6 : 6 }}>
+                    <ImageIcon sx={{ 
+                      fontSize: isMobile ? 56 : 64,
+                      color: 'grey.300',
+                      mb: 1.5 
+                    }} />
+                    <Typography 
+                      variant={isMobile ? 'body2' : 'subtitle2'} 
+                      color="text.secondary"
+                      fontWeight={500}
+                    >
+                      イラストがまだありません
+                    </Typography>
+                  </Box>
+                )}
               </Stack>
             </Paper>
-          </Stack>
-        </Grid>
-      </Grid>
+          </Grid>
 
-      {/* Bottom Info Bar */}
-      <Box mt={4}>
-        <Paper sx={{ 
-          p: 2, 
-          borderRadius: 2, 
-          backgroundColor: alpha(theme.palette.primary.main, 0.03),
-          border: `1px solid ${alpha(theme.palette.primary.main, 0.1)}`
-        }}>
-          <Stack direction="row" justifyContent="space-between" alignItems="center">
-            <Typography variant="body2" color="text.secondary">
-              {stats.lastUpdated ? `Last updated: ${getTimeAgo(stats.lastUpdated)}` : 'Never updated'}
-            </Typography>
-            <Stack direction="row" spacing={1} alignItems="center">
-              <Chip 
-                icon={<TrendingUpIcon />}
-                label={`${stats.totalIllustrations} illustrations`} 
-                size="small" 
-                variant="outlined"
-              />
-              <Chip 
-                label="API: Online" 
-                size="small" 
-                color="success" 
-                variant="outlined"
-              />
-              {isFetchingRef.current && (
-                <Chip 
-                  icon={<CircularProgress size={16} />}
-                  label="Syncing..." 
-                  size="small" 
-                  variant="outlined"
-                  color="info"
-                />
-              )}
+          {/* システム状態 & インサイト */}
+          <Grid item xs={12} lg={4}>
+            <Stack spacing={isMobile ? 2 : 3}>
+              {/* システム状態 */}
+              <Paper sx={{ 
+                p: isMobile ? 2 : 3,
+                borderRadius: isMobile ? 3 : 2,
+                boxShadow: isMobile ? 1 : 'inherit'
+              }}>
+                <Stack 
+                  direction="row" 
+                  justifyContent="space-between" 
+                  alignItems="center" 
+                  mb={2}
+                >
+                  <Typography 
+                    variant={isMobile ? 'body1' : 'h6'} 
+                    fontWeight="bold"
+                  >
+                    システム状態
+                  </Typography>
+                  <Chip 
+                    label="良好" 
+                    size="small" 
+                    color="success"
+                    icon={<StorageIcon sx={{ fontSize: 14 }} />}
+                    sx={{
+                      fontWeight: 600,
+                      fontSize: isMobile ? '0.7rem' : '0.75rem'
+                    }}
+                  />
+                </Stack>
+                
+                <Stack spacing={2}>
+                  <Box>
+                    <Stack direction="row" justifyContent="space-between" mb={0.5}>
+                      <Typography 
+                        variant="caption" 
+                        fontWeight={600}
+                        sx={{ fontSize: isMobile ? '0.75rem' : '0.8rem' }}
+                      >
+                        API
+                      </Typography>
+                      <Typography 
+                        variant="caption" 
+                        fontWeight="bold"
+                        sx={{ fontSize: isMobile ? '0.75rem' : '0.8rem' }}
+                      >
+                        98%
+                      </Typography>
+                    </Stack>
+                    <LinearProgress 
+                      variant="determinate" 
+                      value={98} 
+                      sx={{ 
+                        height: isMobile ? 8 : 8,
+                        borderRadius: 4 
+                      }} 
+                      color="success" 
+                    />
+                  </Box>
+                  
+                  <Box>
+                    <Stack direction="row" justifyContent="space-between" mb={0.5}>
+                      <Typography 
+                        variant="caption"
+                        fontWeight={600}
+                        sx={{ fontSize: isMobile ? '0.75rem' : '0.8rem' }}
+                      >
+                        データベース
+                      </Typography>
+                      <Typography 
+                        variant="caption" 
+                        fontWeight="bold"
+                        sx={{ fontSize: isMobile ? '0.75rem' : '0.8rem' }}
+                      >
+                        85%
+                      </Typography>
+                    </Stack>
+                    <LinearProgress 
+                      variant="determinate" 
+                      value={85} 
+                      sx={{ 
+                        height: isMobile ? 8 : 8,
+                        borderRadius: 4 
+                      }} 
+                    />
+                  </Box>
+                </Stack>
+              </Paper>
+
+              {/* 週間インサイト */}
+              <Paper sx={{ 
+                p: isMobile ? 2.5 : 3,
+                borderRadius: isMobile ? 3 : 2,
+                background: `linear-gradient(135deg, ${theme.palette.primary.main} 0%, ${theme.palette.primary.dark} 100%)`,
+                color: 'white',
+                boxShadow: isMobile ? 3 : 2
+              }}>
+                <Stack 
+                  direction="row" 
+                  justifyContent="space-between" 
+                  alignItems="start" 
+                  mb={isMobile ? 2.5 : 3}
+                >
+                  <Box>
+                    <Typography 
+                      variant={isMobile ? 'body1' : 'h6'} 
+                      fontWeight="bold"
+                    >
+                      週間インサイト
+                    </Typography>
+                    <Typography 
+                      variant="caption" 
+                      sx={{ 
+                        opacity: 0.9,
+                        fontSize: isMobile ? '0.75rem' : '0.8rem',
+                        fontWeight: 500
+                      }}
+                    >
+                      生産性のサマリー
+                    </Typography>
+                  </Box>
+                  <TrendingUpIcon sx={{ fontSize: isMobile ? 28 : 28 }} />
+                </Stack>
+                
+                <Grid container spacing={isMobile ? 1.5 : 1.5}>
+                  <Grid item xs={4}>
+                    <Box sx={{ 
+                      p: isMobile ? 2 : 2,
+                      borderRadius: isMobile ? 2.5 : 2,
+                      bgcolor: 'rgba(255,255,255,0.2)',
+                      textAlign: 'center'
+                    }}>
+                      <Typography 
+                        variant={isMobile ? 'h5' : 'h5'} 
+                        fontWeight="bold"
+                      >
+                        +24
+                      </Typography>
+                      <Typography 
+                        variant="caption" 
+                        sx={{ 
+                          opacity: 0.9,
+                          fontSize: isMobile ? '0.7rem' : '0.75rem',
+                          fontWeight: 500
+                        }}
+                      >
+                        新規
+                      </Typography>
+                    </Box>
+                  </Grid>
+                  <Grid item xs={4}>
+                    <Box sx={{ 
+                      p: isMobile ? 2 : 2,
+                      borderRadius: isMobile ? 2.5 : 2,
+                      bgcolor: 'rgba(255,255,255,0.2)',
+                      textAlign: 'center'
+                    }}>
+                      <Typography 
+                        variant={isMobile ? 'h5' : 'h5'} 
+                        fontWeight="bold"
+                      >
+                        89%
+                      </Typography>
+                      <Typography 
+                        variant="caption" 
+                        sx={{ 
+                          opacity: 0.9,
+                          fontSize: isMobile ? '0.7rem' : '0.75rem',
+                          fontWeight: 500
+                        }}
+                      >
+                        完了率
+                      </Typography>
+                    </Box>
+                  </Grid>
+                  <Grid item xs={4}>
+                    <Box sx={{ 
+                      p: isMobile ? 2 : 2,
+                      borderRadius: isMobile ? 2.5 : 2,
+                      bgcolor: 'rgba(255,255,255,0.2)',
+                      textAlign: 'center'
+                    }}>
+                      <Typography 
+                        variant={isMobile ? 'h5' : 'h5'} 
+                        fontWeight="bold"
+                      >
+                        5.2h
+                      </Typography>
+                      <Typography 
+                        variant="caption" 
+                        sx={{ 
+                          opacity: 0.9,
+                          fontSize: isMobile ? '0.7rem' : '0.75rem',
+                          fontWeight: 500
+                        }}
+                      >
+                        平均
+                      </Typography>
+                    </Box>
+                  </Grid>
+                </Grid>
+              </Paper>
             </Stack>
-          </Stack>
-        </Paper>
-      </Box>
+          </Grid>
+        </Grid>
+      </Container>
 
-      {/* Create Illustration Modal */}
+      {/* 作成モーダル */}
       <CreateIllustrationModal
         open={createModalOpen}
         onClose={() => setCreateModalOpen(false)}
-        onSuccess={handleCreateSuccess}
+        onSuccess={() => {
+          setCreateModalOpen(false);
+          fetchDashboardData(true);
+        }}
       />
-    </Container>
+
+      <style>
+        {`
+          @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+          }
+        `}
+      </style>
+    </Box>
   );
 };
 

@@ -59,45 +59,45 @@ const Login = () => {
     if (error.type) {
       switch (error.type) {
         case 'OFFLINE_ERROR':
-          return '📱 You are offline. Please check your internet connection and try again.';
+          return '📱 インターネット接続がオフラインです。接続を確認して再度お試しください。';
         case 'TIMEOUT_ERROR':
-          return '⏰ Connection timeout. The server is taking too long to respond. Please try again.';
+          return '⏰ 接続がタイムアウトしました。サーバーの応答が遅い可能性があります。再度お試しください。';
         case 'SERVER_UNREACHABLE':
-          return '🔌 Cannot connect to the server. Please check:\n• Server is running\n• Correct API URL\n• Network connectivity';
+          return '🔌 サーバーに接続できません。以下を確認してください：\n• サーバーが起動しているか\n• API URLが正しいか\n• ネットワーク接続';
         case 'CORS_ERROR':
-          return '🛡️ CORS error. Please contact administrator or check server configuration.';
+          return '🛡️ CORSエラーが発生しました。管理者に連絡するか、サーバー設定を確認してください。';
         case 'ENDPOINT_NOT_FOUND':
-          return '🔍 Login endpoint not found. Please check if the API URL is correct.';
+          return '🔍 ログインエンドポイントが見つかりません。API URLが正しいか確認してください。';
         case 'SERVER_ERROR':
-          return '🚨 Server error. Please try again later or contact support.';
+          return '🚨 サーバーエラーが発生しました。後ほど再度お試しいただくか、サポートにお問い合わせください。';
         case 'UNAUTHORIZED':
-          return '❌ Invalid username or password. Please check your credentials.';
+          return '❌ ユーザー名またはパスワードが正しくありません。';
         case 'REQUEST_CONFIG_ERROR':
-          return '⚙️ Request configuration error. Please try again.';
+          return '⚙️ リクエスト設定エラーが発生しました。再度お試しください。';
         default:
-          return error.details || 'An unexpected error occurred. Please try again.';
+          return error.details || '予期せぬエラーが発生しました。再度お試しください。';
       }
     }
 
     if (error.response) {
       if (error.response.status === 401) {
-        return '❌ Invalid username or password.';
+        return '❌ ユーザー名またはパスワードが正しくありません。';
       } else if (error.response.status >= 500) {
-        return `🚨 Server error (${error.response.status}). Please try again later.`;
+        return `🚨 サーバーエラー（${error.response.status}）が発生しました。後ほど再度お試しください。`;
       } else {
-        return error.response.data?.message || `Error: ${error.response.status}`;
+        return error.response.data?.message || `エラー: ${error.response.status}`;
       }
     }
 
     if (error.message === 'Network Error') {
       if (!navigator.onLine) {
-        return '📱 You are offline. Please check your internet connection.';
+        return '📱 インターネット接続がオフラインです。接続を確認してください。';
       } else {
-        return '🔌 Cannot connect to server. The server may be down or the URL is incorrect.';
+        return '🔌 サーバーに接続できません。サーバーがダウンしているか、URLが正しくありません。';
       }
     }
 
-    return 'Login failed. Please try again.';
+    return 'ログインに失敗しました。再度お試しください。';
   };
 
   const handleSubmit = async (e) => {
@@ -199,7 +199,7 @@ const Login = () => {
                 letterSpacing: '-0.5px',
               }}
             >
-              Welcome Back
+              ようこそ
             </Typography>
             <Typography
               variant="body1"
@@ -211,7 +211,7 @@ const Login = () => {
                 gap: 1,
               }}
             >
-              ✨ Sign in to continue your journey
+              ✨ 続行するにはログインしてください
             </Typography>
           </Box>
         </Slide>
@@ -249,7 +249,7 @@ const Login = () => {
                 }}
               >
                 <LockOutlined />
-                Secure Login
+                セキュアログイン
               </Typography>
             </Box>
 
@@ -296,8 +296,8 @@ const Login = () => {
 
                 <TextField
                   type="text"
-                  label="Username"
-                  placeholder="Enter your username"
+                  label="ユーザー名"
+                  placeholder="ユーザー名を入力"
                   value={form.username}
                   onChange={(e) => setForm({ ...form, username: e.target.value })}
                   error={!!errors.username}
@@ -343,8 +343,8 @@ const Login = () => {
 
                 <TextField
                   type={showPassword ? 'text' : 'password'}
-                  label="Password"
-                  placeholder="Enter your password"
+                  label="パスワード"
+                  placeholder="パスワードを入力"
                   value={form.password}
                   onChange={(e) => setForm({ ...form, password: e.target.value })}
                   error={!!errors.password}
@@ -411,7 +411,7 @@ const Login = () => {
                         }}
                       />
                     }
-                    label={<Typography sx={{ color: 'rgba(255, 255, 255, 0.7)', fontSize: '0.9rem' }}>Remember me</Typography>}
+                    label={<Typography sx={{ color: 'rgba(255, 255, 255, 0.7)', fontSize: '0.9rem' }}>ログイン状態を保持</Typography>}
                   />
                   <Typography
                     component="a"
@@ -427,7 +427,7 @@ const Login = () => {
                       },
                     }}
                   >
-                    Forgot password?
+                    パスワードをお忘れですか？
                   </Typography>
                 </Box>
 
@@ -461,7 +461,7 @@ const Login = () => {
                     },
                   }}
                 >
-                  {isLoading ? 'Logging in...' : 'Sign In →'}
+                  {isLoading ? 'ログイン中...' : 'ログイン →'}
                 </Button>
 
                 <Button
@@ -496,12 +496,12 @@ const Login = () => {
                     },
                   }}
                 >
-                  Create New Account
+                  新規アカウントを作成
                 </Button>
 
                 <Divider sx={{ my: 2 }}>
                   <Typography sx={{ color: 'rgba(255, 255, 255, 0.5)', fontSize: '0.875rem' }}>
-                    Or continue with
+                    または、以下で続行
                   </Typography>
                 </Divider>
 
@@ -547,7 +547,7 @@ const Login = () => {
                     }}
                   >
                     <Typography variant="caption">
-                      API URL: {import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000/api'}
+                      YAW イラストシステムは開発モードで動作しています。APIサーバーURL: {import.meta.env.VITE_API_URL || 'http://localhost:8000/api'}
                     </Typography>
                   </Alert>
                 )}
@@ -564,7 +564,7 @@ const Login = () => {
             fontSize: '0.875rem',
           }}
         >
-          🔒 Protected by enterprise-grade encryption
+          🔒 エンタープライズグレードの暗号化で保護
         </Typography>
       </Container>
     </Box>
