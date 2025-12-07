@@ -1,10 +1,10 @@
 import React from 'react';
 import { useLocation } from 'react-router-dom';
-import Navbar from '../common/Navbar';
-import Sidebar from '../common/Sidebar';
+import Navbar from '../components/common/Navbar';
+import Sidebar from '../components/common/Sidebar';
 import { Box, Container, Fab, Zoom, IconButton, Typography, Avatar, useMediaQuery, useTheme } from '@mui/material';
 import { KeyboardArrowUp, Menu, Store } from '@mui/icons-material';
-import { useAuth } from '../../context/AuthContext';
+import { useAuth } from '../context/AuthContext';
 
 const DashboardLayout = ({ children }) => {
   const location = useLocation();

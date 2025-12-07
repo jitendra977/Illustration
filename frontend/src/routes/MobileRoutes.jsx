@@ -1,3 +1,4 @@
+// src/routes/MobileRoutes.jsx
 import React from 'react';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import Login from '../pages/auth/Login';
@@ -5,24 +6,37 @@ import Register from '../pages/auth/Register';
 import ProtectedRoute from '../components/common/ProtectedRoute';
 import { AuthProvider } from '../context/AuthContext';
 import EmailVerification from '../pages/auth/EmailVerification';
-import DashboardLayout from '../layouts/DashboardLayout';
-import Dashboard from '../pages/dashboard/Dashboard';
-import IllustrationDashboard from '../pages/Illustrations/IllustrationDashboard';
-import ManufacturerManagement from '../pages/Illustrations/ManufacturerManagement';
-import CarModelManagement from '../pages/Illustrations/CarModelManagement';
-import EngineModelManagement from '../pages/Illustrations/EngineModelManagement';
-import PartCategoryManagement from '../pages/Illustrations/PartCategoryManagement';
+import MobileLayout from '../layouts/MobileLayout';
+import MobileHome from '../pages/mobile/MobileHome';
+import MobileDashboard from '../pages/mobile/MobileDashboard';
+import MobileIllustrations from '../pages/mobile/MobileIllustrations';
+import MobileManufacturers from '../pages/mobile/MobileManufacturers';
+import MobileCarModels from '../pages/mobile/MobileCarModels';
+import MobileEngineModels from '../pages/mobile/MobileEngineModels';
+import MobilePartCategories from '../pages/mobile/MobilePartCategories';
+import MobileProfile from '../pages/mobile/MobileProfile';
+import MobileSearch from '../pages/mobile/MobileSearch';
 
-const AppRoutes = () => {
+const MobileRoutes = () => {
   const router = createBrowserRouter([
-    // ==================== DASHBOARD ====================
+    // ==================== HOME ====================
     {
       path: "/",
       element: (
         <ProtectedRoute>
-          <DashboardLayout>
-            <Dashboard />
-          </DashboardLayout>
+          <MobileHome />
+        </ProtectedRoute>
+      ),
+    },
+    
+    // ==================== DASHBOARD ====================
+    {
+      path: "/dashboard",
+      element: (
+        <ProtectedRoute>
+          <MobileLayout>
+            <MobileDashboard />
+          </MobileLayout>
         </ProtectedRoute>
       ),
     },
@@ -32,9 +46,9 @@ const AppRoutes = () => {
       path: "/verify-email/:token",
       element: (
         <ProtectedRoute>
-          <DashboardLayout>
+          <MobileLayout>
             <EmailVerification />
-          </DashboardLayout>
+          </MobileLayout>
         </ProtectedRoute>
       ),
     },
@@ -42,9 +56,9 @@ const AppRoutes = () => {
       path: "/verify-email",
       element: (
         <ProtectedRoute>
-          <DashboardLayout>
+          <MobileLayout>
             <EmailVerification />
-          </DashboardLayout>
+          </MobileLayout>
         </ProtectedRoute>
       ),
     },
@@ -54,9 +68,9 @@ const AppRoutes = () => {
       path: "/illustrations",
       element: (
         <ProtectedRoute>
-          <DashboardLayout>
-            <IllustrationDashboard />
-          </DashboardLayout>
+          <MobileLayout>
+            <MobileIllustrations />
+          </MobileLayout>
         </ProtectedRoute>
       ),
     },
@@ -64,9 +78,9 @@ const AppRoutes = () => {
       path: "/illustrations/create",
       element: (
         <ProtectedRoute>
-          <DashboardLayout>
-            <IllustrationDashboard />
-          </DashboardLayout>
+          <MobileLayout>
+            <MobileIllustrations />
+          </MobileLayout>
         </ProtectedRoute>
       ),
     },
@@ -74,9 +88,9 @@ const AppRoutes = () => {
       path: "/illustrations/:id",
       element: (
         <ProtectedRoute>
-          <DashboardLayout>
-            <IllustrationDashboard />
-          </DashboardLayout>
+          <MobileLayout>
+            <MobileIllustrations />
+          </MobileLayout>
         </ProtectedRoute>
       ),
     },
@@ -86,9 +100,9 @@ const AppRoutes = () => {
       path: "/manufacturers",
       element: (
         <ProtectedRoute>
-          <DashboardLayout>
-            <ManufacturerManagement />
-          </DashboardLayout>
+          <MobileLayout>
+            <MobileManufacturers />
+          </MobileLayout>
         </ProtectedRoute>
       ),
     },
@@ -96,9 +110,9 @@ const AppRoutes = () => {
       path: "/manufacturers/create",
       element: (
         <ProtectedRoute>
-          <DashboardLayout>
-            <ManufacturerManagement />
-          </DashboardLayout>
+          <MobileLayout>
+            <MobileManufacturers />
+          </MobileLayout>
         </ProtectedRoute>
       ),
     },
@@ -106,9 +120,9 @@ const AppRoutes = () => {
       path: "/car-models",
       element: (
         <ProtectedRoute>
-          <DashboardLayout>
-            <CarModelManagement />
-          </DashboardLayout>
+          <MobileLayout>
+            <MobileCarModels />
+          </MobileLayout>
         </ProtectedRoute>
       ),
     },
@@ -116,9 +130,9 @@ const AppRoutes = () => {
       path: "/car-models/create",
       element: (
         <ProtectedRoute>
-          <DashboardLayout>
-            <CarModelManagement />
-          </DashboardLayout>
+          <MobileLayout>
+            <MobileCarModels />
+          </MobileLayout>
         </ProtectedRoute>
       ),
     },
@@ -126,9 +140,9 @@ const AppRoutes = () => {
       path: "/engine-models",
       element: (
         <ProtectedRoute>
-          <DashboardLayout>
-            <EngineModelManagement />
-          </DashboardLayout>
+          <MobileLayout>
+            <MobileEngineModels />
+          </MobileLayout>
         </ProtectedRoute>
       ),
     },
@@ -136,9 +150,9 @@ const AppRoutes = () => {
       path: "/engine-models/create",
       element: (
         <ProtectedRoute>
-          <DashboardLayout>
-            <EngineModelManagement />
-          </DashboardLayout>
+          <MobileLayout>
+            <MobileEngineModels />
+          </MobileLayout>
         </ProtectedRoute>
       ),
     },
@@ -146,9 +160,9 @@ const AppRoutes = () => {
       path: "/part-categories",
       element: (
         <ProtectedRoute>
-          <DashboardLayout>
-            <PartCategoryManagement />
-          </DashboardLayout>
+          <MobileLayout>
+            <MobilePartCategories />
+          </MobileLayout>
         </ProtectedRoute>
       ),
     },
@@ -156,9 +170,31 @@ const AppRoutes = () => {
       path: "/part-categories/create",
       element: (
         <ProtectedRoute>
-          <DashboardLayout>
-            <PartCategoryManagement />
-          </DashboardLayout>
+          <MobileLayout>
+            <MobilePartCategories />
+          </MobileLayout>
+        </ProtectedRoute>
+      ),
+    },
+    
+    // ==================== ADDITIONAL MOBILE ROUTES ====================
+    {
+      path: "/search",
+      element: (
+        <ProtectedRoute>
+          <MobileLayout>
+            <MobileSearch />
+          </MobileLayout>
+        </ProtectedRoute>
+      ),
+    },
+    {
+      path: "/profile",
+      element: (
+        <ProtectedRoute>
+          <MobileLayout>
+            <MobileProfile />
+          </MobileLayout>
         </ProtectedRoute>
       ),
     },
@@ -181,4 +217,4 @@ const AppRoutes = () => {
   );
 };
 
-export default AppRoutes;
+export default MobileRoutes;

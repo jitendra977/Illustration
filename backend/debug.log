@@ -20974,3 +20974,712 @@ INFO 2025-12-05 06:29:34,700 basehttp "GET /media/illustrations/toyota/dyana/N04
 INFO 2025-12-05 06:29:34,700 basehttp - Broken pipe from ('127.0.0.1', 53599)
 INFO 2025-12-05 06:29:43,351 basehttp "GET /media/illustrations/toyota/dyana/N04C/Radiator/general/7/c0946642-3637-4849-a946-4a5db08f07f5.pdf HTTP/1.1" 200 17792
 INFO 2025-12-05 06:29:43,351 basehttp - Broken pipe from ('127.0.0.1', 53601)
+INFO 2025-12-05 06:48:48,448 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 464
+INFO 2025-12-05 06:48:48,461 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 464
+INFO 2025-12-05 06:48:48,513 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 464
+INFO 2025-12-05 06:48:48,526 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 464
+INFO 2025-12-05 06:48:48,829 basehttp "GET /api/illustrations/ HTTP/1.1" 200 5460
+INFO 2025-12-05 06:48:48,850 basehttp "GET /api/illustrations/ HTTP/1.1" 200 5460
+INFO 2025-12-05 06:48:48,875 basehttp "GET /media/illustrations/toyota/dyana/N04C/Radiator/general/7/c0946642-3637-4849-a946-4a5db08f07f5.pdf HTTP/1.1" 200 17792
+INFO 2025-12-05 06:48:48,875 basehttp - Broken pipe from ('127.0.0.1', 53812)
+INFO 2025-12-05 06:48:48,929 basehttp "GET /media/illustrations/toyota/dyana/N04C/Radiator/general/7/c0946642-3637-4849-a946-4a5db08f07f5.pdf HTTP/1.1" 200 17792
+INFO 2025-12-05 06:48:48,929 basehttp - Broken pipe from ('127.0.0.1', 53818)
+INFO 2025-12-06 21:49:51,961 autoreload Watching for file changes with StatReloader
+INFO 2025-12-06 21:50:27,839 autoreload Watching for file changes with StatReloader
+INFO 2025-12-06 21:50:55,334 autoreload Watching for file changes with StatReloader
+INFO 2025-12-06 21:50:57,902 basehttp "OPTIONS /api/auth/users/profile/ HTTP/1.1" 200 0
+INFO 2025-12-06 21:50:57,904 basehttp "OPTIONS /api/auth/users/profile/ HTTP/1.1" 200 0
+INFO 2025-12-06 21:50:57,906 basehttp "OPTIONS /api/auth/users/profile/ HTTP/1.1" 200 0
+INFO 2025-12-06 21:50:57,906 basehttp "OPTIONS /api/auth/users/profile/ HTTP/1.1" 200 0
+WARNING 2025-12-06 21:50:57,918 log Unauthorized: /api/auth/users/profile/
+WARNING 2025-12-06 21:50:57,918 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 401 172
+WARNING 2025-12-06 21:50:57,920 log Unauthorized: /api/auth/users/profile/
+WARNING 2025-12-06 21:50:57,920 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 401 172
+WARNING 2025-12-06 21:50:57,921 log Unauthorized: /api/auth/users/profile/
+WARNING 2025-12-06 21:50:57,922 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 401 172
+WARNING 2025-12-06 21:50:57,923 log Unauthorized: /api/auth/users/profile/
+WARNING 2025-12-06 21:50:57,923 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 401 172
+INFO 2025-12-06 21:50:57,982 basehttp "OPTIONS /api/token/refresh/ HTTP/1.1" 200 0
+WARNING 2025-12-06 21:50:57,991 log Not Found: /api/token/refresh/
+WARNING 2025-12-06 21:50:57,992 basehttp "POST /api/token/refresh/ HTTP/1.1" 404 7480
+WARNING 2025-12-06 21:50:58,009 log Not Found: /api/token/refresh/
+WARNING 2025-12-06 21:50:58,015 log Not Found: /api/token/refresh/
+WARNING 2025-12-06 21:50:58,019 log Not Found: /api/token/refresh/
+WARNING 2025-12-06 21:50:58,020 basehttp "POST /api/token/refresh/ HTTP/1.1" 404 7480
+WARNING 2025-12-06 21:50:58,020 basehttp "POST /api/token/refresh/ HTTP/1.1" 404 7480
+WARNING 2025-12-06 21:50:58,020 basehttp "POST /api/token/refresh/ HTTP/1.1" 404 7480
+INFO 2025-12-06 21:51:01,880 basehttp "OPTIONS /api/auth/login/ HTTP/1.1" 200 0
+INFO 2025-12-06 21:51:02,100 basehttp "POST /api/auth/login/ HTTP/1.1" 200 489
+INFO 2025-12-06 21:51:02,109 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 464
+INFO 2025-12-06 21:51:02,166 basehttp "GET /media/users/1/profile/profile_1_55551146.png HTTP/1.1" 304 0
+INFO 2025-12-06 21:51:02,193 basehttp "OPTIONS /api/car-models/?limit=1 HTTP/1.1" 200 0
+INFO 2025-12-06 21:51:02,195 basehttp "OPTIONS /api/manufacturers/?limit=1 HTTP/1.1" 200 0
+INFO 2025-12-06 21:51:02,195 basehttp "OPTIONS /api/engine-models/?limit=1 HTTP/1.1" 200 0
+INFO 2025-12-06 21:51:02,195 basehttp "OPTIONS /api/illustrations/?limit=5&ordering=-created_at HTTP/1.1" 200 0
+INFO 2025-12-06 21:51:02,219 basehttp "GET /api/car-models/?limit=1 HTTP/1.1" 200 301
+INFO 2025-12-06 21:51:02,219 basehttp "GET /api/manufacturers/?limit=1 HTTP/1.1" 200 286
+INFO 2025-12-06 21:51:02,223 basehttp "GET /api/engine-models/?limit=1 HTTP/1.1" 200 373
+INFO 2025-12-06 21:51:02,234 basehttp "GET /api/illustrations/?limit=5&ordering=-created_at HTTP/1.1" 200 5460
+INFO 2025-12-06 21:51:02,314 basehttp "GET /media/illustrations/toyota/dyana/N04C/Radiator/general/6/3b273a6b-8563-4a8a-9580-dc3361e404a1.jpg HTTP/1.1" 304 0
+INFO 2025-12-06 21:51:02,318 basehttp "GET /media/illustrations/isuzu/iga/60987P/Radiator/general/4/ba01ce20-149f-49de-a626-ed398cbb9ca0.jpg HTTP/1.1" 304 0
+INFO 2025-12-06 21:51:02,319 basehttp "GET /media/illustrations/hino/dutro/N04C/Head_Cover/Head_Gasket/3/ae27030e-9ef8-4c11-896a-aabd4240cea9.png HTTP/1.1" 304 0
+INFO 2025-12-06 21:51:02,320 basehttp "GET /media/illustrations/toyota/dyana/N04C/Radiator/general/5/60b72384-219a-49e9-a01e-420121accb0d.jpg HTTP/1.1" 304 0
+INFO 2025-12-06 21:51:02,323 basehttp "GET /media/illustrations/toyota/dyana/N04C/Thermistor/Gasket/2/39346832-4956-4ebf-b8a9-35b60379a2aa.png HTTP/1.1" 304 0
+INFO 2025-12-06 21:51:02,324 basehttp "GET /media/illustrations/hino/dutro/N04C/Radiator/Upper_Pipe/1/dd55288c-3974-4678-b669-36191c782b71.png HTTP/1.1" 304 0
+INFO 2025-12-06 21:51:02,324 basehttp - Broken pipe from ('127.0.0.1', 57939)
+INFO 2025-12-06 21:51:03,984 basehttp - Broken pipe from ('127.0.0.1', 57948)
+INFO 2025-12-06 21:51:06,067 basehttp "GET /media/illustrations/toyota/dyana/N04C/Radiator/general/7/c0946642-3637-4849-a946-4a5db08f07f5.pdf HTTP/1.1" 200 17792
+INFO 2025-12-06 21:51:06,067 basehttp - Broken pipe from ('127.0.0.1', 57950)
+INFO 2025-12-06 22:00:28,739 basehttp "GET /media/illustrations/toyota/dyana/N04C/Radiator/general/7/c0946642-3637-4849-a946-4a5db08f07f5.pdf HTTP/1.1" 200 17792
+INFO 2025-12-06 22:00:28,741 basehttp - Broken pipe from ('127.0.0.1', 57983)
+INFO 2025-12-06 22:08:52,698 basehttp "POST /api/auth/login/ HTTP/1.1" 200 489
+INFO 2025-12-06 22:08:52,710 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 464
+INFO 2025-12-06 22:16:34,661 basehttp "GET /api/manufacturers/?limit=1 HTTP/1.1" 200 286
+INFO 2025-12-06 22:16:34,721 basehttp "GET /api/car-models/?limit=1 HTTP/1.1" 200 301
+INFO 2025-12-06 22:16:34,724 basehttp "GET /api/engine-models/?limit=1 HTTP/1.1" 200 373
+INFO 2025-12-06 22:16:34,740 basehttp "GET /api/illustrations/?limit=5&ordering=-created_at HTTP/1.1" 200 5460
+INFO 2025-12-06 22:16:34,961 basehttp - Broken pipe from ('127.0.0.1', 63077)
+INFO 2025-12-06 22:16:45,316 basehttp "GET /media/illustrations/toyota/dyana/N04C/Radiator/general/7/c0946642-3637-4849-a946-4a5db08f07f5.pdf HTTP/1.1" 200 17792
+INFO 2025-12-06 22:16:45,318 basehttp - Broken pipe from ('127.0.0.1', 63123)
+INFO 2025-12-06 22:16:50,755 basehttp "GET /media/illustrations/toyota/dyana/N04C/Radiator/general/7/c0946642-3637-4849-a946-4a5db08f07f5.pdf HTTP/1.1" 200 17792
+INFO 2025-12-06 22:16:50,755 basehttp - Broken pipe from ('127.0.0.1', 63146)
+INFO 2025-12-06 22:17:04,297 basehttp "GET /api/manufacturers/?limit=1 HTTP/1.1" 200 286
+INFO 2025-12-06 22:17:04,303 basehttp "GET /api/engine-models/?limit=1 HTTP/1.1" 200 373
+INFO 2025-12-06 22:17:04,304 basehttp "GET /api/car-models/?limit=1 HTTP/1.1" 200 301
+INFO 2025-12-06 22:17:04,314 basehttp "GET /api/illustrations/?limit=5&ordering=-created_at HTTP/1.1" 200 5460
+INFO 2025-12-06 22:17:04,477 basehttp "GET /media/illustrations/toyota/dyana/N04C/Radiator/general/7/c0946642-3637-4849-a946-4a5db08f07f5.pdf HTTP/1.1" 200 17792
+INFO 2025-12-06 22:17:04,478 basehttp - Broken pipe from ('127.0.0.1', 63207)
+INFO 2025-12-06 22:29:45,145 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 464
+INFO 2025-12-06 22:29:45,151 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 464
+INFO 2025-12-06 22:29:45,157 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 464
+INFO 2025-12-06 22:29:45,161 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 464
+INFO 2025-12-06 22:37:23,023 basehttp "OPTIONS /api/illustrations/ HTTP/1.1" 200 0
+INFO 2025-12-06 22:37:23,043 basehttp "GET /api/illustrations/ HTTP/1.1" 200 5460
+INFO 2025-12-06 22:37:23,150 basehttp - Broken pipe from ('127.0.0.1', 56626)
+INFO 2025-12-06 22:37:27,813 basehttp - Broken pipe from ('127.0.0.1', 56649)
+INFO 2025-12-06 22:37:27,825 basehttp "GET /api/illustrations/ HTTP/1.1" 200 5460
+INFO 2025-12-06 22:37:27,901 basehttp "GET /media/illustrations/toyota/dyana/N04C/Radiator/general/7/c0946642-3637-4849-a946-4a5db08f07f5.pdf HTTP/1.1" 200 17792
+INFO 2025-12-06 22:37:27,902 basehttp - Broken pipe from ('127.0.0.1', 56651)
+INFO 2025-12-06 22:37:29,109 basehttp "GET /media/illustrations/toyota/dyana/N04C/Radiator/general/7/c0946642-3637-4849-a946-4a5db08f07f5.pdf HTTP/1.1" 200 17792
+INFO 2025-12-06 22:37:29,110 basehttp - Broken pipe from ('127.0.0.1', 56657)
+INFO 2025-12-06 22:37:29,124 basehttp "GET /api/illustrations/ HTTP/1.1" 200 5460
+INFO 2025-12-06 22:37:29,190 basehttp "GET /media/illustrations/toyota/dyana/N04C/Radiator/general/7/c0946642-3637-4849-a946-4a5db08f07f5.pdf HTTP/1.1" 200 17792
+INFO 2025-12-06 22:37:29,196 basehttp - Broken pipe from ('127.0.0.1', 56663)
+INFO 2025-12-06 22:37:29,472 basehttp - Broken pipe from ('127.0.0.1', 56665)
+INFO 2025-12-06 22:37:29,482 basehttp "GET /api/illustrations/ HTTP/1.1" 200 5460
+INFO 2025-12-06 22:37:29,547 basehttp "GET /media/illustrations/toyota/dyana/N04C/Radiator/general/7/c0946642-3637-4849-a946-4a5db08f07f5.pdf HTTP/1.1" 200 17792
+INFO 2025-12-06 22:37:29,548 basehttp - Broken pipe from ('127.0.0.1', 56667)
+INFO 2025-12-06 22:37:29,634 basehttp "GET /media/illustrations/toyota/dyana/N04C/Radiator/general/7/c0946642-3637-4849-a946-4a5db08f07f5.pdf HTTP/1.1" 200 17792
+INFO 2025-12-06 22:37:29,635 basehttp - Broken pipe from ('127.0.0.1', 56669)
+INFO 2025-12-06 22:37:29,650 basehttp "GET /api/illustrations/ HTTP/1.1" 200 5460
+INFO 2025-12-06 22:37:29,716 basehttp "GET /media/illustrations/toyota/dyana/N04C/Radiator/general/7/c0946642-3637-4849-a946-4a5db08f07f5.pdf HTTP/1.1" 200 17792
+INFO 2025-12-06 22:37:29,717 basehttp - Broken pipe from ('127.0.0.1', 56671)
+INFO 2025-12-06 22:37:29,800 basehttp "GET /media/illustrations/toyota/dyana/N04C/Radiator/general/7/c0946642-3637-4849-a946-4a5db08f07f5.pdf HTTP/1.1" 200 17792
+INFO 2025-12-06 22:37:29,800 basehttp - Broken pipe from ('127.0.0.1', 56673)
+INFO 2025-12-06 22:37:29,813 basehttp "GET /api/illustrations/ HTTP/1.1" 200 5460
+INFO 2025-12-06 22:37:29,857 basehttp "GET /media/illustrations/toyota/dyana/N04C/Radiator/general/7/c0946642-3637-4849-a946-4a5db08f07f5.pdf HTTP/1.1" 200 17792
+INFO 2025-12-06 22:37:29,858 basehttp - Broken pipe from ('127.0.0.1', 56675)
+INFO 2025-12-06 22:38:21,959 basehttp "OPTIONS /api/manufacturers/ HTTP/1.1" 200 0
+INFO 2025-12-06 22:38:21,961 basehttp "OPTIONS /api/car-models/ HTTP/1.1" 200 0
+INFO 2025-12-06 22:38:21,972 basehttp "OPTIONS /api/engine-models/ HTTP/1.1" 200 0
+INFO 2025-12-06 22:38:21,973 basehttp "OPTIONS /api/engine-models/ HTTP/1.1" 200 0
+INFO 2025-12-06 22:38:21,975 basehttp "OPTIONS /api/part-categories/ HTTP/1.1" 200 0
+INFO 2025-12-06 22:38:21,975 basehttp - Broken pipe from ('127.0.0.1', 56886)
+INFO 2025-12-06 22:38:21,980 basehttp "OPTIONS /api/part-categories/ HTTP/1.1" 200 0
+INFO 2025-12-06 22:38:21,982 basehttp "OPTIONS /api/manufacturers/ HTTP/1.1" 200 0
+INFO 2025-12-06 22:38:21,983 basehttp "OPTIONS /api/car-models/ HTTP/1.1" 200 0
+INFO 2025-12-06 22:38:21,995 basehttp "GET /api/car-models/ HTTP/1.1" 200 301
+INFO 2025-12-06 22:38:21,996 basehttp "GET /api/manufacturers/ HTTP/1.1" 200 286
+INFO 2025-12-06 22:38:21,998 basehttp "GET /api/engine-models/ HTTP/1.1" 200 373
+INFO 2025-12-06 22:38:22,000 basehttp "GET /api/part-categories/ HTTP/1.1" 200 425
+INFO 2025-12-06 22:38:22,006 basehttp "GET /api/car-models/ HTTP/1.1" 200 301
+INFO 2025-12-06 22:38:22,009 basehttp "GET /api/manufacturers/ HTTP/1.1" 200 286
+INFO 2025-12-06 22:38:22,013 basehttp "GET /api/engine-models/ HTTP/1.1" 200 373
+INFO 2025-12-06 22:38:22,013 basehttp "GET /api/part-categories/ HTTP/1.1" 200 425
+INFO 2025-12-06 22:38:25,393 basehttp "OPTIONS /api/car-models/?manufacturer=1 HTTP/1.1" 200 0
+INFO 2025-12-06 22:38:25,402 basehttp "GET /api/car-models/?manufacturer=1 HTTP/1.1" 200 136
+INFO 2025-12-06 22:38:29,760 basehttp "GET /api/car-models/?manufacturer=1 HTTP/1.1" 200 136
+INFO 2025-12-06 22:38:31,325 basehttp "OPTIONS /api/engine-models/?car_model=1 HTTP/1.1" 200 0
+INFO 2025-12-06 22:38:31,336 basehttp "GET /api/engine-models/?car_model=1 HTTP/1.1" 200 163
+INFO 2025-12-06 22:38:33,630 basehttp "OPTIONS /api/part-categories/?engine_model=2 HTTP/1.1" 200 0
+INFO 2025-12-06 22:38:33,639 basehttp "GET /api/part-categories/?engine_model=2 HTTP/1.1" 200 234
+INFO 2025-12-06 22:38:39,232 basehttp "OPTIONS /api/illustrations/?manufacturer=1&car_model=1&engine_model=2&part_category=2 HTTP/1.1" 200 0
+INFO 2025-12-06 22:38:39,232 basehttp "OPTIONS /api/illustrations/?manufacturer=1&car_model=1&engine_model=2&part_category=2 HTTP/1.1" 200 0
+INFO 2025-12-06 22:38:39,251 basehttp "GET /api/illustrations/?manufacturer=1&car_model=1&engine_model=2&part_category=2 HTTP/1.1" 200 2493
+INFO 2025-12-06 22:38:39,265 basehttp "GET /api/illustrations/?manufacturer=1&car_model=1&engine_model=2&part_category=2 HTTP/1.1" 200 2493
+INFO 2025-12-06 22:38:39,297 basehttp "GET /media/illustrations/toyota/dyana/N04C/Radiator/general/7/c0946642-3637-4849-a946-4a5db08f07f5.pdf HTTP/1.1" 200 17792
+INFO 2025-12-06 22:38:39,297 basehttp - Broken pipe from ('127.0.0.1', 56967)
+INFO 2025-12-06 22:38:44,812 basehttp - Broken pipe from ('127.0.0.1', 56993)
+INFO 2025-12-06 22:38:44,824 basehttp "GET /api/manufacturers/ HTTP/1.1" 200 286
+INFO 2025-12-06 22:38:44,826 basehttp "GET /api/part-categories/ HTTP/1.1" 200 425
+INFO 2025-12-06 22:38:44,833 basehttp "GET /api/engine-models/ HTTP/1.1" 200 373
+INFO 2025-12-06 22:38:44,834 basehttp "GET /api/car-models/ HTTP/1.1" 200 301
+INFO 2025-12-06 22:38:44,836 basehttp "GET /api/manufacturers/ HTTP/1.1" 200 286
+INFO 2025-12-06 22:38:44,845 basehttp "GET /api/engine-models/ HTTP/1.1" 200 373
+INFO 2025-12-06 22:38:44,848 basehttp "GET /api/part-categories/ HTTP/1.1" 200 425
+INFO 2025-12-06 22:38:44,851 basehttp "GET /api/car-models/ HTTP/1.1" 200 301
+INFO 2025-12-06 22:38:47,808 basehttp "GET /api/illustrations/?manufacturer=1&car_model=1&engine_model=2&part_category=2 HTTP/1.1" 200 2493
+INFO 2025-12-06 22:38:47,811 basehttp "GET /api/illustrations/ HTTP/1.1" 200 5460
+INFO 2025-12-06 22:38:47,850 basehttp - Broken pipe from ('127.0.0.1', 57008)
+INFO 2025-12-06 22:39:54,261 basehttp - Broken pipe from ('127.0.0.1', 57279)
+INFO 2025-12-06 22:39:54,270 basehttp "GET /api/manufacturers/ HTTP/1.1" 200 286
+INFO 2025-12-06 22:39:54,275 basehttp "GET /api/part-categories/ HTTP/1.1" 200 425
+INFO 2025-12-06 22:39:54,279 basehttp "GET /api/engine-models/ HTTP/1.1" 200 373
+INFO 2025-12-06 22:39:54,281 basehttp "GET /api/car-models/ HTTP/1.1" 200 301
+INFO 2025-12-06 22:39:54,285 basehttp "GET /api/manufacturers/ HTTP/1.1" 200 286
+INFO 2025-12-06 22:39:54,290 basehttp "GET /api/part-categories/ HTTP/1.1" 200 425
+INFO 2025-12-06 22:39:54,299 basehttp "GET /api/car-models/ HTTP/1.1" 200 301
+INFO 2025-12-06 22:39:54,299 basehttp "GET /api/engine-models/ HTTP/1.1" 200 373
+INFO 2025-12-06 22:39:54,307 basehttp "GET /api/illustrations/ HTTP/1.1" 200 5460
+INFO 2025-12-06 22:39:54,450 basehttp "GET /media/illustrations/toyota/dyana/N04C/Radiator/general/7/c0946642-3637-4849-a946-4a5db08f07f5.pdf HTTP/1.1" 200 17792
+INFO 2025-12-06 22:39:54,450 basehttp - Broken pipe from ('127.0.0.1', 57281)
+INFO 2025-12-06 22:40:07,929 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 464
+INFO 2025-12-06 22:40:07,934 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 464
+INFO 2025-12-06 22:40:07,939 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 464
+INFO 2025-12-06 22:40:07,943 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 464
+INFO 2025-12-06 22:40:08,567 basehttp "GET /api/manufacturers/ HTTP/1.1" 200 286
+INFO 2025-12-06 22:40:08,570 basehttp "GET /api/engine-models/ HTTP/1.1" 200 373
+INFO 2025-12-06 22:40:08,576 basehttp "GET /api/car-models/ HTTP/1.1" 200 301
+INFO 2025-12-06 22:40:08,593 basehttp "GET /api/engine-models/ HTTP/1.1" 200 373
+INFO 2025-12-06 22:40:08,595 basehttp "GET /api/part-categories/ HTTP/1.1" 200 425
+INFO 2025-12-06 22:40:08,600 basehttp "GET /api/car-models/ HTTP/1.1" 200 301
+INFO 2025-12-06 22:40:08,605 basehttp "GET /api/manufacturers/ HTTP/1.1" 200 286
+INFO 2025-12-06 22:40:08,607 basehttp "GET /api/part-categories/ HTTP/1.1" 200 425
+INFO 2025-12-06 22:40:08,615 basehttp "GET /api/illustrations/ HTTP/1.1" 200 5460
+INFO 2025-12-06 22:40:08,629 basehttp "GET /api/illustrations/ HTTP/1.1" 200 5460
+INFO 2025-12-06 22:40:08,787 basehttp "GET /media/illustrations/toyota/dyana/N04C/Radiator/general/7/c0946642-3637-4849-a946-4a5db08f07f5.pdf HTTP/1.1" 200 17792
+INFO 2025-12-06 22:40:08,790 basehttp - Broken pipe from ('127.0.0.1', 57444)
+INFO 2025-12-06 22:40:14,950 basehttp "GET /media/illustrations/toyota/dyana/N04C/Radiator/general/7/c0946642-3637-4849-a946-4a5db08f07f5.pdf HTTP/1.1" 200 17792
+INFO 2025-12-06 22:40:14,951 basehttp - Broken pipe from ('127.0.0.1', 57524)
+INFO 2025-12-06 22:40:14,952 basehttp "GET /media/illustrations/toyota/dyana/N04C/Radiator/general/7/194a727a-9ba4-45a4-9b51-9f313fafe9a9.jpg HTTP/1.1" 304 0
+INFO 2025-12-06 22:40:19,362 basehttp "GET /media/illustrations/toyota/dyana/N04C/Radiator/general/7/c0946642-3637-4849-a946-4a5db08f07f5.pdf HTTP/1.1" 200 17792
+INFO 2025-12-06 22:40:19,363 basehttp - Broken pipe from ('127.0.0.1', 57526)
+INFO 2025-12-06 22:40:22,697 basehttp - Broken pipe from ('127.0.0.1', 57556)
+INFO 2025-12-06 22:40:22,699 basehttp "GET /api/manufacturers/ HTTP/1.1" 200 286
+INFO 2025-12-06 22:40:24,646 basehttp "GET /media/illustrations/toyota/dyana/N04C/Radiator/general/7/c0946642-3637-4849-a946-4a5db08f07f5.pdf HTTP/1.1" 200 17792
+INFO 2025-12-06 22:40:24,646 basehttp - Broken pipe from ('127.0.0.1', 57566)
+INFO 2025-12-06 22:45:19,582 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 464
+INFO 2025-12-06 22:45:19,588 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 464
+INFO 2025-12-06 22:45:19,593 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 464
+INFO 2025-12-06 22:45:19,597 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 464
+INFO 2025-12-06 22:45:24,155 basehttp "GET /api/manufacturers/ HTTP/1.1" 200 286
+INFO 2025-12-06 22:45:24,160 basehttp "GET /api/manufacturers/ HTTP/1.1" 200 286
+INFO 2025-12-06 22:47:48,192 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 464
+INFO 2025-12-06 22:47:48,198 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 464
+INFO 2025-12-06 22:47:48,203 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 464
+INFO 2025-12-06 22:47:48,208 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 464
+INFO 2025-12-06 22:47:56,120 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 464
+INFO 2025-12-06 22:47:56,124 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 464
+INFO 2025-12-06 22:47:56,129 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 464
+INFO 2025-12-06 22:47:56,133 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 464
+INFO 2025-12-06 22:49:04,373 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 464
+INFO 2025-12-06 22:49:04,377 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 464
+INFO 2025-12-06 22:49:04,382 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 464
+INFO 2025-12-06 22:49:04,391 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 464
+INFO 2025-12-06 22:49:06,852 basehttp "GET /api/engine-models/ HTTP/1.1" 200 373
+INFO 2025-12-06 22:49:06,860 basehttp "GET /api/car-models/ HTTP/1.1" 200 301
+INFO 2025-12-06 22:49:06,863 basehttp "GET /api/part-categories/ HTTP/1.1" 200 425
+INFO 2025-12-06 22:49:06,868 basehttp "GET /api/manufacturers/ HTTP/1.1" 200 286
+INFO 2025-12-06 22:49:06,885 basehttp "GET /api/car-models/ HTTP/1.1" 200 301
+INFO 2025-12-06 22:49:06,886 basehttp "GET /api/part-categories/ HTTP/1.1" 200 425
+INFO 2025-12-06 22:49:06,886 basehttp "GET /api/engine-models/ HTTP/1.1" 200 373
+INFO 2025-12-06 22:49:06,887 basehttp "GET /api/manufacturers/ HTTP/1.1" 200 286
+INFO 2025-12-06 22:49:06,892 basehttp "GET /api/illustrations/ HTTP/1.1" 200 5460
+INFO 2025-12-06 22:49:06,906 basehttp "GET /api/illustrations/ HTTP/1.1" 200 5460
+INFO 2025-12-06 22:49:07,047 basehttp "GET /media/illustrations/toyota/dyana/N04C/Radiator/general/7/c0946642-3637-4849-a946-4a5db08f07f5.pdf HTTP/1.1" 200 17792
+INFO 2025-12-06 22:49:07,047 basehttp - Broken pipe from ('127.0.0.1', 60758)
+INFO 2025-12-06 22:50:06,456 basehttp "GET /api/engine-models/ HTTP/1.1" 200 373
+INFO 2025-12-06 22:50:06,457 basehttp "GET /api/car-models/ HTTP/1.1" 200 301
+INFO 2025-12-06 22:50:06,460 basehttp "GET /api/manufacturers/ HTTP/1.1" 200 286
+INFO 2025-12-06 22:50:06,669 basehttp "GET /api/engine-models/ HTTP/1.1" 200 373
+INFO 2025-12-06 22:50:06,671 basehttp "GET /api/manufacturers/ HTTP/1.1" 200 286
+INFO 2025-12-06 22:50:06,671 basehttp "GET /api/car-models/ HTTP/1.1" 200 301
+INFO 2025-12-06 22:52:54,988 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 464
+INFO 2025-12-06 22:52:54,992 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 464
+INFO 2025-12-06 22:52:54,997 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 464
+INFO 2025-12-06 22:52:55,001 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 464
+INFO 2025-12-06 22:52:55,494 basehttp "GET /api/engine-models/ HTTP/1.1" 200 373
+INFO 2025-12-06 22:52:55,501 basehttp "GET /api/manufacturers/ HTTP/1.1" 200 286
+INFO 2025-12-06 22:52:55,516 basehttp "GET /api/manufacturers/ HTTP/1.1" 200 286
+INFO 2025-12-06 22:52:55,523 basehttp "GET /api/engine-models/ HTTP/1.1" 200 373
+INFO 2025-12-06 22:52:55,533 basehttp "GET /api/car-models/ HTTP/1.1" 200 301
+INFO 2025-12-06 22:52:55,549 basehttp "GET /api/car-models/ HTTP/1.1" 200 301
+INFO 2025-12-06 22:53:01,772 basehttp "POST /api/auth/login/ HTTP/1.1" 200 489
+INFO 2025-12-06 22:53:01,784 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 464
+INFO 2025-12-06 22:53:09,362 basehttp "GET /api/car-models/ HTTP/1.1" 200 301
+INFO 2025-12-06 22:53:09,380 basehttp "GET /api/manufacturers/ HTTP/1.1" 200 286
+INFO 2025-12-06 22:53:09,380 basehttp "GET /api/part-categories/ HTTP/1.1" 200 425
+INFO 2025-12-06 22:53:09,383 basehttp "GET /api/engine-models/ HTTP/1.1" 200 373
+INFO 2025-12-06 22:53:09,388 basehttp "GET /api/car-models/ HTTP/1.1" 200 301
+INFO 2025-12-06 22:53:09,396 basehttp "GET /api/engine-models/ HTTP/1.1" 200 373
+INFO 2025-12-06 22:53:09,396 basehttp "GET /api/part-categories/ HTTP/1.1" 200 425
+INFO 2025-12-06 22:53:09,398 basehttp "GET /api/manufacturers/ HTTP/1.1" 200 286
+INFO 2025-12-06 22:53:09,405 basehttp "GET /api/illustrations/ HTTP/1.1" 200 5460
+INFO 2025-12-06 22:53:09,420 basehttp "GET /api/illustrations/ HTTP/1.1" 200 5460
+INFO 2025-12-06 22:53:09,570 basehttp - Broken pipe from ('127.0.0.1', 62426)
+INFO 2025-12-06 22:57:44,536 basehttp "GET /api/part-categories/ HTTP/1.1" 200 425
+INFO 2025-12-06 22:57:44,540 basehttp "GET /api/manufacturers/ HTTP/1.1" 200 286
+INFO 2025-12-06 22:57:44,540 basehttp "GET /api/car-models/ HTTP/1.1" 200 301
+INFO 2025-12-06 22:57:44,541 basehttp "GET /api/engine-models/ HTTP/1.1" 200 373
+INFO 2025-12-06 22:57:44,556 basehttp "GET /api/manufacturers/ HTTP/1.1" 200 286
+INFO 2025-12-06 22:57:44,563 basehttp "GET /api/part-categories/ HTTP/1.1" 200 425
+INFO 2025-12-06 22:57:44,563 basehttp "GET /api/engine-models/ HTTP/1.1" 200 373
+INFO 2025-12-06 22:57:44,568 basehttp "GET /api/car-models/ HTTP/1.1" 200 301
+INFO 2025-12-06 22:57:44,572 basehttp "GET /api/illustrations/ HTTP/1.1" 200 5460
+INFO 2025-12-06 22:57:44,599 basehttp "GET /api/illustrations/ HTTP/1.1" 200 5460
+INFO 2025-12-06 22:57:44,758 basehttp "GET /media/illustrations/toyota/dyana/N04C/Radiator/general/7/c0946642-3637-4849-a946-4a5db08f07f5.pdf HTTP/1.1" 200 17792
+INFO 2025-12-06 22:57:44,760 basehttp - Broken pipe from ('127.0.0.1', 63698)
+INFO 2025-12-06 22:57:51,892 basehttp "GET /api/manufacturers/ HTTP/1.1" 200 286
+INFO 2025-12-06 22:57:51,904 basehttp "GET /api/car-models/ HTTP/1.1" 200 301
+INFO 2025-12-06 22:57:51,907 basehttp "GET /api/part-categories/ HTTP/1.1" 200 425
+INFO 2025-12-06 22:57:51,911 basehttp "GET /api/engine-models/ HTTP/1.1" 200 373
+INFO 2025-12-06 22:57:51,916 basehttp "GET /api/manufacturers/ HTTP/1.1" 200 286
+INFO 2025-12-06 22:57:51,921 basehttp "GET /api/car-models/ HTTP/1.1" 200 301
+INFO 2025-12-06 22:57:51,924 basehttp "GET /api/engine-models/ HTTP/1.1" 200 373
+INFO 2025-12-06 22:57:51,924 basehttp "GET /api/part-categories/ HTTP/1.1" 200 425
+INFO 2025-12-06 22:57:51,935 basehttp "GET /api/illustrations/ HTTP/1.1" 200 5460
+INFO 2025-12-06 22:57:51,948 basehttp "GET /api/illustrations/ HTTP/1.1" 200 5460
+INFO 2025-12-06 22:57:52,126 basehttp "GET /media/illustrations/toyota/dyana/N04C/Radiator/general/7/c0946642-3637-4849-a946-4a5db08f07f5.pdf HTTP/1.1" 200 17792
+INFO 2025-12-06 22:57:52,128 basehttp - Broken pipe from ('127.0.0.1', 63878)
+INFO 2025-12-06 23:14:24,040 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 464
+INFO 2025-12-06 23:14:24,046 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 464
+INFO 2025-12-06 23:14:24,052 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 464
+INFO 2025-12-06 23:14:24,056 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 464
+INFO 2025-12-06 23:14:24,700 basehttp "GET /api/manufacturers/ HTTP/1.1" 200 286
+INFO 2025-12-06 23:14:24,705 basehttp "GET /api/part-categories/ HTTP/1.1" 200 425
+INFO 2025-12-06 23:14:24,710 basehttp "GET /api/car-models/ HTTP/1.1" 200 301
+INFO 2025-12-06 23:14:24,714 basehttp "GET /api/engine-models/ HTTP/1.1" 200 373
+INFO 2025-12-06 23:14:24,725 basehttp "GET /api/car-models/ HTTP/1.1" 200 301
+INFO 2025-12-06 23:14:24,726 basehttp "GET /api/manufacturers/ HTTP/1.1" 200 286
+INFO 2025-12-06 23:14:24,726 basehttp "GET /api/part-categories/ HTTP/1.1" 200 425
+INFO 2025-12-06 23:14:24,731 basehttp "GET /api/engine-models/ HTTP/1.1" 200 373
+INFO 2025-12-06 23:14:24,739 basehttp "GET /api/illustrations/ HTTP/1.1" 200 5460
+INFO 2025-12-06 23:14:24,753 basehttp "GET /api/illustrations/ HTTP/1.1" 200 5460
+INFO 2025-12-06 23:14:24,991 basehttp "GET /media/illustrations/toyota/dyana/N04C/Radiator/general/7/c0946642-3637-4849-a946-4a5db08f07f5.pdf HTTP/1.1" 200 17792
+INFO 2025-12-06 23:14:24,992 basehttp - Broken pipe from ('127.0.0.1', 55610)
+INFO 2025-12-07 13:43:44,621 basehttp "OPTIONS /api/auth/users/profile/ HTTP/1.1" 200 0
+WARNING 2025-12-07 13:43:44,627 log Unauthorized: /api/auth/users/profile/
+INFO 2025-12-07 13:43:44,627 basehttp "OPTIONS /api/auth/users/profile/ HTTP/1.1" 200 0
+WARNING 2025-12-07 13:43:44,628 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 401 172
+WARNING 2025-12-07 13:43:44,630 log Unauthorized: /api/auth/users/profile/
+INFO 2025-12-07 13:43:44,630 basehttp "OPTIONS /api/auth/users/profile/ HTTP/1.1" 200 0
+INFO 2025-12-07 13:43:44,630 basehttp "OPTIONS /api/auth/users/profile/ HTTP/1.1" 200 0
+WARNING 2025-12-07 13:43:44,631 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 401 172
+WARNING 2025-12-07 13:43:44,632 log Unauthorized: /api/auth/users/profile/
+WARNING 2025-12-07 13:43:44,632 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 401 172
+WARNING 2025-12-07 13:43:44,633 log Unauthorized: /api/auth/users/profile/
+WARNING 2025-12-07 13:43:44,634 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 401 172
+INFO 2025-12-07 13:43:44,879 basehttp "OPTIONS /api/token/refresh/ HTTP/1.1" 200 0
+WARNING 2025-12-07 13:43:44,893 log Not Found: /api/token/refresh/
+WARNING 2025-12-07 13:43:44,911 log Not Found: /api/token/refresh/
+WARNING 2025-12-07 13:43:44,914 log Not Found: /api/token/refresh/
+WARNING 2025-12-07 13:43:44,915 basehttp "POST /api/token/refresh/ HTTP/1.1" 404 7480
+WARNING 2025-12-07 13:43:44,923 log Not Found: /api/token/refresh/
+WARNING 2025-12-07 13:43:44,927 basehttp "POST /api/token/refresh/ HTTP/1.1" 404 7480
+WARNING 2025-12-07 13:43:44,929 basehttp "POST /api/token/refresh/ HTTP/1.1" 404 7480
+WARNING 2025-12-07 13:43:44,930 basehttp "POST /api/token/refresh/ HTTP/1.1" 404 7480
+INFO 2025-12-07 21:46:51,975 basehttp "OPTIONS /api/auth/login/ HTTP/1.1" 200 0
+INFO 2025-12-07 21:46:52,195 basehttp "POST /api/auth/login/ HTTP/1.1" 200 489
+INFO 2025-12-07 21:46:52,211 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 464
+INFO 2025-12-07 21:46:52,330 basehttp "GET /media/users/1/profile/profile_1_55551146.png HTTP/1.1" 304 0
+INFO 2025-12-07 21:47:04,774 basehttp "OPTIONS /api/manufacturers/ HTTP/1.1" 200 0
+INFO 2025-12-07 21:47:04,780 basehttp "OPTIONS /api/engine-models/ HTTP/1.1" 200 0
+INFO 2025-12-07 21:47:04,786 basehttp "OPTIONS /api/engine-models/ HTTP/1.1" 200 0
+INFO 2025-12-07 21:47:04,786 basehttp "OPTIONS /api/car-models/ HTTP/1.1" 200 0
+INFO 2025-12-07 21:47:04,787 basehttp "OPTIONS /api/part-categories/ HTTP/1.1" 200 0
+INFO 2025-12-07 21:47:04,789 basehttp "OPTIONS /api/part-categories/ HTTP/1.1" 200 0
+INFO 2025-12-07 21:47:04,791 basehttp "OPTIONS /api/illustrations/ HTTP/1.1" 200 0
+INFO 2025-12-07 21:47:04,791 basehttp "OPTIONS /api/car-models/ HTTP/1.1" 200 0
+INFO 2025-12-07 21:47:04,791 basehttp "OPTIONS /api/illustrations/ HTTP/1.1" 200 0
+INFO 2025-12-07 21:47:04,794 basehttp "OPTIONS /api/manufacturers/ HTTP/1.1" 200 0
+INFO 2025-12-07 21:47:04,808 basehttp "GET /api/manufacturers/ HTTP/1.1" 200 286
+INFO 2025-12-07 21:47:04,809 basehttp "GET /api/engine-models/ HTTP/1.1" 200 373
+INFO 2025-12-07 21:47:04,810 basehttp "GET /api/car-models/ HTTP/1.1" 200 301
+INFO 2025-12-07 21:47:04,811 basehttp "GET /api/part-categories/ HTTP/1.1" 200 425
+INFO 2025-12-07 21:47:04,823 basehttp "GET /api/manufacturers/ HTTP/1.1" 200 286
+INFO 2025-12-07 21:47:04,828 basehttp "GET /api/part-categories/ HTTP/1.1" 200 425
+INFO 2025-12-07 21:47:04,828 basehttp "GET /api/engine-models/ HTTP/1.1" 200 373
+INFO 2025-12-07 21:47:04,830 basehttp "GET /api/car-models/ HTTP/1.1" 200 301
+INFO 2025-12-07 21:47:04,836 basehttp "GET /api/illustrations/ HTTP/1.1" 200 5460
+INFO 2025-12-07 21:47:04,850 basehttp "GET /api/illustrations/ HTTP/1.1" 200 5460
+INFO 2025-12-07 21:47:04,977 basehttp "GET /media/illustrations/toyota/dyana/N04C/Radiator/general/6/3b273a6b-8563-4a8a-9580-dc3361e404a1.jpg HTTP/1.1" 304 0
+INFO 2025-12-07 21:47:04,980 basehttp "GET /media/illustrations/toyota/dyana/N04C/Radiator/general/5/60b72384-219a-49e9-a01e-420121accb0d.jpg HTTP/1.1" 304 0
+INFO 2025-12-07 21:47:04,983 basehttp "GET /media/illustrations/isuzu/iga/60987P/Radiator/general/4/ba01ce20-149f-49de-a626-ed398cbb9ca0.jpg HTTP/1.1" 304 0
+INFO 2025-12-07 21:47:04,986 basehttp "GET /media/illustrations/hino/dutro/N04C/Head_Cover/Head_Gasket/3/ae27030e-9ef8-4c11-896a-aabd4240cea9.png HTTP/1.1" 304 0
+INFO 2025-12-07 21:47:04,989 basehttp "GET /media/illustrations/toyota/dyana/N04C/Thermistor/Gasket/2/39346832-4956-4ebf-b8a9-35b60379a2aa.png HTTP/1.1" 304 0
+INFO 2025-12-07 21:47:04,992 basehttp "GET /media/illustrations/hino/dutro/N04C/Radiator/Upper_Pipe/1/dd55288c-3974-4678-b669-36191c782b71.png HTTP/1.1" 304 0
+INFO 2025-12-07 21:47:05,009 basehttp - Broken pipe from ('127.0.0.1', 57504)
+INFO 2025-12-07 21:47:18,733 basehttp "GET /api/manufacturers/ HTTP/1.1" 200 286
+INFO 2025-12-07 21:47:18,736 basehttp "GET /api/car-models/ HTTP/1.1" 200 301
+INFO 2025-12-07 21:47:18,738 basehttp "GET /api/part-categories/ HTTP/1.1" 200 425
+INFO 2025-12-07 21:47:18,742 basehttp "GET /api/engine-models/ HTTP/1.1" 200 373
+INFO 2025-12-07 21:47:18,768 basehttp "GET /api/manufacturers/ HTTP/1.1" 200 286
+INFO 2025-12-07 21:47:18,769 basehttp "GET /api/car-models/ HTTP/1.1" 200 301
+INFO 2025-12-07 21:47:18,778 basehttp "GET /api/engine-models/ HTTP/1.1" 200 373
+INFO 2025-12-07 21:47:18,783 basehttp "GET /api/part-categories/ HTTP/1.1" 200 425
+INFO 2025-12-07 21:47:18,794 basehttp "GET /api/illustrations/ HTTP/1.1" 200 5460
+INFO 2025-12-07 21:47:18,807 basehttp "GET /api/illustrations/ HTTP/1.1" 200 5460
+INFO 2025-12-07 21:47:18,949 basehttp "GET /media/illustrations/toyota/dyana/N04C/Radiator/general/7/c0946642-3637-4849-a946-4a5db08f07f5.pdf HTTP/1.1" 200 17792
+INFO 2025-12-07 21:47:18,949 basehttp - Broken pipe from ('127.0.0.1', 57920)
+INFO 2025-12-07 21:47:22,021 basehttp "GET /api/manufacturers/ HTTP/1.1" 200 286
+INFO 2025-12-07 21:47:22,025 basehttp "GET /api/manufacturers/ HTTP/1.1" 200 286
+INFO 2025-12-07 21:49:18,073 basehttp "GET /api/car-models/ HTTP/1.1" 200 301
+INFO 2025-12-07 21:49:18,075 basehttp "GET /api/engine-models/ HTTP/1.1" 200 373
+INFO 2025-12-07 21:49:18,081 basehttp "GET /api/manufacturers/ HTTP/1.1" 200 286
+INFO 2025-12-07 21:49:18,086 basehttp "GET /api/engine-models/ HTTP/1.1" 200 373
+INFO 2025-12-07 21:49:18,088 basehttp "GET /api/car-models/ HTTP/1.1" 200 301
+INFO 2025-12-07 21:49:18,090 basehttp "GET /api/manufacturers/ HTTP/1.1" 200 286
+INFO 2025-12-07 21:49:31,595 basehttp "GET /api/manufacturers/ HTTP/1.1" 200 286
+INFO 2025-12-07 21:49:31,606 basehttp "GET /api/engine-models/ HTTP/1.1" 200 373
+INFO 2025-12-07 21:49:31,608 basehttp "GET /api/car-models/ HTTP/1.1" 200 301
+INFO 2025-12-07 21:49:31,610 basehttp "GET /api/part-categories/ HTTP/1.1" 200 425
+INFO 2025-12-07 21:49:31,615 basehttp "GET /api/manufacturers/ HTTP/1.1" 200 286
+INFO 2025-12-07 21:49:31,620 basehttp "GET /api/engine-models/ HTTP/1.1" 200 373
+INFO 2025-12-07 21:49:31,623 basehttp "GET /api/car-models/ HTTP/1.1" 200 301
+INFO 2025-12-07 21:49:31,627 basehttp "GET /api/part-categories/ HTTP/1.1" 200 425
+INFO 2025-12-07 21:49:31,635 basehttp "GET /api/illustrations/ HTTP/1.1" 200 5460
+INFO 2025-12-07 21:49:31,648 basehttp "GET /api/illustrations/ HTTP/1.1" 200 5460
+INFO 2025-12-07 21:49:31,780 basehttp "GET /media/illustrations/toyota/dyana/N04C/Radiator/general/7/c0946642-3637-4849-a946-4a5db08f07f5.pdf HTTP/1.1" 200 17792
+INFO 2025-12-07 21:49:31,780 basehttp - Broken pipe from ('127.0.0.1', 58914)
+INFO 2025-12-07 21:49:31,843 basehttp "GET /media/illustrations/toyota/dyana/N04C/Radiator/general/7/c0946642-3637-4849-a946-4a5db08f07f5.pdf HTTP/1.1" 200 17792
+INFO 2025-12-07 21:49:31,844 basehttp - Broken pipe from ('127.0.0.1', 58916)
+INFO 2025-12-07 21:49:38,565 basehttp "GET /media/illustrations/toyota/dyana/N04C/Radiator/general/7/c0946642-3637-4849-a946-4a5db08f07f5.pdf HTTP/1.1" 200 17792
+INFO 2025-12-07 21:49:38,566 basehttp - Broken pipe from ('127.0.0.1', 58943)
+INFO 2025-12-07 21:49:40,650 basehttp "GET /media/illustrations/toyota/dyana/N04C/Radiator/general/7/c0946642-3637-4849-a946-4a5db08f07f5.pdf HTTP/1.1" 200 17792
+INFO 2025-12-07 21:49:40,651 basehttp - Broken pipe from ('127.0.0.1', 58953)
+INFO 2025-12-07 21:49:43,804 basehttp "GET /media/illustrations/toyota/dyana/N04C/Radiator/general/7/c0946642-3637-4849-a946-4a5db08f07f5.pdf HTTP/1.1" 200 17792
+INFO 2025-12-07 21:49:43,804 basehttp - Broken pipe from ('127.0.0.1', 58971)
+INFO 2025-12-07 21:49:54,592 basehttp "GET /media/illustrations/toyota/dyana/N04C/Radiator/general/7/c0946642-3637-4849-a946-4a5db08f07f5.pdf HTTP/1.1" 200 17792
+INFO 2025-12-07 21:49:54,593 basehttp - Broken pipe from ('127.0.0.1', 59013)
+INFO 2025-12-07 21:50:17,761 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 464
+INFO 2025-12-07 21:50:17,769 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 464
+INFO 2025-12-07 21:50:17,774 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 464
+INFO 2025-12-07 21:50:17,779 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 464
+INFO 2025-12-07 21:50:23,044 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 464
+INFO 2025-12-07 21:50:23,048 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 464
+INFO 2025-12-07 21:50:23,055 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 464
+INFO 2025-12-07 21:50:23,060 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 464
+INFO 2025-12-07 21:50:23,231 basehttp "OPTIONS /api/manufacturers/?limit=1 HTTP/1.1" 200 0
+INFO 2025-12-07 21:50:23,231 basehttp "OPTIONS /api/illustrations/?limit=5&ordering=-created_at HTTP/1.1" 200 0
+INFO 2025-12-07 21:50:23,232 basehttp "OPTIONS /api/car-models/?limit=1 HTTP/1.1" 200 0
+INFO 2025-12-07 21:50:23,237 basehttp "OPTIONS /api/engine-models/?limit=1 HTTP/1.1" 200 0
+INFO 2025-12-07 21:50:23,253 basehttp "GET /api/manufacturers/?limit=1 HTTP/1.1" 200 286
+INFO 2025-12-07 21:50:23,258 basehttp "GET /api/car-models/?limit=1 HTTP/1.1" 200 301
+INFO 2025-12-07 21:50:23,260 basehttp "GET /api/engine-models/?limit=1 HTTP/1.1" 200 373
+INFO 2025-12-07 21:50:23,273 basehttp "GET /api/illustrations/?limit=5&ordering=-created_at HTTP/1.1" 200 5460
+INFO 2025-12-07 21:50:23,345 basehttp - Broken pipe from ('127.0.0.1', 59655)
+INFO 2025-12-07 21:50:28,670 basehttp "GET /api/car-models/ HTTP/1.1" 200 301
+INFO 2025-12-07 21:50:28,671 basehttp "GET /api/manufacturers/ HTTP/1.1" 200 286
+INFO 2025-12-07 21:50:28,677 basehttp "GET /api/manufacturers/ HTTP/1.1" 200 286
+INFO 2025-12-07 21:50:28,679 basehttp "GET /api/car-models/ HTTP/1.1" 200 301
+INFO 2025-12-07 21:50:51,772 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 464
+INFO 2025-12-07 21:50:51,776 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 464
+INFO 2025-12-07 21:50:51,781 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 464
+INFO 2025-12-07 21:50:51,785 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 464
+INFO 2025-12-07 21:51:53,728 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 464
+INFO 2025-12-07 21:51:53,732 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 464
+INFO 2025-12-07 21:51:53,736 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 464
+INFO 2025-12-07 21:51:53,741 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 464
+INFO 2025-12-07 21:52:26,640 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 464
+INFO 2025-12-07 21:52:26,654 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 464
+INFO 2025-12-07 21:52:26,659 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 464
+INFO 2025-12-07 21:52:26,663 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 464
+INFO 2025-12-07 21:53:12,643 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 464
+INFO 2025-12-07 21:53:12,649 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 464
+INFO 2025-12-07 21:53:12,654 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 464
+INFO 2025-12-07 21:53:12,659 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 464
+INFO 2025-12-07 21:53:35,294 basehttp "POST /api/auth/login/ HTTP/1.1" 200 489
+INFO 2025-12-07 21:53:35,302 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 464
+INFO 2025-12-07 21:53:42,841 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 464
+INFO 2025-12-07 21:53:42,848 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 464
+INFO 2025-12-07 21:53:42,854 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 464
+INFO 2025-12-07 21:53:42,858 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 464
+INFO 2025-12-07 21:53:48,212 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 464
+INFO 2025-12-07 21:53:48,228 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 464
+INFO 2025-12-07 21:53:48,234 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 464
+INFO 2025-12-07 21:53:48,240 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 464
+INFO 2025-12-07 21:54:28,117 basehttp "GET /api/manufacturers/ HTTP/1.1" 200 286
+INFO 2025-12-07 21:54:28,123 basehttp "GET /api/car-models/ HTTP/1.1" 200 301
+INFO 2025-12-07 21:54:28,138 basehttp "GET /api/engine-models/ HTTP/1.1" 200 373
+INFO 2025-12-07 21:54:28,139 basehttp "GET /api/part-categories/ HTTP/1.1" 200 425
+INFO 2025-12-07 21:54:28,150 basehttp "GET /api/car-models/ HTTP/1.1" 200 301
+INFO 2025-12-07 21:54:28,152 basehttp "GET /api/manufacturers/ HTTP/1.1" 200 286
+INFO 2025-12-07 21:54:28,154 basehttp "GET /api/engine-models/ HTTP/1.1" 200 373
+INFO 2025-12-07 21:54:28,160 basehttp "GET /api/part-categories/ HTTP/1.1" 200 425
+INFO 2025-12-07 21:54:28,165 basehttp "GET /api/illustrations/ HTTP/1.1" 200 5460
+INFO 2025-12-07 21:54:28,182 basehttp "GET /api/illustrations/ HTTP/1.1" 200 5460
+INFO 2025-12-07 21:54:28,340 basehttp "GET /media/illustrations/toyota/dyana/N04C/Radiator/general/7/c0946642-3637-4849-a946-4a5db08f07f5.pdf HTTP/1.1" 200 17792
+INFO 2025-12-07 21:54:28,342 basehttp - Broken pipe from ('127.0.0.1', 62534)
+INFO 2025-12-07 21:57:11,784 basehttp "GET /api/manufacturers/ HTTP/1.1" 200 286
+INFO 2025-12-07 21:57:11,787 basehttp "GET /api/car-models/ HTTP/1.1" 200 301
+INFO 2025-12-07 21:57:12,777 basehttp "GET /api/car-models/ HTTP/1.1" 200 301
+INFO 2025-12-07 21:57:12,777 basehttp "GET /api/manufacturers/ HTTP/1.1" 200 286
+INFO 2025-12-07 21:58:10,033 basehttp "GET /api/manufacturers/ HTTP/1.1" 200 286
+INFO 2025-12-07 21:58:10,037 basehttp "GET /api/manufacturers/ HTTP/1.1" 200 286
+INFO 2025-12-07 21:58:13,390 basehttp "GET /api/engine-models/ HTTP/1.1" 200 373
+INFO 2025-12-07 21:58:13,392 basehttp "GET /api/car-models/ HTTP/1.1" 200 301
+INFO 2025-12-07 21:58:13,394 basehttp "GET /api/manufacturers/ HTTP/1.1" 200 286
+INFO 2025-12-07 21:58:13,400 basehttp "GET /api/engine-models/ HTTP/1.1" 200 373
+INFO 2025-12-07 21:58:13,402 basehttp "GET /api/car-models/ HTTP/1.1" 200 301
+INFO 2025-12-07 21:58:13,403 basehttp "GET /api/manufacturers/ HTTP/1.1" 200 286
+INFO 2025-12-07 21:59:06,925 basehttp "GET /api/part-categories/ HTTP/1.1" 200 425
+INFO 2025-12-07 21:59:06,925 basehttp "GET /api/engine-models/ HTTP/1.1" 200 373
+INFO 2025-12-07 21:59:06,932 basehttp "GET /api/part-categories/ HTTP/1.1" 200 425
+INFO 2025-12-07 21:59:06,934 basehttp "GET /api/engine-models/ HTTP/1.1" 200 373
+INFO 2025-12-07 21:59:06,937 basehttp "GET /api/part-categories/ HTTP/1.1" 200 425
+INFO 2025-12-07 21:59:06,940 basehttp "GET /api/part-categories/ HTTP/1.1" 200 425
+INFO 2025-12-07 22:07:29,657 basehttp "GET /api/engine-models/ HTTP/1.1" 200 373
+INFO 2025-12-07 22:07:29,658 basehttp "GET /api/part-categories/ HTTP/1.1" 200 425
+INFO 2025-12-07 22:07:29,664 basehttp "GET /api/part-categories/ HTTP/1.1" 200 425
+INFO 2025-12-07 22:08:10,654 basehttp "GET /api/manufacturers/ HTTP/1.1" 200 286
+INFO 2025-12-07 22:08:10,655 basehttp "GET /api/car-models/ HTTP/1.1" 200 301
+INFO 2025-12-07 22:08:10,669 basehttp "GET /api/part-categories/ HTTP/1.1" 200 425
+INFO 2025-12-07 22:08:10,670 basehttp "GET /api/engine-models/ HTTP/1.1" 200 373
+INFO 2025-12-07 22:08:10,686 basehttp "GET /api/manufacturers/ HTTP/1.1" 200 286
+INFO 2025-12-07 22:08:10,688 basehttp "GET /api/car-models/ HTTP/1.1" 200 301
+INFO 2025-12-07 22:08:10,691 basehttp "GET /api/engine-models/ HTTP/1.1" 200 373
+INFO 2025-12-07 22:08:10,692 basehttp "GET /api/part-categories/ HTTP/1.1" 200 425
+INFO 2025-12-07 22:08:10,702 basehttp "GET /api/illustrations/ HTTP/1.1" 200 5460
+INFO 2025-12-07 22:08:10,723 basehttp "GET /api/illustrations/ HTTP/1.1" 200 5460
+INFO 2025-12-07 22:08:10,859 basehttp "GET /media/illustrations/toyota/dyana/N04C/Radiator/general/7/c0946642-3637-4849-a946-4a5db08f07f5.pdf HTTP/1.1" 200 17792
+INFO 2025-12-07 22:08:10,860 basehttp - Broken pipe from ('127.0.0.1', 52191)
+INFO 2025-12-07 22:08:13,878 basehttp "GET /media/illustrations/toyota/dyana/N04C/Radiator/general/7/c0946642-3637-4849-a946-4a5db08f07f5.pdf HTTP/1.1" 200 17792
+INFO 2025-12-07 22:08:13,879 basehttp - Broken pipe from ('127.0.0.1', 52205)
+INFO 2025-12-07 22:08:20,423 basehttp "GET /media/illustrations/toyota/dyana/N04C/Radiator/general/7/c0946642-3637-4849-a946-4a5db08f07f5.pdf HTTP/1.1" 200 17792
+INFO 2025-12-07 22:08:20,423 basehttp - Broken pipe from ('127.0.0.1', 52231)
+INFO 2025-12-07 22:12:59,577 basehttp "GET /api/part-categories/ HTTP/1.1" 200 425
+INFO 2025-12-07 22:12:59,577 basehttp "GET /api/engine-models/ HTTP/1.1" 200 373
+INFO 2025-12-07 22:12:59,585 basehttp "GET /api/part-categories/ HTTP/1.1" 200 425
+INFO 2025-12-07 22:12:59,589 basehttp "GET /api/engine-models/ HTTP/1.1" 200 373
+INFO 2025-12-07 22:12:59,593 basehttp "GET /api/part-categories/ HTTP/1.1" 200 425
+INFO 2025-12-07 22:12:59,602 basehttp "GET /api/part-categories/ HTTP/1.1" 200 425
+INFO 2025-12-07 22:13:06,850 basehttp "GET /api/engine-models/ HTTP/1.1" 200 373
+INFO 2025-12-07 22:13:06,861 basehttp "GET /api/manufacturers/ HTTP/1.1" 200 286
+INFO 2025-12-07 22:13:06,867 basehttp "GET /api/car-models/ HTTP/1.1" 200 301
+INFO 2025-12-07 22:13:06,875 basehttp "GET /api/part-categories/ HTTP/1.1" 200 425
+INFO 2025-12-07 22:13:06,881 basehttp "GET /api/car-models/ HTTP/1.1" 200 301
+INFO 2025-12-07 22:13:06,884 basehttp "GET /api/engine-models/ HTTP/1.1" 200 373
+INFO 2025-12-07 22:13:06,885 basehttp "GET /api/manufacturers/ HTTP/1.1" 200 286
+INFO 2025-12-07 22:13:06,887 basehttp "GET /api/part-categories/ HTTP/1.1" 200 425
+INFO 2025-12-07 22:13:06,892 basehttp "GET /api/illustrations/ HTTP/1.1" 200 5460
+INFO 2025-12-07 22:13:06,905 basehttp "GET /api/illustrations/ HTTP/1.1" 200 5460
+INFO 2025-12-07 22:13:07,041 basehttp "GET /media/illustrations/toyota/dyana/N04C/Radiator/general/7/c0946642-3637-4849-a946-4a5db08f07f5.pdf HTTP/1.1" 200 17792
+INFO 2025-12-07 22:13:07,041 basehttp - Broken pipe from ('127.0.0.1', 53582)
+INFO 2025-12-07 22:13:10,900 basehttp "GET /media/illustrations/toyota/dyana/N04C/Radiator/general/7/c0946642-3637-4849-a946-4a5db08f07f5.pdf HTTP/1.1" 200 17792
+INFO 2025-12-07 22:13:10,901 basehttp - Broken pipe from ('127.0.0.1', 53600)
+INFO 2025-12-07 22:13:20,414 basehttp "GET /media/illustrations/toyota/dyana/N04C/Radiator/general/7/c0946642-3637-4849-a946-4a5db08f07f5.pdf HTTP/1.1" 200 17792
+INFO 2025-12-07 22:13:20,415 basehttp - Broken pipe from ('127.0.0.1', 53638)
+INFO 2025-12-07 22:13:22,723 basehttp "GET /media/illustrations/toyota/dyana/N04C/Radiator/general/7/c0946642-3637-4849-a946-4a5db08f07f5.pdf HTTP/1.1" 200 17792
+INFO 2025-12-07 22:13:22,723 basehttp - Broken pipe from ('127.0.0.1', 53648)
+INFO 2025-12-07 22:13:30,406 basehttp "GET /media/illustrations/toyota/dyana/N04C/Radiator/general/7/c0946642-3637-4849-a946-4a5db08f07f5.pdf HTTP/1.1" 200 17792
+INFO 2025-12-07 22:13:30,407 basehttp - Broken pipe from ('127.0.0.1', 53682)
+INFO 2025-12-07 22:13:31,437 basehttp "GET /media/illustrations/toyota/dyana/N04C/Radiator/general/7/c0946642-3637-4849-a946-4a5db08f07f5.pdf HTTP/1.1" 200 17792
+INFO 2025-12-07 22:13:31,438 basehttp - Broken pipe from ('127.0.0.1', 53688)
+INFO 2025-12-07 22:13:32,893 basehttp "GET /media/illustrations/toyota/dyana/N04C/Radiator/general/7/c0946642-3637-4849-a946-4a5db08f07f5.pdf HTTP/1.1" 200 17792
+INFO 2025-12-07 22:13:32,893 basehttp - Broken pipe from ('127.0.0.1', 53698)
+INFO 2025-12-07 22:13:45,888 basehttp "GET /api/illustrations/ HTTP/1.1" 200 5460
+INFO 2025-12-07 22:13:45,903 basehttp "GET /api/illustrations/ HTTP/1.1" 200 5460
+INFO 2025-12-07 22:13:45,951 basehttp "GET /media/illustrations/toyota/dyana/N04C/Radiator/general/7/c0946642-3637-4849-a946-4a5db08f07f5.pdf HTTP/1.1" 200 17792
+INFO 2025-12-07 22:13:45,951 basehttp - Broken pipe from ('127.0.0.1', 54053)
+INFO 2025-12-07 22:13:46,012 basehttp "GET /media/illustrations/toyota/dyana/N04C/Radiator/general/7/c0946642-3637-4849-a946-4a5db08f07f5.pdf HTTP/1.1" 200 17792
+INFO 2025-12-07 22:13:46,013 basehttp - Broken pipe from ('127.0.0.1', 54055)
+INFO 2025-12-07 22:13:47,003 basehttp "GET /media/illustrations/toyota/dyana/N04C/Radiator/general/7/c0946642-3637-4849-a946-4a5db08f07f5.pdf HTTP/1.1" 200 17792
+INFO 2025-12-07 22:13:47,012 basehttp "GET /media/illustrations/toyota/dyana/N04C/Radiator/general/6/aa15213a-d39f-401f-a8b1-3e54b0183415.jpg HTTP/1.1" 304 0
+INFO 2025-12-07 22:13:47,013 basehttp - Broken pipe from ('127.0.0.1', 54061)
+INFO 2025-12-07 22:13:47,013 basehttp "GET /media/illustrations/toyota/dyana/N04C/Radiator/general/6/c8fdc45b-d0e5-4329-9031-bd16e169696d.jpg HTTP/1.1" 304 0
+INFO 2025-12-07 22:13:50,356 basehttp "GET /media/illustrations/toyota/dyana/N04C/Radiator/general/7/c0946642-3637-4849-a946-4a5db08f07f5.pdf HTTP/1.1" 200 17792
+INFO 2025-12-07 22:13:50,356 basehttp - Broken pipe from ('127.0.0.1', 54065)
+INFO 2025-12-07 22:13:54,006 basehttp "GET /media/illustrations/toyota/dyana/N04C/Radiator/general/7/c0946642-3637-4849-a946-4a5db08f07f5.pdf HTTP/1.1" 200 17792
+INFO 2025-12-07 22:13:54,006 basehttp - Broken pipe from ('127.0.0.1', 54064)
+INFO 2025-12-07 22:18:49,358 basehttp "GET /api/manufacturers/?limit=1 HTTP/1.1" 200 286
+INFO 2025-12-07 22:18:49,360 basehttp "GET /api/car-models/?limit=1 HTTP/1.1" 200 301
+INFO 2025-12-07 22:18:49,362 basehttp "GET /api/engine-models/?limit=1 HTTP/1.1" 200 373
+INFO 2025-12-07 22:18:49,376 basehttp "GET /api/illustrations/?limit=5&ordering=-created_at HTTP/1.1" 200 5460
+INFO 2025-12-07 22:18:49,586 basehttp "GET /media/illustrations/toyota/dyana/N04C/Radiator/general/7/c0946642-3637-4849-a946-4a5db08f07f5.pdf HTTP/1.1" 200 17792
+INFO 2025-12-07 22:18:49,598 basehttp - Broken pipe from ('127.0.0.1', 56046)
+INFO 2025-12-07 22:18:55,763 basehttp "GET /api/engine-models/ HTTP/1.1" 200 373
+INFO 2025-12-07 22:18:55,764 basehttp "GET /api/car-models/ HTTP/1.1" 200 301
+INFO 2025-12-07 22:18:55,771 basehttp "GET /api/manufacturers/ HTTP/1.1" 200 286
+INFO 2025-12-07 22:18:55,777 basehttp "GET /api/part-categories/ HTTP/1.1" 200 425
+INFO 2025-12-07 22:18:55,791 basehttp "GET /api/part-categories/ HTTP/1.1" 200 425
+INFO 2025-12-07 22:18:55,794 basehttp "GET /api/engine-models/ HTTP/1.1" 200 373
+INFO 2025-12-07 22:18:55,795 basehttp "GET /api/car-models/ HTTP/1.1" 200 301
+INFO 2025-12-07 22:18:55,796 basehttp "GET /api/manufacturers/ HTTP/1.1" 200 286
+INFO 2025-12-07 22:18:55,801 basehttp "GET /api/illustrations/ HTTP/1.1" 200 5460
+INFO 2025-12-07 22:18:55,816 basehttp "GET /api/illustrations/ HTTP/1.1" 200 5460
+INFO 2025-12-07 22:18:55,996 basehttp "GET /media/illustrations/toyota/dyana/N04C/Radiator/general/7/c0946642-3637-4849-a946-4a5db08f07f5.pdf HTTP/1.1" 200 17792
+INFO 2025-12-07 22:18:55,996 basehttp - Broken pipe from ('127.0.0.1', 56230)
+INFO 2025-12-07 22:18:58,868 basehttp "GET /api/manufacturers/?limit=1 HTTP/1.1" 200 286
+INFO 2025-12-07 22:18:58,870 basehttp "GET /api/car-models/?limit=1 HTTP/1.1" 200 301
+INFO 2025-12-07 22:18:58,871 basehttp "GET /api/engine-models/?limit=1 HTTP/1.1" 200 373
+INFO 2025-12-07 22:18:58,881 basehttp "GET /api/illustrations/?limit=5&ordering=-created_at HTTP/1.1" 200 5460
+INFO 2025-12-07 22:18:59,050 basehttp "GET /media/illustrations/toyota/dyana/N04C/Radiator/general/7/c0946642-3637-4849-a946-4a5db08f07f5.pdf HTTP/1.1" 200 17792
+INFO 2025-12-07 22:18:59,051 basehttp - Broken pipe from ('127.0.0.1', 56323)
+INFO 2025-12-07 22:19:01,452 basehttp "GET /media/illustrations/toyota/dyana/N04C/Radiator/general/7/c0946642-3637-4849-a946-4a5db08f07f5.pdf HTTP/1.1" 200 17792
+INFO 2025-12-07 22:19:01,453 basehttp - Broken pipe from ('127.0.0.1', 56333)
+INFO 2025-12-07 22:19:01,455 basehttp "GET /api/manufacturers/ HTTP/1.1" 200 286
+INFO 2025-12-07 22:19:03,075 basehttp "GET /media/illustrations/toyota/dyana/N04C/Radiator/general/7/c0946642-3637-4849-a946-4a5db08f07f5.pdf HTTP/1.1" 200 17792
+INFO 2025-12-07 22:19:03,076 basehttp - Broken pipe from ('127.0.0.1', 56343)
+INFO 2025-12-07 22:19:45,702 basehttp "GET /api/engine-models/ HTTP/1.1" 200 373
+INFO 2025-12-07 22:19:45,705 basehttp "GET /api/car-models/ HTTP/1.1" 200 301
+INFO 2025-12-07 22:19:45,707 basehttp "GET /api/manufacturers/ HTTP/1.1" 200 286
+INFO 2025-12-07 22:19:45,708 basehttp "GET /api/part-categories/ HTTP/1.1" 200 425
+INFO 2025-12-07 22:19:45,712 basehttp "GET /api/engine-models/ HTTP/1.1" 200 373
+INFO 2025-12-07 22:19:45,722 basehttp "GET /api/manufacturers/ HTTP/1.1" 200 286
+INFO 2025-12-07 22:19:45,727 basehttp "GET /api/car-models/ HTTP/1.1" 200 301
+INFO 2025-12-07 22:19:45,728 basehttp "GET /api/part-categories/ HTTP/1.1" 200 425
+INFO 2025-12-07 22:19:45,736 basehttp "GET /api/illustrations/ HTTP/1.1" 200 5460
+INFO 2025-12-07 22:19:45,751 basehttp "GET /api/illustrations/ HTTP/1.1" 200 5460
+INFO 2025-12-07 22:19:45,883 basehttp "GET /media/illustrations/toyota/dyana/N04C/Radiator/general/7/c0946642-3637-4849-a946-4a5db08f07f5.pdf HTTP/1.1" 200 17792
+INFO 2025-12-07 22:19:45,885 basehttp - Broken pipe from ('127.0.0.1', 56591)
+INFO 2025-12-07 22:19:53,943 basehttp "GET /api/car-models/?limit=1 HTTP/1.1" 200 301
+INFO 2025-12-07 22:19:53,946 basehttp "GET /api/manufacturers/?limit=1 HTTP/1.1" 200 286
+INFO 2025-12-07 22:19:53,947 basehttp "GET /api/engine-models/?limit=1 HTTP/1.1" 200 373
+INFO 2025-12-07 22:19:53,963 basehttp "GET /api/illustrations/?limit=5&ordering=-created_at HTTP/1.1" 200 5460
+INFO 2025-12-07 22:19:54,128 basehttp "GET /media/illustrations/toyota/dyana/N04C/Radiator/general/7/c0946642-3637-4849-a946-4a5db08f07f5.pdf HTTP/1.1" 200 17792
+INFO 2025-12-07 22:19:54,129 basehttp - Broken pipe from ('127.0.0.1', 56775)
+INFO 2025-12-07 22:20:07,184 basehttp "GET /api/manufacturers/ HTTP/1.1" 200 286
+INFO 2025-12-07 22:20:07,196 basehttp "GET /api/car-models/ HTTP/1.1" 200 301
+INFO 2025-12-07 22:20:07,199 basehttp "GET /api/engine-models/ HTTP/1.1" 200 373
+INFO 2025-12-07 22:20:07,204 basehttp "GET /api/manufacturers/ HTTP/1.1" 200 286
+INFO 2025-12-07 22:20:07,205 basehttp "GET /api/part-categories/ HTTP/1.1" 200 425
+INFO 2025-12-07 22:20:07,206 basehttp "GET /api/car-models/ HTTP/1.1" 200 301
+INFO 2025-12-07 22:20:07,215 basehttp "GET /api/engine-models/ HTTP/1.1" 200 373
+INFO 2025-12-07 22:20:07,218 basehttp "GET /api/part-categories/ HTTP/1.1" 200 425
+INFO 2025-12-07 22:20:07,224 basehttp "GET /api/illustrations/ HTTP/1.1" 200 5460
+INFO 2025-12-07 22:20:07,237 basehttp "GET /api/illustrations/ HTTP/1.1" 200 5460
+INFO 2025-12-07 22:20:07,371 basehttp "GET /media/illustrations/toyota/dyana/N04C/Radiator/general/7/c0946642-3637-4849-a946-4a5db08f07f5.pdf HTTP/1.1" 200 17792
+INFO 2025-12-07 22:20:07,371 basehttp - Broken pipe from ('127.0.0.1', 56909)
+INFO 2025-12-07 22:21:58,320 basehttp "GET /api/manufacturers/ HTTP/1.1" 200 286
+INFO 2025-12-07 22:21:58,325 basehttp "GET /api/car-models/ HTTP/1.1" 200 301
+INFO 2025-12-07 22:21:58,331 basehttp "GET /api/engine-models/ HTTP/1.1" 200 373
+INFO 2025-12-07 22:21:58,336 basehttp "GET /api/part-categories/ HTTP/1.1" 200 425
+INFO 2025-12-07 22:21:58,346 basehttp "GET /api/illustrations/ HTTP/1.1" 200 5460
+INFO 2025-12-07 22:21:58,543 basehttp "GET /media/illustrations/toyota/dyana/N04C/Radiator/general/7/c0946642-3637-4849-a946-4a5db08f07f5.pdf HTTP/1.1" 200 17792
+INFO 2025-12-07 22:21:58,548 basehttp - Broken pipe from ('127.0.0.1', 57380)
+INFO 2025-12-07 22:24:41,702 basehttp "GET /api/manufacturers/ HTTP/1.1" 200 286
+INFO 2025-12-07 22:24:41,705 basehttp "GET /api/engine-models/ HTTP/1.1" 200 373
+INFO 2025-12-07 22:24:41,705 basehttp "GET /api/car-models/ HTTP/1.1" 200 301
+INFO 2025-12-07 22:24:41,709 basehttp "GET /api/part-categories/ HTTP/1.1" 200 425
+INFO 2025-12-07 22:24:41,718 basehttp "GET /api/part-categories/ HTTP/1.1" 200 425
+INFO 2025-12-07 22:24:41,728 basehttp "GET /api/engine-models/ HTTP/1.1" 200 373
+INFO 2025-12-07 22:24:41,729 basehttp "GET /api/manufacturers/ HTTP/1.1" 200 286
+INFO 2025-12-07 22:24:41,732 basehttp "GET /api/car-models/ HTTP/1.1" 200 301
+INFO 2025-12-07 22:24:41,738 basehttp "GET /api/illustrations/ HTTP/1.1" 200 5460
+INFO 2025-12-07 22:24:41,752 basehttp "GET /api/illustrations/ HTTP/1.1" 200 5460
+INFO 2025-12-07 22:24:41,917 basehttp "GET /media/illustrations/toyota/dyana/N04C/Radiator/general/7/c0946642-3637-4849-a946-4a5db08f07f5.pdf HTTP/1.1" 200 17792
+INFO 2025-12-07 22:24:41,918 basehttp - Broken pipe from ('127.0.0.1', 58286)
+INFO 2025-12-07 22:24:47,232 basehttp "GET /api/engine-models/?limit=1 HTTP/1.1" 200 373
+INFO 2025-12-07 22:24:47,232 basehttp "GET /api/manufacturers/?limit=1 HTTP/1.1" 200 286
+INFO 2025-12-07 22:24:47,232 basehttp "GET /api/car-models/?limit=1 HTTP/1.1" 200 301
+INFO 2025-12-07 22:24:47,249 basehttp "GET /api/illustrations/?limit=5&ordering=-created_at HTTP/1.1" 200 5460
+INFO 2025-12-07 22:24:47,411 basehttp "GET /media/illustrations/toyota/dyana/N04C/Radiator/general/7/c0946642-3637-4849-a946-4a5db08f07f5.pdf HTTP/1.1" 200 17792
+INFO 2025-12-07 22:24:47,412 basehttp - Broken pipe from ('127.0.0.1', 58387)
+INFO 2025-12-07 22:24:51,214 basehttp "GET /api/manufacturers/ HTTP/1.1" 200 286
+INFO 2025-12-07 22:24:51,251 basehttp "GET /api/part-categories/ HTTP/1.1" 200 425
+INFO 2025-12-07 22:24:51,256 basehttp "GET /api/car-models/ HTTP/1.1" 200 301
+INFO 2025-12-07 22:24:51,260 basehttp "GET /api/engine-models/ HTTP/1.1" 200 373
+INFO 2025-12-07 22:24:51,269 basehttp "GET /api/manufacturers/ HTTP/1.1" 200 286
+INFO 2025-12-07 22:24:51,275 basehttp "GET /api/part-categories/ HTTP/1.1" 200 425
+INFO 2025-12-07 22:24:51,282 basehttp "GET /api/engine-models/ HTTP/1.1" 200 373
+INFO 2025-12-07 22:24:51,282 basehttp "GET /api/car-models/ HTTP/1.1" 200 301
+INFO 2025-12-07 22:24:51,283 basehttp "GET /api/illustrations/ HTTP/1.1" 200 5460
+INFO 2025-12-07 22:24:51,296 basehttp "GET /api/illustrations/ HTTP/1.1" 200 5460
+INFO 2025-12-07 22:24:51,478 basehttp "GET /media/illustrations/toyota/dyana/N04C/Radiator/general/7/c0946642-3637-4849-a946-4a5db08f07f5.pdf HTTP/1.1" 200 17792
+INFO 2025-12-07 22:24:51,478 basehttp - Broken pipe from ('127.0.0.1', 58480)
+INFO 2025-12-07 22:24:52,795 basehttp "GET /media/illustrations/toyota/dyana/N04C/Radiator/general/7/c0946642-3637-4849-a946-4a5db08f07f5.pdf HTTP/1.1" 200 17792
+INFO 2025-12-07 22:24:52,796 basehttp - Broken pipe from ('127.0.0.1', 58486)
+WARNING 2025-12-07 22:30:03,578 log Not Found: /favicon.ico
+WARNING 2025-12-07 22:30:03,579 basehttp "GET /favicon.ico HTTP/1.1" 404 3518
+INFO 2025-12-07 22:30:49,947 basehttp "GET /media/illustrations/toyota/dyana/N04C/Radiator/general/7/c0946642-3637-4849-a946-4a5db08f07f5.pdf HTTP/1.1" 200 17792
+INFO 2025-12-07 22:30:49,947 basehttp - Broken pipe from ('127.0.0.1', 60444)
+INFO 2025-12-07 22:39:51,745 basehttp "OPTIONS /api/illustrations/?search=to&ordering=-created_at HTTP/1.1" 200 0
+INFO 2025-12-07 22:39:51,755 basehttp "GET /api/illustrations/?search=to&ordering=-created_at HTTP/1.1" 200 668
+INFO 2025-12-07 22:39:53,346 basehttp "OPTIONS /api/illustrations/?search=toyota&ordering=-created_at HTTP/1.1" 200 0
+INFO 2025-12-07 22:39:53,355 basehttp "GET /api/illustrations/?search=toyota&ordering=-created_at HTTP/1.1" 200 52
+INFO 2025-12-07 22:39:55,143 basehttp "OPTIONS /api/illustrations/?search=toyot&ordering=-created_at HTTP/1.1" 200 0
+INFO 2025-12-07 22:39:55,156 basehttp "GET /api/illustrations/?search=toyot&ordering=-created_at HTTP/1.1" 200 52
+INFO 2025-12-07 22:39:57,466 basehttp "OPTIONS /api/illustrations/?search=toyo&ordering=-created_at HTTP/1.1" 200 0
+INFO 2025-12-07 22:39:57,479 basehttp "GET /api/illustrations/?search=toyo&ordering=-created_at HTTP/1.1" 200 52
+INFO 2025-12-07 22:40:00,607 basehttp "OPTIONS /api/illustrations/?search=t&ordering=-created_at HTTP/1.1" 200 0
+INFO 2025-12-07 22:40:00,626 basehttp "GET /api/illustrations/?search=t&ordering=-created_at HTTP/1.1" 200 2124
+INFO 2025-12-07 22:40:05,621 basehttp "GET /api/illustrations/?search=to&ordering=-created_at HTTP/1.1" 200 668
+INFO 2025-12-07 22:40:18,313 basehttp "OPTIONS /api/illustrations/?search=isuzu&ordering=-created_at HTTP/1.1" 200 0
+INFO 2025-12-07 22:40:18,323 basehttp "GET /api/illustrations/?search=isuzu&ordering=-created_at HTTP/1.1" 200 52
+INFO 2025-12-07 22:40:21,512 basehttp "OPTIONS /api/illustrations/?search=ISU&ordering=-created_at HTTP/1.1" 200 0
+INFO 2025-12-07 22:40:21,525 basehttp "GET /api/illustrations/?search=ISU&ordering=-created_at HTTP/1.1" 200 52
+INFO 2025-12-07 22:40:22,389 basehttp "OPTIONS /api/illustrations/?search=ISUZU&ordering=-created_at HTTP/1.1" 200 0
+INFO 2025-12-07 22:40:22,401 basehttp "GET /api/illustrations/?search=ISUZU&ordering=-created_at HTTP/1.1" 200 52
+INFO 2025-12-07 22:40:32,068 basehttp "GET /api/illustrations/?search=toyo&ordering=-created_at HTTP/1.1" 200 52
+INFO 2025-12-07 22:40:38,187 basehttp "GET /api/illustrations/?search=t&ordering=-created_at HTTP/1.1" 200 2124
+INFO 2025-12-07 22:40:42,692 basehttp "OPTIONS /api/illustrations/?search=Radi&ordering=-created_at HTTP/1.1" 200 0
+INFO 2025-12-07 22:40:42,702 basehttp "GET /api/illustrations/?search=Radi&ordering=-created_at HTTP/1.1" 200 668
+INFO 2025-12-07 22:40:43,300 basehttp "OPTIONS /api/illustrations/?search=Radia&ordering=-created_at HTTP/1.1" 200 0
+INFO 2025-12-07 22:40:43,313 basehttp "GET /api/illustrations/?search=Radia&ordering=-created_at HTTP/1.1" 200 668
+INFO 2025-12-07 22:40:50,075 basehttp "GET /api/manufacturers/ HTTP/1.1" 200 286
+INFO 2025-12-07 22:40:50,081 basehttp "GET /api/part-categories/ HTTP/1.1" 200 425
+INFO 2025-12-07 22:40:50,090 basehttp "GET /api/engine-models/ HTTP/1.1" 200 373
+INFO 2025-12-07 22:40:50,082 basehttp "GET /api/car-models/ HTTP/1.1" 200 301
+INFO 2025-12-07 22:40:50,086 basehttp "GET /api/manufacturers/ HTTP/1.1" 200 286
+INFO 2025-12-07 22:40:50,139 basehttp "GET /api/part-categories/ HTTP/1.1" 200 425
+INFO 2025-12-07 22:40:50,139 basehttp "GET /api/car-models/ HTTP/1.1" 200 301
+INFO 2025-12-07 22:40:50,141 basehttp "GET /api/engine-models/ HTTP/1.1" 200 373
+INFO 2025-12-07 22:40:50,143 basehttp "GET /api/illustrations/ HTTP/1.1" 200 5460
+INFO 2025-12-07 22:40:50,166 basehttp "GET /api/illustrations/ HTTP/1.1" 200 5460
+INFO 2025-12-07 22:40:50,288 basehttp "GET /media/illustrations/toyota/dyana/N04C/Radiator/general/7/c0946642-3637-4849-a946-4a5db08f07f5.pdf HTTP/1.1" 200 17792
+INFO 2025-12-07 22:40:50,289 basehttp - Broken pipe from ('127.0.0.1', 64939)
+INFO 2025-12-07 22:40:50,416 basehttp "GET /media/illustrations/toyota/dyana/N04C/Radiator/general/7/c0946642-3637-4849-a946-4a5db08f07f5.pdf HTTP/1.1" 200 17792
+INFO 2025-12-07 22:40:50,417 basehttp - Broken pipe from ('127.0.0.1', 64941)
+INFO 2025-12-07 22:41:06,466 basehttp "OPTIONS /api/illustrations/?search=sdfa&ordering=-created_at HTTP/1.1" 200 0
+INFO 2025-12-07 22:41:06,481 basehttp "GET /api/illustrations/?search=sdfa&ordering=-created_at HTTP/1.1" 200 672
+INFO 2025-12-07 22:45:04,840 basehttp "OPTIONS /api/manufacturers/?page_size=1000 HTTP/1.1" 200 0
+INFO 2025-12-07 22:45:04,845 basehttp "GET /api/manufacturers/?page_size=1000 HTTP/1.1" 200 286
+INFO 2025-12-07 22:45:12,269 basehttp "OPTIONS /api/car-models/?manufacturer=toyota&page_size=1000 HTTP/1.1" 200 0
+WARNING 2025-12-07 22:45:12,275 log Bad Request: /api/car-models/
+WARNING 2025-12-07 22:45:12,276 basehttp "GET /api/car-models/?manufacturer=toyota&page_size=1000 HTTP/1.1" 400 92
+INFO 2025-12-07 22:45:12,711 basehttp "OPTIONS /api/illustrations/?ordering=-created_at&car_model__manufacturer=toyota HTTP/1.1" 200 0
+INFO 2025-12-07 22:45:12,767 basehttp "GET /api/illustrations/?ordering=-created_at&car_model__manufacturer=toyota HTTP/1.1" 200 5460
+INFO 2025-12-07 22:45:12,887 basehttp "GET /media/illustrations/toyota/dyana/N04C/Radiator/general/7/c0946642-3637-4849-a946-4a5db08f07f5.pdf HTTP/1.1" 200 17792
+INFO 2025-12-07 22:45:12,888 basehttp - Broken pipe from ('127.0.0.1', 50163)
+INFO 2025-12-07 22:45:29,335 basehttp "OPTIONS /api/car-models/?manufacturer=hino&page_size=1000 HTTP/1.1" 200 0
+WARNING 2025-12-07 22:45:29,342 log Bad Request: /api/car-models/
+WARNING 2025-12-07 22:45:29,343 basehttp "GET /api/car-models/?manufacturer=hino&page_size=1000 HTTP/1.1" 400 92
+INFO 2025-12-07 22:45:29,712 basehttp "OPTIONS /api/illustrations/?ordering=-created_at&car_model__manufacturer=hino HTTP/1.1" 200 0
+INFO 2025-12-07 22:45:29,734 basehttp "GET /api/illustrations/?ordering=-created_at&car_model__manufacturer=hino HTTP/1.1" 200 5460
+INFO 2025-12-07 22:45:29,869 basehttp "GET /media/illustrations/toyota/dyana/N04C/Radiator/general/7/c0946642-3637-4849-a946-4a5db08f07f5.pdf HTTP/1.1" 200 17792
+INFO 2025-12-07 22:45:29,870 basehttp - Broken pipe from ('127.0.0.1', 50234)
+WARNING 2025-12-07 22:46:00,741 log Bad Request: /api/car-models/
+WARNING 2025-12-07 22:46:00,743 basehttp "GET /api/car-models/?manufacturer=toyota&page_size=1000 HTTP/1.1" 400 92
+INFO 2025-12-07 22:46:01,122 basehttp "GET /api/illustrations/?ordering=-created_at&car_model__manufacturer=toyota HTTP/1.1" 200 5460
+INFO 2025-12-07 22:46:01,261 basehttp "GET /media/illustrations/toyota/dyana/N04C/Radiator/general/7/c0946642-3637-4849-a946-4a5db08f07f5.pdf HTTP/1.1" 200 17792
+INFO 2025-12-07 22:46:01,262 basehttp - Broken pipe from ('127.0.0.1', 51030)
+INFO 2025-12-07 22:49:39,614 basehttp "OPTIONS /api/car-models/?manufacturer=1&page_size=1000 HTTP/1.1" 200 0
+INFO 2025-12-07 22:49:39,627 basehttp "GET /api/car-models/?manufacturer=1&page_size=1000 HTTP/1.1" 200 136
+INFO 2025-12-07 22:49:40,001 basehttp "OPTIONS /api/illustrations/?ordering=-created_at&car_model__manufacturer=1 HTTP/1.1" 200 0
+INFO 2025-12-07 22:49:40,022 basehttp "GET /api/illustrations/?ordering=-created_at&car_model__manufacturer=1 HTTP/1.1" 200 5460
+INFO 2025-12-07 22:49:40,159 basehttp "GET /media/illustrations/toyota/dyana/N04C/Radiator/general/7/c0946642-3637-4849-a946-4a5db08f07f5.pdf HTTP/1.1" 200 17792
+INFO 2025-12-07 22:49:40,159 basehttp - Broken pipe from ('127.0.0.1', 52370)
+INFO 2025-12-07 22:49:41,903 basehttp "OPTIONS /api/engine-models/?car_model=1&page_size=1000 HTTP/1.1" 200 0
+INFO 2025-12-07 22:49:41,912 basehttp "GET /api/engine-models/?car_model=1&page_size=1000 HTTP/1.1" 200 163
+INFO 2025-12-07 22:49:42,285 basehttp "OPTIONS /api/illustrations/?ordering=-created_at&car_model=1 HTTP/1.1" 200 0
+INFO 2025-12-07 22:49:42,337 basehttp "GET /api/illustrations/?ordering=-created_at&car_model=1 HTTP/1.1" 200 5460
+INFO 2025-12-07 22:49:42,460 basehttp "GET /media/illustrations/toyota/dyana/N04C/Radiator/general/7/c0946642-3637-4849-a946-4a5db08f07f5.pdf HTTP/1.1" 200 17792
+INFO 2025-12-07 22:49:42,460 basehttp - Broken pipe from ('127.0.0.1', 52384)
+INFO 2025-12-07 22:49:44,679 basehttp "OPTIONS /api/illustrations/?ordering=-created_at&engine_model=2 HTTP/1.1" 200 0
+INFO 2025-12-07 22:49:44,698 basehttp "GET /api/illustrations/?ordering=-created_at&engine_model=2 HTTP/1.1" 200 3225
+INFO 2025-12-07 22:49:44,831 basehttp "GET /media/illustrations/toyota/dyana/N04C/Radiator/general/7/c0946642-3637-4849-a946-4a5db08f07f5.pdf HTTP/1.1" 200 17792
+INFO 2025-12-07 22:49:44,831 basehttp - Broken pipe from ('127.0.0.1', 52394)
+INFO 2025-12-07 22:50:10,363 basehttp "OPTIONS /api/car-models/?manufacturer=3&page_size=1000 HTTP/1.1" 200 0
+INFO 2025-12-07 22:50:10,374 basehttp "GET /api/car-models/?manufacturer=3&page_size=1000 HTTP/1.1" 200 133
+INFO 2025-12-07 22:50:10,808 basehttp "OPTIONS /api/illustrations/?ordering=-created_at&car_model__manufacturer=3 HTTP/1.1" 200 0
+INFO 2025-12-07 22:50:10,831 basehttp "GET /api/illustrations/?ordering=-created_at&car_model__manufacturer=3 HTTP/1.1" 200 5460
+INFO 2025-12-07 22:50:10,973 basehttp "GET /media/illustrations/toyota/dyana/N04C/Radiator/general/7/c0946642-3637-4849-a946-4a5db08f07f5.pdf HTTP/1.1" 200 17792
+INFO 2025-12-07 22:50:10,974 basehttp - Broken pipe from ('127.0.0.1', 52502)
+INFO 2025-12-07 22:50:12,409 basehttp "OPTIONS /api/engine-models/?car_model=3&page_size=1000 HTTP/1.1" 200 0
+INFO 2025-12-07 22:50:12,420 basehttp "GET /api/engine-models/?car_model=3&page_size=1000 HTTP/1.1" 200 158
+INFO 2025-12-07 22:50:12,791 basehttp "OPTIONS /api/illustrations/?ordering=-created_at&car_model=3 HTTP/1.1" 200 0
+INFO 2025-12-07 22:50:12,812 basehttp "GET /api/illustrations/?ordering=-created_at&car_model=3 HTTP/1.1" 200 5460
+INFO 2025-12-07 22:50:12,958 basehttp "GET /media/illustrations/toyota/dyana/N04C/Radiator/general/7/c0946642-3637-4849-a946-4a5db08f07f5.pdf HTTP/1.1" 200 17792
+INFO 2025-12-07 22:50:12,959 basehttp - Broken pipe from ('127.0.0.1', 52512)
+INFO 2025-12-07 22:50:14,715 basehttp "OPTIONS /api/illustrations/?ordering=-created_at&engine_model=3 HTTP/1.1" 200 0
+INFO 2025-12-07 22:50:14,733 basehttp "GET /api/illustrations/?ordering=-created_at&engine_model=3 HTTP/1.1" 200 668
