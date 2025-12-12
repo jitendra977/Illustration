@@ -196,7 +196,7 @@ const MobileCarModels = () => {
             <Stack direction="row" alignItems="center" spacing={0.5} mt={0.5}>
               <StoreIcon sx={{ fontSize: 14, color: 'text.secondary' }} />
               <Typography variant="caption" color="text.secondary">
-                {carModel.manufacturer_name}
+                {carModel.manufacturer_name}{carModel.year ? ` | ${carModel.year}年式` : ''}{carModel.first_registration ? ` | 初度登録: ${carModel.first_registration}` : ''}
               </Typography>
             </Stack>
           </Box>
@@ -218,6 +218,7 @@ const MobileCarModels = () => {
         }}>
           <Typography variant="caption" sx={{ fontFamily: 'monospace', fontWeight: 600 }}>
             {carModel.slug}
+            {carModel.chassis_number ? ` | シャーシ番号: ${carModel.chassis_number}` : ''}{carModel.model_code ? ` | 型式: ${carModel.model_code}` : ''}{carModel.fuel_type ? ` | 燃料: ${carModel.fuel_type}` : ''}
           </Typography>
         </Box>
       </CardContent>

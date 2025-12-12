@@ -32,22 +32,21 @@ class ManufacturerAdmin(admin.ModelAdmin):
     car_model_count.short_description = 'Car Models'
     car_model_count.admin_order_field = '_car_model_count'
 
-
 # ==========================================
 # Car Model Admin
 # ==========================================
 @admin.register(CarModel)
 class CarModelAdmin(admin.ModelAdmin):
-    list_display = ['name', 'manufacturer_link', 'engine_model_count', 'slug']
+    list_display = ['name','year','model_code', 'chassis_number','fuel_type','vehicle_type','manufacturer_link', 'engine_model_count', 'slug']
     list_filter = ['manufacturer']
     search_fields = ['name', 'manufacturer__name']
     prepopulated_fields = {'slug': ('name',)}
-    raw_id_fields = ['manufacturer']
+    
     
     def get_queryset(self, request):
         qs = super().get_queryset(request)
         return qs.select_related('manufacturer').annotate(
-            _engine_model_count=Count('enginemodel')
+            _engine_model_count=Count('engines')  # ✅ Changed from 'enginemodel' to 'engines'
         )
     
     def manufacturer_link(self, obj):
@@ -60,9 +59,8 @@ class CarModelAdmin(admin.ModelAdmin):
         return obj._engine_model_count
     engine_model_count.short_description = 'Engine Models'
     engine_model_count.admin_order_field = '_engine_model_count'
-
-
-# ==========================================
+    
+ # ==========================================
 # Engine Model Admin
 # ==========================================
 @admin.register(EngineModel)
@@ -70,8 +68,8 @@ class EngineModelAdmin(admin.ModelAdmin):
     list_display = ['name', 'car_model_link', 'manufacturer_name', 'part_category_count', 'slug']
     list_filter = ['car_model__manufacturer']
     search_fields = ['name', 'car_model__name', 'car_model__manufacturer__name']
-    prepopulated_fields = {'slug': ('name',)}
-    raw_id_fields = ['car_model']
+    # ✅ REMOVED prepopulated_fields - slug is now auto-generated
+    readonly_fields = ['slug']  # ✅ Make slug read-only so it's auto-generated
     
     def get_queryset(self, request):
         qs = super().get_queryset(request)
@@ -97,7 +95,6 @@ class EngineModelAdmin(admin.ModelAdmin):
     part_category_count.short_description = 'Part Categories'
     part_category_count.admin_order_field = '_part_category_count'
 
-
 # ==========================================
 # Part Category Admin
 # ==========================================
@@ -107,7 +104,7 @@ class PartCategoryAdmin(admin.ModelAdmin):
     list_filter = ['engine_model']
     search_fields = ['name', 'engine_model__name']
     prepopulated_fields = {'slug': ('name',)}
-    raw_id_fields = ['engine_model']
+    
     
     def get_queryset(self, request):
         qs = super().get_queryset(request)

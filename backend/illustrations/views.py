@@ -1,5 +1,122 @@
-from rest_framework import generics, filters, status
-from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly, BasePermission
+# views.py - CORRECTED CarModelViewSet
+
+from rest_framework import viewsets, filters, status
+from rest_framework.decorators import action
+from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly, AllowAny
+from rest_framework.response import Response
+from django_filters.rest_framework import DjangoFilterBackend
+from .models import CarModel
+from .serializers import CarModelSerializer
+from .permissions import IsVerifiedUserOrReadOnly
+
+
+class CarModelViewSet(viewsets.ModelViewSet):
+    queryset = CarModel.objects.select_related('manufacturer').all()
+    serializer_class = CarModelSerializer
+    permission_classes = [IsVerifiedUserOrReadOnly]
+    filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
+    filterset_fields = ['manufacturer', 'vehicle_type', 'fuel_type']
+    search_fields = ['name', 'manufacturer__name', 'model_code']
+    ordering_fields = ['name', 'year']
+    lookup_field = 'slug'
+    
+    def get_permissions(self):
+        """
+        Override permissions for specific actions
+        """
+        # ✅ Allow anyone to access vehicle-types and fuel-types (public data)
+        if self.action in ['vehicle_types', 'fuel_types']:
+            return [AllowAny()]
+        
+        # Default permission for other actions
+        return super().get_permissions()
+    
+    @action(detail=False, methods=['get'], permission_classes=[AllowAny])
+    def vehicle_types(self, request):
+        """
+        Get all available vehicle type choices
+        Public endpoint - no authentication required
+        """
+        vehicle_types = [
+            {'value': choice[0], 'label': choice[1]}
+            for choice in CarModel.VEHICLE_TYPES
+        ]
+        return Response(vehicle_types)
+    
+    @action(detail=False, methods=['get'], permission_classes=[AllowAny])
+    def fuel_types(self, request):
+        """
+        Get all available fuel type choices
+        Public endpoint - no authentication required
+        """
+        fuel_types = [
+            {'value': choice[0], 'label': choice[1]}
+            for choice in CarModel.FUEL_TYPES
+        ]
+        return Response(fuel_types)
+
+
+# ============================================
+# ALTERNATIVE: If you want them to require authentication
+# ============================================
+
+class CarModelViewSetAuthRequired(viewsets.ModelViewSet):
+    """
+    Use this version if you want vehicle-types and fuel-types 
+    to require authentication (but not verification)
+    """
+    queryset = CarModel.objects.select_related('manufacturer').all()
+    serializer_class = CarModelSerializer
+    permission_classes = [IsVerifiedUserOrReadOnly]
+    filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
+    filterset_fields = ['manufacturer', 'vehicle_type', 'fuel_type']
+    search_fields = ['name', 'manufacturer__name', 'model_code']
+    ordering_fields = ['name', 'year']
+    lookup_field = 'slug'
+    
+    def get_permissions(self):
+        """
+        Override permissions for specific actions
+        """
+        # ✅ Require authentication but not verification for these endpoints
+        if self.action in ['vehicle_types', 'fuel_types']:
+            return [IsAuthenticated()]
+        
+        # Default permission for other actions
+        return super().get_permissions()
+    
+    @action(detail=False, methods=['get'])
+    def vehicle_types(self, request):
+        """
+        Get all available vehicle type choices
+        Requires authentication but not verification
+        """
+        vehicle_types = [
+            {'value': choice[0], 'label': choice[1]}
+            for choice in CarModel.VEHICLE_TYPES
+        ]
+        return Response(vehicle_types)
+    
+    @action(detail=False, methods=['get'])
+    def fuel_types(self, request):
+        """
+        Get all available fuel type choices
+        Requires authentication but not verification
+        """
+        fuel_types = [
+            {'value': choice[0], 'label': choice[1]}
+            for choice in CarModel.FUEL_TYPES
+        ]
+        return Response(fuel_types)
+
+
+# ============================================
+# COMPLETE UPDATED views.py
+# ============================================
+
+from rest_framework import viewsets, filters, status
+from rest_framework.decorators import action
+from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly, AllowAny
 from rest_framework.response import Response
 from django_filters.rest_framework import DjangoFilterBackend
 from .models import (
@@ -13,221 +130,170 @@ from .serializers import (
     IllustrationSerializer, IllustrationDetailSerializer,
     IllustrationFileSerializer
 )
+from .permissions import IsVerifiedUser, IsVerifiedUserOrReadOnly
 
 
 # ------------------------------
-# Custom Permission
+# Manufacturer ViewSet
 # ------------------------------
-class IsVerifiedUser(BasePermission):
-    """
-    Custom permission to only allow verified users to access the view.
-    Works with your existing User model that has is_verified field.
-    """
-    def has_permission(self, request, view):
-        # For schema generation (Swagger), bypass the check
-        if getattr(view, 'swagger_fake_view', False):
-            return True
-        
-        # Check if user is authenticated
-        if not request.user or not request.user.is_authenticated:
-            return False
-        
-        # Check if user is verified (your User model has is_verified field)
-        return request.user.is_verified
-    
-    message = 'You must verify your email address before performing this action.'
-
-
-class IsVerifiedUserOrReadOnly(BasePermission):
-    """
-    Custom permission to allow verified users full access,
-    and read-only access to everyone else.
-    """
-    def has_permission(self, request, view):
-        # For schema generation (Swagger), bypass the check
-        if getattr(view, 'swagger_fake_view', False):
-            return True
-        
-        # Read permissions are allowed to any request
-        if request.method in ['GET', 'HEAD', 'OPTIONS']:
-            return True
-        
-        # Write permissions only for verified users
-        if not request.user or not request.user.is_authenticated:
-            return False
-        
-        return request.user.is_verified
-    
-    message = 'You must verify your email address before performing this action.'
-
-
-# ------------------------------
-# Manufacturer Views
-# ------------------------------
-class ManufacturerListCreateAPIView(generics.ListCreateAPIView):
+class ManufacturerViewSet(viewsets.ModelViewSet):
     queryset = Manufacturer.objects.all()
     serializer_class = ManufacturerSerializer
     permission_classes = [IsVerifiedUserOrReadOnly]
     filter_backends = [filters.SearchFilter, filters.OrderingFilter]
     search_fields = ['name', 'country']
     ordering_fields = ['name', 'country']
-
-
-class ManufacturerRetrieveUpdateDestroyAPIView(generics.RetrieveUpdateDestroyAPIView):
-    queryset = Manufacturer.objects.all()
-    serializer_class = ManufacturerSerializer
-    permission_classes = [IsVerifiedUserOrReadOnly]
     lookup_field = 'slug'
 
 
 # ------------------------------
-# Car Model Views
+# Car Model ViewSet
 # ------------------------------
-class CarModelListCreateAPIView(generics.ListCreateAPIView):
+class CarModelViewSet(viewsets.ModelViewSet):
     queryset = CarModel.objects.select_related('manufacturer').all()
     serializer_class = CarModelSerializer
     permission_classes = [IsVerifiedUserOrReadOnly]
     filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
-    filterset_fields = ['manufacturer']
-    search_fields = ['name', 'manufacturer__name']
-    ordering_fields = ['name']
-
-
-class CarModelRetrieveUpdateDestroyAPIView(generics.RetrieveUpdateDestroyAPIView):
-    queryset = CarModel.objects.select_related('manufacturer').all()
-    serializer_class = CarModelSerializer
-    permission_classes = [IsVerifiedUserOrReadOnly]
+    filterset_fields = ['manufacturer', 'vehicle_type', 'fuel_type']
+    search_fields = ['name', 'manufacturer__name', 'model_code']
+    ordering_fields = ['name', 'year']
     lookup_field = 'slug'
+    
+    def get_permissions(self):
+        """Override permissions for public endpoints"""
+        if self.action in ['vehicle_types', 'fuel_types']:
+            return [AllowAny()]
+        return super().get_permissions()
+    
+    @action(detail=False, methods=['get'], permission_classes=[AllowAny])
+    def vehicle_types(self, request):
+        """Get all available vehicle type choices - Public endpoint"""
+        vehicle_types = [
+            {'value': choice[0], 'label': choice[1]}
+            for choice in CarModel.VEHICLE_TYPES
+        ]
+        return Response(vehicle_types)
+    
+    @action(detail=False, methods=['get'], permission_classes=[AllowAny])
+    def fuel_types(self, request):
+        """Get all available fuel type choices - Public endpoint"""
+        fuel_types = [
+            {'value': choice[0], 'label': choice[1]}
+            for choice in CarModel.FUEL_TYPES
+        ]
+        return Response(fuel_types)
 
 
 # ------------------------------
-# Engine Model Views
+# Engine Model ViewSet
 # ------------------------------
-class EngineModelListCreateAPIView(generics.ListCreateAPIView):
+class EngineModelViewSet(viewsets.ModelViewSet):
     queryset = EngineModel.objects.select_related('car_model__manufacturer').all()
     serializer_class = EngineModelSerializer
     permission_classes = [IsVerifiedUserOrReadOnly]
     filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
     filterset_fields = ['car_model', 'car_model__manufacturer']
-    search_fields = ['name', 'car_model__name']
+    search_fields = ['name', 'engine_code', 'car_model__name']
     ordering_fields = ['name']
-
-
-class EngineModelRetrieveUpdateDestroyAPIView(generics.RetrieveUpdateDestroyAPIView):
-    queryset = EngineModel.objects.select_related('car_model__manufacturer').all()
-    serializer_class = EngineModelSerializer
-    permission_classes = [IsVerifiedUserOrReadOnly]
     lookup_field = 'slug'
 
 
 # ------------------------------
-# Part Category Views
+# Part Category ViewSet
 # ------------------------------
-class PartCategoryListCreateAPIView(generics.ListCreateAPIView):
-    queryset = PartCategory.objects.select_related('engine_model').all()
+class PartCategoryViewSet(viewsets.ModelViewSet):
+    queryset = PartCategory.objects.all()
     serializer_class = PartCategorySerializer
     permission_classes = [IsVerifiedUserOrReadOnly]
-    filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
-    filterset_fields = ['engine_model']
+    filter_backends = [filters.SearchFilter, filters.OrderingFilter]
     search_fields = ['name']
     ordering_fields = ['name']
-
-
-class PartCategoryRetrieveUpdateDestroyAPIView(generics.RetrieveUpdateDestroyAPIView):
-    queryset = PartCategory.objects.select_related('engine_model').all()
-    serializer_class = PartCategorySerializer
-    permission_classes = [IsVerifiedUserOrReadOnly]
+    ordering = ['name']
 
 
 # ------------------------------
-# Part Subcategory Views
+# Part Subcategory ViewSet
 # ------------------------------
-class PartSubCategoryListCreateAPIView(generics.ListCreateAPIView):
+class PartSubCategoryViewSet(viewsets.ModelViewSet):
     queryset = PartSubCategory.objects.select_related('part_category').all()
     serializer_class = PartSubCategorySerializer
     permission_classes = [IsVerifiedUserOrReadOnly]
     filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
     filterset_fields = ['part_category']
     search_fields = ['name']
-    ordering_fields = ['name']
-
-
-class PartSubCategoryRetrieveUpdateDestroyAPIView(generics.RetrieveUpdateDestroyAPIView):
-    queryset = PartSubCategory.objects.select_related('part_category').all()
-    serializer_class = PartSubCategorySerializer
-    permission_classes = [IsVerifiedUserOrReadOnly]
+    ordering_fields = ['part_category', 'name']
+    ordering = ['part_category', 'name']
 
 
 # ------------------------------
-# Illustration Views
+# Illustration ViewSet
 # ------------------------------
-class IllustrationListCreateAPIView(generics.ListCreateAPIView):
-    queryset = Illustration.objects.select_related(
-        'user', 'engine_model', 'part_category', 'part_subcategory'
-    ).prefetch_related('files').all()
+class IllustrationViewSet(viewsets.ModelViewSet):
     permission_classes = [IsVerifiedUser]
     filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
-    filterset_fields = ['engine_model', 'part_category', 'part_subcategory', 'user']
+    filterset_fields = ['engine_model', 'part_category', 'part_subcategory']
     search_fields = ['title', 'description']
     ordering_fields = ['created_at', 'title']
     ordering = ['-created_at']
     
+    def get_queryset(self):
+        if getattr(self, 'swagger_fake_view', False):
+            return Illustration.objects.none()
+        
+        queryset = Illustration.objects.select_related(
+            'user', 'engine_model__car_model__manufacturer',
+            'part_category', 'part_subcategory'
+        ).prefetch_related('files')
+        
+        # Users can only see their own illustrations
+        if self.request.user and self.request.user.is_authenticated:
+            return queryset.filter(user=self.request.user)
+        return queryset.none()
+    
     def get_serializer_class(self):
-        if self.request.method == 'GET':
+        if self.action in ['list', 'retrieve']:
             return IllustrationDetailSerializer
         return IllustrationSerializer
     
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
-
-
-class IllustrationRetrieveUpdateDestroyAPIView(generics.RetrieveUpdateDestroyAPIView):
-    queryset = Illustration.objects.select_related(
-        'user', 'engine_model', 'part_category', 'part_subcategory'
-    ).prefetch_related('files').all()
-    serializer_class = IllustrationDetailSerializer
-    permission_classes = [IsVerifiedUser]
     
-    def get_serializer_class(self):
-        if self.request.method in ['PUT', 'PATCH']:
-            return IllustrationSerializer
-        return IllustrationDetailSerializer
+    @action(detail=True, methods=['post'])
+    def increment_view(self, request, pk=None):
+        """Increment view count for illustration"""
+        illustration = self.get_object()
+        return Response({'message': 'View count feature not implemented'}, 
+                       status=status.HTTP_501_NOT_IMPLEMENTED)
 
 
 # ------------------------------
-# Illustration File Views
+# Illustration File ViewSet
 # ------------------------------
-class IllustrationFileListCreateAPIView(generics.ListCreateAPIView):
+class IllustrationFileViewSet(viewsets.ModelViewSet):
     serializer_class = IllustrationFileSerializer
     permission_classes = [IsVerifiedUser]
-    filter_backends = [DjangoFilterBackend]
+    filter_backends = [DjangoFilterBackend, filters.OrderingFilter]
     filterset_fields = ['illustration']
+    ordering_fields = ['uploaded_at']
+    ordering = ['uploaded_at']
     
     def get_queryset(self):
-        # Fix for Swagger schema generation
         if getattr(self, 'swagger_fake_view', False):
             return IllustrationFile.objects.none()
         
         # Only return files for illustrations created by the current user
         if self.request.user and self.request.user.is_authenticated:
-            return IllustrationFile.objects.filter(
+            return IllustrationFile.objects.select_related(
+                'illustration'
+            ).filter(
                 illustration__user=self.request.user
             )
         return IllustrationFile.objects.none()
-
-
-class IllustrationFileDestroyAPIView(generics.DestroyAPIView):
-    serializer_class = IllustrationFileSerializer
-    permission_classes = [IsVerifiedUser]
     
-    def get_queryset(self):
-        # Fix for Swagger schema generation
-        if getattr(self, 'swagger_fake_view', False):
-            return IllustrationFile.objects.none()
-        
-        # Only allow deletion of files from illustrations created by the current user
-        if self.request.user and self.request.user.is_authenticated:
-            return IllustrationFile.objects.filter(
-                illustration__user=self.request.user
-            )
-        return IllustrationFile.objects.none()
+    @action(detail=True, methods=['patch'])
+    def reorder(self, request, pk=None):
+        """Update file order"""
+        return Response(
+            {'error': 'Order field does not exist in IllustrationFile model'}, 
+            status=status.HTTP_501_NOT_IMPLEMENTED
+        )

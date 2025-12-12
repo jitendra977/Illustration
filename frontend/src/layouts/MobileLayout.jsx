@@ -234,15 +234,7 @@ const MobileLayout = ({ children, showHeader = true }) => {
                 <ListItemText primary="ホーム" />
               </ListItemButton>
             </ListItem>
-            <ListItem disablePadding>
-              <ListItemButton
-                onClick={() => { setMenuOpen(false); navigate('/dashboard'); }}
-                selected={location.pathname === '/dashboard'}
-              >
-                <ListItemIcon><DashboardIcon /></ListItemIcon>
-                <ListItemText primary="ダッシュボード" />
-              </ListItemButton>
-            </ListItem>
+            
             <ListItem disablePadding>
               <ListItemButton
                 onClick={() => { setMenuOpen(false); navigate('/illustrations'); }}

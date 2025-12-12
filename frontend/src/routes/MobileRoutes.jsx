@@ -8,7 +8,6 @@ import { AuthProvider } from '../context/AuthContext';
 import EmailVerification from '../pages/auth/EmailVerification';
 import MobileLayout from '../layouts/MobileLayout';
 import MobileHome from '../pages/mobile/MobileHome';
-import MobileDashboard from '../pages/mobile/MobileDashboard';
 import MobileIllustrations from '../pages/mobile/MobileIllustrations';
 import MobileManufacturers from '../pages/mobile/MobileManufacturers';
 import MobileCarModels from '../pages/mobile/MobileCarModels';
@@ -29,18 +28,7 @@ const MobileRoutes = () => {
       ),
     },
     
-    // ==================== DASHBOARD ====================
-    {
-      path: "/dashboard",
-      element: (
-        <ProtectedRoute>
-          <MobileLayout>
-            <MobileDashboard />
-          </MobileLayout>
-        </ProtectedRoute>
-      ),
-    },
-    
+   
     // ==================== EMAIL VERIFICATION ====================
     {
       path: "/verify-email/:token",

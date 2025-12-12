@@ -223,6 +223,16 @@ const MobileSearch = () => {
     setSelectedIllustration(null);
   };
 
+  const handleUpdate = () => {
+    // Refresh search results after update
+    handleSearch();
+  };
+
+  const handleDelete = (deletedId) => {
+    // Remove deleted illustration from results
+    setIllustrations(prev => prev.filter(ill => ill.id !== deletedId));
+  };
+
   return (
     <>
       <Container maxWidth="sm" sx={{ px: 2, py: 3, minHeight: '100vh' }}>
@@ -650,6 +660,8 @@ const MobileSearch = () => {
         open={modalOpen}
         onClose={handleCloseModal}
         illustration={selectedIllustration}
+        onUpdate={handleUpdate}
+        onDelete={handleDelete}
       />
     </>
   );

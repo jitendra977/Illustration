@@ -1,104 +1,88 @@
-from django.urls import path
-from .views import (
-    # Manufacturer
-    ManufacturerListCreateAPIView,
-    ManufacturerRetrieveUpdateDestroyAPIView,
-    
-    # Car Model
-    CarModelListCreateAPIView,
-    CarModelRetrieveUpdateDestroyAPIView,
-    
-    # Engine Model
-    EngineModelListCreateAPIView,
-    EngineModelRetrieveUpdateDestroyAPIView,
-    
-    # Part Category
-    PartCategoryListCreateAPIView,
-    PartCategoryRetrieveUpdateDestroyAPIView,
-    
-    # Part Subcategory
-    PartSubCategoryListCreateAPIView,
-    PartSubCategoryRetrieveUpdateDestroyAPIView,
-    
-    # Illustration
-    IllustrationListCreateAPIView,
-    IllustrationRetrieveUpdateDestroyAPIView,
-    
-    # Illustration File
-    IllustrationFileListCreateAPIView,
-    IllustrationFileDestroyAPIView,
-)
+from django.urls import path, include
+from rest_framework.routers import DefaultRouter
+from . import views
 
-app_name = 'illustrations'
+router = DefaultRouter()
+router.register(r'manufacturers', views.ManufacturerViewSet, basename='manufacturer')
+router.register(r'engine-models', views.EngineModelViewSet, basename='enginemodel')
+router.register(r'part-categories', views.PartCategoryViewSet, basename='partcategory')
+router.register(r'part-subcategories', views.PartSubCategoryViewSet, basename='partsubcategory')
+router.register(r'illustrations', views.IllustrationViewSet, basename='illustration')
+router.register(r'illustration-files', views.IllustrationFileViewSet, basename='illustrationfile')
+
+# ✅ Register car-models LAST or use manual URLs for custom actions
+router.register(r'car-models', views.CarModelViewSet, basename='carmodel')
 
 urlpatterns = [
-    # ------------------------------
-    # Manufacturer URLs
-    # ------------------------------
-    path('manufacturers/', 
-         ManufacturerListCreateAPIView.as_view(), 
-         name='manufacturer-list-create'),
-    path('manufacturers/<slug:slug>/', 
-         ManufacturerRetrieveUpdateDestroyAPIView.as_view(), 
-         name='manufacturer-detail'),
+    # ✅ IMPORTANT: Put custom action URLs BEFORE router.urls
+    path('car-models/vehicle-types/', 
+         views.CarModelViewSet.as_view({'get': 'vehicle_types'}), 
+         name='carmodel-vehicle-types'),
+    path('car-models/fuel-types/', 
+         views.CarModelViewSet.as_view({'get': 'fuel_types'}), 
+         name='carmodel-fuel-types'),
     
-    # ------------------------------
-    # Car Model URLs
-    # ------------------------------
-    path('car-models/', 
-         CarModelListCreateAPIView.as_view(), 
-         name='car-model-list-create'),
-    path('car-models/<slug:slug>/', 
-         CarModelRetrieveUpdateDestroyAPIView.as_view(), 
-         name='car-model-detail'),
-    
-    # ------------------------------
-    # Engine Model URLs
-    # ------------------------------
-    path('engine-models/', 
-         EngineModelListCreateAPIView.as_view(), 
-         name='engine-model-list-create'),
-    path('engine-models/<slug:slug>/', 
-         EngineModelRetrieveUpdateDestroyAPIView.as_view(), 
-         name='engine-model-detail'),
-    
-    # ------------------------------
-    # Part Category URLs
-    # ------------------------------
-    path('part-categories/', 
-         PartCategoryListCreateAPIView.as_view(), 
-         name='part-category-list-create'),
-    path('part-categories/<int:pk>/', 
-         PartCategoryRetrieveUpdateDestroyAPIView.as_view(), 
-         name='part-category-detail'),
-    
-    # ------------------------------
-    # Part Subcategory URLs
-    # ------------------------------
-    path('part-subcategories/', 
-         PartSubCategoryListCreateAPIView.as_view(), 
-         name='part-subcategory-list-create'),
-    path('part-subcategories/<int:pk>/', 
-         PartSubCategoryRetrieveUpdateDestroyAPIView.as_view(), 
-         name='part-subcategory-detail'),
-    
-    # ------------------------------
-    # Illustration URLs
-    # ------------------------------
-    path('illustrations/', 
-         IllustrationListCreateAPIView.as_view(), 
-         name='illustration-list-create'),
-    path('illustrations/<int:pk>/', 
-         IllustrationRetrieveUpdateDestroyAPIView.as_view(), 
-         name='illustration-detail'),
-    
-    # ------------------------------
-    # Illustration File URLs
-    # ------------------------------
-    path('illustration-files/', 
-         IllustrationFileListCreateAPIView.as_view(), 
-         name='illustration-file-list-create'),
-    path('illustration-files/<int:pk>/', 
-         IllustrationFileDestroyAPIView.as_view(), 
-         name='illustration-file-delete'),
+    # Then include router URLs
+    path('', include(router.urls)),
 ]
+
+# This automatically creates these endpoints:
+# 
+# Manufacturers:
+# GET    /api/manufacturers/
+# POST   /api/manufacturers/
+# GET    /api/manufacturers/{slug}/
+# PUT    /api/manufacturers/{slug}/
+# PATCH  /api/manufacturers/{slug}/
+# DELETE /api/manufacturers/{slug}/
+#
+# Car Models:
+# GET    /api/car-models/
+# POST   /api/car-models/
+# GET    /api/car-models/vehicle-types/  ✅ Custom action
+# GET    /api/car-models/fuel-types/     ✅ Custom action
+# GET    /api/car-models/{slug}/
+# PUT    /api/car-models/{slug}/
+# PATCH  /api/car-models/{slug}/
+# DELETE /api/car-models/{slug}/
+#
+# Engine Models:
+# GET    /api/engine-models/
+# POST   /api/engine-models/
+# GET    /api/engine-models/{slug}/
+# PUT    /api/engine-models/{slug}/
+# PATCH  /api/engine-models/{slug}/
+# DELETE /api/engine-models/{slug}/
+#
+# Part Categories:
+# GET    /api/part-categories/
+# POST   /api/part-categories/
+# GET    /api/part-categories/{id}/
+# PUT    /api/part-categories/{id}/
+# PATCH  /api/part-categories/{id}/
+# DELETE /api/part-categories/{id}/
+#
+# Part Subcategories:
+# GET    /api/part-subcategories/
+# POST   /api/part-subcategories/
+# GET    /api/part-subcategories/{id}/
+# PUT    /api/part-subcategories/{id}/
+# PATCH  /api/part-subcategories/{id}/
+# DELETE /api/part-subcategories/{id}/
+#
+# Illustrations:
+# GET    /api/illustrations/
+# POST   /api/illustrations/
+# GET    /api/illustrations/{id}/
+# PUT    /api/illustrations/{id}/
+# PATCH  /api/illustrations/{id}/
+# DELETE /api/illustrations/{id}/
+# POST   /api/illustrations/{id}/increment_view/  ✅ Custom action
+#
+# Illustration Files:
+# GET    /api/illustration-files/
+# POST   /api/illustration-files/
+# GET    /api/illustration-files/{id}/
+# PATCH  /api/illustration-files/{id}/
+# DELETE /api/illustration-files/{id}/
+# PATCH  /api/illustration-files/{id}/reorder/  ✅ Custom action

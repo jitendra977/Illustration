@@ -48,7 +48,15 @@ api.interceptors.response.use(
 // MANUFACTURERS
 // ============================================================================
 export const manufacturerAPI = {
-  getAll: (params) => api.get('/manufacturers/', { params }),
+  getAll: async (params = {}) => {
+    try {
+      const response = await api.get('/manufacturers/', { params });
+      return response;
+    } catch (error) {
+      console.error('Manufacturer API error:', error);
+      throw error;
+    }
+  },
   getBySlug: (slug) => api.get(`/manufacturers/${slug}/`),
   create: (data) => api.post('/manufacturers/', data),
   update: (slug, data) => api.put(`/manufacturers/${slug}/`, data),
@@ -60,7 +68,15 @@ export const manufacturerAPI = {
 // CAR MODELS
 // ============================================================================
 export const carModelAPI = {
-  getAll: (params) => api.get('/car-models/', { params }),
+  getAll: async (params = {}) => {
+    try {
+      const response = await api.get('/car-models/', { params });
+      return response;
+    } catch (error) {
+      console.error('Car Model API error:', error);
+      throw error;
+    }
+  },
   getBySlug: (slug) => api.get(`/car-models/${slug}/`),
   getByManufacturer: (manufacturerId) => 
     api.get('/car-models/', { params: { manufacturer: manufacturerId } }),
@@ -74,7 +90,15 @@ export const carModelAPI = {
 // ENGINE MODELS
 // ============================================================================
 export const engineModelAPI = {
-  getAll: (params) => api.get('/engine-models/', { params }),
+  getAll: async (params = {}) => {
+    try {
+      const response = await api.get('/engine-models/', { params });
+      return response;
+    } catch (error) {
+      console.error('Engine Model API error:', error);
+      throw error;
+    }
+  },
   getBySlug: (slug) => api.get(`/engine-models/${slug}/`),
   getByCarModel: (carModelId) => 
     api.get('/engine-models/', { params: { car_model: carModelId } }),
@@ -90,7 +114,15 @@ export const engineModelAPI = {
 // PART CATEGORIES
 // ============================================================================
 export const partCategoryAPI = {
-  getAll: (params) => api.get('/part-categories/', { params }),
+  getAll: async (params = {}) => {
+    try {
+      const response = await api.get('/part-categories/', { params });
+      return response;
+    } catch (error) {
+      console.error('Part Category API error:', error);
+      throw error;
+    }
+  },
   getById: (id) => api.get(`/part-categories/${id}/`),
   getByEngineModel: (engineModelId) => 
     api.get('/part-categories/', { params: { engine_model: engineModelId } }),

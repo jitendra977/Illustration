@@ -15,8 +15,7 @@ import {
   CardMedia,
   Paper,
   alpha,
-  useTheme,
-  useMediaQuery
+  useTheme
 } from '@mui/material';
 import {
   Close as CloseIcon,
@@ -36,8 +35,6 @@ import {
 const IllustrationDetailModal = ({ open, onClose, illustration }) => {
   const [selectedImageIndex, setSelectedImageIndex] = useState(null);
   const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
-  const isTablet = useMediaQuery(theme.breakpoints.down('md'));
 
   if (!illustration) return null;
 
@@ -74,39 +71,30 @@ const IllustrationDetailModal = ({ open, onClose, illustration }) => {
   const formatDate = (dateString) => {
     return new Date(dateString).toLocaleDateString('en-US', {
       year: 'numeric',
-      month: isMobile ? 'short' : 'long',
+      month: 'long',
       day: 'numeric',
-      ...(!isMobile && { hour: '2-digit', minute: '2-digit' })
+      hour: '2-digit',
+      minute: '2-digit'
     });
   };
 
   const InfoRow = ({ icon, label, value }) => (
-    <Stack direction="row" spacing={isMobile ? 1.5 : 2} alignItems="center">
+    <Stack direction="row" spacing={1.5} alignItems="center">
       <Box sx={{ 
-        p: isMobile ? 0.75 : 1,
+        p: 1, 
         borderRadius: 1, 
         bgcolor: alpha(theme.palette.primary.main, 0.1),
         color: theme.palette.primary.main,
         display: 'flex',
-        alignItems: 'center',
-        minWidth: isMobile ? 32 : 36,
-        minHeight: isMobile ? 32 : 36,
-        justifyContent: 'center'
+        alignItems: 'center'
       }}>
-        {React.cloneElement(icon, { sx: { fontSize: isMobile ? 18 : 20 } })}
+        {icon}
       </Box>
-      <Box sx={{ minWidth: 0, flex: 1 }}>
-        <Typography variant="caption" color="text.secondary" display="block" sx={{ fontSize: isMobile ? '0.7rem' : '0.75rem' }}>
+      <Box>
+        <Typography variant="caption" color="text.secondary" display="block">
           {label}
         </Typography>
-        <Typography 
-          variant="body2" 
-          fontWeight="medium" 
-          sx={{ 
-            fontSize: isMobile ? '0.875rem' : '0.875rem',
-            wordBreak: 'break-word'
-          }}
-        >
+        <Typography variant="body2" fontWeight="medium">
           {value || 'N/A'}
         </Typography>
       </Box>
@@ -121,82 +109,74 @@ const IllustrationDetailModal = ({ open, onClose, illustration }) => {
         onClose={onClose}
         maxWidth="lg"
         fullWidth
-        fullScreen={isMobile}
         PaperProps={{
           sx: {
-            borderRadius: isMobile ? 0 : 3,
-            maxHeight: isMobile ? '100vh' : '90vh',
-            m: isMobile ? 0 : 2
+            borderRadius: 3,
+            maxHeight: '90vh'
           }
         }}
       >
-        <DialogTitle sx={{ p: isMobile ? 2 : 3 }}>
-          <Stack direction="row" justifyContent="space-between" alignItems="flex-start">
-            <Stack spacing={0.5} sx={{ flex: 1, pr: 1 }}>
-              <Typography variant={isMobile ? 'h6' : 'h5'} fontWeight="bold">
+        <DialogTitle>
+          <Stack direction="row" justifyContent="space-between" alignItems="center">
+            <Stack spacing={0.5}>
+              <Typography variant="h5" fontWeight="bold">
                 {illustration.title}
               </Typography>
-              <Stack direction="row" spacing={1} alignItems="center" flexWrap="wrap">
+              <Stack direction="row" spacing={1} alignItems="center">
                 <Chip 
                   icon={<ImageIcon />}
                   label={`${illustration.files?.length || 0} files`}
                   size="small"
                   variant="outlined"
                   color="primary"
-                  sx={{ fontSize: isMobile ? '0.7rem' : '0.75rem' }}
                 />
-                <Typography variant="caption" color="text.secondary" sx={{ fontSize: isMobile ? '0.7rem' : '0.75rem' }}>
+                <Typography variant="caption" color="text.secondary">
                   ID: {illustration.id}
                 </Typography>
               </Stack>
             </Stack>
-            <IconButton onClick={onClose} sx={{ mt: -1 }}>
+            <IconButton onClick={onClose}>
               <CloseIcon />
             </IconButton>
           </Stack>
         </DialogTitle>
 
-        <DialogContent dividers sx={{ p: isMobile ? 2 : 3 }}>
-          <Grid container spacing={isMobile ? 2 : 3}>
-            {/* Images Section */}
+        <DialogContent dividers>
+          <Grid container spacing={3}>
+            {/* Left Column - Images */}
             <Grid item xs={12} md={7}>
               <Paper 
                 elevation={0} 
                 sx={{ 
-                  p: isMobile ? 1.5 : 2,
+                  p: 2, 
                   bgcolor: alpha(theme.palette.primary.main, 0.03),
                   borderRadius: 2,
                   border: `1px solid ${alpha(theme.palette.primary.main, 0.1)}`
                 }}
               >
-                <Typography variant={isMobile ? 'body2' : 'subtitle1'} fontWeight="bold" gutterBottom sx={{ px: isMobile ? 0.5 : 0 }}>
+                <Typography variant="subtitle1" fontWeight="bold" gutterBottom>
                   Files & Images ({illustration.files?.length || 0})
                 </Typography>
                 
                 {illustration.files && illustration.files.length > 0 ? (
-                  <Grid container spacing={isMobile ? 1.5 : 2}>
+                  <Grid container spacing={2}>
                     {illustration.files.map((file, index) => (
                       <Grid item xs={6} sm={4} key={file.id || index}>
                         <Card 
                           sx={{ 
                             cursor: 'pointer',
                             transition: 'all 0.3s ease',
-                            '&:active': {
-                              transform: 'scale(0.98)'
-                            },
-                            ...(!isMobile && {
-                              '&:hover': {
-                                transform: 'translateY(-4px)',
-                                boxShadow: theme.shadows[8]
-                              }
-                            })
+                            '&:hover': {
+                              transform: 'translateY(-4px)',
+                              boxShadow: theme.shadows[8]
+                            }
                           }}
                           onClick={() => handleImageClick(index)}
                         >
                           <Box sx={{ position: 'relative' }}>
                             <CardMedia
                               component="img"
-                              height={isMobile ? 100 : 120}
+                              height="120"
                               image={file.file}
                               alt={`${illustration.title} - Image ${index + 1}`}
                               sx={{ 
@@ -204,36 +184,34 @@ const IllustrationDetailModal = ({ open, onClose, illustration }) => {
                                 objectFit: 'cover'
                               }}
                             />
-                            {!isMobile && (
-                              <Box
-                                sx={{
-                                  position: 'absolute',
-                                  top: 0,
-                                  left: 0,
-                                  right: 0,
-                                  bottom: 0,
-                                  bgcolor: 'rgba(0,0,0,0.4)',
-                                  display: 'flex',
-                                  alignItems: 'center',
-                                  justifyContent: 'center',
-                                  opacity: 0,
-                                  transition: 'opacity 0.3s ease',
-                                  '&:hover': {
-                                    opacity: 1
-                                  }
-                                }}
-                              >
-                                <ZoomInIcon sx={{ color: 'white', fontSize: 32 }} />
-                              </Box>
-                            )}
+                            <Box
+                              sx={{
+                                position: 'absolute',
+                                top: 0,
+                                left: 0,
+                                right: 0,
+                                bottom: 0,
+                                bgcolor: 'rgba(0,0,0,0.4)',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                opacity: 0,
+                                transition: 'opacity 0.3s ease',
+                                '&:hover': {
+                                  opacity: 1
+                                }
+                              }}
+                            >
+                              <ZoomInIcon sx={{ color: 'white', fontSize: 32 }} />
+                            </Box>
                           </Box>
                           <Stack 
                             direction="row" 
                             justifyContent="space-between" 
                             alignItems="center"
-                            sx={{ p: isMobile ? 0.75 : 1, bgcolor: 'grey.50' }}
+                            sx={{ p: 1, bgcolor: 'grey.50' }}
                           >
-                            <Typography variant="caption" noWrap sx={{ flex: 1, fontSize: isMobile ? '0.7rem' : '0.75rem' }}>
+                            <Typography variant="caption" noWrap sx={{ flex: 1 }}>
                               Image {index + 1}
                             </Typography>
                             <IconButton 
@@ -242,7 +220,6 @@ const IllustrationDetailModal = ({ open, onClose, illustration }) => {
                                 e.stopPropagation();
                                 handleDownload(file.file, `${illustration.title}_${index + 1}`);
                               }}
-                              sx={{ p: isMobile ? 0.5 : 0.75 }}
                             >
                               <DownloadIcon fontSize="small" />
                             </IconButton>
@@ -255,11 +232,11 @@ const IllustrationDetailModal = ({ open, onClose, illustration }) => {
                   <Box 
                     sx={{ 
                       textAlign: 'center', 
-                      py: isMobile ? 3 : 4,
+                      py: 4,
                       color: 'text.secondary' 
                     }}
                   >
-                    <ImageIcon sx={{ fontSize: isMobile ? 40 : 48, mb: 1 }} />
+                    <ImageIcon sx={{ fontSize: 48, mb: 1 }} />
                     <Typography variant="body2">No files available</Typography>
                   </Box>
                 )}
@@ -270,41 +247,41 @@ const IllustrationDetailModal = ({ open, onClose, illustration }) => {
                 <Paper 
                   elevation={0} 
                   sx={{ 
-                    p: isMobile ? 1.5 : 2,
+                    p: 2, 
                     mt: 2,
                     bgcolor: alpha(theme.palette.secondary.main, 0.03),
                     borderRadius: 2,
                     border: `1px solid ${alpha(theme.palette.secondary.main, 0.1)}`
                   }}
                 >
-                  <Typography variant={isMobile ? 'body2' : 'subtitle1'} fontWeight="bold" gutterBottom>
+                  <Typography variant="subtitle1" fontWeight="bold" gutterBottom>
                     Description
                   </Typography>
-                  <Typography variant="body2" color="text.secondary" sx={{ fontSize: isMobile ? '0.875rem' : '0.875rem' }}>
+                  <Typography variant="body2" color="text.secondary">
                     {illustration.description}
                   </Typography>
                 </Paper>
               )}
             </Grid>
 
-            {/* Details Section */}
+            {/* Right Column - Details */}
             <Grid item xs={12} md={5}>
               <Stack spacing={2}>
                 {/* Basic Information */}
                 <Paper 
                   elevation={0} 
                   sx={{ 
-                    p: isMobile ? 1.5 : 2.5,
+                    p: 2.5, 
                     borderRadius: 2,
                     border: `1px solid ${theme.palette.divider}`
                   }}
                 >
-                  <Typography variant={isMobile ? 'body2' : 'subtitle1'} fontWeight="bold" gutterBottom sx={{ mb: 2 }}>
+                  <Typography variant="subtitle1" fontWeight="bold" gutterBottom sx={{ mb: 2 }}>
                     Information
                   </Typography>
-                  <Stack spacing={isMobile ? 1.5 : 2}>
+                  <Stack spacing={2}>
                     <InfoRow
-                      icon={<StoreIcon />}
+                      icon={<StoreIcon fontSize="small" />}
                       label="Manufacturer"
                       value={
                         illustration.car_model?.manufacturer?.name || 
@@ -314,7 +291,7 @@ const IllustrationDetailModal = ({ open, onClose, illustration }) => {
                       }
                     />
                     <InfoRow
-                      icon={<CarIcon />}
+                      icon={<CarIcon fontSize="small" />}
                       label="Car Model"
                       value={
                         illustration.car_model?.name || 
@@ -324,7 +301,7 @@ const IllustrationDetailModal = ({ open, onClose, illustration }) => {
                       }
                     />
                     <InfoRow
-                      icon={<BuildIcon />}
+                      icon={<BuildIcon fontSize="small" />}
                       label="Engine Model"
                       value={
                         illustration.engine_model?.name || 
@@ -333,7 +310,7 @@ const IllustrationDetailModal = ({ open, onClose, illustration }) => {
                       }
                     />
                     <InfoRow
-                      icon={<CategoryIcon />}
+                      icon={<CategoryIcon fontSize="small" />}
                       label="Part Category"
                       value={
                         illustration.part_category?.name || 
@@ -348,28 +325,28 @@ const IllustrationDetailModal = ({ open, onClose, illustration }) => {
                 <Paper 
                   elevation={0} 
                   sx={{ 
-                    p: isMobile ? 1.5 : 2.5,
+                    p: 2.5, 
                     borderRadius: 2,
                     border: `1px solid ${theme.palette.divider}`
                   }}
                 >
-                  <Typography variant={isMobile ? 'body2' : 'subtitle1'} fontWeight="bold" gutterBottom sx={{ mb: 2 }}>
+                  <Typography variant="subtitle1" fontWeight="bold" gutterBottom sx={{ mb: 2 }}>
                     Metadata
                   </Typography>
-                  <Stack spacing={isMobile ? 1.5 : 2}>
+                  <Stack spacing={2}>
                     <InfoRow
-                      icon={<PersonIcon />}
+                      icon={<PersonIcon fontSize="small" />}
                       label="Created By"
                       value={illustration.user_name || illustration.user?.username || 'Unknown'}
                     />
                     <InfoRow
-                      icon={<CalendarIcon />}
+                      icon={<CalendarIcon fontSize="small" />}
                       label="Created At"
                       value={formatDate(illustration.created_at)}
                     />
                     {illustration.updated_at && illustration.updated_at !== illustration.created_at && (
                       <InfoRow
-                        icon={<CalendarIcon />}
+                        icon={<CalendarIcon fontSize="small" />}
                         label="Last Updated"
                         value={formatDate(illustration.updated_at)}
                       />
@@ -382,7 +359,7 @@ const IllustrationDetailModal = ({ open, onClose, illustration }) => {
                   variant="contained"
                   startIcon={<DownloadIcon />}
                   fullWidth
-                  size={isMobile ? 'medium' : 'large'}
+                  size="large"
                   onClick={() => {
                     illustration.files?.forEach((file, index) => {
                       setTimeout(() => {
@@ -391,10 +368,6 @@ const IllustrationDetailModal = ({ open, onClose, illustration }) => {
                     });
                   }}
                   disabled={!illustration.files || illustration.files.length === 0}
-                  sx={{ 
-                    py: isMobile ? 1.25 : 1.5,
-                    fontSize: isMobile ? '0.875rem' : '1rem'
-                  }}
                 >
                   Download All Files
                 </Button>
@@ -403,11 +376,9 @@ const IllustrationDetailModal = ({ open, onClose, illustration }) => {
           </Grid>
         </DialogContent>
 
-        {!isMobile && (
-          <DialogActions sx={{ p: 2 }}>
-            <Button onClick={onClose}>Close</Button>
-          </DialogActions>
-        )}
+        <DialogActions sx={{ p: 2 }}>
+          <Button onClick={onClose}>Close</Button>
+        </DialogActions>
       </Dialog>
 
       {/* Image Viewer Dialog (Lightbox) */}
@@ -416,12 +387,13 @@ const IllustrationDetailModal = ({ open, onClose, illustration }) => {
         onClose={handleCloseImageViewer}
         maxWidth="xl"
         fullWidth
-        fullScreen
         PaperProps={{
           sx: {
             bgcolor: 'rgba(0, 0, 0, 0.95)',
             borderRadius: 0,
-            m: 0
+            m: 0,
+            maxHeight: '100vh',
+            height: '100vh'
           }
         }}
       >
@@ -431,19 +403,14 @@ const IllustrationDetailModal = ({ open, onClose, illustration }) => {
             onClick={handleCloseImageViewer}
             sx={{
               position: 'absolute',
-              top: isMobile ? 8 : 16,
-              right: isMobile ? 8 : 16,
+              top: 16,
+              right: 16,
               color: 'white',
               bgcolor: 'rgba(255, 255, 255, 0.1)',
               '&:hover': {
                 bgcolor: 'rgba(255, 255, 255, 0.2)'
               },
-              '&:active': {
-                bgcolor: 'rgba(255, 255, 255, 0.3)'
-              },
-              zIndex: 2,
-              width: isMobile ? 44 : 48,
-              height: isMobile ? 44 : 48
+              zIndex: 2
             }}
           >
             <CloseIcon />
@@ -453,17 +420,17 @@ const IllustrationDetailModal = ({ open, onClose, illustration }) => {
           <Paper
             sx={{
               position: 'absolute',
-              top: isMobile ? 8 : 16,
+              top: 16,
               left: '50%',
               transform: 'translateX(-50%)',
-              px: isMobile ? 1.5 : 2,
-              py: isMobile ? 0.75 : 1,
+              px: 2,
+              py: 1,
               bgcolor: 'rgba(255, 255, 255, 0.1)',
               backdropFilter: 'blur(10px)',
               zIndex: 2
             }}
           >
-            <Typography variant="body2" color="white" sx={{ fontSize: isMobile ? '0.875rem' : '1rem' }}>
+            <Typography variant="body2" color="white">
               {selectedImageIndex + 1} / {illustration.files?.length || 0}
             </Typography>
           </Paper>
@@ -476,19 +443,14 @@ const IllustrationDetailModal = ({ open, onClose, illustration }) => {
             }}
             sx={{
               position: 'absolute',
-              top: isMobile ? 8 : 16,
-              left: isMobile ? 8 : 16,
+              top: 16,
+              left: 16,
               color: 'white',
               bgcolor: 'rgba(255, 255, 255, 0.1)',
               '&:hover': {
                 bgcolor: 'rgba(255, 255, 255, 0.2)'
               },
-              '&:active': {
-                bgcolor: 'rgba(255, 255, 255, 0.3)'
-              },
-              zIndex: 2,
-              width: isMobile ? 44 : 48,
-              height: isMobile ? 44 : 48
+              zIndex: 2
             }}
           >
             <DownloadIcon />
@@ -500,7 +462,7 @@ const IllustrationDetailModal = ({ open, onClose, illustration }) => {
               onClick={handlePreviousImage}
               sx={{
                 position: 'absolute',
-                left: isMobile ? 8 : 16,
+                left: 16,
                 top: '50%',
                 transform: 'translateY(-50%)',
                 color: 'white',
@@ -508,15 +470,10 @@ const IllustrationDetailModal = ({ open, onClose, illustration }) => {
                 '&:hover': {
                   bgcolor: 'rgba(255, 255, 255, 0.2)'
                 },
-                '&:active': {
-                  bgcolor: 'rgba(255, 255, 255, 0.3)'
-                },
-                zIndex: 2,
-                width: isMobile ? 48 : 56,
-                height: isMobile ? 48 : 56
+                zIndex: 2
               }}
             >
-              <ArrowBackIcon sx={{ fontSize: isMobile ? 28 : 32 }} />
+              <ArrowBackIcon />
             </IconButton>
           )}
 
@@ -526,7 +483,7 @@ const IllustrationDetailModal = ({ open, onClose, illustration }) => {
               onClick={handleNextImage}
               sx={{
                 position: 'absolute',
-                right: isMobile ? 8 : 16,
+                right: 16,
                 top: '50%',
                 transform: 'translateY(-50%)',
                 color: 'white',
@@ -534,15 +491,10 @@ const IllustrationDetailModal = ({ open, onClose, illustration }) => {
                 '&:hover': {
                   bgcolor: 'rgba(255, 255, 255, 0.2)'
                 },
-                '&:active': {
-                  bgcolor: 'rgba(255, 255, 255, 0.3)'
-                },
-                zIndex: 2,
-                width: isMobile ? 48 : 56,
-                height: isMobile ? 48 : 56
+                zIndex: 2
               }}
             >
-              <ArrowForwardIcon sx={{ fontSize: isMobile ? 28 : 32 }} />
+              <ArrowForwardIcon />
             </IconButton>
           )}
 
@@ -553,11 +505,10 @@ const IllustrationDetailModal = ({ open, onClose, illustration }) => {
               src={illustration.files[selectedImageIndex].file}
               alt={`${illustration.title} - Image ${selectedImageIndex + 1}`}
               sx={{
-                maxWidth: isMobile ? '100%' : '95%',
-                maxHeight: isMobile ? '100%' : '95%',
+                maxWidth: '95%',
+                maxHeight: '95%',
                 objectFit: 'contain',
-                userSelect: 'none',
-                touchAction: 'pan-x pan-y pinch-zoom'
+                userSelect: 'none'
               }}
             />
           )}
@@ -566,19 +517,19 @@ const IllustrationDetailModal = ({ open, onClose, illustration }) => {
           <Box
             sx={{
               position: 'absolute',
-              bottom: isMobile ? 8 : 16,
+              bottom: 16,
               left: '50%',
               transform: 'translateX(-50%)',
               display: 'flex',
-              gap: isMobile ? 0.75 : 1,
-              p: isMobile ? 0.75 : 1,
+              gap: 1,
+              p: 1,
               bgcolor: 'rgba(255, 255, 255, 0.1)',
               backdropFilter: 'blur(10px)',
               borderRadius: 2,
-              maxWidth: isMobile ? '95%' : '90%',
+              maxWidth: '90%',
               overflowX: 'auto',
               '&::-webkit-scrollbar': {
-                height: isMobile ? 4 : 6
+                height: 6
               },
               '&::-webkit-scrollbar-thumb': {
                 bgcolor: 'rgba(255, 255, 255, 0.3)',
@@ -594,8 +545,8 @@ const IllustrationDetailModal = ({ open, onClose, illustration }) => {
                 alt={`Thumbnail ${index + 1}`}
                 onClick={() => setSelectedImageIndex(index)}
                 sx={{
-                  width: isMobile ? 50 : 60,
-                  height: isMobile ? 50 : 60,
+                  width: 60,
+                  height: 60,
                   objectFit: 'cover',
                   borderRadius: 1,
                   cursor: 'pointer',
@@ -604,12 +555,9 @@ const IllustrationDetailModal = ({ open, onClose, illustration }) => {
                     : '2px solid transparent',
                   opacity: selectedImageIndex === index ? 1 : 0.6,
                   transition: 'all 0.2s ease',
-                  flexShrink: 0,
                   '&:hover': {
-                    opacity: 1
-                  },
-                  '&:active': {
-                    transform: 'scale(0.95)'
+                    opacity: 1,
+                    transform: 'scale(1.1)'
                   }
                 }}
               />

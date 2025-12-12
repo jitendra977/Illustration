@@ -1,3 +1,7 @@
+# =============================================================================
+# serializers.py - CORRECTED VERSION
+# =============================================================================
+
 from rest_framework import serializers
 from .models import (
     Manufacturer, CarModel, EngineModel, 
@@ -13,7 +17,7 @@ class ManufacturerSerializer(serializers.ModelSerializer):
     class Meta:
         model = Manufacturer
         fields = ['id', 'name', 'country', 'slug']
-        read_only_fields = ['id']
+        read_only_fields = ['id', 'slug']  # ✅ FIXED: Added 'slug' as read-only
 
 
 # ------------------------------
@@ -21,12 +25,19 @@ class ManufacturerSerializer(serializers.ModelSerializer):
 # ------------------------------
 class CarModelSerializer(serializers.ModelSerializer):
     manufacturer_name = serializers.CharField(source='manufacturer.name', read_only=True)
+    vehicle_type_display = serializers.CharField(source='get_vehicle_type_display', read_only=True)
+    fuel_type_display = serializers.CharField(source='get_fuel_type_display', read_only=True)
     
     class Meta:
         model = CarModel
-        fields = ['id', 'manufacturer', 'manufacturer_name', 'name', 'slug']
-        read_only_fields = ['id']
-
+        fields = [
+            'id', 'manufacturer', 'manufacturer_name', 'name', 'slug',
+            'year', 'first_registration', 'model_code',  # ✅ FIXED: Changed 'year_from', 'year_to' to 'year'
+            'chassis_number', 'vehicle_type', 'vehicle_type_display',
+            'fuel_type', 'fuel_type_display'  # ✅ FIXED: Removed 'description', 'created_at', 'updated_at'
+        ]
+        read_only_fields = ['slug']  # ✅ FIXED: Removed 'created_at', 'updated_at'
+        
 
 # ------------------------------
 # Engine Model Serializer
@@ -37,20 +48,18 @@ class EngineModelSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = EngineModel
-        fields = ['id', 'car_model', 'car_model_name', 'manufacturer_name', 'name', 'slug']
-        read_only_fields = ['id']
+        fields = ['id', 'car_model', 'car_model_name', 'manufacturer_name', 'name', 'slug', 'engine_code']  # ✅ ADDED: 'engine_code'
+        read_only_fields = ['id', 'slug']  # ✅ FIXED: Added 'slug' as read-only
 
 
 # ------------------------------
 # Part Category Serializer
 # ------------------------------
 class PartCategorySerializer(serializers.ModelSerializer):
-    engine_model_name = serializers.CharField(source='engine_model.name', read_only=True)
-    
     class Meta:
         model = PartCategory
-        fields = ['id', 'engine_model', 'engine_model_name', 'name', 'slug']
-        read_only_fields = ['id']
+        fields = ['id', 'engine_model', 'name', 'slug']  # ✅ FIXED: Removed 'engine_model_name' (not a field)
+        read_only_fields = ['id', 'slug']  # ✅ FIXED: Added 'slug' as read-only
 
 
 # ------------------------------
@@ -62,7 +71,7 @@ class PartSubCategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = PartSubCategory
         fields = ['id', 'part_category', 'part_category_name', 'name', 'slug']
-        read_only_fields = ['id']
+        read_only_fields = ['id', 'slug']  # ✅ FIXED: Added 'slug' as read-only
 
 
 # ------------------------------
@@ -71,7 +80,7 @@ class PartSubCategorySerializer(serializers.ModelSerializer):
 class IllustrationFileSerializer(serializers.ModelSerializer):
     class Meta:
         model = IllustrationFile
-        fields = ['id', 'file', 'uploaded_at']
+        fields = ['id', 'illustration', 'file', 'uploaded_at']  # ✅ ADDED: 'illustration' field
         read_only_fields = ['id', 'uploaded_at']
 
 
@@ -97,9 +106,10 @@ class IllustrationSerializer(serializers.ModelSerializer):
             'id', 'user', 'user_name', 'engine_model', 'engine_model_name',
             'part_category', 'part_category_name', 'part_subcategory', 
             'part_subcategory_name', 'title', 'description', 'created_at',
+            'updated_at',  # ✅ ADDED: 'updated_at' field
             'files', 'uploaded_files'
         ]
-        read_only_fields = ['id', 'user', 'created_at']
+        read_only_fields = ['id', 'user', 'created_at', 'updated_at']  # ✅ ADDED: 'updated_at'
     
     def create(self, validated_data):
         uploaded_files = validated_data.pop('uploaded_files', [])
@@ -141,5 +151,6 @@ class IllustrationDetailSerializer(serializers.ModelSerializer):
         model = Illustration
         fields = [
             'id', 'user', 'user_name', 'engine_model', 'part_category',
-            'part_subcategory', 'title', 'description', 'created_at', 'files'
+            'part_subcategory', 'title', 'description', 'created_at', 
+            'updated_at', 'files'  # ✅ ADDED: 'updated_at'
         ]

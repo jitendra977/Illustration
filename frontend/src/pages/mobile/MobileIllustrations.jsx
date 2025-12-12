@@ -6,9 +6,7 @@ import {
   Typography,
   IconButton,
   TextField,
-  InputAdornment,
   Paper,
-  Grid,
   Card,
   CardContent,
   CardMedia,
@@ -21,6 +19,7 @@ import {
   ToggleButtonGroup,
   MenuItem
 } from '@mui/material';
+
 import {
   Add as PlusIcon,
   Search as SearchIcon,
@@ -28,20 +27,22 @@ import {
   GridView as GridIcon,
   ViewList as ListIcon,
   Image as ImageIcon,
-  Close as CloseIcon,
-  KeyboardArrowDown as ArrowDownIcon
+  Close as CloseIcon
 } from '@mui/icons-material';
+
 import { useIllustrations } from '../../hooks/useIllustrations';
-import CreateIllustrationModal from '../../components/forms/CreateIllustrationModal';
 import IllustrationDetailModal from '../../components/common/IllustrationDetailModal';
+import IllustrationFormModal from '../../components/forms/CreateIllustrationModal';
 import MobileFilterPanel from '../../components/mobile/MobileFilterPanel';
+
 
 const MobileIllustrations = () => {
   const [viewMode, setViewMode] = useState('grid');
   const [searchTerm, setSearchTerm] = useState('');
   const [showFilters, setShowFilters] = useState(false);
-  const [showCreateModal, setShowCreateModal] = useState(false);
-  const [showDetailModal, setShowDetailModal] = useState(false);
+
+  const [formModalOpen, setFormModalOpen] = useState(false);
+  const [detailModalOpen, setDetailModalOpen] = useState(false);
   const [selectedIllustration, setSelectedIllustration] = useState(null);
   const [filters, setFilters] = useState({});
   const [sortBy, setSortBy] = useState('newest');
@@ -50,7 +51,7 @@ const MobileIllustrations = () => {
 
   const handleSearch = (e) => {
     e.preventDefault();
-    fetchIllustrations({ search: searchTerm });
+    fetchIllustrations({ ...filters, search: searchTerm });
   };
 
   const handleFilterChange = (newFilters) => {
@@ -61,112 +62,155 @@ const MobileIllustrations = () => {
 
   const handleCardClick = (illustration) => {
     setSelectedIllustration(illustration);
-    setShowDetailModal(true);
+    setDetailModalOpen(true);
   };
 
   const handleCloseDetailModal = () => {
-    setShowDetailModal(false);
+    setDetailModalOpen(false);
     setSelectedIllustration(null);
   };
 
-  const filteredIllustrations = illustrations.filter(ill =>
-    ill.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    ill.description?.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const handleFormModalClose = () => {
+    setFormModalOpen(false);
+  };
 
+  const handleFormModalSuccess = () => {
+    setFormModalOpen(false);
+    fetchIllustrations();
+  };
+
+  const handleDetailModalUpdate = () => {
+    fetchIllustrations();
+  };
+
+  const handleDetailModalDelete = (deletedId) => {
+    fetchIllustrations();
+    if (selectedIllustration?.id === deletedId) {
+      setDetailModalOpen(false);
+    }
+  };
+
+  // Filter + Search
+  const filteredIllustrations = illustrations.filter((ill) => {
+    const term = searchTerm.toLowerCase();
+    return (
+      ill.title?.toLowerCase().includes(term) ||
+      ill.description?.toLowerCase().includes(term) ||
+      ill.engine_model?.name?.toLowerCase().includes(term) ||
+      ill.part_category?.name?.toLowerCase().includes(term)
+    );
+  });
+
+  // Sorting
   const sortedIllustrations = [...filteredIllustrations].sort((a, b) => {
     switch (sortBy) {
       case 'popular':
         return (b.downloads || 0) - (a.downloads || 0);
       case 'rating':
         return (b.rating || 0) - (a.rating || 0);
+      case 'oldest':
+        return new Date(a.created_at) - new Date(b.created_at);
       case 'newest':
       default:
         return new Date(b.created_at) - new Date(a.created_at);
     }
   });
 
+  // GRID VIEW
   const IllustrationGrid = ({ illustrations }) => (
-    <Box sx={{ 
-      display: 'grid',
-      gridTemplateColumns: 'repeat(2, 1fr)',
-      gap: 1.5
-    }}>
+    <Box
+      sx={{
+        display: 'grid',
+        gridTemplateColumns: 'repeat(2, 1fr)',
+        gap: 1.5
+      }}
+    >
       {illustrations.map((illustration) => (
-        <Card 
+        <Card
           key={illustration.id}
-          sx={{ 
+          sx={{
             borderRadius: 3,
             cursor: 'pointer',
-            transition: 'transform 0.2s',
-            '&:active': {
-              transform: 'scale(0.97)'
-            }
+            transition: 'transform 0.2s, box-shadow 0.2s',
+            '&:hover': { boxShadow: '0 4px 12px rgba(0,0,0,0.15)' },
+            '&:active': { transform: 'scale(0.97)' }
           }}
           onClick={() => handleCardClick(illustration)}
         >
-          <Box sx={{ position: 'relative' }}>
+          <Box sx={{ position: 'relative', height: 140 }}>
             <CardMedia
               component="img"
               height="140"
               image={illustration.files?.[0]?.file || '/placeholder.jpg'}
               alt={illustration.title}
-              sx={{ bgcolor: 'grey.100' }}
+              sx={{ objectFit: 'cover', height: '100%' }}
             />
-            {illustration.files && illustration.files.length > 1 && (
+
+            {illustration.files?.length > 1 && (
               <Chip
                 size="small"
-                label={illustration.files.length}
-                sx={{ 
-                  position: 'absolute', 
-                  top: 6, 
-                  right: 6, 
-                  bgcolor: 'rgba(0,0,0,0.7)', 
+                label={`+${illustration.files.length - 1}`}
+                sx={{
+                  position: 'absolute',
+                  top: 6,
+                  right: 6,
+                  bgcolor: 'rgba(0,0,0,0.7)',
                   color: 'white',
-                  fontWeight: 'bold',
-                  height: 20,
-                  fontSize: '0.7rem'
+                  fontWeight: 'bold'
                 }}
               />
             )}
+
+            <Box
+              sx={{
+                position: 'absolute',
+                bottom: 0,
+                width: '100%',
+                height: '30%',
+                background: 'linear-gradient(transparent, rgba(0,0,0,0.7))',
+                display: 'flex',
+                alignItems: 'flex-end',
+                p: 1
+              }}
+            >
+              <Typography variant="caption" sx={{ color: 'white' }} noWrap>
+                {illustration.title}
+              </Typography>
+            </Box>
           </Box>
+
           <CardContent sx={{ p: 1.5 }}>
-            <Typography variant="caption" fontWeight="bold" noWrap display="block" mb={0.5}>
-              {illustration.title}
+            <Typography variant="caption" color="text.secondary" noWrap>
+              {illustration.engine_model?.name || 'エンジンモデルなし'}
             </Typography>
-            
-            <Stack spacing={0.25}>
-              <Typography variant="caption" color="text.secondary" fontSize="0.65rem" noWrap>
-                {illustration.engine_model?.name || illustration.engine_model_name}
-              </Typography>
-              <Typography variant="caption" color="text.secondary" fontSize="0.65rem" noWrap>
-                {illustration.part_category?.name || illustration.part_category_name}
-              </Typography>
-            </Stack>
+            <Typography variant="caption" color="text.secondary" noWrap>
+              {illustration.part_category?.name || 'カテゴリなし'}
+            </Typography>
+            <Typography variant="caption" sx={{ fontSize: '0.65rem' }}>
+              {new Date(illustration.created_at).toLocaleDateString('ja-JP')}
+            </Typography>
           </CardContent>
         </Card>
       ))}
     </Box>
   );
 
+  // LIST VIEW
   const IllustrationList = ({ illustrations }) => (
     <Stack spacing={1.5}>
       {illustrations.map((illustration) => (
-        <Card 
+        <Card
           key={illustration.id}
-          sx={{ 
+          sx={{
             borderRadius: 3,
             cursor: 'pointer',
             transition: 'all 0.2s',
-            '&:active': {
-              transform: 'scale(0.98)',
-              boxShadow: 1
-            }
+            '&:hover': { boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }
           }}
           onClick={() => handleCardClick(illustration)}
         >
           <Box sx={{ p: 1.5 }}>
-            <Stack direction="row" spacing={1.5} alignItems="center">
+            <Stack direction="row" spacing={1.5}>
               <Box
                 sx={{
                   width: 80,
@@ -174,8 +218,7 @@ const MobileIllustrations = () => {
                   borderRadius: 2,
                   overflow: 'hidden',
                   bgcolor: 'grey.100',
-                  position: 'relative',
-                  flexShrink: 0
+                  position: 'relative'
                 }}
               >
                 <img
@@ -183,34 +226,35 @@ const MobileIllustrations = () => {
                   alt={illustration.title}
                   style={{ width: '100%', height: '100%', objectFit: 'cover' }}
                 />
-                {illustration.files && illustration.files.length > 1 && (
+
+                {illustration.files?.length > 1 && (
                   <Chip
                     size="small"
                     label={`+${illustration.files.length - 1}`}
-                    sx={{ 
-                      position: 'absolute', 
-                      bottom: 4, 
-                      right: 4, 
-                      bgcolor: 'rgba(0,0,0,0.7)', 
+                    sx={{
+                      position: 'absolute',
+                      bottom: 4,
+                      right: 4,
+                      bgcolor: 'rgba(0,0,0,0.7)',
                       color: 'white',
-                      fontSize: '0.6rem',
-                      height: 16
+                      fontSize: '0.6rem'
                     }}
                   />
                 )}
               </Box>
+
               <Box sx={{ flex: 1, minWidth: 0 }}>
-                <Typography variant="body2" fontWeight="bold" noWrap mb={0.5}>
+                <Typography variant="body2" fontWeight="bold" noWrap>
                   {illustration.title}
                 </Typography>
-                <Typography variant="caption" color="text.secondary" display="block" noWrap mb={0.5}>
-                  {illustration.engine_model?.name || illustration.engine_model_name}
+                <Typography variant="caption" color="text.secondary" noWrap>
+                  {illustration.engine_model?.name || 'エンジンモデルなし'}
                 </Typography>
-                <Typography variant="caption" color="text.secondary" display="block" noWrap>
-                  {illustration.part_category?.name || illustration.part_category_name}
+                <Typography variant="caption" color="text.secondary" noWrap>
+                  {illustration.part_category?.name || 'カテゴリなし'}
                 </Typography>
-                <Typography variant="caption" color="text.secondary" display="block" sx={{ mt: 0.5, fontSize: '0.65rem' }}>
-                  {new Date(illustration.created_at).toLocaleDateString()}
+                <Typography variant="caption" sx={{ fontSize: '0.65rem' }}>
+                  {new Date(illustration.created_at).toLocaleDateString('ja-JP')}
                 </Typography>
               </Box>
             </Stack>
@@ -221,61 +265,45 @@ const MobileIllustrations = () => {
   );
 
   return (
-    <Box>
+    <Box sx={{ minHeight: '100vh' }}>
       <Container maxWidth="sm" sx={{ px: 2, py: 2 }}>
-        {/* Search Bar */}
+
+        {/* SEARCH BAR */}
         <Paper
           component="form"
           onSubmit={handleSearch}
           sx={{
-            display: 'flex',
-            alignItems: 'center',
             px: 2,
             py: 1,
+            display: 'flex',
             borderRadius: 3,
-            mb: 2,
-            boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
+            mb: 2
           }}
         >
-          <SearchIcon fontSize="small" sx={{ color: 'text.secondary', mr: 1 }} />
+          <SearchIcon sx={{ mr: 1 }} />
           <TextField
             fullWidth
             placeholder="イラストを検索..."
             variant="standard"
-            size="small"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            InputProps={{
-              disableUnderline: true
-            }}
+            InputProps={{ disableUnderline: true }}
           />
+
           {searchTerm && (
-            <IconButton
-              size="small"
-              onClick={() => setSearchTerm('')}
-            >
-              <CloseIcon fontSize="small" />
+            <IconButton onClick={() => setSearchTerm('')}>
+              <CloseIcon />
             </IconButton>
           )}
         </Paper>
 
-        {/* Toolbar */}
-        <Stack direction="row" spacing={1} mb={2} alignItems="center">
+        {/* TOOLBAR */}
+        <Stack direction="row" spacing={1} mb={2}>
           <IconButton
-            size="small"
-            onClick={() => setShowFilters(!showFilters)}
-            sx={{
-              bgcolor: showFilters ? 'primary.main' : 'background.paper',
-              color: showFilters ? 'white' : 'text.primary',
-              border: 1,
-              borderColor: 'divider',
-              borderRadius: 2,
-              '&:hover': {
-                bgcolor: showFilters ? 'primary.dark' : 'action.hover'
-              }
-            }}
+            onClick={() => setShowFilters(true)}
+            sx={{ border: 1, borderRadius: 2 }}
           >
-            <FilterIcon fontSize="small" />
+            <FilterIcon />
           </IconButton>
 
           <TextField
@@ -283,75 +311,67 @@ const MobileIllustrations = () => {
             size="small"
             value={sortBy}
             onChange={(e) => setSortBy(e.target.value)}
-            sx={{ 
-              flex: 1,
-              '& .MuiOutlinedInput-root': {
-                borderRadius: 2,
-                fontSize: '0.85rem'
-              }
-            }}
+            sx={{ flex: 1 }}
           >
             <MenuItem value="newest">新しい順</MenuItem>
+            <MenuItem value="oldest">古い順</MenuItem>
             <MenuItem value="popular">人気順</MenuItem>
             <MenuItem value="rating">評価順</MenuItem>
           </TextField>
 
-          <ToggleButtonGroup
-            value={viewMode}
-            exclusive
-            onChange={(e, newMode) => newMode && setViewMode(newMode)}
-            size="small"
-            sx={{
-              '& .MuiToggleButton-root': {
-                borderRadius: 2,
-                border: 1,
-                borderColor: 'divider'
-              }
-            }}
-          >
+          <ToggleButtonGroup value={viewMode} exclusive onChange={(e, mode) => mode && setViewMode(mode)}>
             <ToggleButton value="grid">
-              <GridIcon fontSize="small" />
+              <GridIcon />
             </ToggleButton>
             <ToggleButton value="list">
-              <ListIcon fontSize="small" />
+              <ListIcon />
             </ToggleButton>
           </ToggleButtonGroup>
         </Stack>
 
-        {/* Mobile Filter Panel */}
+        {/* FILTER PANEL */}
         <MobileFilterPanel
           open={showFilters}
           onClose={() => setShowFilters(false)}
           onFilterChange={handleFilterChange}
+          currentFilters={filters}
         />
 
-        {/* Content */}
-        {loading ? (
-          <Box display="flex" justifyContent="center" alignItems="center" py={8}>
+        {/* LOADING */}
+        {loading && (
+          <Box textAlign="center" py={8}>
             <CircularProgress />
           </Box>
-        ) : error ? (
-          <Alert severity="error" sx={{ mb: 2, borderRadius: 2 }}>
+        )}
+
+        {/* ERROR */}
+        {error && !loading && (
+          <Alert severity="error" sx={{ mb: 2 }}>
             {error}
           </Alert>
-        ) : sortedIllustrations.length === 0 ? (
+        )}
+
+        {/* NO RESULT */}
+        {!loading && !error && sortedIllustrations.length === 0 && (
           <Card sx={{ borderRadius: 3, p: 4, textAlign: 'center' }}>
-            <ImageIcon sx={{ fontSize: 56, color: 'grey.300', mb: 2 }} />
-            <Typography variant="h6" fontWeight="bold" gutterBottom>
-              イラストが見つかりません
-            </Typography>
-            <Typography variant="body2" color="text.secondary">
-              {searchTerm ? '検索条件を変更してください' : '最初のイラストを作成しましょう'}
-            </Typography>
+            <ImageIcon sx={{ fontSize: 56, color: 'grey.400', mb: 1 }} />
+            <Typography variant="h6">イラストが見つかりません</Typography>
+
+            {!searchTerm && Object.keys(filters).length === 0 && (
+              <Fab color="primary" size="small" onClick={() => setFormModalOpen(true)}>
+                <PlusIcon />
+              </Fab>
+            )}
           </Card>
-        ) : (
+        )}
+
+        {/* LIST OR GRID */}
+        {!loading && !error && sortedIllustrations.length > 0 && (
           <>
-            {/* Results Count */}
-            <Typography variant="caption" color="text.secondary" display="block" mb={1.5} fontWeight={600}>
-              {sortedIllustrations.length} 件の結果
+            <Typography variant="caption" color="text.secondary" mb={1}>
+              {sortedIllustrations.length} 件のイラスト
             </Typography>
 
-            {/* Content Display */}
             {viewMode === 'grid' ? (
               <IllustrationGrid illustrations={sortedIllustrations} />
             ) : (
@@ -361,38 +381,24 @@ const MobileIllustrations = () => {
         )}
       </Container>
 
-      {/* Create Modal */}
-      <CreateIllustrationModal
-        open={showCreateModal}
-        onClose={() => setShowCreateModal(false)}
-        onSuccess={() => {
-          setShowCreateModal(false);
-          fetchIllustrations();
-        }}
+      {/* FORM MODAL */}
+      <IllustrationFormModal
+        open={formModalOpen}
+        onClose={handleFormModalClose}
+        onSuccess={handleFormModalSuccess}
+        mode="create"
       />
 
-      {/* Detail Modal */}
-      <IllustrationDetailModal
-        open={showDetailModal}
-        onClose={handleCloseDetailModal}
-        illustration={selectedIllustration}
-      />
-
-      {/* Floating Action Button */}
-      <Fab
-        color="primary"
-        aria-label="add"
-        onClick={() => setShowCreateModal(true)}
-        sx={{
-          position: 'fixed',
-          bottom: 80,
-          right: 16,
-          zIndex: 1000,
-          boxShadow: '0 4px 12px rgba(25, 118, 210, 0.4)'
-        }}
-      >
-        <PlusIcon />
-      </Fab>
+      {/* DETAIL MODAL */}
+      {selectedIllustration && (
+        <IllustrationDetailModal
+          open={detailModalOpen}
+          illustration={selectedIllustration}
+          onClose={handleCloseDetailModal}
+          onUpdate={handleDetailModalUpdate}
+          onDelete={handleDetailModalDelete}
+        />
+      )}
     </Box>
   );
 };
