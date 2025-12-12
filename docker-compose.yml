@@ -16,9 +16,9 @@ services:
       - DJANGO_SETTINGS_MODULE=main.settings
       - DB_HOST=mysql_db
       - DB_PORT=3306
-      - DB_NAME=nishanaweb
-      - DB_USER=nishanaweb
-      - DB_PASSWORD=M3IF00UrzSZEEnZkp5lk
+      - DB_NAME=
+      - DB_USER=
+      - DB_PASSWORD=
     networks:
       - yaw-network
       - app-network
