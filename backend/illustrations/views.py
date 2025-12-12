@@ -1,118 +1,4 @@
-# views.py - CORRECTED CarModelViewSet
-
-from rest_framework import viewsets, filters, status
-from rest_framework.decorators import action
-from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly, AllowAny
-from rest_framework.response import Response
-from django_filters.rest_framework import DjangoFilterBackend
-from .models import CarModel
-from .serializers import CarModelSerializer
-from .permissions import IsVerifiedUserOrReadOnly
-
-
-class CarModelViewSet(viewsets.ModelViewSet):
-    queryset = CarModel.objects.select_related('manufacturer').all()
-    serializer_class = CarModelSerializer
-    permission_classes = [IsVerifiedUserOrReadOnly]
-    filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
-    filterset_fields = ['manufacturer', 'vehicle_type', 'fuel_type']
-    search_fields = ['name', 'manufacturer__name', 'model_code']
-    ordering_fields = ['name', 'year']
-    lookup_field = 'slug'
-    
-    def get_permissions(self):
-        """
-        Override permissions for specific actions
-        """
-        # ✅ Allow anyone to access vehicle-types and fuel-types (public data)
-        if self.action in ['vehicle_types', 'fuel_types']:
-            return [AllowAny()]
-        
-        # Default permission for other actions
-        return super().get_permissions()
-    
-    @action(detail=False, methods=['get'], permission_classes=[AllowAny])
-    def vehicle_types(self, request):
-        """
-        Get all available vehicle type choices
-        Public endpoint - no authentication required
-        """
-        vehicle_types = [
-            {'value': choice[0], 'label': choice[1]}
-            for choice in CarModel.VEHICLE_TYPES
-        ]
-        return Response(vehicle_types)
-    
-    @action(detail=False, methods=['get'], permission_classes=[AllowAny])
-    def fuel_types(self, request):
-        """
-        Get all available fuel type choices
-        Public endpoint - no authentication required
-        """
-        fuel_types = [
-            {'value': choice[0], 'label': choice[1]}
-            for choice in CarModel.FUEL_TYPES
-        ]
-        return Response(fuel_types)
-
-
-# ============================================
-# ALTERNATIVE: If you want them to require authentication
-# ============================================
-
-class CarModelViewSetAuthRequired(viewsets.ModelViewSet):
-    """
-    Use this version if you want vehicle-types and fuel-types 
-    to require authentication (but not verification)
-    """
-    queryset = CarModel.objects.select_related('manufacturer').all()
-    serializer_class = CarModelSerializer
-    permission_classes = [IsVerifiedUserOrReadOnly]
-    filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
-    filterset_fields = ['manufacturer', 'vehicle_type', 'fuel_type']
-    search_fields = ['name', 'manufacturer__name', 'model_code']
-    ordering_fields = ['name', 'year']
-    lookup_field = 'slug'
-    
-    def get_permissions(self):
-        """
-        Override permissions for specific actions
-        """
-        # ✅ Require authentication but not verification for these endpoints
-        if self.action in ['vehicle_types', 'fuel_types']:
-            return [IsAuthenticated()]
-        
-        # Default permission for other actions
-        return super().get_permissions()
-    
-    @action(detail=False, methods=['get'])
-    def vehicle_types(self, request):
-        """
-        Get all available vehicle type choices
-        Requires authentication but not verification
-        """
-        vehicle_types = [
-            {'value': choice[0], 'label': choice[1]}
-            for choice in CarModel.VEHICLE_TYPES
-        ]
-        return Response(vehicle_types)
-    
-    @action(detail=False, methods=['get'])
-    def fuel_types(self, request):
-        """
-        Get all available fuel type choices
-        Requires authentication but not verification
-        """
-        fuel_types = [
-            {'value': choice[0], 'label': choice[1]}
-            for choice in CarModel.FUEL_TYPES
-        ]
-        return Response(fuel_types)
-
-
-# ============================================
-# COMPLETE UPDATED views.py
-# ============================================
+# views.py - UPDATED to use ID for CarModel lookup
 
 from rest_framework import viewsets, filters, status
 from rest_framework.decorators import action
@@ -147,7 +33,7 @@ class ManufacturerViewSet(viewsets.ModelViewSet):
 
 
 # ------------------------------
-# Car Model ViewSet
+# Car Model ViewSet - ✅ CHANGED TO USE ID
 # ------------------------------
 class CarModelViewSet(viewsets.ModelViewSet):
     queryset = CarModel.objects.select_related('manufacturer').all()
@@ -157,7 +43,7 @@ class CarModelViewSet(viewsets.ModelViewSet):
     filterset_fields = ['manufacturer', 'vehicle_type', 'fuel_type']
     search_fields = ['name', 'manufacturer__name', 'model_code']
     ordering_fields = ['name', 'year']
-    lookup_field = 'slug'
+    # ✅ REMOVED: lookup_field = 'slug' (now uses default 'pk' which is 'id')
     
     def get_permissions(self):
         """Override permissions for public endpoints"""

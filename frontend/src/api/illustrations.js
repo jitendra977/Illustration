@@ -65,7 +65,7 @@ export const manufacturerAPI = {
 };
 
 // ============================================================================
-// CAR MODELS
+// CAR MODELS - ✅ UPDATED: Use ID for all operations
 // ============================================================================
 export const carModelAPI = {
   getAll: async (params = {}) => {
@@ -77,13 +77,15 @@ export const carModelAPI = {
       throw error;
     }
   },
-  getBySlug: (slug) => api.get(`/car-models/${slug}/`),
+  getById: (id) => api.get(`/car-models/${id}/`),
   getByManufacturer: (manufacturerId) => 
     api.get('/car-models/', { params: { manufacturer: manufacturerId } }),
   create: (data) => api.post('/car-models/', data),
-  update: (slug, data) => api.put(`/car-models/${slug}/`, data),
-  partialUpdate: (slug, data) => api.patch(`/car-models/${slug}/`, data),
-  delete: (slug) => api.delete(`/car-models/${slug}/`),
+  update: (id, data) => api.put(`/car-models/${id}/`, data),
+  partialUpdate: (id, data) => api.patch(`/car-models/${id}/`, data),
+  delete: (id) => api.delete(`/car-models/${id}/`),
+  getVehicleTypes: () => api.get('/car-models/vehicle-types/'),
+  getFuelTypes: () => api.get('/car-models/fuel-types/'),
 };
 
 // ============================================================================
@@ -232,7 +234,5 @@ export const illustrationFileAPI = {
   update: (id, data) => api.patch(`/illustration-files/${id}/`, data),
   delete: (id) => api.delete(`/illustration-files/${id}/`),
 };
-
-
 
 export default api;
