@@ -25720,3 +25720,977 @@ INFO 2025-12-12 04:18:36,706 basehttp "GET /api/car-models/vehicle-types/ HTTP/1
 INFO 2025-12-12 04:18:36,716 basehttp "GET /api/car-models/ HTTP/1.1" 200 2247
 INFO 2025-12-12 04:18:36,716 basehttp "GET /api/manufacturers/ HTTP/1.1" 200 628
 INFO 2025-12-12 04:19:12,693 basehttp "PATCH /api/car-models/7/ HTTP/1.1" 200 313
+INFO 2025-12-12 04:20:07,006 basehttp "GET /api/part-categories/ HTTP/1.1" 200 317
+INFO 2025-12-12 04:20:07,008 basehttp "GET /api/manufacturers/ HTTP/1.1" 200 628
+INFO 2025-12-12 04:20:07,016 basehttp "GET /api/engine-models/ HTTP/1.1" 200 1146
+INFO 2025-12-12 04:20:07,020 basehttp "GET /api/car-models/ HTTP/1.1" 200 2253
+INFO 2025-12-12 04:20:07,041 basehttp "GET /api/manufacturers/ HTTP/1.1" 200 628
+INFO 2025-12-12 04:20:07,043 basehttp "GET /api/illustrations/ HTTP/1.1" 200 4559
+INFO 2025-12-12 04:20:07,046 basehttp "GET /api/car-models/ HTTP/1.1" 200 2253
+INFO 2025-12-12 04:20:07,043 basehttp "GET /api/part-categories/ HTTP/1.1" 200 317
+INFO 2025-12-12 04:20:07,048 basehttp "GET /api/engine-models/ HTTP/1.1" 200 1146
+INFO 2025-12-12 04:20:07,066 basehttp "GET /api/illustrations/ HTTP/1.1" 200 4559
+INFO 2025-12-12 04:21:32,586 basehttp "GET /admin/accounts/ HTTP/1.1" 200 5467
+INFO 2025-12-12 04:21:34,342 basehttp "GET /admin/ HTTP/1.1" 200 17411
+INFO 2025-12-12 04:21:35,745 basehttp "GET /admin/illustrations/carmodel/ HTTP/1.1" 200 21729
+INFO 2025-12-12 04:21:35,766 basehttp "GET /admin/jsi18n/ HTTP/1.1" 200 3342
+INFO 2025-12-12 04:21:50,625 basehttp "GET /admin/illustrations/carmodel/ HTTP/1.1" 200 21729
+INFO 2025-12-12 04:21:50,646 basehttp "GET /admin/jsi18n/ HTTP/1.1" 200 3342
+INFO 2025-12-12 04:21:51,556 basehttp "GET /admin/illustrations/enginemodel/ HTTP/1.1" 200 20800
+INFO 2025-12-12 04:21:51,586 basehttp "GET /admin/jsi18n/ HTTP/1.1" 200 3342
+INFO 2025-12-12 04:21:54,426 basehttp "GET /admin/illustrations/illustration/ HTTP/1.1" 200 24879
+INFO 2025-12-12 04:21:54,450 basehttp "GET /admin/jsi18n/ HTTP/1.1" 200 3342
+INFO 2025-12-12 04:21:59,005 basehttp "GET /admin/illustrations/illustration/add/ HTTP/1.1" 200 22200
+INFO 2025-12-12 04:21:59,049 basehttp "GET /admin/jsi18n/ HTTP/1.1" 200 3342
+INFO 2025-12-12 04:23:10,908 basehttp "GET /admin/illustrations/illustration/ HTTP/1.1" 200 24879
+INFO 2025-12-12 04:23:10,931 basehttp "GET /admin/jsi18n/ HTTP/1.1" 200 3342
+INFO 2025-12-12 04:23:12,992 basehttp "GET /admin/illustrations/illustration/8/change/ HTTP/1.1" 200 26300
+INFO 2025-12-12 04:23:13,018 basehttp "GET /admin/jsi18n/ HTTP/1.1" 200 3342
+INFO 2025-12-12 04:23:19,749 basehttp "GET /admin/illustrations/partsubcategory/?_to_field=id&_popup=1 HTTP/1.1" 200 7212
+INFO 2025-12-12 04:23:25,743 basehttp "POST /admin/illustrations/illustration/8/change/ HTTP/1.1" 302 0
+INFO 2025-12-12 04:23:25,769 basehttp "GET /admin/illustrations/illustration/ HTTP/1.1" 200 25180
+INFO 2025-12-12 04:23:25,796 basehttp "GET /admin/jsi18n/ HTTP/1.1" 200 3342
+INFO 2025-12-12 04:23:34,587 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 464
+INFO 2025-12-12 04:23:34,593 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 464
+INFO 2025-12-12 04:23:34,597 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 464
+INFO 2025-12-12 04:23:34,601 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 464
+INFO 2025-12-12 04:23:34,801 basehttp "GET /api/manufacturers/ HTTP/1.1" 200 628
+INFO 2025-12-12 04:23:34,883 basehttp "GET /api/part-categories/ HTTP/1.1" 200 317
+INFO 2025-12-12 04:23:34,900 basehttp "GET /api/illustrations/ HTTP/1.1" 200 4653
+INFO 2025-12-12 04:23:34,901 basehttp "GET /api/engine-models/ HTTP/1.1" 200 1146
+INFO 2025-12-12 04:23:34,907 basehttp "GET /api/manufacturers/ HTTP/1.1" 200 628
+INFO 2025-12-12 04:23:34,910 basehttp "GET /api/car-models/ HTTP/1.1" 200 2253
+INFO 2025-12-12 04:23:34,914 basehttp "GET /api/part-categories/ HTTP/1.1" 200 317
+INFO 2025-12-12 04:23:34,921 basehttp "GET /api/engine-models/ HTTP/1.1" 200 1146
+INFO 2025-12-12 04:23:34,928 basehttp "GET /api/car-models/ HTTP/1.1" 200 2253
+INFO 2025-12-12 04:23:34,941 basehttp "GET /api/illustrations/ HTTP/1.1" 200 4653
+INFO 2025-12-12 04:23:38,669 basehttp "GET /media/illustrations/hino/dutro/N04C/Radiator/Upper_Pipe/1/5ccaeb9d-96c7-42ad-a726-ebb2df19f883.jpg HTTP/1.1" 304 0
+INFO 2025-12-12 04:23:49,389 basehttp "GET /api/manufacturers/?limit=1 HTTP/1.1" 200 628
+INFO 2025-12-12 04:23:49,393 basehttp "GET /api/engine-models/?limit=1 HTTP/1.1" 200 1146
+INFO 2025-12-12 04:23:49,394 basehttp "GET /api/car-models/?limit=1 HTTP/1.1" 200 2253
+INFO 2025-12-12 04:23:49,394 basehttp "GET /api/illustrations/?limit=5&ordering=-created_at HTTP/1.1" 200 4653
+INFO 2025-12-12 04:25:10,117 basehttp "GET /admin/illustrations/illustration/8/change/ HTTP/1.1" 200 26399
+INFO 2025-12-12 04:25:11,871 basehttp "GET /admin/illustrations/illustration/ HTTP/1.1" 200 24949
+INFO 2025-12-12 04:25:13,267 basehttp "GET /admin/ HTTP/1.1" 200 17417
+INFO 2025-12-12 04:25:17,602 basehttp "GET /admin/illustrations/carmodel/ HTTP/1.1" 200 21729
+INFO 2025-12-12 04:25:17,632 basehttp "GET /admin/jsi18n/ HTTP/1.1" 200 3342
+INFO 2025-12-12 04:25:40,044 basehttp "GET /admin/illustrations/enginemodel/ HTTP/1.1" 200 20800
+INFO 2025-12-12 04:25:40,071 basehttp "GET /admin/jsi18n/ HTTP/1.1" 200 3342
+INFO 2025-12-12 04:26:30,971 basehttp "GET /api/car-models/vehicle-types/ HTTP/1.1" 200 1617
+INFO 2025-12-12 04:26:30,971 basehttp "GET /api/car-models/fuel-types/ HTTP/1.1" 200 242
+INFO 2025-12-12 04:26:30,979 basehttp "GET /api/manufacturers/ HTTP/1.1" 200 628
+INFO 2025-12-12 04:26:30,979 basehttp "GET /api/car-models/ HTTP/1.1" 200 2253
+INFO 2025-12-12 04:26:30,982 basehttp "GET /api/car-models/fuel-types/ HTTP/1.1" 200 242
+INFO 2025-12-12 04:26:30,983 basehttp "GET /api/car-models/vehicle-types/ HTTP/1.1" 200 1617
+INFO 2025-12-12 04:26:30,993 basehttp "GET /api/car-models/ HTTP/1.1" 200 2253
+INFO 2025-12-12 04:26:30,993 basehttp "GET /api/manufacturers/ HTTP/1.1" 200 628
+INFO 2025-12-12 04:26:53,529 basehttp "GET /api/manufacturers/ HTTP/1.1" 200 628
+INFO 2025-12-12 04:26:53,531 basehttp "GET /api/engine-models/ HTTP/1.1" 200 1146
+INFO 2025-12-12 04:26:53,531 basehttp "GET /api/car-models/ HTTP/1.1" 200 2253
+INFO 2025-12-12 04:26:53,541 basehttp "GET /api/manufacturers/ HTTP/1.1" 200 628
+INFO 2025-12-12 04:26:53,543 basehttp "GET /api/engine-models/ HTTP/1.1" 200 1146
+INFO 2025-12-12 04:26:53,543 basehttp "GET /api/car-models/ HTTP/1.1" 200 2253
+INFO 2025-12-12 04:27:29,971 basehttp "OPTIONS /api/car-models/?manufacturer=1 HTTP/1.1" 200 0
+INFO 2025-12-12 04:27:29,980 basehttp "GET /api/car-models/?manufacturer=1 HTTP/1.1" 200 671
+INFO 2025-12-12 04:33:02,635 basehttp "GET /api/manufacturers/?limit=1 HTTP/1.1" 200 628
+INFO 2025-12-12 04:33:02,641 basehttp "GET /api/car-models/?limit=1 HTTP/1.1" 200 2253
+INFO 2025-12-12 04:33:02,648 basehttp "GET /api/engine-models/?limit=1 HTTP/1.1" 200 1146
+INFO 2025-12-12 04:33:02,651 basehttp "GET /api/illustrations/?limit=5&ordering=-created_at HTTP/1.1" 200 4653
+INFO 2025-12-12 04:33:04,232 basehttp "GET /api/car-models/fuel-types/ HTTP/1.1" 200 242
+INFO 2025-12-12 04:33:04,233 basehttp "GET /api/car-models/vehicle-types/ HTTP/1.1" 200 1617
+INFO 2025-12-12 04:33:04,239 basehttp "GET /api/car-models/ HTTP/1.1" 200 2253
+INFO 2025-12-12 04:33:04,240 basehttp "GET /api/manufacturers/ HTTP/1.1" 200 628
+INFO 2025-12-12 04:33:04,241 basehttp "GET /api/car-models/vehicle-types/ HTTP/1.1" 200 1617
+INFO 2025-12-12 04:33:04,249 basehttp "GET /api/car-models/fuel-types/ HTTP/1.1" 200 242
+INFO 2025-12-12 04:33:04,249 basehttp "GET /api/car-models/ HTTP/1.1" 200 2253
+INFO 2025-12-12 04:33:04,250 basehttp "GET /api/manufacturers/ HTTP/1.1" 200 628
+INFO 2025-12-12 05:02:59,835 autoreload /Volumes/Programming/React-Python/YAW/Illustration-System/backend/main/settings.py changed, reloading.
+INFO 2025-12-12 05:03:00,264 autoreload Watching for file changes with StatReloader
+INFO 2025-12-12 05:03:14,632 autoreload /Volumes/Programming/React-Python/YAW/Illustration-System/backend/main/settings.py changed, reloading.
+INFO 2025-12-12 05:03:15,023 autoreload Watching for file changes with StatReloader
+INFO 2025-12-12 05:03:16,236 autoreload /Volumes/Programming/React-Python/YAW/Illustration-System/backend/main/settings.py changed, reloading.
+INFO 2025-12-12 05:03:16,499 autoreload Watching for file changes with StatReloader
+INFO 2025-12-12 05:03:19,722 autoreload /Volumes/Programming/React-Python/YAW/Illustration-System/backend/main/settings.py changed, reloading.
+INFO 2025-12-12 05:03:20,005 autoreload Watching for file changes with StatReloader
+INFO 2025-12-12 05:03:22,216 autoreload /Volumes/Programming/React-Python/YAW/Illustration-System/backend/main/settings.py changed, reloading.
+INFO 2025-12-12 05:03:22,533 autoreload Watching for file changes with StatReloader
+INFO 2025-12-12 05:31:09,497 autoreload Watching for file changes with StatReloader
+INFO 2025-12-12 06:07:45,560 basehttp "OPTIONS /api/auth/users/profile/ HTTP/1.1" 200 0
+INFO 2025-12-12 06:07:45,562 basehttp "OPTIONS /api/auth/users/profile/ HTTP/1.1" 200 0
+INFO 2025-12-12 06:07:45,562 basehttp "OPTIONS /api/auth/users/profile/ HTTP/1.1" 200 0
+INFO 2025-12-12 06:07:45,562 basehttp "OPTIONS /api/auth/users/profile/ HTTP/1.1" 200 0
+WARNING 2025-12-12 06:07:45,579 log Unauthorized: /api/auth/users/profile/
+WARNING 2025-12-12 06:07:45,579 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 401 172
+WARNING 2025-12-12 06:07:45,581 log Unauthorized: /api/auth/users/profile/
+WARNING 2025-12-12 06:07:45,581 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 401 172
+WARNING 2025-12-12 06:07:45,582 log Unauthorized: /api/auth/users/profile/
+WARNING 2025-12-12 06:07:45,583 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 401 172
+WARNING 2025-12-12 06:07:45,584 log Unauthorized: /api/auth/users/profile/
+WARNING 2025-12-12 06:07:45,584 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 401 172
+INFO 2025-12-12 06:07:45,653 basehttp "OPTIONS /api/token/refresh/ HTTP/1.1" 200 0
+WARNING 2025-12-12 06:07:45,664 log Not Found: /api/token/refresh/
+WARNING 2025-12-12 06:07:45,664 basehttp "POST /api/token/refresh/ HTTP/1.1" 404 19117
+WARNING 2025-12-12 06:07:45,893 log Not Found: /api/token/refresh/
+WARNING 2025-12-12 06:07:45,894 basehttp "POST /api/token/refresh/ HTTP/1.1" 404 19117
+INFO 2025-12-12 06:07:45,894 basehttp - Broken pipe from ('127.0.0.1', 59760)
+WARNING 2025-12-12 06:07:45,895 log Not Found: /api/token/refresh/
+WARNING 2025-12-12 06:07:45,895 basehttp "POST /api/token/refresh/ HTTP/1.1" 404 19117
+INFO 2025-12-12 06:07:45,896 basehttp - Broken pipe from ('127.0.0.1', 59755)
+WARNING 2025-12-12 06:07:45,902 log Not Found: /api/token/refresh/
+WARNING 2025-12-12 06:07:45,911 basehttp "POST /api/token/refresh/ HTTP/1.1" 404 19117
+INFO 2025-12-12 06:07:45,912 basehttp - Broken pipe from ('127.0.0.1', 59759)
+INFO 2025-12-12 10:56:25,069 autoreload Watching for file changes with StatReloader
+WARNING 2025-12-12 10:56:26,513 log Not Found: /
+WARNING 2025-12-12 10:56:26,514 basehttp "GET / HTTP/1.1" 404 3467
+INFO 2025-12-12 10:56:30,165 basehttp "GET /admin/ HTTP/1.1" 200 17417
+INFO 2025-12-12 10:56:33,377 basehttp "GET /admin/illustrations/manufacturer/ HTTP/1.1" 200 20106
+INFO 2025-12-12 10:56:33,405 basehttp "GET /admin/jsi18n/ HTTP/1.1" 200 3342
+INFO 2025-12-12 11:57:22,694 autoreload /Volumes/Programming/React-Python/YAW/Illustration-System/backend/illustrations/permissions.py changed, reloading.
+INFO 2025-12-12 11:57:23,187 autoreload Watching for file changes with StatReloader
+INFO 2025-12-12 11:57:24,475 autoreload /Volumes/Programming/React-Python/YAW/Illustration-System/backend/illustrations/permissions.py changed, reloading.
+INFO 2025-12-12 11:57:24,817 autoreload Watching for file changes with StatReloader
+INFO 2025-12-12 11:57:57,233 autoreload /Volumes/Programming/React-Python/YAW/Illustration-System/backend/illustrations/views.py changed, reloading.
+INFO 2025-12-12 11:57:57,666 autoreload Watching for file changes with StatReloader
+INFO 2025-12-12 11:58:06,193 autoreload /Volumes/Programming/React-Python/YAW/Illustration-System/backend/illustrations/views.py changed, reloading.
+INFO 2025-12-12 11:58:06,621 autoreload Watching for file changes with StatReloader
+INFO 2025-12-12 12:00:11,405 autoreload /Volumes/Programming/React-Python/YAW/Illustration-System/backend/illustrations/views.py changed, reloading.
+INFO 2025-12-12 12:00:11,839 autoreload Watching for file changes with StatReloader
+INFO 2025-12-12 12:00:39,080 autoreload /Volumes/Programming/React-Python/YAW/Illustration-System/backend/illustrations/views.py changed, reloading.
+INFO 2025-12-12 12:00:39,516 autoreload Watching for file changes with StatReloader
+WARNING 2025-12-12 12:00:51,761 log Not Found: /
+WARNING 2025-12-12 12:00:51,762 basehttp "GET / HTTP/1.1" 404 3467
+INFO 2025-12-12 12:00:55,430 basehttp "GET /admin/ HTTP/1.1" 200 17417
+INFO 2025-12-12 12:01:07,454 basehttp "GET /admin/illustrations/illustration/add/ HTTP/1.1" 200 22200
+INFO 2025-12-12 12:01:07,486 basehttp "GET /admin/jsi18n/ HTTP/1.1" 200 3342
+INFO 2025-12-12 12:01:53,047 basehttp "GET /admin/illustrations/partcategory/ HTTP/1.1" 200 18393
+INFO 2025-12-12 12:01:53,077 basehttp "GET /admin/jsi18n/ HTTP/1.1" 200 3342
+INFO 2025-12-12 12:01:56,741 basehttp "GET /admin/illustrations/partcategory/add/ HTTP/1.1" 200 16976
+INFO 2025-12-12 12:01:56,765 basehttp "GET /admin/jsi18n/ HTTP/1.1" 200 3342
+INFO 2025-12-12 12:02:11,085 autoreload Watching for file changes with StatReloader
+INFO 2025-12-12 12:02:14,019 basehttp "GET /admin/illustrations/partcategory/add/ HTTP/1.1" 200 16976
+INFO 2025-12-12 12:02:14,038 basehttp "GET /admin/jsi18n/ HTTP/1.1" 200 3342
+INFO 2025-12-12 12:02:23,761 basehttp "GET /admin/illustrations/manufacturer/ HTTP/1.1" 200 20106
+INFO 2025-12-12 12:02:23,782 basehttp "GET /admin/jsi18n/ HTTP/1.1" 200 3342
+INFO 2025-12-12 12:02:28,996 basehttp "GET /admin/illustrations/partcategory/ HTTP/1.1" 200 18393
+INFO 2025-12-12 12:02:29,016 basehttp "GET /admin/jsi18n/ HTTP/1.1" 200 3342
+INFO 2025-12-12 12:02:30,985 basehttp "GET /admin/illustrations/partcategory/add/ HTTP/1.1" 200 16976
+INFO 2025-12-12 12:02:31,016 basehttp "GET /admin/jsi18n/ HTTP/1.1" 200 3342
+INFO 2025-12-12 12:02:58,535 basehttp "GET /admin/illustrations/manufacturer/ HTTP/1.1" 200 20106
+INFO 2025-12-12 12:02:58,561 basehttp "GET /admin/jsi18n/ HTTP/1.1" 200 3342
+INFO 2025-12-12 12:03:00,719 basehttp "GET /admin/accounts/user/ HTTP/1.1" 200 20871
+INFO 2025-12-12 12:03:00,744 basehttp "GET /admin/jsi18n/ HTTP/1.1" 200 3342
+INFO 2025-12-12 12:03:04,670 basehttp "GET /admin/accounts/user/1/change/ HTTP/1.1" 200 34814
+INFO 2025-12-12 12:03:04,714 basehttp "GET /static/admin/js/SelectBox.js HTTP/1.1" 200 4530
+INFO 2025-12-12 12:03:04,715 basehttp "GET /admin/jsi18n/ HTTP/1.1" 200 3342
+INFO 2025-12-12 12:03:04,716 basehttp "GET /static/admin/js/calendar.js HTTP/1.1" 200 9141
+INFO 2025-12-12 12:03:04,717 basehttp "GET /static/admin/js/SelectFilter2.js HTTP/1.1" 200 15845
+INFO 2025-12-12 12:03:04,717 basehttp "GET /static/admin/js/admin/DateTimeShortcuts.js HTTP/1.1" 200 19319
+INFO 2025-12-12 12:03:04,801 basehttp "GET /static/admin/img/selector-icons.svg HTTP/1.1" 200 3291
+INFO 2025-12-12 12:03:04,804 basehttp "GET /static/admin/img/icon-clock.svg HTTP/1.1" 200 677
+INFO 2025-12-12 12:03:04,804 basehttp "GET /static/admin/img/icon-calendar.svg HTTP/1.1" 200 1086
+INFO 2025-12-12 12:03:10,416 basehttp "POST /admin/accounts/user/1/change/ HTTP/1.1" 302 0
+INFO 2025-12-12 12:03:10,430 basehttp "GET /admin/accounts/user/ HTTP/1.1" 200 21088
+INFO 2025-12-12 12:03:10,455 basehttp "GET /static/admin/img/icon-no.svg HTTP/1.1" 200 560
+INFO 2025-12-12 12:03:10,458 basehttp "GET /admin/jsi18n/ HTTP/1.1" 200 3342
+INFO 2025-12-12 12:03:13,447 basehttp "GET /admin/illustrations/illustration/ HTTP/1.1" 200 24949
+INFO 2025-12-12 12:03:13,470 basehttp "GET /admin/jsi18n/ HTTP/1.1" 200 3342
+INFO 2025-12-12 12:03:16,143 basehttp "GET /admin/illustrations/illustration/add/ HTTP/1.1" 200 22200
+INFO 2025-12-12 12:03:16,166 basehttp "GET /admin/jsi18n/ HTTP/1.1" 200 3342
+INFO 2025-12-12 12:03:48,135 basehttp "OPTIONS /api/auth/login/ HTTP/1.1" 200 0
+INFO 2025-12-12 12:03:48,354 basehttp "POST /api/auth/login/ HTTP/1.1" 200 489
+INFO 2025-12-12 12:03:48,358 basehttp "OPTIONS /api/auth/users/profile/ HTTP/1.1" 200 0
+INFO 2025-12-12 12:03:48,365 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 465
+INFO 2025-12-12 12:03:48,439 basehttp "OPTIONS /api/illustrations/?limit=5&ordering=-created_at HTTP/1.1" 200 0
+INFO 2025-12-12 12:03:48,441 basehttp "OPTIONS /api/manufacturers/?limit=1 HTTP/1.1" 200 0
+INFO 2025-12-12 12:03:48,443 basehttp "OPTIONS /api/engine-models/?limit=1 HTTP/1.1" 200 0
+INFO 2025-12-12 12:03:48,443 basehttp "OPTIONS /api/car-models/?limit=1 HTTP/1.1" 200 0
+INFO 2025-12-12 12:03:48,460 basehttp "GET /api/engine-models/?limit=1 HTTP/1.1" 200 1146
+WARNING 2025-12-12 12:03:48,462 log Forbidden: /api/illustrations/
+INFO 2025-12-12 12:03:48,462 basehttp "GET /api/manufacturers/?limit=1 HTTP/1.1" 200 776
+WARNING 2025-12-12 12:03:48,463 basehttp "GET /api/illustrations/?limit=5&ordering=-created_at HTTP/1.1" 403 73
+INFO 2025-12-12 12:03:48,465 basehttp "GET /api/car-models/?limit=1 HTTP/1.1" 200 2253
+INFO 2025-12-12 12:03:53,705 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 465
+INFO 2025-12-12 12:03:53,711 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 465
+INFO 2025-12-12 12:03:53,716 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 465
+INFO 2025-12-12 12:03:53,720 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 465
+WARNING 2025-12-12 12:03:53,773 log Forbidden: /api/illustrations/
+WARNING 2025-12-12 12:03:53,777 basehttp "GET /api/illustrations/?limit=5&ordering=-created_at HTTP/1.1" 403 73
+INFO 2025-12-12 12:03:53,782 basehttp "GET /api/car-models/?limit=1 HTTP/1.1" 200 2253
+INFO 2025-12-12 12:03:53,782 basehttp "GET /api/manufacturers/?limit=1 HTTP/1.1" 200 776
+INFO 2025-12-12 12:03:53,784 basehttp "GET /api/engine-models/?limit=1 HTTP/1.1" 200 1146
+INFO 2025-12-12 12:04:11,686 basehttp "OPTIONS /api/manufacturers/ HTTP/1.1" 200 0
+INFO 2025-12-12 12:04:11,686 basehttp "OPTIONS /api/manufacturers/ HTTP/1.1" 200 0
+INFO 2025-12-12 12:04:11,700 basehttp "GET /api/manufacturers/ HTTP/1.1" 200 768
+INFO 2025-12-12 12:04:11,704 basehttp "GET /api/manufacturers/ HTTP/1.1" 200 768
+INFO 2025-12-12 12:04:21,328 basehttp "OPTIONS /api/part-categories/ HTTP/1.1" 200 0
+INFO 2025-12-12 12:04:21,340 basehttp "OPTIONS /api/illustrations/ HTTP/1.1" 200 0
+INFO 2025-12-12 12:04:21,341 basehttp "OPTIONS /api/car-models/ HTTP/1.1" 200 0
+INFO 2025-12-12 12:04:21,341 basehttp "OPTIONS /api/engine-models/ HTTP/1.1" 200 0
+INFO 2025-12-12 12:04:21,341 basehttp "OPTIONS /api/car-models/ HTTP/1.1" 200 0
+INFO 2025-12-12 12:04:21,342 basehttp "OPTIONS /api/engine-models/ HTTP/1.1" 200 0
+INFO 2025-12-12 12:04:21,346 basehttp "GET /api/manufacturers/ HTTP/1.1" 200 768
+INFO 2025-12-12 12:04:21,349 basehttp "OPTIONS /api/illustrations/ HTTP/1.1" 200 0
+INFO 2025-12-12 12:04:21,350 basehttp "OPTIONS /api/part-categories/ HTTP/1.1" 200 0
+WARNING 2025-12-12 12:04:21,356 log Forbidden: /api/illustrations/
+WARNING 2025-12-12 12:04:21,357 basehttp "GET /api/illustrations/ HTTP/1.1" 403 73
+INFO 2025-12-12 12:04:21,358 basehttp "GET /api/part-categories/ HTTP/1.1" 200 317
+INFO 2025-12-12 12:04:21,367 basehttp "GET /api/engine-models/ HTTP/1.1" 200 1146
+INFO 2025-12-12 12:04:21,368 basehttp "GET /api/car-models/ HTTP/1.1" 200 2253
+WARNING 2025-12-12 12:04:21,368 log Forbidden: /api/illustrations/
+INFO 2025-12-12 12:04:21,369 basehttp "GET /api/manufacturers/ HTTP/1.1" 200 768
+WARNING 2025-12-12 12:04:21,370 basehttp "GET /api/illustrations/ HTTP/1.1" 403 73
+INFO 2025-12-12 12:04:21,373 basehttp "GET /api/part-categories/ HTTP/1.1" 200 317
+INFO 2025-12-12 12:04:21,379 basehttp "GET /api/car-models/ HTTP/1.1" 200 2253
+INFO 2025-12-12 12:04:21,380 basehttp "GET /api/engine-models/ HTTP/1.1" 200 1146
+INFO 2025-12-12 12:04:24,834 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 465
+INFO 2025-12-12 12:04:24,840 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 465
+INFO 2025-12-12 12:04:24,845 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 465
+INFO 2025-12-12 12:04:24,849 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 465
+WARNING 2025-12-12 12:04:24,975 log Forbidden: /api/illustrations/
+WARNING 2025-12-12 12:04:24,984 basehttp "GET /api/illustrations/ HTTP/1.1" 403 73
+INFO 2025-12-12 12:04:24,988 basehttp "GET /api/manufacturers/ HTTP/1.1" 200 768
+INFO 2025-12-12 12:04:24,988 basehttp "GET /api/part-categories/ HTTP/1.1" 200 317
+INFO 2025-12-12 12:04:24,990 basehttp "GET /api/car-models/ HTTP/1.1" 200 2253
+INFO 2025-12-12 12:04:24,991 basehttp "GET /api/engine-models/ HTTP/1.1" 200 1146
+WARNING 2025-12-12 12:04:24,992 log Forbidden: /api/illustrations/
+WARNING 2025-12-12 12:04:24,993 basehttp "GET /api/illustrations/ HTTP/1.1" 403 73
+INFO 2025-12-12 12:04:25,000 basehttp "GET /api/manufacturers/ HTTP/1.1" 200 768
+INFO 2025-12-12 12:04:25,007 basehttp "GET /api/engine-models/ HTTP/1.1" 200 1146
+INFO 2025-12-12 12:04:25,007 basehttp "GET /api/part-categories/ HTTP/1.1" 200 317
+INFO 2025-12-12 12:04:25,008 basehttp "GET /api/car-models/ HTTP/1.1" 200 2253
+WARNING 2025-12-12 12:04:27,293 log Forbidden: /api/illustrations/
+WARNING 2025-12-12 12:04:27,297 basehttp "GET /api/illustrations/?limit=5&ordering=-created_at HTTP/1.1" 403 73
+INFO 2025-12-12 12:04:27,298 basehttp "GET /api/manufacturers/?limit=1 HTTP/1.1" 200 776
+INFO 2025-12-12 12:04:27,308 basehttp "GET /api/engine-models/?limit=1 HTTP/1.1" 200 1146
+INFO 2025-12-12 12:04:27,308 basehttp "GET /api/car-models/?limit=1 HTTP/1.1" 200 2253
+INFO 2025-12-12 12:04:32,232 basehttp "GET /api/manufacturers/ HTTP/1.1" 200 768
+INFO 2025-12-12 12:04:32,237 basehttp "GET /api/manufacturers/ HTTP/1.1" 200 768
+WARNING 2025-12-12 12:04:40,230 log Forbidden: /api/illustrations/
+WARNING 2025-12-12 12:04:40,231 basehttp "GET /api/illustrations/?limit=5&ordering=-created_at HTTP/1.1" 403 73
+INFO 2025-12-12 12:04:40,233 basehttp "GET /api/manufacturers/?limit=1 HTTP/1.1" 200 776
+INFO 2025-12-12 12:04:40,237 basehttp "GET /api/car-models/?limit=1 HTTP/1.1" 200 2253
+INFO 2025-12-12 12:04:40,240 basehttp "GET /api/engine-models/?limit=1 HTTP/1.1" 200 1146
+INFO 2025-12-12 12:04:49,731 basehttp "GET /api/manufacturers/ HTTP/1.1" 200 768
+INFO 2025-12-12 12:04:49,734 basehttp "GET /api/engine-models/ HTTP/1.1" 200 1146
+INFO 2025-12-12 12:04:49,743 basehttp "GET /api/car-models/ HTTP/1.1" 200 2253
+INFO 2025-12-12 12:04:49,757 basehttp "GET /api/car-models/ HTTP/1.1" 200 2253
+INFO 2025-12-12 12:04:49,760 basehttp "GET /api/manufacturers/ HTTP/1.1" 200 768
+INFO 2025-12-12 12:04:49,763 basehttp "GET /api/engine-models/ HTTP/1.1" 200 1146
+WARNING 2025-12-12 12:04:54,602 log Forbidden: /api/illustrations/
+WARNING 2025-12-12 12:04:54,607 basehttp "GET /api/illustrations/ HTTP/1.1" 403 73
+INFO 2025-12-12 12:04:54,608 basehttp "GET /api/car-models/ HTTP/1.1" 200 2253
+INFO 2025-12-12 12:04:54,609 basehttp "GET /api/manufacturers/ HTTP/1.1" 200 768
+INFO 2025-12-12 12:04:54,610 basehttp "GET /api/part-categories/ HTTP/1.1" 200 317
+INFO 2025-12-12 12:04:54,615 basehttp "GET /api/engine-models/ HTTP/1.1" 200 1146
+WARNING 2025-12-12 12:04:54,616 log Forbidden: /api/illustrations/
+WARNING 2025-12-12 12:04:54,616 basehttp "GET /api/illustrations/ HTTP/1.1" 403 73
+INFO 2025-12-12 12:04:54,622 basehttp "GET /api/part-categories/ HTTP/1.1" 200 317
+INFO 2025-12-12 12:04:54,625 basehttp "GET /api/manufacturers/ HTTP/1.1" 200 768
+INFO 2025-12-12 12:04:54,626 basehttp "GET /api/car-models/ HTTP/1.1" 200 2253
+INFO 2025-12-12 12:04:54,628 basehttp "GET /api/engine-models/ HTTP/1.1" 200 1146
+INFO 2025-12-12 12:04:56,373 basehttp "GET /api/engine-models/ HTTP/1.1" 200 1146
+INFO 2025-12-12 12:04:56,376 basehttp "GET /api/manufacturers/ HTTP/1.1" 200 768
+INFO 2025-12-12 12:04:56,380 basehttp "GET /api/car-models/ HTTP/1.1" 200 2253
+INFO 2025-12-12 12:04:56,390 basehttp "GET /api/manufacturers/ HTTP/1.1" 200 768
+INFO 2025-12-12 12:04:56,390 basehttp "GET /api/engine-models/ HTTP/1.1" 200 1146
+INFO 2025-12-12 12:04:56,392 basehttp "GET /api/car-models/ HTTP/1.1" 200 2253
+INFO 2025-12-12 12:05:44,556 autoreload /Volumes/Programming/React-Python/YAW/Illustration-System/backend/illustrations/views.py changed, reloading.
+INFO 2025-12-12 12:05:45,027 autoreload Watching for file changes with StatReloader
+INFO 2025-12-12 12:05:49,374 autoreload /Volumes/Programming/React-Python/YAW/Illustration-System/backend/illustrations/views.py changed, reloading.
+INFO 2025-12-12 12:05:49,703 autoreload Watching for file changes with StatReloader
+INFO 2025-12-12 12:05:54,021 autoreload /Volumes/Programming/React-Python/YAW/Illustration-System/backend/illustrations/views.py changed, reloading.
+INFO 2025-12-12 12:05:54,367 autoreload Watching for file changes with StatReloader
+INFO 2025-12-12 12:05:59,742 autoreload /Volumes/Programming/React-Python/YAW/Illustration-System/backend/illustrations/views.py changed, reloading.
+INFO 2025-12-12 12:06:00,084 autoreload Watching for file changes with StatReloader
+INFO 2025-12-12 12:07:07,597 autoreload /Volumes/Programming/React-Python/YAW/Illustration-System/backend/illustrations/views.py changed, reloading.
+INFO 2025-12-12 12:07:07,955 autoreload Watching for file changes with StatReloader
+INFO 2025-12-12 12:07:13,359 autoreload /Volumes/Programming/React-Python/YAW/Illustration-System/backend/illustrations/views.py changed, reloading.
+INFO 2025-12-12 12:07:13,694 autoreload Watching for file changes with StatReloader
+INFO 2025-12-12 12:07:14,928 autoreload /Volumes/Programming/React-Python/YAW/Illustration-System/backend/illustrations/views.py changed, reloading.
+INFO 2025-12-12 12:07:15,263 autoreload Watching for file changes with StatReloader
+INFO 2025-12-12 12:07:17,435 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 465
+INFO 2025-12-12 12:07:17,441 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 465
+INFO 2025-12-12 12:07:17,450 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 465
+INFO 2025-12-12 12:07:17,459 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 465
+WARNING 2025-12-12 12:07:17,543 log Forbidden: /api/car-models/
+WARNING 2025-12-12 12:07:17,543 log Forbidden: /api/engine-models/
+INFO 2025-12-12 12:07:17,545 basehttp "GET /api/manufacturers/ HTTP/1.1" 200 768
+WARNING 2025-12-12 12:07:17,545 basehttp "GET /api/car-models/ HTTP/1.1" 403 73
+WARNING 2025-12-12 12:07:17,547 basehttp "GET /api/engine-models/ HTTP/1.1" 403 73
+WARNING 2025-12-12 12:07:17,552 log Forbidden: /api/engine-models/
+WARNING 2025-12-12 12:07:17,552 basehttp "GET /api/engine-models/ HTTP/1.1" 403 73
+WARNING 2025-12-12 12:07:17,557 log Forbidden: /api/car-models/
+WARNING 2025-12-12 12:07:17,558 basehttp "GET /api/car-models/ HTTP/1.1" 403 73
+INFO 2025-12-12 12:07:17,559 basehttp "GET /api/manufacturers/ HTTP/1.1" 200 768
+WARNING 2025-12-12 12:07:19,826 log Forbidden: /api/engine-models/
+WARNING 2025-12-12 12:07:19,829 log Forbidden: /api/car-models/
+WARNING 2025-12-12 12:07:19,830 basehttp "GET /api/engine-models/?limit=1 HTTP/1.1" 403 73
+WARNING 2025-12-12 12:07:19,832 basehttp "GET /api/car-models/?limit=1 HTTP/1.1" 403 73
+INFO 2025-12-12 12:07:19,832 basehttp "GET /api/manufacturers/?limit=1 HTTP/1.1" 200 776
+INFO 2025-12-12 12:07:19,839 basehttp "GET /api/illustrations/?limit=5&ordering=-created_at HTTP/1.1" 200 4653
+INFO 2025-12-12 12:07:19,931 basehttp "GET /media/illustrations/toyota/dyana/N04C/Radiator/general/8/bf1467e7-fb87-4e63-8433-83ea6bb04124.jpg HTTP/1.1" 304 0
+WARNING 2025-12-12 12:07:24,137 log Forbidden: /api/car-models/
+WARNING 2025-12-12 12:07:24,140 log Forbidden: /api/part-categories/
+WARNING 2025-12-12 12:07:24,142 basehttp "GET /api/car-models/ HTTP/1.1" 403 73
+INFO 2025-12-12 12:07:24,142 basehttp "GET /api/manufacturers/ HTTP/1.1" 200 768
+WARNING 2025-12-12 12:07:24,146 basehttp "GET /api/part-categories/ HTTP/1.1" 403 73
+WARNING 2025-12-12 12:07:24,147 log Forbidden: /api/engine-models/
+WARNING 2025-12-12 12:07:24,149 log Forbidden: /api/car-models/
+WARNING 2025-12-12 12:07:24,149 basehttp "GET /api/car-models/ HTTP/1.1" 403 73
+WARNING 2025-12-12 12:07:24,149 basehttp "GET /api/engine-models/ HTTP/1.1" 403 73
+WARNING 2025-12-12 12:07:24,151 log Forbidden: /api/part-categories/
+WARNING 2025-12-12 12:07:24,153 basehttp "GET /api/part-categories/ HTTP/1.1" 403 73
+WARNING 2025-12-12 12:07:24,154 log Forbidden: /api/engine-models/
+WARNING 2025-12-12 12:07:24,155 basehttp "GET /api/engine-models/ HTTP/1.1" 403 73
+INFO 2025-12-12 12:07:24,158 basehttp "GET /api/manufacturers/ HTTP/1.1" 200 768
+INFO 2025-12-12 12:07:24,161 basehttp "GET /api/illustrations/ HTTP/1.1" 200 4653
+INFO 2025-12-12 12:07:24,172 basehttp "GET /api/illustrations/ HTTP/1.1" 200 4653
+INFO 2025-12-12 12:07:26,963 basehttp "GET /media/illustrations/toyota/dyana/N04C/Radiator/general/8/0491418b-8cca-4ea8-82b3-22cb7dc4f773.jpg HTTP/1.1" 304 0
+INFO 2025-12-12 12:07:31,006 basehttp "GET /api/manufacturers/ HTTP/1.1" 200 768
+INFO 2025-12-12 12:07:31,011 basehttp "GET /api/manufacturers/ HTTP/1.1" 200 768
+INFO 2025-12-12 12:08:19,215 autoreload /Volumes/Programming/React-Python/YAW/Illustration-System/backend/illustrations/views.py changed, reloading.
+INFO 2025-12-12 12:08:19,697 autoreload Watching for file changes with StatReloader
+WARNING 2025-12-12 12:08:20,948 log Forbidden: /api/engine-models/
+WARNING 2025-12-12 12:08:20,949 log Forbidden: /api/part-categories/
+WARNING 2025-12-12 12:08:20,954 basehttp "GET /api/engine-models/ HTTP/1.1" 403 73
+WARNING 2025-12-12 12:08:20,955 log Forbidden: /api/car-models/
+WARNING 2025-12-12 12:08:20,956 basehttp "GET /api/part-categories/ HTTP/1.1" 403 73
+WARNING 2025-12-12 12:08:20,959 basehttp "GET /api/car-models/ HTTP/1.1" 403 73
+WARNING 2025-12-12 12:08:20,964 log Forbidden: /api/engine-models/
+WARNING 2025-12-12 12:08:20,965 basehttp "GET /api/engine-models/ HTTP/1.1" 403 73
+INFO 2025-12-12 12:08:20,970 basehttp "GET /api/manufacturers/ HTTP/1.1" 200 768
+WARNING 2025-12-12 12:08:20,972 log Forbidden: /api/part-categories/
+WARNING 2025-12-12 12:08:20,972 basehttp "GET /api/part-categories/ HTTP/1.1" 403 73
+WARNING 2025-12-12 12:08:20,973 log Forbidden: /api/car-models/
+INFO 2025-12-12 12:08:20,975 basehttp "GET /api/illustrations/ HTTP/1.1" 200 4653
+INFO 2025-12-12 12:08:20,977 basehttp "GET /api/manufacturers/ HTTP/1.1" 200 768
+WARNING 2025-12-12 12:08:20,980 basehttp "GET /api/car-models/ HTTP/1.1" 403 73
+INFO 2025-12-12 12:08:20,990 basehttp "GET /api/illustrations/ HTTP/1.1" 200 4653
+INFO 2025-12-12 12:08:21,853 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 465
+INFO 2025-12-12 12:08:21,858 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 465
+INFO 2025-12-12 12:08:21,863 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 465
+INFO 2025-12-12 12:08:21,868 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 465
+WARNING 2025-12-12 12:08:22,084 log Forbidden: /api/engine-models/
+WARNING 2025-12-12 12:08:22,085 basehttp "GET /api/engine-models/ HTTP/1.1" 403 73
+INFO 2025-12-12 12:08:22,088 basehttp "GET /api/manufacturers/ HTTP/1.1" 200 768
+WARNING 2025-12-12 12:08:22,091 log Forbidden: /api/part-categories/
+WARNING 2025-12-12 12:08:22,092 basehttp "GET /api/part-categories/ HTTP/1.1" 403 73
+WARNING 2025-12-12 12:08:22,098 log Forbidden: /api/car-models/
+WARNING 2025-12-12 12:08:22,099 log Forbidden: /api/engine-models/
+WARNING 2025-12-12 12:08:22,104 basehttp "GET /api/engine-models/ HTTP/1.1" 403 73
+WARNING 2025-12-12 12:08:22,105 basehttp "GET /api/car-models/ HTTP/1.1" 403 73
+WARNING 2025-12-12 12:08:22,109 log Forbidden: /api/part-categories/
+INFO 2025-12-12 12:08:22,109 basehttp "GET /api/manufacturers/ HTTP/1.1" 200 768
+WARNING 2025-12-12 12:08:22,113 basehttp "GET /api/part-categories/ HTTP/1.1" 403 73
+INFO 2025-12-12 12:08:22,118 basehttp "GET /api/illustrations/ HTTP/1.1" 200 4653
+WARNING 2025-12-12 12:08:22,120 log Forbidden: /api/car-models/
+WARNING 2025-12-12 12:08:22,120 basehttp "GET /api/car-models/ HTTP/1.1" 403 73
+INFO 2025-12-12 12:08:22,130 basehttp "GET /api/illustrations/ HTTP/1.1" 200 4653
+WARNING 2025-12-12 12:08:24,213 log Forbidden: /api/car-models/
+WARNING 2025-12-12 12:08:24,216 log Forbidden: /api/engine-models/
+WARNING 2025-12-12 12:08:24,217 basehttp "GET /api/car-models/?limit=1 HTTP/1.1" 403 73
+INFO 2025-12-12 12:08:24,218 basehttp "GET /api/manufacturers/?limit=1 HTTP/1.1" 200 776
+WARNING 2025-12-12 12:08:24,218 basehttp "GET /api/engine-models/?limit=1 HTTP/1.1" 403 73
+INFO 2025-12-12 12:08:24,224 basehttp "GET /api/illustrations/?limit=5&ordering=-created_at HTTP/1.1" 200 4653
+WARNING 2025-12-12 12:08:26,901 log Forbidden: /api/car-models/
+WARNING 2025-12-12 12:08:26,902 basehttp "GET /api/car-models/ HTTP/1.1" 403 73
+WARNING 2025-12-12 12:08:26,905 log Forbidden: /api/part-categories/
+WARNING 2025-12-12 12:08:26,906 log Forbidden: /api/engine-models/
+INFO 2025-12-12 12:08:26,907 basehttp "GET /api/manufacturers/ HTTP/1.1" 200 768
+WARNING 2025-12-12 12:08:26,909 basehttp "GET /api/part-categories/ HTTP/1.1" 403 73
+WARNING 2025-12-12 12:08:26,910 basehttp "GET /api/engine-models/ HTTP/1.1" 403 73
+WARNING 2025-12-12 12:08:26,911 log Forbidden: /api/car-models/
+WARNING 2025-12-12 12:08:26,911 basehttp "GET /api/car-models/ HTTP/1.1" 403 73
+WARNING 2025-12-12 12:08:26,916 log Forbidden: /api/engine-models/
+WARNING 2025-12-12 12:08:26,917 basehttp "GET /api/engine-models/ HTTP/1.1" 403 73
+WARNING 2025-12-12 12:08:26,922 log Forbidden: /api/part-categories/
+WARNING 2025-12-12 12:08:26,924 basehttp "GET /api/part-categories/ HTTP/1.1" 403 73
+INFO 2025-12-12 12:08:26,925 basehttp "GET /api/illustrations/ HTTP/1.1" 200 4653
+INFO 2025-12-12 12:08:26,926 basehttp "GET /api/manufacturers/ HTTP/1.1" 200 768
+INFO 2025-12-12 12:08:26,935 basehttp "GET /api/illustrations/ HTTP/1.1" 200 4653
+WARNING 2025-12-12 12:08:27,857 log Forbidden: /api/car-models/
+WARNING 2025-12-12 12:08:27,858 basehttp "GET /api/car-models/?limit=1 HTTP/1.1" 403 73
+WARNING 2025-12-12 12:08:27,865 log Forbidden: /api/engine-models/
+WARNING 2025-12-12 12:08:27,867 basehttp "GET /api/engine-models/?limit=1 HTTP/1.1" 403 73
+INFO 2025-12-12 12:08:27,869 basehttp "GET /api/manufacturers/?limit=1 HTTP/1.1" 200 776
+INFO 2025-12-12 12:08:27,876 basehttp "GET /api/illustrations/?limit=5&ordering=-created_at HTTP/1.1" 200 4653
+INFO 2025-12-12 12:08:29,462 basehttp "GET /api/manufacturers/ HTTP/1.1" 200 768
+INFO 2025-12-12 12:08:29,465 basehttp "GET /api/manufacturers/ HTTP/1.1" 200 768
+WARNING 2025-12-12 12:08:30,890 log Forbidden: /api/car-models/
+WARNING 2025-12-12 12:08:30,890 log Forbidden: /api/engine-models/
+WARNING 2025-12-12 12:08:30,891 basehttp "GET /api/car-models/?limit=1 HTTP/1.1" 403 73
+WARNING 2025-12-12 12:08:30,893 basehttp "GET /api/engine-models/?limit=1 HTTP/1.1" 403 73
+INFO 2025-12-12 12:08:30,897 basehttp "GET /api/manufacturers/?limit=1 HTTP/1.1" 200 776
+INFO 2025-12-12 12:08:30,900 basehttp "GET /api/illustrations/?limit=5&ordering=-created_at HTTP/1.1" 200 4653
+INFO 2025-12-12 12:08:32,533 basehttp "OPTIONS /api/car-models/vehicle-types/ HTTP/1.1" 200 0
+INFO 2025-12-12 12:08:32,533 basehttp "OPTIONS /api/car-models/fuel-types/ HTTP/1.1" 200 0
+INFO 2025-12-12 12:08:32,533 basehttp "OPTIONS /api/car-models/fuel-types/ HTTP/1.1" 200 0
+INFO 2025-12-12 12:08:32,535 basehttp "OPTIONS /api/car-models/vehicle-types/ HTTP/1.1" 200 0
+WARNING 2025-12-12 12:08:32,539 log Forbidden: /api/car-models/
+INFO 2025-12-12 12:08:32,541 basehttp "GET /api/car-models/vehicle-types/ HTTP/1.1" 200 1617
+WARNING 2025-12-12 12:08:32,543 basehttp "GET /api/car-models/ HTTP/1.1" 403 73
+INFO 2025-12-12 12:08:32,544 basehttp "GET /api/manufacturers/ HTTP/1.1" 200 768
+INFO 2025-12-12 12:08:32,545 basehttp "GET /api/car-models/fuel-types/ HTTP/1.1" 200 242
+INFO 2025-12-12 12:08:32,547 basehttp "GET /api/car-models/vehicle-types/ HTTP/1.1" 200 1617
+WARNING 2025-12-12 12:08:32,548 log Forbidden: /api/car-models/
+WARNING 2025-12-12 12:08:32,550 basehttp "GET /api/car-models/ HTTP/1.1" 403 73
+INFO 2025-12-12 12:08:32,553 basehttp "GET /api/car-models/fuel-types/ HTTP/1.1" 200 242
+INFO 2025-12-12 12:08:32,553 basehttp "GET /api/manufacturers/ HTTP/1.1" 200 768
+WARNING 2025-12-12 12:08:33,876 log Forbidden: /api/car-models/
+WARNING 2025-12-12 12:08:33,877 basehttp "GET /api/car-models/?limit=1 HTTP/1.1" 403 73
+WARNING 2025-12-12 12:08:33,880 log Forbidden: /api/engine-models/
+WARNING 2025-12-12 12:08:33,881 basehttp "GET /api/engine-models/?limit=1 HTTP/1.1" 403 73
+INFO 2025-12-12 12:08:33,882 basehttp "GET /api/manufacturers/?limit=1 HTTP/1.1" 200 776
+INFO 2025-12-12 12:08:33,890 basehttp "GET /api/illustrations/?limit=5&ordering=-created_at HTTP/1.1" 200 4653
+INFO 2025-12-12 12:09:00,505 autoreload /Volumes/Programming/React-Python/YAW/Illustration-System/backend/illustrations/views.py changed, reloading.
+INFO 2025-12-12 12:09:00,856 autoreload Watching for file changes with StatReloader
+INFO 2025-12-12 12:09:02,291 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 465
+INFO 2025-12-12 12:09:02,295 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 465
+INFO 2025-12-12 12:09:02,300 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 465
+INFO 2025-12-12 12:09:02,304 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 465
+WARNING 2025-12-12 12:09:02,417 log Forbidden: /api/manufacturers/
+WARNING 2025-12-12 12:09:02,418 basehttp "GET /api/manufacturers/?limit=1 HTTP/1.1" 403 73
+WARNING 2025-12-12 12:09:02,419 log Forbidden: /api/engine-models/
+WARNING 2025-12-12 12:09:02,419 basehttp "GET /api/engine-models/?limit=1 HTTP/1.1" 403 73
+WARNING 2025-12-12 12:09:02,423 log Forbidden: /api/car-models/
+WARNING 2025-12-12 12:09:02,427 basehttp "GET /api/car-models/?limit=1 HTTP/1.1" 403 73
+INFO 2025-12-12 12:09:02,431 basehttp "GET /api/illustrations/?limit=5&ordering=-created_at HTTP/1.1" 200 4653
+WARNING 2025-12-12 12:09:04,331 log Forbidden: /api/manufacturers/
+WARNING 2025-12-12 12:09:04,332 log Forbidden: /api/car-models/
+WARNING 2025-12-12 12:09:04,333 log Forbidden: /api/part-categories/
+WARNING 2025-12-12 12:09:04,334 basehttp "GET /api/manufacturers/ HTTP/1.1" 403 73
+WARNING 2025-12-12 12:09:04,334 basehttp "GET /api/car-models/ HTTP/1.1" 403 73
+WARNING 2025-12-12 12:09:04,340 basehttp "GET /api/part-categories/ HTTP/1.1" 403 73
+WARNING 2025-12-12 12:09:04,341 log Forbidden: /api/engine-models/
+WARNING 2025-12-12 12:09:04,341 basehttp "GET /api/engine-models/ HTTP/1.1" 403 73
+WARNING 2025-12-12 12:09:04,344 log Forbidden: /api/car-models/
+WARNING 2025-12-12 12:09:04,345 basehttp "GET /api/car-models/ HTTP/1.1" 403 73
+WARNING 2025-12-12 12:09:04,348 log Forbidden: /api/part-categories/
+WARNING 2025-12-12 12:09:04,349 log Forbidden: /api/engine-models/
+WARNING 2025-12-12 12:09:04,349 log Forbidden: /api/manufacturers/
+WARNING 2025-12-12 12:09:04,351 basehttp "GET /api/part-categories/ HTTP/1.1" 403 73
+WARNING 2025-12-12 12:09:04,355 basehttp "GET /api/engine-models/ HTTP/1.1" 403 73
+WARNING 2025-12-12 12:09:04,355 basehttp "GET /api/manufacturers/ HTTP/1.1" 403 73
+INFO 2025-12-12 12:09:04,358 basehttp "GET /api/illustrations/ HTTP/1.1" 200 4653
+INFO 2025-12-12 12:09:04,374 basehttp "GET /api/illustrations/ HTTP/1.1" 200 4653
+WARNING 2025-12-12 12:09:10,282 log Forbidden: /api/manufacturers/
+WARNING 2025-12-12 12:09:10,285 basehttp "GET /api/manufacturers/ HTTP/1.1" 403 73
+WARNING 2025-12-12 12:09:10,298 log Forbidden: /api/manufacturers/
+WARNING 2025-12-12 12:09:10,299 basehttp "GET /api/manufacturers/ HTTP/1.1" 403 73
+WARNING 2025-12-12 12:09:13,102 log Forbidden: /api/manufacturers/
+INFO 2025-12-12 12:09:13,103 basehttp "GET /api/car-models/vehicle-types/ HTTP/1.1" 200 1617
+WARNING 2025-12-12 12:09:13,105 basehttp "GET /api/manufacturers/ HTTP/1.1" 403 73
+WARNING 2025-12-12 12:09:13,105 log Forbidden: /api/car-models/
+INFO 2025-12-12 12:09:13,106 basehttp "GET /api/car-models/fuel-types/ HTTP/1.1" 200 242
+WARNING 2025-12-12 12:09:13,106 basehttp "GET /api/car-models/ HTTP/1.1" 403 73
+INFO 2025-12-12 12:09:13,110 basehttp "GET /api/car-models/vehicle-types/ HTTP/1.1" 200 1617
+WARNING 2025-12-12 12:09:13,111 log Forbidden: /api/car-models/
+INFO 2025-12-12 12:09:13,112 basehttp "GET /api/car-models/fuel-types/ HTTP/1.1" 200 242
+WARNING 2025-12-12 12:09:13,114 log Forbidden: /api/manufacturers/
+WARNING 2025-12-12 12:09:13,114 basehttp "GET /api/car-models/ HTTP/1.1" 403 73
+WARNING 2025-12-12 12:09:13,114 basehttp "GET /api/manufacturers/ HTTP/1.1" 403 73
+WARNING 2025-12-12 12:09:16,996 log Forbidden: /api/engine-models/
+WARNING 2025-12-12 12:09:16,997 log Forbidden: /api/manufacturers/
+WARNING 2025-12-12 12:09:16,997 log Forbidden: /api/car-models/
+WARNING 2025-12-12 12:09:16,998 basehttp "GET /api/engine-models/ HTTP/1.1" 403 73
+WARNING 2025-12-12 12:09:16,999 basehttp "GET /api/manufacturers/ HTTP/1.1" 403 73
+WARNING 2025-12-12 12:09:17,000 basehttp "GET /api/car-models/ HTTP/1.1" 403 73
+WARNING 2025-12-12 12:09:17,004 log Forbidden: /api/engine-models/
+WARNING 2025-12-12 12:09:17,005 basehttp "GET /api/engine-models/ HTTP/1.1" 403 73
+WARNING 2025-12-12 12:09:17,005 log Forbidden: /api/car-models/
+WARNING 2025-12-12 12:09:17,006 log Forbidden: /api/manufacturers/
+WARNING 2025-12-12 12:09:17,006 basehttp "GET /api/car-models/ HTTP/1.1" 403 73
+WARNING 2025-12-12 12:09:17,006 basehttp "GET /api/manufacturers/ HTTP/1.1" 403 73
+WARNING 2025-12-12 12:09:19,649 log Forbidden: /api/car-models/
+WARNING 2025-12-12 12:09:19,651 log Forbidden: /api/manufacturers/
+WARNING 2025-12-12 12:09:19,654 basehttp "GET /api/car-models/?limit=1 HTTP/1.1" 403 73
+WARNING 2025-12-12 12:09:19,658 log Forbidden: /api/engine-models/
+WARNING 2025-12-12 12:09:19,658 basehttp "GET /api/manufacturers/?limit=1 HTTP/1.1" 403 73
+WARNING 2025-12-12 12:09:19,659 basehttp "GET /api/engine-models/?limit=1 HTTP/1.1" 403 73
+INFO 2025-12-12 12:09:19,665 basehttp "GET /api/illustrations/?limit=5&ordering=-created_at HTTP/1.1" 200 4653
+WARNING 2025-12-12 12:09:25,226 log Forbidden: /api/manufacturers/
+WARNING 2025-12-12 12:09:25,227 log Forbidden: /api/engine-models/
+WARNING 2025-12-12 12:09:25,230 log Forbidden: /api/part-categories/
+WARNING 2025-12-12 12:09:25,231 log Forbidden: /api/car-models/
+WARNING 2025-12-12 12:09:25,232 basehttp "GET /api/manufacturers/ HTTP/1.1" 403 73
+WARNING 2025-12-12 12:09:25,234 basehttp "GET /api/engine-models/ HTTP/1.1" 403 73
+WARNING 2025-12-12 12:09:25,235 basehttp "GET /api/part-categories/ HTTP/1.1" 403 73
+WARNING 2025-12-12 12:09:25,235 basehttp "GET /api/car-models/ HTTP/1.1" 403 73
+WARNING 2025-12-12 12:09:25,237 log Forbidden: /api/manufacturers/
+WARNING 2025-12-12 12:09:25,240 basehttp "GET /api/manufacturers/ HTTP/1.1" 403 73
+WARNING 2025-12-12 12:09:25,242 log Forbidden: /api/part-categories/
+WARNING 2025-12-12 12:09:25,242 log Forbidden: /api/car-models/
+WARNING 2025-12-12 12:09:25,243 basehttp "GET /api/part-categories/ HTTP/1.1" 403 73
+WARNING 2025-12-12 12:09:25,244 basehttp "GET /api/car-models/ HTTP/1.1" 403 73
+WARNING 2025-12-12 12:09:25,244 log Forbidden: /api/engine-models/
+WARNING 2025-12-12 12:09:25,247 basehttp "GET /api/engine-models/ HTTP/1.1" 403 73
+INFO 2025-12-12 12:09:25,249 basehttp "GET /api/illustrations/ HTTP/1.1" 200 4653
+INFO 2025-12-12 12:09:25,258 basehttp "GET /api/illustrations/ HTTP/1.1" 200 4653
+INFO 2025-12-12 12:09:48,433 basehttp "POST /api/auth/login/ HTTP/1.1" 200 489
+INFO 2025-12-12 12:09:48,443 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 389
+INFO 2025-12-12 12:09:48,554 basehttp "GET /api/car-models/?limit=1 HTTP/1.1" 200 2253
+INFO 2025-12-12 12:09:48,558 basehttp "GET /api/manufacturers/?limit=1 HTTP/1.1" 200 776
+INFO 2025-12-12 12:09:48,571 basehttp "GET /api/illustrations/?limit=5&ordering=-created_at HTTP/1.1" 200 1777
+INFO 2025-12-12 12:09:48,572 basehttp "GET /api/engine-models/?limit=1 HTTP/1.1" 200 1146
+INFO 2025-12-12 12:09:48,646 basehttp "GET /media/illustrations/toyota/dyana/N04C/Radiator/general/5/60b72384-219a-49e9-a01e-420121accb0d.jpg HTTP/1.1" 304 0
+INFO 2025-12-12 12:09:48,646 basehttp "GET /media/illustrations/toyota/dyana/N04C/Radiator/general/6/3b273a6b-8563-4a8a-9580-dc3361e404a1.jpg HTTP/1.1" 304 0
+INFO 2025-12-12 12:09:58,141 basehttp "GET /api/manufacturers/ HTTP/1.1" 200 768
+INFO 2025-12-12 12:09:58,144 basehttp "GET /api/car-models/ HTTP/1.1" 200 2253
+INFO 2025-12-12 12:09:58,146 basehttp "GET /api/part-categories/ HTTP/1.1" 200 317
+INFO 2025-12-12 12:09:58,154 basehttp "GET /api/illustrations/ HTTP/1.1" 200 1777
+INFO 2025-12-12 12:09:58,155 basehttp "GET /api/engine-models/ HTTP/1.1" 200 1146
+INFO 2025-12-12 12:09:58,164 basehttp "GET /api/manufacturers/ HTTP/1.1" 200 768
+INFO 2025-12-12 12:09:58,167 basehttp "GET /api/part-categories/ HTTP/1.1" 200 317
+INFO 2025-12-12 12:09:58,168 basehttp "GET /api/car-models/ HTTP/1.1" 200 2253
+INFO 2025-12-12 12:09:58,172 basehttp "GET /api/illustrations/ HTTP/1.1" 200 1777
+INFO 2025-12-12 12:09:58,173 basehttp "GET /api/engine-models/ HTTP/1.1" 200 1146
+INFO 2025-12-12 12:10:52,885 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 389
+INFO 2025-12-12 12:10:52,889 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 389
+INFO 2025-12-12 12:10:52,895 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 389
+INFO 2025-12-12 12:10:52,899 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 389
+INFO 2025-12-12 12:10:53,084 basehttp "GET /api/car-models/ HTTP/1.1" 200 2253
+INFO 2025-12-12 12:10:53,090 basehttp "GET /api/part-categories/ HTTP/1.1" 200 317
+INFO 2025-12-12 12:10:53,103 basehttp "GET /api/illustrations/ HTTP/1.1" 200 1777
+INFO 2025-12-12 12:10:53,108 basehttp "GET /api/manufacturers/ HTTP/1.1" 200 768
+INFO 2025-12-12 12:10:53,118 basehttp "GET /api/part-categories/ HTTP/1.1" 200 317
+INFO 2025-12-12 12:10:53,119 basehttp "GET /api/car-models/ HTTP/1.1" 200 2253
+INFO 2025-12-12 12:10:53,121 basehttp "GET /api/engine-models/ HTTP/1.1" 200 1146
+INFO 2025-12-12 12:10:53,126 basehttp "GET /api/illustrations/ HTTP/1.1" 200 1777
+INFO 2025-12-12 12:10:53,128 basehttp "GET /api/manufacturers/ HTTP/1.1" 200 768
+INFO 2025-12-12 12:10:53,130 basehttp "GET /api/engine-models/ HTTP/1.1" 200 1146
+INFO 2025-12-12 12:10:54,395 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 389
+INFO 2025-12-12 12:10:54,402 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 389
+INFO 2025-12-12 12:10:54,406 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 389
+INFO 2025-12-12 12:10:54,410 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 389
+INFO 2025-12-12 12:10:54,566 basehttp "GET /api/manufacturers/ HTTP/1.1" 200 768
+INFO 2025-12-12 12:10:54,585 basehttp "GET /api/manufacturers/ HTTP/1.1" 200 768
+INFO 2025-12-12 12:10:54,585 basehttp "GET /api/illustrations/ HTTP/1.1" 200 1777
+INFO 2025-12-12 12:10:54,592 basehttp "GET /api/engine-models/ HTTP/1.1" 200 1146
+INFO 2025-12-12 12:10:54,597 basehttp "GET /api/car-models/ HTTP/1.1" 200 2253
+INFO 2025-12-12 12:10:54,602 basehttp "GET /api/part-categories/ HTTP/1.1" 200 317
+INFO 2025-12-12 12:10:54,615 basehttp "GET /api/engine-models/ HTTP/1.1" 200 1146
+INFO 2025-12-12 12:10:54,616 basehttp "GET /api/part-categories/ HTTP/1.1" 200 317
+INFO 2025-12-12 12:10:54,616 basehttp "GET /api/car-models/ HTTP/1.1" 200 2253
+INFO 2025-12-12 12:10:54,619 basehttp "GET /api/illustrations/ HTTP/1.1" 200 1777
+INFO 2025-12-12 12:11:07,091 basehttp "GET /api/manufacturers/?limit=1 HTTP/1.1" 200 776
+INFO 2025-12-12 12:11:07,094 basehttp "GET /api/engine-models/?limit=1 HTTP/1.1" 200 1146
+INFO 2025-12-12 12:11:07,097 basehttp "GET /api/illustrations/?limit=5&ordering=-created_at HTTP/1.1" 200 1777
+INFO 2025-12-12 12:11:07,098 basehttp "GET /api/car-models/?limit=1 HTTP/1.1" 200 2253
+INFO 2025-12-12 12:11:12,862 basehttp "GET /api/manufacturers/ HTTP/1.1" 200 768
+INFO 2025-12-12 12:11:12,865 basehttp "GET /api/engine-models/ HTTP/1.1" 200 1146
+INFO 2025-12-12 12:11:12,867 basehttp "GET /api/car-models/ HTTP/1.1" 200 2253
+INFO 2025-12-12 12:11:12,876 basehttp "GET /api/manufacturers/ HTTP/1.1" 200 768
+INFO 2025-12-12 12:11:12,877 basehttp "GET /api/engine-models/ HTTP/1.1" 200 1146
+INFO 2025-12-12 12:11:12,879 basehttp "GET /api/car-models/ HTTP/1.1" 200 2253
+INFO 2025-12-12 12:11:16,229 basehttp "GET /api/car-models/?limit=1 HTTP/1.1" 200 2253
+INFO 2025-12-12 12:11:16,229 basehttp "GET /api/manufacturers/?limit=1 HTTP/1.1" 200 776
+INFO 2025-12-12 12:11:16,230 basehttp "GET /api/engine-models/?limit=1 HTTP/1.1" 200 1146
+INFO 2025-12-12 12:11:16,234 basehttp "GET /api/illustrations/?limit=5&ordering=-created_at HTTP/1.1" 200 1777
+INFO 2025-12-12 12:11:17,760 basehttp "GET /api/manufacturers/ HTTP/1.1" 200 768
+INFO 2025-12-12 12:13:14,993 basehttp "GET /api/part-categories/ HTTP/1.1" 200 317
+INFO 2025-12-12 12:13:14,995 basehttp "GET /api/car-models/ HTTP/1.1" 200 2253
+INFO 2025-12-12 12:13:14,996 basehttp "GET /api/engine-models/ HTTP/1.1" 200 1146
+INFO 2025-12-12 12:13:14,996 basehttp "GET /api/manufacturers/ HTTP/1.1" 200 768
+INFO 2025-12-12 12:13:15,004 basehttp "GET /api/illustrations/ HTTP/1.1" 200 1777
+INFO 2025-12-12 12:13:15,007 basehttp "GET /api/part-categories/ HTTP/1.1" 200 317
+INFO 2025-12-12 12:13:15,012 basehttp "GET /api/car-models/ HTTP/1.1" 200 2253
+INFO 2025-12-12 12:13:15,013 basehttp "GET /api/manufacturers/ HTTP/1.1" 200 768
+INFO 2025-12-12 12:13:15,015 basehttp "GET /api/engine-models/ HTTP/1.1" 200 1146
+INFO 2025-12-12 12:13:15,021 basehttp "GET /api/illustrations/ HTTP/1.1" 200 1777
+INFO 2025-12-12 12:17:29,905 autoreload /Volumes/Programming/React-Python/YAW/Illustration-System/backend/illustrations/permissions.py changed, reloading.
+INFO 2025-12-12 12:17:30,388 autoreload Watching for file changes with StatReloader
+INFO 2025-12-12 12:17:52,396 autoreload /Volumes/Programming/React-Python/YAW/Illustration-System/backend/illustrations/views.py changed, reloading.
+INFO 2025-12-12 12:17:52,876 autoreload Watching for file changes with StatReloader
+INFO 2025-12-12 12:17:56,126 autoreload /Volumes/Programming/React-Python/YAW/Illustration-System/backend/illustrations/views.py changed, reloading.
+INFO 2025-12-12 12:17:56,481 autoreload Watching for file changes with StatReloader
+INFO 2025-12-12 12:18:04,880 autoreload /Volumes/Programming/React-Python/YAW/Illustration-System/backend/illustrations/views.py changed, reloading.
+INFO 2025-12-12 12:18:05,216 autoreload Watching for file changes with StatReloader
+INFO 2025-12-12 12:18:09,460 autoreload /Volumes/Programming/React-Python/YAW/Illustration-System/backend/illustrations/views.py changed, reloading.
+INFO 2025-12-12 12:18:09,823 autoreload Watching for file changes with StatReloader
+INFO 2025-12-12 12:18:12,013 autoreload /Volumes/Programming/React-Python/YAW/Illustration-System/backend/illustrations/views.py changed, reloading.
+INFO 2025-12-12 12:18:12,363 autoreload Watching for file changes with StatReloader
+INFO 2025-12-12 12:18:22,883 autoreload /Volumes/Programming/React-Python/YAW/Illustration-System/backend/illustrations/views.py changed, reloading.
+INFO 2025-12-12 12:18:23,238 autoreload Watching for file changes with StatReloader
+INFO 2025-12-12 12:18:25,440 autoreload /Volumes/Programming/React-Python/YAW/Illustration-System/backend/illustrations/views.py changed, reloading.
+INFO 2025-12-12 12:18:25,790 autoreload Watching for file changes with StatReloader
+INFO 2025-12-12 12:19:32,342 autoreload /Volumes/Programming/React-Python/YAW/Illustration-System/backend/illustrations/views.py changed, reloading.
+INFO 2025-12-12 12:19:32,798 autoreload Watching for file changes with StatReloader
+INFO 2025-12-12 12:19:34,072 autoreload /Volumes/Programming/React-Python/YAW/Illustration-System/backend/illustrations/views.py changed, reloading.
+INFO 2025-12-12 12:19:34,413 autoreload Watching for file changes with StatReloader
+INFO 2025-12-12 12:19:42,094 basehttp "POST /api/auth/login/ HTTP/1.1" 200 489
+INFO 2025-12-12 12:19:42,104 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 465
+INFO 2025-12-12 12:19:42,176 basehttp "GET /api/engine-models/?limit=1 HTTP/1.1" 200 1146
+INFO 2025-12-12 12:19:42,177 basehttp "GET /api/manufacturers/?limit=1 HTTP/1.1" 200 776
+INFO 2025-12-12 12:19:42,179 basehttp "GET /api/car-models/?limit=1 HTTP/1.1" 200 2253
+INFO 2025-12-12 12:19:42,180 basehttp "GET /api/illustrations/?limit=5&ordering=-created_at HTTP/1.1" 200 4653
+INFO 2025-12-12 12:19:51,228 basehttp "GET /admin/ HTTP/1.1" 200 17410
+INFO 2025-12-12 12:19:52,668 basehttp "GET /admin/accounts/user/ HTTP/1.1" 200 20873
+INFO 2025-12-12 12:19:52,691 basehttp "GET /admin/jsi18n/ HTTP/1.1" 200 3342
+INFO 2025-12-12 12:19:55,683 basehttp "GET /admin/accounts/user/1/change/ HTTP/1.1" 200 34809
+INFO 2025-12-12 12:19:55,712 basehttp "GET /admin/jsi18n/ HTTP/1.1" 200 3342
+INFO 2025-12-12 12:20:15,193 basehttp "POST /admin/accounts/user/1/change/ HTTP/1.1" 302 0
+WARNING 2025-12-12 12:20:15,200 log Forbidden (Permission denied): /admin/accounts/user/
+Traceback (most recent call last):
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/contrib/admin/options.py", line 719, in wrapper
+    return self.admin_site.admin_view(view)(*args, **kwargs)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/utils/decorators.py", line 192, in _view_wrapper
+    result = _process_exception(request, e)
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/utils/decorators.py", line 190, in _view_wrapper
+    response = view_func(request, *args, **kwargs)
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/views/decorators/cache.py", line 80, in _view_wrapper
+    response = view_func(request, *args, **kwargs)
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/contrib/admin/sites.py", line 246, in inner
+    return view(request, *args, **kwargs)
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/utils/decorators.py", line 48, in _wrapper
+    return bound_method(*args, **kwargs)
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/utils/decorators.py", line 192, in _view_wrapper
+    result = _process_exception(request, e)
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/utils/decorators.py", line 190, in _view_wrapper
+    response = view_func(request, *args, **kwargs)
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/contrib/admin/options.py", line 2021, in changelist_view
+    raise PermissionDenied
+django.core.exceptions.PermissionDenied
+WARNING 2025-12-12 12:20:15,204 basehttp "GET /admin/accounts/user/ HTTP/1.1" 403 135
+WARNING 2025-12-12 12:20:25,608 log Forbidden (Permission denied): /admin/accounts/user/1/change/
+Traceback (most recent call last):
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/contrib/admin/options.py", line 719, in wrapper
+    return self.admin_site.admin_view(view)(*args, **kwargs)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/utils/decorators.py", line 192, in _view_wrapper
+    result = _process_exception(request, e)
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/utils/decorators.py", line 190, in _view_wrapper
+    response = view_func(request, *args, **kwargs)
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/views/decorators/cache.py", line 80, in _view_wrapper
+    response = view_func(request, *args, **kwargs)
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/contrib/admin/sites.py", line 246, in inner
+    return view(request, *args, **kwargs)
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/contrib/admin/options.py", line 1987, in change_view
+    return self.changeform_view(request, object_id, form_url, extra_context)
+           ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/utils/decorators.py", line 48, in _wrapper
+    return bound_method(*args, **kwargs)
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/utils/decorators.py", line 192, in _view_wrapper
+    result = _process_exception(request, e)
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/utils/decorators.py", line 190, in _view_wrapper
+    response = view_func(request, *args, **kwargs)
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/contrib/admin/options.py", line 1840, in changeform_view
+    return self._changeform_view(request, object_id, form_url, extra_context)
+           ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/contrib/admin/options.py", line 1870, in _changeform_view
+    raise PermissionDenied
+django.core.exceptions.PermissionDenied
+WARNING 2025-12-12 12:20:25,612 basehttp "GET /admin/accounts/user/1/change/ HTTP/1.1" 403 135
+WARNING 2025-12-12 12:20:26,817 log Forbidden (Permission denied): /admin/accounts/user/1/change/
+Traceback (most recent call last):
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/contrib/admin/options.py", line 719, in wrapper
+    return self.admin_site.admin_view(view)(*args, **kwargs)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/utils/decorators.py", line 192, in _view_wrapper
+    result = _process_exception(request, e)
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/utils/decorators.py", line 190, in _view_wrapper
+    response = view_func(request, *args, **kwargs)
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/views/decorators/cache.py", line 80, in _view_wrapper
+    response = view_func(request, *args, **kwargs)
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/contrib/admin/sites.py", line 246, in inner
+    return view(request, *args, **kwargs)
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/contrib/admin/options.py", line 1987, in change_view
+    return self.changeform_view(request, object_id, form_url, extra_context)
+           ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/utils/decorators.py", line 48, in _wrapper
+    return bound_method(*args, **kwargs)
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/utils/decorators.py", line 192, in _view_wrapper
+    result = _process_exception(request, e)
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/utils/decorators.py", line 190, in _view_wrapper
+    response = view_func(request, *args, **kwargs)
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/contrib/admin/options.py", line 1840, in changeform_view
+    return self._changeform_view(request, object_id, form_url, extra_context)
+           ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/contrib/admin/options.py", line 1870, in _changeform_view
+    raise PermissionDenied
+django.core.exceptions.PermissionDenied
+WARNING 2025-12-12 12:20:26,820 basehttp "GET /admin/accounts/user/1/change/ HTTP/1.1" 403 135
+INFO 2025-12-12 12:20:37,144 autoreload Watching for file changes with StatReloader
+WARNING 2025-12-12 12:20:38,136 log Forbidden (Permission denied): /admin/accounts/user/1/change/
+Traceback (most recent call last):
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/contrib/admin/options.py", line 719, in wrapper
+    return self.admin_site.admin_view(view)(*args, **kwargs)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/utils/decorators.py", line 192, in _view_wrapper
+    result = _process_exception(request, e)
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/utils/decorators.py", line 190, in _view_wrapper
+    response = view_func(request, *args, **kwargs)
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/views/decorators/cache.py", line 80, in _view_wrapper
+    response = view_func(request, *args, **kwargs)
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/contrib/admin/sites.py", line 246, in inner
+    return view(request, *args, **kwargs)
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/contrib/admin/options.py", line 1987, in change_view
+    return self.changeform_view(request, object_id, form_url, extra_context)
+           ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/utils/decorators.py", line 48, in _wrapper
+    return bound_method(*args, **kwargs)
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/utils/decorators.py", line 192, in _view_wrapper
+    result = _process_exception(request, e)
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/utils/decorators.py", line 190, in _view_wrapper
+    response = view_func(request, *args, **kwargs)
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/contrib/admin/options.py", line 1840, in changeform_view
+    return self._changeform_view(request, object_id, form_url, extra_context)
+           ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/contrib/admin/options.py", line 1870, in _changeform_view
+    raise PermissionDenied
+django.core.exceptions.PermissionDenied
+WARNING 2025-12-12 12:20:38,140 basehttp "GET /admin/accounts/user/1/change/ HTTP/1.1" 403 135
+WARNING 2025-12-12 12:20:38,929 log Forbidden (Permission denied): /admin/accounts/user/1/change/
+Traceback (most recent call last):
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/contrib/admin/options.py", line 719, in wrapper
+    return self.admin_site.admin_view(view)(*args, **kwargs)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/utils/decorators.py", line 192, in _view_wrapper
+    result = _process_exception(request, e)
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/utils/decorators.py", line 190, in _view_wrapper
+    response = view_func(request, *args, **kwargs)
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/views/decorators/cache.py", line 80, in _view_wrapper
+    response = view_func(request, *args, **kwargs)
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/contrib/admin/sites.py", line 246, in inner
+    return view(request, *args, **kwargs)
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/contrib/admin/options.py", line 1987, in change_view
+    return self.changeform_view(request, object_id, form_url, extra_context)
+           ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/utils/decorators.py", line 48, in _wrapper
+    return bound_method(*args, **kwargs)
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/utils/decorators.py", line 192, in _view_wrapper
+    result = _process_exception(request, e)
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/utils/decorators.py", line 190, in _view_wrapper
+    response = view_func(request, *args, **kwargs)
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/contrib/admin/options.py", line 1840, in changeform_view
+    return self._changeform_view(request, object_id, form_url, extra_context)
+           ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/contrib/admin/options.py", line 1870, in _changeform_view
+    raise PermissionDenied
+django.core.exceptions.PermissionDenied
+WARNING 2025-12-12 12:20:38,933 basehttp "GET /admin/accounts/user/1/change/ HTTP/1.1" 403 135
+INFO 2025-12-12 12:21:02,244 autoreload Watching for file changes with StatReloader
+WARNING 2025-12-12 12:21:03,536 log Not Found: /
+WARNING 2025-12-12 12:21:03,536 basehttp "GET / HTTP/1.1" 404 3467
+INFO 2025-12-12 12:21:10,222 basehttp "GET /admin/ HTTP/1.1" 200 8477
+INFO 2025-12-12 12:21:21,930 basehttp "POST /admin/logout/ HTTP/1.1" 200 3568
+INFO 2025-12-12 12:21:23,711 basehttp "GET /admin/ HTTP/1.1" 302 0
+INFO 2025-12-12 12:21:23,729 basehttp "GET /admin/login/?next=/admin/ HTTP/1.1" 200 4173
+INFO 2025-12-12 12:21:28,919 basehttp "POST /admin/login/?next=/admin/ HTTP/1.1" 302 0
+INFO 2025-12-12 12:21:28,933 basehttp "GET /admin/ HTTP/1.1" 200 14070
+INFO 2025-12-12 12:21:39,159 basehttp "GET /admin/illustrations/carmodel/ HTTP/1.1" 200 21905
+INFO 2025-12-12 12:21:39,207 basehttp "GET /admin/jsi18n/ HTTP/1.1" 200 3342
+INFO 2025-12-12 12:21:43,706 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 465
+INFO 2025-12-12 12:21:43,711 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 465
+INFO 2025-12-12 12:21:43,716 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 465
+INFO 2025-12-12 12:21:43,722 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 465
+INFO 2025-12-12 12:21:43,871 basehttp "GET /api/engine-models/?limit=1 HTTP/1.1" 200 1146
+INFO 2025-12-12 12:21:43,881 basehttp "GET /api/illustrations/?limit=5&ordering=-created_at HTTP/1.1" 200 4653
+INFO 2025-12-12 12:21:43,888 basehttp "GET /api/car-models/?limit=1 HTTP/1.1" 200 2253
+INFO 2025-12-12 12:21:43,889 basehttp "GET /api/manufacturers/?limit=1 HTTP/1.1" 200 776
+INFO 2025-12-12 12:21:48,189 basehttp "GET /api/car-models/vehicle-types/ HTTP/1.1" 200 1617
+INFO 2025-12-12 12:21:48,189 basehttp "GET /api/car-models/fuel-types/ HTTP/1.1" 200 242
+INFO 2025-12-12 12:21:48,195 basehttp "GET /api/manufacturers/ HTTP/1.1" 200 768
+INFO 2025-12-12 12:21:48,196 basehttp "GET /api/car-models/vehicle-types/ HTTP/1.1" 200 1617
+INFO 2025-12-12 12:21:48,197 basehttp "GET /api/car-models/ HTTP/1.1" 200 2253
+INFO 2025-12-12 12:21:48,209 basehttp "GET /api/car-models/fuel-types/ HTTP/1.1" 200 242
+INFO 2025-12-12 12:21:48,210 basehttp "GET /api/manufacturers/ HTTP/1.1" 200 768
+INFO 2025-12-12 12:21:48,211 basehttp "GET /api/car-models/ HTTP/1.1" 200 2253
+INFO 2025-12-12 12:22:13,354 basehttp "GET /api/manufacturers/ HTTP/1.1" 200 768
+INFO 2025-12-12 12:22:13,359 basehttp "GET /api/manufacturers/ HTTP/1.1" 200 768
+INFO 2025-12-12 12:22:29,210 basehttp "POST /api/manufacturers/ HTTP/1.1" 201 50
+INFO 2025-12-12 12:22:35,818 basehttp "OPTIONS /api/manufacturers// HTTP/1.1" 200 0
+WARNING 2025-12-12 12:22:35,833 log Not Found: /api/manufacturers//
+WARNING 2025-12-12 12:22:35,833 basehttp "DELETE /api/manufacturers// HTTP/1.1" 404 19122
+INFO 2025-12-12 12:22:41,173 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 465
+INFO 2025-12-12 12:22:41,179 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 465
+INFO 2025-12-12 12:22:41,185 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 465
+INFO 2025-12-12 12:22:41,190 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 465
+INFO 2025-12-12 12:22:41,309 basehttp "GET /api/manufacturers/ HTTP/1.1" 200 768
+INFO 2025-12-12 12:22:41,342 basehttp "GET /api/manufacturers/ HTTP/1.1" 200 768
+INFO 2025-12-12 12:22:51,654 basehttp "GET /api/car-models/vehicle-types/ HTTP/1.1" 200 1617
+INFO 2025-12-12 12:22:51,654 basehttp "GET /api/car-models/fuel-types/ HTTP/1.1" 200 242
+INFO 2025-12-12 12:22:51,658 basehttp "GET /api/car-models/ HTTP/1.1" 200 2253
+INFO 2025-12-12 12:22:51,658 basehttp "GET /api/manufacturers/ HTTP/1.1" 200 768
+INFO 2025-12-12 12:22:51,660 basehttp "GET /api/car-models/vehicle-types/ HTTP/1.1" 200 1617
+INFO 2025-12-12 12:22:51,667 basehttp "GET /api/car-models/fuel-types/ HTTP/1.1" 200 242
+INFO 2025-12-12 12:22:51,669 basehttp "GET /api/manufacturers/ HTTP/1.1" 200 768
+INFO 2025-12-12 12:22:51,671 basehttp "GET /api/car-models/ HTTP/1.1" 200 2253
+INFO 2025-12-12 12:22:54,271 basehttp "GET /api/car-models/?limit=1 HTTP/1.1" 200 2253
+INFO 2025-12-12 12:22:54,271 basehttp "GET /api/manufacturers/?limit=1 HTTP/1.1" 200 776
+INFO 2025-12-12 12:22:54,276 basehttp "GET /api/engine-models/?limit=1 HTTP/1.1" 200 1146
+INFO 2025-12-12 12:22:54,283 basehttp "GET /api/illustrations/?limit=5&ordering=-created_at HTTP/1.1" 200 4653
+INFO 2025-12-12 12:22:55,775 basehttp "GET /api/manufacturers/ HTTP/1.1" 200 768
+INFO 2025-12-12 12:22:55,779 basehttp "GET /api/manufacturers/ HTTP/1.1" 200 768
+INFO 2025-12-12 12:23:13,777 basehttp "OPTIONS /api/manufacturers/volvo/ HTTP/1.1" 200 0
+INFO 2025-12-12 12:23:13,789 basehttp "DELETE /api/manufacturers/volvo/ HTTP/1.1" 204 0
+INFO 2025-12-12 12:24:27,304 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 465
+INFO 2025-12-12 12:24:27,310 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 465
+INFO 2025-12-12 12:24:27,317 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 465
+INFO 2025-12-12 12:24:27,325 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 465
+INFO 2025-12-12 12:24:27,481 basehttp "GET /api/manufacturers/ HTTP/1.1" 200 779
+INFO 2025-12-12 12:24:27,497 basehttp "GET /api/manufacturers/ HTTP/1.1" 200 779
+INFO 2025-12-12 12:24:37,480 basehttp "OPTIONS /api/manufacturers/ud-trucks/ HTTP/1.1" 200 0
+INFO 2025-12-12 12:24:37,490 basehttp "DELETE /api/manufacturers/ud-trucks/ HTTP/1.1" 204 0
+INFO 2025-12-12 12:24:43,680 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 465
+INFO 2025-12-12 12:24:43,684 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 465
+INFO 2025-12-12 12:24:43,688 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 465
+INFO 2025-12-12 12:24:43,693 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 465
+INFO 2025-12-12 12:24:43,788 basehttp "GET /api/manufacturers/ HTTP/1.1" 200 708
+INFO 2025-12-12 12:24:43,795 basehttp "GET /api/manufacturers/ HTTP/1.1" 200 708
+WARNING 2025-12-12 12:24:52,569 log Not Found: /api/manufacturers//
+WARNING 2025-12-12 12:24:52,569 basehttp "DELETE /api/manufacturers// HTTP/1.1" 404 19122
+INFO 2025-12-12 12:24:57,672 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 465
+INFO 2025-12-12 12:24:57,678 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 465
+INFO 2025-12-12 12:24:57,683 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 465
+INFO 2025-12-12 12:24:57,688 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 465
+INFO 2025-12-12 12:24:57,793 basehttp "GET /api/manufacturers/ HTTP/1.1" 200 708
+INFO 2025-12-12 12:24:57,797 basehttp "GET /api/manufacturers/ HTTP/1.1" 200 708
+INFO 2025-12-12 12:25:11,278 basehttp "GET /admin/illustrations/carmodel/ HTTP/1.1" 200 21145
+INFO 2025-12-12 12:25:11,297 basehttp "GET /admin/jsi18n/ HTTP/1.1" 200 3342
+INFO 2025-12-12 12:25:14,251 basehttp "GET /admin/ HTTP/1.1" 200 14070
+INFO 2025-12-12 12:25:18,494 basehttp "GET /admin/illustrations/manufacturer/ HTTP/1.1" 200 19606
+INFO 2025-12-12 12:25:18,523 basehttp "GET /admin/jsi18n/ HTTP/1.1" 200 3342
+INFO 2025-12-12 12:25:28,807 basehttp "POST /admin/illustrations/manufacturer/ HTTP/1.1" 200 13306
+INFO 2025-12-12 12:25:28,830 basehttp "GET /static/admin/js/cancel.js HTTP/1.1" 200 884
+INFO 2025-12-12 12:25:29,641 basehttp "POST /admin/illustrations/manufacturer/ HTTP/1.1" 302 0
+INFO 2025-12-12 12:25:29,659 basehttp "GET /admin/illustrations/manufacturer/ HTTP/1.1" 200 19373
+INFO 2025-12-12 12:25:29,676 basehttp "GET /admin/jsi18n/ HTTP/1.1" 200 3342
+INFO 2025-12-12 12:26:43,994 autoreload /Volumes/Programming/React-Python/YAW/Illustration-System/backend/illustrations/views.py changed, reloading.
+INFO 2025-12-12 12:26:44,475 autoreload Watching for file changes with StatReloader
+INFO 2025-12-12 12:26:45,750 autoreload /Volumes/Programming/React-Python/YAW/Illustration-System/backend/illustrations/views.py changed, reloading.
+INFO 2025-12-12 12:26:46,103 autoreload Watching for file changes with StatReloader
+INFO 2025-12-12 12:26:52,084 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 465
+INFO 2025-12-12 12:26:52,089 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 465
+INFO 2025-12-12 12:26:52,095 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 465
+INFO 2025-12-12 12:26:52,103 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 465
+INFO 2025-12-12 12:26:52,200 basehttp "GET /api/manufacturers/ HTTP/1.1" 200 656
+INFO 2025-12-12 12:26:52,203 basehttp "GET /api/manufacturers/ HTTP/1.1" 200 656
+INFO 2025-12-12 12:27:04,256 basehttp "OPTIONS /api/manufacturers/nissan-mi/ HTTP/1.1" 200 0
+INFO 2025-12-12 12:27:04,265 basehttp "PUT /api/manufacturers/nissan-mi/ HTTP/1.1" 200 75
+INFO 2025-12-12 12:30:41,357 basehttp "GET /admin/accounts/user/ HTTP/1.1" 200 20870
+INFO 2025-12-12 12:30:41,387 basehttp "GET /admin/jsi18n/ HTTP/1.1" 200 3342
+INFO 2025-12-12 12:30:43,449 basehttp "GET /admin/accounts/user/1/change/ HTTP/1.1" 200 34806
+INFO 2025-12-12 12:30:43,482 basehttp "GET /admin/jsi18n/ HTTP/1.1" 200 3342
+INFO 2025-12-12 12:35:06,528 autoreload /Volumes/Programming/React-Python/YAW/Illustration-System/backend/illustrations/permissions.py changed, reloading.
+INFO 2025-12-12 12:35:07,008 autoreload Watching for file changes with StatReloader
+INFO 2025-12-12 12:35:36,135 autoreload /Volumes/Programming/React-Python/YAW/Illustration-System/backend/illustrations/views.py changed, reloading.
+INFO 2025-12-12 12:35:36,569 autoreload Watching for file changes with StatReloader
+INFO 2025-12-12 12:35:49,104 autoreload /Volumes/Programming/React-Python/YAW/Illustration-System/backend/illustrations/views.py changed, reloading.
+INFO 2025-12-12 12:35:49,434 autoreload Watching for file changes with StatReloader
+INFO 2025-12-12 12:35:53,700 autoreload /Volumes/Programming/React-Python/YAW/Illustration-System/backend/illustrations/views.py changed, reloading.
+INFO 2025-12-12 12:35:54,027 autoreload Watching for file changes with StatReloader
+INFO 2025-12-12 12:35:56,209 autoreload /Volumes/Programming/React-Python/YAW/Illustration-System/backend/illustrations/views.py changed, reloading.
+INFO 2025-12-12 12:35:56,555 autoreload Watching for file changes with StatReloader
+INFO 2025-12-12 12:35:57,734 autoreload /Volumes/Programming/React-Python/YAW/Illustration-System/backend/illustrations/views.py changed, reloading.
+INFO 2025-12-12 12:35:58,059 autoreload Watching for file changes with StatReloader
+INFO 2025-12-12 12:35:59,229 autoreload /Volumes/Programming/React-Python/YAW/Illustration-System/backend/illustrations/views.py changed, reloading.
+INFO 2025-12-12 12:35:59,565 autoreload Watching for file changes with StatReloader
+INFO 2025-12-12 12:36:01,767 autoreload /Volumes/Programming/React-Python/YAW/Illustration-System/backend/illustrations/views.py changed, reloading.
+INFO 2025-12-12 12:36:02,100 autoreload Watching for file changes with StatReloader
+INFO 2025-12-12 12:36:03,262 autoreload /Volumes/Programming/React-Python/YAW/Illustration-System/backend/illustrations/views.py changed, reloading.
+INFO 2025-12-12 12:36:03,591 autoreload Watching for file changes with StatReloader
+INFO 2025-12-12 12:36:07,867 autoreload /Volumes/Programming/React-Python/YAW/Illustration-System/backend/illustrations/views.py changed, reloading.
+INFO 2025-12-12 12:36:08,207 autoreload Watching for file changes with StatReloader
+INFO 2025-12-12 12:36:24,901 autoreload /Volumes/Programming/React-Python/YAW/Illustration-System/backend/illustrations/views.py changed, reloading.
+INFO 2025-12-12 12:36:25,345 autoreload Watching for file changes with StatReloader
+INFO 2025-12-12 12:37:37,007 autoreload /Volumes/Programming/React-Python/YAW/Illustration-System/backend/illustrations/views.py changed, reloading.
+INFO 2025-12-12 12:37:37,429 autoreload Watching for file changes with StatReloader
+INFO 2025-12-12 12:37:42,745 autoreload /Volumes/Programming/React-Python/YAW/Illustration-System/backend/illustrations/views.py changed, reloading.
+INFO 2025-12-12 12:37:43,090 autoreload Watching for file changes with StatReloader
+INFO 2025-12-12 12:37:44,252 autoreload /Volumes/Programming/React-Python/YAW/Illustration-System/backend/illustrations/views.py changed, reloading.
+INFO 2025-12-12 12:37:44,580 autoreload Watching for file changes with StatReloader
+INFO 2025-12-12 12:37:45,743 autoreload /Volumes/Programming/React-Python/YAW/Illustration-System/backend/illustrations/views.py changed, reloading.
+INFO 2025-12-12 12:37:46,068 autoreload Watching for file changes with StatReloader
+INFO 2025-12-12 12:38:17,293 autoreload /Volumes/Programming/React-Python/YAW/Illustration-System/backend/illustrations/views.py changed, reloading.
+INFO 2025-12-12 12:38:17,643 autoreload Watching for file changes with StatReloader
+INFO 2025-12-12 12:38:44,712 autoreload /Volumes/Programming/React-Python/YAW/Illustration-System/backend/illustrations/views.py changed, reloading.
+INFO 2025-12-12 12:38:45,134 autoreload Watching for file changes with StatReloader
+INFO 2025-12-12 12:42:34,794 autoreload /Volumes/Programming/React-Python/YAW/Illustration-System/backend/illustrations/views.py changed, reloading.
+INFO 2025-12-12 12:42:35,323 autoreload Watching for file changes with StatReloader
+INFO 2025-12-12 12:42:50,542 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 465
+INFO 2025-12-12 12:42:50,547 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 465
+INFO 2025-12-12 12:42:50,551 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 465
+INFO 2025-12-12 12:42:50,556 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 465
+INFO 2025-12-12 12:42:50,766 basehttp "GET /api/manufacturers/ HTTP/1.1" 200 657
+INFO 2025-12-12 12:42:50,805 basehttp "GET /api/manufacturers/ HTTP/1.1" 200 657
+INFO 2025-12-12 12:43:55,675 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 465
+INFO 2025-12-12 12:43:55,682 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 465
+INFO 2025-12-12 12:43:55,689 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 465
+INFO 2025-12-12 12:43:55,694 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 465
+INFO 2025-12-12 12:43:55,793 basehttp "GET /api/manufacturers/ HTTP/1.1" 200 657
+INFO 2025-12-12 12:43:55,798 basehttp "GET /api/manufacturers/ HTTP/1.1" 200 657
+INFO 2025-12-12 12:44:04,127 basehttp "OPTIONS /api/manufacturers/toyota/ HTTP/1.1" 200 0
+INFO 2025-12-12 12:44:04,144 basehttp "DELETE /api/manufacturers/toyota/ HTTP/1.1" 204 0
+INFO 2025-12-12 12:44:14,503 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 465
+INFO 2025-12-12 12:44:14,507 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 465
+INFO 2025-12-12 12:44:14,513 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 465
+INFO 2025-12-12 12:44:14,518 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 465
+INFO 2025-12-12 12:44:14,627 basehttp "GET /api/manufacturers/ HTTP/1.1" 200 595
+INFO 2025-12-12 12:44:14,646 basehttp "GET /api/manufacturers/ HTTP/1.1" 200 595
+INFO 2025-12-12 12:44:14,929 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 465
+INFO 2025-12-12 12:44:14,936 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 465
+INFO 2025-12-12 12:44:14,941 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 465
+INFO 2025-12-12 12:44:14,946 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 465
+INFO 2025-12-12 12:44:15,026 basehttp "GET /api/manufacturers/ HTTP/1.1" 200 595
+INFO 2025-12-12 12:44:15,030 basehttp "GET /api/manufacturers/ HTTP/1.1" 200 595
+INFO 2025-12-12 12:44:15,245 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 465
+INFO 2025-12-12 12:44:15,253 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 465
+INFO 2025-12-12 12:44:15,258 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 465
+INFO 2025-12-12 12:44:15,263 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 465
+INFO 2025-12-12 12:44:15,335 basehttp "GET /api/manufacturers/ HTTP/1.1" 200 595
+INFO 2025-12-12 12:44:15,341 basehttp "GET /api/manufacturers/ HTTP/1.1" 200 595
+INFO 2025-12-12 12:44:24,187 basehttp "OPTIONS /api/manufacturers/isuzu/ HTTP/1.1" 200 0
+INFO 2025-12-12 12:44:24,196 basehttp "PUT /api/manufacturers/isuzu/ HTTP/1.1" 200 63
+INFO 2025-12-12 12:44:47,751 autoreload Watching for file changes with StatReloader
+INFO 2025-12-12 12:45:02,712 basehttp "PUT /api/manufacturers/isuzu/ HTTP/1.1" 200 60
+INFO 2025-12-12 12:46:19,744 basehttp "GET /admin/accounts/user/ HTTP/1.1" 200 20870
+INFO 2025-12-12 12:46:19,777 basehttp "GET /admin/jsi18n/ HTTP/1.1" 200 3342
+INFO 2025-12-12 12:46:21,386 basehttp "GET /admin/accounts/user/1/change/ HTTP/1.1" 200 34806
+INFO 2025-12-12 12:46:21,411 basehttp "GET /admin/jsi18n/ HTTP/1.1" 200 3342
+INFO 2025-12-12 12:46:28,248 basehttp "POST /admin/accounts/user/1/change/ HTTP/1.1" 302 0
+INFO 2025-12-12 12:46:28,262 basehttp "GET /admin/accounts/user/ HTTP/1.1" 200 21087
+INFO 2025-12-12 12:46:28,287 basehttp "GET /admin/jsi18n/ HTTP/1.1" 200 3342
+INFO 2025-12-12 12:46:33,503 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 466
+INFO 2025-12-12 12:46:33,513 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 466
+INFO 2025-12-12 12:46:33,520 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 466
+INFO 2025-12-12 12:46:33,524 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 466
+INFO 2025-12-12 12:46:33,664 basehttp "GET /api/manufacturers/ HTTP/1.1" 200 595
+INFO 2025-12-12 12:46:33,724 basehttp "GET /api/manufacturers/ HTTP/1.1" 200 595
+INFO 2025-12-12 12:46:40,175 basehttp "OPTIONS /api/manufacturers/nissan/ HTTP/1.1" 200 0
+WARNING 2025-12-12 12:46:40,180 log Forbidden: /api/manufacturers/nissan/
+WARNING 2025-12-12 12:46:40,180 basehttp "PUT /api/manufacturers/nissan/ HTTP/1.1" 403 67
+INFO 2025-12-12 12:46:48,952 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 466
+INFO 2025-12-12 12:46:48,958 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 466
+INFO 2025-12-12 12:46:48,964 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 466
+INFO 2025-12-12 12:46:48,968 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 466
+INFO 2025-12-12 12:46:49,068 basehttp "GET /api/manufacturers/ HTTP/1.1" 200 595
+INFO 2025-12-12 12:46:49,073 basehttp "GET /api/manufacturers/ HTTP/1.1" 200 595
+WARNING 2025-12-12 12:46:57,055 log Forbidden: /api/manufacturers/nissan/
+WARNING 2025-12-12 12:46:57,055 basehttp "DELETE /api/manufacturers/nissan/ HTTP/1.1" 403 67
+INFO 2025-12-12 12:47:06,861 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 466
+INFO 2025-12-12 12:47:06,867 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 466
+INFO 2025-12-12 12:47:06,871 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 466
+INFO 2025-12-12 12:47:06,877 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 466
+INFO 2025-12-12 12:47:06,950 basehttp "GET /api/manufacturers/ HTTP/1.1" 200 595
+INFO 2025-12-12 12:47:06,956 basehttp "GET /api/manufacturers/ HTTP/1.1" 200 595
