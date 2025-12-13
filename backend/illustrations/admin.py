@@ -18,35 +18,59 @@ User = get_user_model()
 # ==========================================
 @admin.register(Manufacturer)
 class ManufacturerAdmin(admin.ModelAdmin):
-    list_display = ['name', 'country', 'car_model_count', 'slug']
+    list_display = ['name', 'country', 'engine_count', 'car_model_count', 'slug']
     search_fields = ['name', 'country']
     prepopulated_fields = {'slug': ('name',)}
     list_filter = ['country']
+    ordering = ['name']
     
     def get_queryset(self, request):
         qs = super().get_queryset(request)
-        return qs.annotate(_car_model_count=Count('carmodel'))
+        return qs.annotate(
+            _car_model_count=Count('car_models', distinct=True),
+            _engine_count=Count('engines', distinct=True)
+        )
     
     def car_model_count(self, obj):
         return obj._car_model_count
     car_model_count.short_description = 'Car Models'
     car_model_count.admin_order_field = '_car_model_count'
+    
+    def engine_count(self, obj):
+        return obj._engine_count
+    engine_count.short_description = 'Engines'
+    engine_count.admin_order_field = '_engine_count'
+
 
 # ==========================================
-# Car Model Admin
+# Engine Model Admin
 # ==========================================
-@admin.register(CarModel)
-class CarModelAdmin(admin.ModelAdmin):
-    list_display = ['name','year','model_code', 'chassis_number','fuel_type','vehicle_type','manufacturer_link', 'engine_model_count', 'slug']
-    list_filter = ['manufacturer']
-    search_fields = ['name', 'manufacturer__name']
-    prepopulated_fields = {'slug': ('name',)}
+@admin.register(EngineModel)
+class EngineModelAdmin(admin.ModelAdmin):
+    list_display = [
+        'name', 'engine_code', 'manufacturer_link', 'fuel_type',
+        'displacement', 'horsepower', 'torque',
+        'car_model_count', 'part_category_count', 'slug'
+    ]
+    list_filter = ['manufacturer', 'fuel_type']
+    search_fields = ['name', 'engine_code', 'manufacturer__name']
+    readonly_fields = ['slug']
+    raw_id_fields = ['manufacturer']
     
+    fieldsets = (
+        ('Basic Information', {
+            'fields': ('manufacturer', 'name', 'engine_code', 'slug')
+        }),
+        ('Technical Specifications', {
+            'fields': ('fuel_type', 'displacement', 'horsepower', 'torque')
+        }),
+    )
     
     def get_queryset(self, request):
         qs = super().get_queryset(request)
         return qs.select_related('manufacturer').annotate(
-            _engine_model_count=Count('engines')  # ✅ Changed from 'enginemodel' to 'engines'
+            _car_model_count=Count('car_models', distinct=True),
+            _part_category_count=Count('part_categories', distinct=True)
         )
     
     def manufacturer_link(self, obj):
@@ -55,67 +79,111 @@ class CarModelAdmin(admin.ModelAdmin):
     manufacturer_link.short_description = 'Manufacturer'
     manufacturer_link.admin_order_field = 'manufacturer__name'
     
-    def engine_model_count(self, obj):
-        return obj._engine_model_count
-    engine_model_count.short_description = 'Engine Models'
-    engine_model_count.admin_order_field = '_engine_model_count'
-    
- # ==========================================
-# Engine Model Admin
-# ==========================================
-@admin.register(EngineModel)
-class EngineModelAdmin(admin.ModelAdmin):
-    list_display = ['name', 'car_model_link', 'manufacturer_name', 'part_category_count', 'slug']
-    list_filter = ['car_model__manufacturer']
-    search_fields = ['name', 'car_model__name', 'car_model__manufacturer__name']
-    # ✅ REMOVED prepopulated_fields - slug is now auto-generated
-    readonly_fields = ['slug']  # ✅ Make slug read-only so it's auto-generated
-    
-    def get_queryset(self, request):
-        qs = super().get_queryset(request)
-        return qs.select_related(
-            'car_model__manufacturer'
-        ).annotate(
-            _part_category_count=Count('partcategory')
-        )
-    
-    def car_model_link(self, obj):
-        url = reverse('admin:illustrations_carmodel_change', args=[obj.car_model.id])
-        return format_html('<a href="{}">{}</a>', url, obj.car_model.name)
-    car_model_link.short_description = 'Car Model'
-    car_model_link.admin_order_field = 'car_model__name'
-    
-    def manufacturer_name(self, obj):
-        return obj.car_model.manufacturer.name
-    manufacturer_name.short_description = 'Manufacturer'
-    manufacturer_name.admin_order_field = 'car_model__manufacturer__name'
+    def car_model_count(self, obj):
+        return obj._car_model_count
+    car_model_count.short_description = 'Car Models'
+    car_model_count.admin_order_field = '_car_model_count'
     
     def part_category_count(self, obj):
         return obj._part_category_count
     part_category_count.short_description = 'Part Categories'
     part_category_count.admin_order_field = '_part_category_count'
 
+
+# ==========================================
+# Car Model Admin
+# ==========================================
+@admin.register(CarModel)
+class CarModelAdmin(admin.ModelAdmin):
+    list_display = [
+        'name', 'manufacturer_link', 'vehicle_type',
+        'year_range', 'model_code', 'chassis_code',
+        'engine_count', 'slug'
+    ]
+    list_filter = ['manufacturer', 'vehicle_type']
+    search_fields = ['name', 'manufacturer__name', 'model_code', 'chassis_code']
+    prepopulated_fields = {'slug': ('name',)}
+    filter_horizontal = ['engines']
+    raw_id_fields = ['manufacturer']
+    
+    fieldsets = (
+        ('Basic Information', {
+            'fields': ('manufacturer', 'name', 'slug')
+        }),
+        ('Classification', {
+            'fields': ('vehicle_type',)
+        }),
+        ('Production Period', {
+            'fields': ('year_from', 'year_to')
+        }),
+        ('Technical Details', {
+            'fields': ('model_code', 'chassis_code')
+        }),
+        ('Engine Options', {
+            'fields': ('engines',),
+            'description': 'Select all engine options available for this car model'
+        }),
+    )
+    
+    def get_queryset(self, request):
+        qs = super().get_queryset(request)
+        return qs.select_related('manufacturer').annotate(
+            _engine_count=Count('engines', distinct=True)
+        )
+    
+    def manufacturer_link(self, obj):
+        url = reverse('admin:illustrations_manufacturer_change', args=[obj.manufacturer.id])
+        return format_html('<a href="{}">{}</a>', url, obj.manufacturer.name)
+    manufacturer_link.short_description = 'Manufacturer'
+    manufacturer_link.admin_order_field = 'manufacturer__name'
+    
+    def year_range(self, obj):
+        if obj.year_from and obj.year_to:
+            return f"{obj.year_from} - {obj.year_to}"
+        elif obj.year_from:
+            return f"{obj.year_from} - Present"
+        return "-"
+    year_range.short_description = 'Production Years'
+    
+    def engine_count(self, obj):
+        return obj._engine_count
+    engine_count.short_description = 'Engines'
+    engine_count.admin_order_field = '_engine_count'
+
+
 # ==========================================
 # Part Category Admin
 # ==========================================
 @admin.register(PartCategory)
 class PartCategoryAdmin(admin.ModelAdmin):
-    list_display = ['name', 'engine_model_link', 'subcategory_count', 'illustration_count', 'slug']
-    list_filter = ['engine_model']
-    search_fields = ['name', 'engine_model__name']
+    list_display = [
+        'name', 'engine_model_link', 'subcategory_count', 
+        'illustration_count', 'slug'
+    ]
+    list_filter = ['engine_model__manufacturer', 'engine_model']
+    search_fields = ['name', 'description', 'engine_model__name']
     prepopulated_fields = {'slug': ('name',)}
+    raw_id_fields = ['engine_model']
     
+    fieldsets = (
+        ('Basic Information', {
+            'fields': ('engine_model', 'name', 'slug')
+        }),
+        ('Details', {
+            'fields': ('description',)
+        }),
+    )
     
     def get_queryset(self, request):
         qs = super().get_queryset(request)
-        return qs.select_related('engine_model').annotate(
-            _subcategory_count=Count('partsubcategory'),
-            _illustration_count=Count('illustration')
+        return qs.select_related('engine_model__manufacturer').annotate(
+            _subcategory_count=Count('subcategories', distinct=True),
+            _illustration_count=Count('illustrations', distinct=True)
         )
     
     def engine_model_link(self, obj):
         url = reverse('admin:illustrations_enginemodel_change', args=[obj.engine_model.id])
-        return format_html('<a href="{}">{}</a>', url, obj.engine_model.name)
+        return format_html('<a href="{}">{}</a>', url, obj.engine_model)
     engine_model_link.short_description = 'Engine Model'
     engine_model_link.admin_order_field = 'engine_model__name'
     
@@ -135,16 +203,34 @@ class PartCategoryAdmin(admin.ModelAdmin):
 # ==========================================
 @admin.register(PartSubCategory)
 class PartSubCategoryAdmin(admin.ModelAdmin):
-    list_display = ['name', 'part_category_link', 'illustration_count', 'slug']
-    list_filter = ['part_category']
-    search_fields = ['name', 'part_category__name']
+    list_display = [
+        'name', 'part_category_link', 'engine_model_info',
+        'illustration_count', 'slug'
+    ]
+    list_filter = [
+        'part_category__engine_model__manufacturer',
+        'part_category__engine_model',
+        'part_category'
+    ]
+    search_fields = ['name', 'description', 'part_category__name']
     prepopulated_fields = {'slug': ('name',)}
     raw_id_fields = ['part_category']
     
+    fieldsets = (
+        ('Basic Information', {
+            'fields': ('part_category', 'name', 'slug')
+        }),
+        ('Details', {
+            'fields': ('description',)
+        }),
+    )
+    
     def get_queryset(self, request):
         qs = super().get_queryset(request)
-        return qs.select_related('part_category').annotate(
-            _illustration_count=Count('illustration')
+        return qs.select_related(
+            'part_category__engine_model__manufacturer'
+        ).annotate(
+            _illustration_count=Count('illustrations', distinct=True)
         )
     
     def part_category_link(self, obj):
@@ -152,6 +238,11 @@ class PartSubCategoryAdmin(admin.ModelAdmin):
         return format_html('<a href="{}">{}</a>', url, obj.part_category.name)
     part_category_link.short_description = 'Part Category'
     part_category_link.admin_order_field = 'part_category__name'
+    
+    def engine_model_info(self, obj):
+        return f"{obj.part_category.engine_model}"
+    engine_model_info.short_description = 'Engine Model'
+    engine_model_info.admin_order_field = 'part_category__engine_model__name'
     
     def illustration_count(self, obj):
         return obj._illustration_count
@@ -165,19 +256,24 @@ class PartSubCategoryAdmin(admin.ModelAdmin):
 class IllustrationFileInline(admin.TabularInline):
     model = IllustrationFile
     extra = 1
-    fields = ['file', 'file_preview', 'uploaded_at']
-    readonly_fields = ['uploaded_at', 'file_preview']
+    fields = ['file', 'file_type', 'file_preview', 'uploaded_at']
+    readonly_fields = ['file_type', 'uploaded_at', 'file_preview']
     
     def file_preview(self, obj):
         if obj.file:
-            if obj.file.name.lower().endswith(('.png', '.jpg', '.jpeg', '.gif', '.bmp', '.webp')):
+            if obj.file_type == 'image':
                 return format_html(
                     '<a href="{}" target="_blank"><img src="{}" style="max-height: 50px; max-width: 100px;" /></a>',
                     obj.file.url, obj.file.url
                 )
+            elif obj.file_type == 'pdf':
+                return format_html(
+                    '<a href="{}" target="_blank">📄 PDF</a>',
+                    obj.file.url
+                )
             else:
                 return format_html(
-                    '<a href="{}" target="_blank">View File</a>',
+                    '<a href="{}" target="_blank">📎 File</a>',
                     obj.file.url
                 )
         return "-"
@@ -192,14 +288,26 @@ class IllustrationAdmin(admin.ModelAdmin):
     list_display = [
         'title', 'user_display', 'engine_model_link', 
         'part_category_link', 'part_subcategory_link', 
-        'file_count', 'created_at'
+        'car_model_count', 'file_count', 'created_at'
     ]
-    list_filter = ['created_at', 'engine_model', 'part_category', 'part_subcategory', 'user']
-    search_fields = ['title', 'description', 'user__username', 'user__email']
+    list_filter = [
+        'created_at',
+        'engine_model__manufacturer',
+        'engine_model',
+        'part_category',
+        'part_subcategory',
+        'user'
+    ]
+    search_fields = [
+        'title', 'description',
+        'user__username', 'user__email',
+        'engine_model__name', 'part_category__name'
+    ]
     raw_id_fields = ['user', 'engine_model', 'part_category', 'part_subcategory']
+    filter_horizontal = ['applicable_car_models']
     date_hierarchy = 'created_at'
     inlines = [IllustrationFileInline]
-    readonly_fields = ['created_at']
+    readonly_fields = ['created_at', 'updated_at']
     
     fieldsets = (
         ('Basic Information', {
@@ -208,33 +316,39 @@ class IllustrationAdmin(admin.ModelAdmin):
         ('Classification', {
             'fields': ('engine_model', 'part_category', 'part_subcategory')
         }),
+        ('Applicable Car Models', {
+            'fields': ('applicable_car_models',),
+            'description': 'Select car models where this part/illustration is applicable (optional)'
+        }),
         ('Metadata', {
-            'fields': ('created_at',),
+            'fields': ('created_at', 'updated_at'),
             'classes': ('collapse',)
         }),
     )
     
     def get_queryset(self, request):
-        """Optimize queries with select_related and annotate file count"""
         qs = super().get_queryset(request)
         return qs.select_related(
             'user', 
-            'engine_model__car_model__manufacturer', 
-            'part_category', 
-            'part_subcategory'
-        ).prefetch_related('files').annotate(
-            _file_count=Count('files')
+            'engine_model__manufacturer',
+            'part_category__engine_model',
+            'part_subcategory__part_category'
+        ).prefetch_related(
+            'files',
+            'applicable_car_models'
+        ).annotate(
+            _file_count=Count('files', distinct=True),
+            _car_model_count=Count('applicable_car_models', distinct=True)
         )
     
     def user_display(self, obj):
-        # Simple display without link to avoid URL errors
-        return f"{obj.user.username} ({obj.user.email})"
+        return f"{obj.user.username}"
     user_display.short_description = 'User'
     user_display.admin_order_field = 'user__username'
     
     def engine_model_link(self, obj):
         url = reverse('admin:illustrations_enginemodel_change', args=[obj.engine_model.id])
-        return format_html('<a href="{}">{}</a>', url, obj.engine_model.name)
+        return format_html('<a href="{}">{}</a>', url, obj.engine_model)
     engine_model_link.short_description = 'Engine Model'
     engine_model_link.admin_order_field = 'engine_model__name'
     
@@ -252,14 +366,15 @@ class IllustrationAdmin(admin.ModelAdmin):
     part_subcategory_link.short_description = 'Part Subcategory'
     part_subcategory_link.admin_order_field = 'part_subcategory__name'
     
+    def car_model_count(self, obj):
+        return obj._car_model_count
+    car_model_count.short_description = 'Car Models'
+    car_model_count.admin_order_field = '_car_model_count'
+    
     def file_count(self, obj):
         return obj._file_count
     file_count.short_description = 'Files'
     file_count.admin_order_field = '_file_count'
-    
-    def description_short(self, obj):
-        return Truncator(obj.description).chars(100)
-    description_short.short_description = 'Description'
 
 
 # ==========================================
@@ -268,25 +383,39 @@ class IllustrationAdmin(admin.ModelAdmin):
 @admin.register(IllustrationFile)
 class IllustrationFileAdmin(admin.ModelAdmin):
     list_display = [
-        'id', 'illustration_link', 'user_display', 
-        'file_preview', 'file_name', 'uploaded_at'
+        'id', 'illustration_link', 'file_type',
+        'user_display', 'file_preview', 'file_name', 'uploaded_at'
     ]
-    list_filter = ['uploaded_at', 'illustration__engine_model']
+    list_filter = [
+        'file_type',
+        'uploaded_at',
+        'illustration__engine_model__manufacturer',
+        'illustration__engine_model'
+    ]
     search_fields = [
         'illustration__title', 
         'illustration__user__username',
         'illustration__user__email'
     ]
     raw_id_fields = ['illustration']
-    readonly_fields = ['uploaded_at', 'file_preview_large']
+    readonly_fields = ['file_type', 'uploaded_at', 'file_preview_large']
     date_hierarchy = 'uploaded_at'
     
+    fieldsets = (
+        ('File Information', {
+            'fields': ('illustration', 'file', 'file_type', 'file_preview_large')
+        }),
+        ('Metadata', {
+            'fields': ('uploaded_at',),
+            'classes': ('collapse',)
+        }),
+    )
+    
     def get_queryset(self, request):
-        """Optimize queries with select_related"""
         qs = super().get_queryset(request)
         return qs.select_related(
             'illustration__user',
-            'illustration__engine_model__car_model__manufacturer',
+            'illustration__engine_model__manufacturer',
             'illustration__part_category',
             'illustration__part_subcategory'
         )
@@ -298,8 +427,7 @@ class IllustrationFileAdmin(admin.ModelAdmin):
     illustration_link.admin_order_field = 'illustration__title'
     
     def user_display(self, obj):
-        # Simple display without link to avoid URL errors
-        return f"{obj.illustration.user.username} ({obj.illustration.user.email})"
+        return f"{obj.illustration.user.username}"
     user_display.short_description = 'User'
     user_display.admin_order_field = 'illustration__user__username'
     
@@ -309,14 +437,19 @@ class IllustrationFileAdmin(admin.ModelAdmin):
     
     def file_preview(self, obj):
         if obj.file:
-            if obj.file.name.lower().endswith(('.png', '.jpg', '.jpeg', '.gif', '.bmp', '.webp')):
+            if obj.file_type == 'image':
                 return format_html(
                     '<a href="{}" target="_blank"><img src="{}" style="max-height: 40px; max-width: 60px;" /></a>',
                     obj.file.url, obj.file.url
                 )
+            elif obj.file_type == 'pdf':
+                return format_html(
+                    '<a href="{}" target="_blank">📄 PDF</a>',
+                    obj.file.url
+                )
             else:
                 return format_html(
-                    '<a href="{}" target="_blank">📄 View</a>',
+                    '<a href="{}" target="_blank">📎 View</a>',
                     obj.file.url
                 )
         return "-"
@@ -324,25 +457,20 @@ class IllustrationFileAdmin(admin.ModelAdmin):
     
     def file_preview_large(self, obj):
         if obj.file:
-            if obj.file.name.lower().endswith(('.png', '.jpg', '.jpeg', '.gif', '.bmp', '.webp')):
+            if obj.file_type == 'image':
                 return format_html(
                     '<a href="{}" target="_blank"><img src="{}" style="max-width: 300px; max-height: 300px;" /></a>',
                     obj.file.url, obj.file.url
                 )
+            elif obj.file_type == 'pdf':
+                return format_html(
+                    '<a href="{}" target="_blank">📄 Open PDF</a>',
+                    obj.file.url
+                )
             else:
                 return format_html(
-                    '<a href="{}" target="_blank">📄 Open File</a>',
+                    '<a href="{}" target="_blank">📎 Open File</a>',
                     obj.file.url
                 )
         return "-"
     file_preview_large.short_description = 'File Preview'
-    
-    fieldsets = (
-        ('File Information', {
-            'fields': ('illustration', 'file', 'file_preview_large')
-        }),
-        ('Metadata', {
-            'fields': ('uploaded_at',),
-            'classes': ('collapse',)
-        }),
-    )

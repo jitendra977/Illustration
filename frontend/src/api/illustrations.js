@@ -65,31 +65,7 @@ export const manufacturerAPI = {
 };
 
 // ============================================================================
-// CAR MODELS - ✅ UPDATED: Use ID for all operations
-// ============================================================================
-export const carModelAPI = {
-  getAll: async (params = {}) => {
-    try {
-      const response = await api.get('/car-models/', { params });
-      return response;
-    } catch (error) {
-      console.error('Car Model API error:', error);
-      throw error;
-    }
-  },
-  getById: (id) => api.get(`/car-models/${id}/`),
-  getByManufacturer: (manufacturerId) => 
-    api.get('/car-models/', { params: { manufacturer: manufacturerId } }),
-  create: (data) => api.post('/car-models/', data),
-  update: (id, data) => api.put(`/car-models/${id}/`, data),
-  partialUpdate: (id, data) => api.patch(`/car-models/${id}/`, data),
-  delete: (id) => api.delete(`/car-models/${id}/`),
-  getVehicleTypes: () => api.get('/car-models/vehicle-types/'),
-  getFuelTypes: () => api.get('/car-models/fuel-types/'),
-};
-
-// ============================================================================
-// ENGINE MODELS
+// ENGINE MODELS - ✅ UPDATED: Now independent from CarModel
 // ============================================================================
 export const engineModelAPI = {
   getAll: async (params = {}) => {
@@ -102,14 +78,36 @@ export const engineModelAPI = {
     }
   },
   getBySlug: (slug) => api.get(`/engine-models/${slug}/`),
-  getByCarModel: (carModelId) => 
-    api.get('/engine-models/', { params: { car_model: carModelId } }),
   getByManufacturer: (manufacturerId) => 
-    api.get('/engine-models/', { params: { car_model__manufacturer: manufacturerId } }),
+    api.get('/engine-models/', { params: { manufacturer: manufacturerId } }),
+  getFuelTypes: () => api.get('/engine-models/fuel-types/'),
   create: (data) => api.post('/engine-models/', data),
   update: (slug, data) => api.put(`/engine-models/${slug}/`, data),
   partialUpdate: (slug, data) => api.patch(`/engine-models/${slug}/`, data),
   delete: (slug) => api.delete(`/engine-models/${slug}/`),
+};
+
+// ============================================================================
+// CAR MODELS - ✅ UPDATED: Now uses slug, has ManyToMany engines
+// ============================================================================
+export const carModelAPI = {
+  getAll: async (params = {}) => {
+    try {
+      const response = await api.get('/car-models/', { params });
+      return response;
+    } catch (error) {
+      console.error('Car Model API error:', error);
+      throw error;
+    }
+  },
+  getBySlug: (slug) => api.get(`/car-models/${slug}/`),
+  getByManufacturer: (manufacturerId) => 
+    api.get('/car-models/', { params: { manufacturer: manufacturerId } }),
+  create: (data) => api.post('/car-models/', data),
+  update: (slug, data) => api.put(`/car-models/${slug}/`, data),
+  partialUpdate: (slug, data) => api.patch(`/car-models/${slug}/`, data),
+  delete: (slug) => api.delete(`/car-models/${slug}/`),
+  getVehicleTypes: () => api.get('/car-models/vehicle-types/'),
 };
 
 // ============================================================================
@@ -149,7 +147,7 @@ export const partSubCategoryAPI = {
 };
 
 // ============================================================================
-// ILLUSTRATIONS
+// ILLUSTRATIONS - ✅ UPDATED: Added applicable_car_models support
 // ============================================================================
 export const illustrationAPI = {
   getAll: (params) => api.get('/illustrations/', { params }),
@@ -159,10 +157,20 @@ export const illustrationAPI = {
     
     // Add regular fields
     Object.keys(data).forEach(key => {
-      if (key !== 'uploaded_files' && data[key] !== null && data[key] !== undefined) {
+      if (key === 'uploaded_files' || key === 'applicable_car_models') {
+        return; // Handle separately
+      }
+      if (data[key] !== null && data[key] !== undefined) {
         formData.append(key, data[key]);
       }
     });
+    
+    // Add applicable car models (ManyToMany)
+    if (data.applicable_car_models && data.applicable_car_models.length > 0) {
+      data.applicable_car_models.forEach(carModelId => {
+        formData.append('applicable_car_models', carModelId);
+      });
+    }
     
     // Add files
     if (data.uploaded_files && data.uploaded_files.length > 0) {
@@ -177,28 +185,46 @@ export const illustrationAPI = {
   },
   update: (id, data) => {
     const formData = new FormData();
+    
     Object.keys(data).forEach(key => {
-      if (key !== 'uploaded_files' && data[key] !== null && data[key] !== undefined) {
+      if (key === 'uploaded_files' || key === 'applicable_car_models') {
+        return;
+      }
+      if (data[key] !== null && data[key] !== undefined) {
         formData.append(key, data[key]);
       }
     });
     
-    // Use PUT for full updates
+    // Add applicable car models
+    if (data.applicable_car_models) {
+      data.applicable_car_models.forEach(carModelId => {
+        formData.append('applicable_car_models', carModelId);
+      });
+    }
+    
     return api.put(`/illustrations/${id}/`, formData, {
       headers: { 'Content-Type': 'multipart/form-data' }
     });
   },
   partialUpdate: (id, data) => {
-    // Handle both FormData and regular JSON for PATCH
     if (data instanceof FormData || (data.uploaded_files && data.uploaded_files.length > 0)) {
       const formData = data instanceof FormData ? data : new FormData();
       
       if (!(data instanceof FormData)) {
         Object.keys(data).forEach(key => {
-          if (key !== 'uploaded_files' && data[key] !== null && data[key] !== undefined) {
+          if (key === 'uploaded_files' || key === 'applicable_car_models') {
+            return;
+          }
+          if (data[key] !== null && data[key] !== undefined) {
             formData.append(key, data[key]);
           }
         });
+        
+        if (data.applicable_car_models) {
+          data.applicable_car_models.forEach(carModelId => {
+            formData.append('applicable_car_models', carModelId);
+          });
+        }
         
         if (data.uploaded_files && data.uploaded_files.length > 0) {
           data.uploaded_files.forEach(file => {
@@ -215,6 +241,15 @@ export const illustrationAPI = {
     }
   },
   delete: (id) => api.delete(`/illustrations/${id}/`),
+  addFiles: (id, files) => {
+    const formData = new FormData();
+    files.forEach(file => {
+      formData.append('files', file);
+    });
+    return api.post(`/illustrations/${id}/add-files/`, formData, {
+      headers: { 'Content-Type': 'multipart/form-data' }
+    });
+  },
 };
 
 // ============================================================================

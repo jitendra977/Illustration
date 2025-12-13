@@ -21,6 +21,11 @@ import {
   Fab,
   SwipeableDrawer,
   Divider,
+  Chip,
+  FormControl,
+  InputLabel,
+  Select,
+  OutlinedInput,
   alpha
 } from '@mui/material';
 import {
@@ -31,9 +36,11 @@ import {
   DirectionsCar as CarIcon,
   Close as CloseIcon,
   MoreVert as MoreIcon,
-  Store as StoreIcon
+  Store as StoreIcon,
+  Build as EngineIcon,
+  CalendarToday as CalendarIcon
 } from '@mui/icons-material';
-import { useCarModels, useManufacturers, useVehicleTypes, useFuelTypes } from '../../hooks/useIllustrations';
+import { useCarModels, useManufacturers, useVehicleTypes, useEngineModels } from '../../hooks/useIllustrations';
 
 const MobileCarModels = () => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -41,14 +48,13 @@ const MobileCarModels = () => {
   const [editingCarModel, setEditingCarModel] = useState(null);
   const [formData, setFormData] = useState({
     manufacturer: '',
-    vehicle_type: '',
-    year: '',
-    first_registration: '',
-    model_code: '',
-    chassis_number: '',
-    fuel_type: '',
     name: '',
-    slug: ''
+    vehicle_type: '',
+    year_from: '',
+    year_to: '',
+    model_code: '',
+    chassis_code: '',
+    engines: [] // ManyToMany field
   });
   const [errors, setErrors] = useState({});
   const [selectedCarModel, setSelectedCarModel] = useState(null);
@@ -57,51 +63,39 @@ const MobileCarModels = () => {
   const { carModels, loading, error, createCarModel, updateCarModel, deleteCarModel } = useCarModels();
   const { manufacturers } = useManufacturers();
   const { vehicleTypes, loading: vehicleTypesLoading } = useVehicleTypes();
-  const { fuelTypes, loading: fuelTypesLoading } = useFuelTypes();
+  const { engineModels } = useEngineModels();
 
   const filteredCarModels = carModels.filter(c =>
     c.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    c.manufacturer_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    (c.manufacturer?.name && c.manufacturer.name.toLowerCase().includes(searchTerm.toLowerCase()))
+    c.manufacturer_name?.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   const handleOpenModal = (carModel = null) => {
     if (carModel) {
       setEditingCarModel(carModel);
-      
-      // Check if vehicle_type value exists in available options
-      const validVehicleType = vehicleTypes.some(type => type.value === carModel.vehicle_type) 
-        ? carModel.vehicle_type 
-        : '';
-      
-      // Check if fuel_type value exists in available options
-      const validFuelType = fuelTypes.some(type => type.value === carModel.fuel_type)
-        ? carModel.fuel_type
-        : '';
-      
       setFormData({
-        manufacturer: carModel.manufacturer || carModel.manufacturer_id,
-        vehicle_type: validVehicleType,
-        year: carModel.year || '',
-        first_registration: carModel.first_registration || '',
-        model_code: carModel.model_code || '',
-        chassis_number: carModel.chassis_number || '',
-        fuel_type: validFuelType,
+        manufacturer: carModel.manufacturer || '',
         name: carModel.name || '',
-        slug: carModel.slug || '',
+        vehicle_type: vehicleTypes.some(t => t.value === carModel.vehicle_type) 
+          ? carModel.vehicle_type 
+          : '',
+        year_from: carModel.year_from || '',
+        year_to: carModel.year_to || '',
+        model_code: carModel.model_code || '',
+        chassis_code: carModel.chassis_code || '',
+        engines: carModel.engines || []
       });
     } else {
       setEditingCarModel(null);
       setFormData({
         manufacturer: '',
-        vehicle_type: '',
-        year: '',
-        first_registration: '',
-        model_code: '',
-        chassis_number: '',
-        fuel_type: '',
         name: '',
-        slug: ''
+        vehicle_type: '',
+        year_from: '',
+        year_to: '',
+        model_code: '',
+        chassis_code: '',
+        engines: []
       });
     }
     setErrors({});
@@ -111,17 +105,15 @@ const MobileCarModels = () => {
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
-
-    // Auto-generate slug from name when creating (not editing)
-    if (name === 'name' && !editingCarModel) {
-      const slug = value.toLowerCase()
-        .replace(/[^a-z0-9\s]+/g, '')
-        .replace(/\s+/g, '-')
-        .replace(/(^-|-$)/g, '');
-      setFormData(prev => ({ ...prev, slug }));
-    }
-
     setErrors(prev => ({ ...prev, [name]: '' }));
+  };
+
+  const handleEnginesChange = (event) => {
+    const { value } = event.target;
+    setFormData(prev => ({ 
+      ...prev, 
+      engines: typeof value === 'string' ? value.split(',') : value 
+    }));
   };
 
   const handleSubmit = async (e) => {
@@ -130,7 +122,6 @@ const MobileCarModels = () => {
     const newErrors = {};
     if (!formData.manufacturer) newErrors.manufacturer = 'メーカーは必須です';
     if (!formData.name?.trim()) newErrors.name = '名前は必須です';
-    if (!formData.slug?.trim()) newErrors.slug = 'スラッグは必須です';
 
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors);
@@ -139,44 +130,42 @@ const MobileCarModels = () => {
 
     try {
       const payload = {
-        manufacturer: formData.manufacturer,
+        manufacturer: parseInt(formData.manufacturer),
         name: formData.name.trim(),
-        slug: formData.slug.trim(), // ✅ Now slug is included for both create and update
-        vehicle_type: formData.vehicle_type || null,
-        fuel_type: formData.fuel_type || null,
-        year: formData.year || null,
-        first_registration: formData.first_registration || null,
-        model_code: formData.model_code || null,
-        chassis_number: formData.chassis_number || null,
+        vehicle_type: formData.vehicle_type || undefined,
+        year_from: formData.year_from ? parseInt(formData.year_from) : undefined,
+        year_to: formData.year_to ? parseInt(formData.year_to) : undefined,
+        model_code: formData.model_code?.trim() || undefined,
+        chassis_code: formData.chassis_code?.trim() || undefined,
+        engines: formData.engines.map(id => parseInt(id))
       };
 
-      // Remove null/empty values for cleaner payload
+      // Remove undefined values
       Object.keys(payload).forEach(key => {
-        if (payload[key] === null || payload[key] === '') {
+        if (payload[key] === undefined || payload[key] === '' || 
+            (Array.isArray(payload[key]) && payload[key].length === 0)) {
           delete payload[key];
         }
       });
 
       if (editingCarModel) {
-        // ✅ Use ID for updates
-        console.log('Updating car model with ID:', editingCarModel.id, 'payload:', payload);
-        await updateCarModel(editingCarModel.id, payload);
+        console.log('Updating car model:', editingCarModel.slug, payload);
+        await updateCarModel(editingCarModel.slug, payload);
       } else {
-        console.log('Creating car model with payload:', payload);
+        console.log('Creating car model:', payload);
         await createCarModel(payload);
       }
       
       setShowModal(false);
       setFormData({
         manufacturer: '',
-        vehicle_type: '',
-        year: '',
-        first_registration: '',
-        model_code: '',
-        chassis_number: '',
-        fuel_type: '',
         name: '',
-        slug: ''
+        vehicle_type: '',
+        year_from: '',
+        year_to: '',
+        model_code: '',
+        chassis_code: '',
+        engines: []
       });
       setEditingCarModel(null);
     } catch (err) {
@@ -184,35 +173,11 @@ const MobileCarModels = () => {
       const apiError = err.response?.data;
       if (apiError) {
         const fieldErrors = {};
-        const errorFields = {
-          'manufacturer': 'manufacturer',
-          'name': 'name',
-          'slug': 'slug',
-          'vehicle_type': 'vehicle_type',
-          'fuel_type': 'fuel_type',
-          'year': 'year',
-          'manufacturer_id': 'manufacturer',
-          'manufacturer_name': 'manufacturer'
-        };
-
         Object.keys(apiError).forEach(key => {
-          if (errorFields[key]) {
-            fieldErrors[errorFields[key]] = Array.isArray(apiError[key])
-              ? apiError[key].join(', ')
-              : apiError[key];
-          } else if (key === 'non_field_errors') {
-            fieldErrors.submit = Array.isArray(apiError[key])
-              ? apiError[key].join(', ')
-              : apiError[key];
-          } else if (typeof apiError === 'string') {
-            fieldErrors.submit = apiError;
-          }
+          fieldErrors[key] = Array.isArray(apiError[key])
+            ? apiError[key].join(', ')
+            : apiError[key];
         });
-
-        if (Object.keys(fieldErrors).length === 0 && apiError.detail) {
-          fieldErrors.submit = apiError.detail;
-        }
-
         setErrors(fieldErrors);
       } else {
         setErrors({ submit: err.message || '操作に失敗しました' });
@@ -234,23 +199,15 @@ const MobileCarModels = () => {
     setShowActions(false);
     if (window.confirm(`${selectedCarModel.name}を削除しますか？`)) {
       try {
-        // ✅ Use ID for deletes
-        await deleteCarModel(selectedCarModel.id);
+        await deleteCarModel(selectedCarModel.slug);
       } catch (err) {
         alert(`削除に失敗しました: ${err.response?.data?.message || err.message}`);
       }
     }
   };
 
-  // Helper function to get label for vehicle type
   const getVehicleTypeLabel = (value) => {
     const type = vehicleTypes.find(t => t.value === value);
-    return type ? type.label : value;
-  };
-
-  // Helper function to get label for fuel type
-  const getFuelTypeLabel = (value) => {
-    const type = fuelTypes.find(t => t.value === value);
     return type ? type.label : value;
   };
 
@@ -275,10 +232,8 @@ const MobileCarModels = () => {
             </Typography>
             <Stack direction="row" alignItems="center" spacing={0.5} mt={0.5}>
               <StoreIcon sx={{ fontSize: 14, color: 'text.secondary' }} />
-              <Typography variant="caption" color="text.secondary">
+              <Typography variant="caption" color="text.secondary" noWrap>
                 {carModel.manufacturer_name}
-                {carModel.year ? ` | ${carModel.year}年式` : ''}
-                {carModel.first_registration ? ` | 初度登録: ${carModel.first_registration}` : ''}
               </Typography>
             </Stack>
           </Box>
@@ -291,21 +246,81 @@ const MobileCarModels = () => {
           </IconButton>
         </Stack>
 
-        <Box sx={{
-          bgcolor: alpha('#2196f3', 0.08),
-          px: 1.5,
-          py: 0.75,
-          borderRadius: 2,
-          display: 'inline-block'
-        }}>
-          <Typography variant="caption" sx={{ fontFamily: 'monospace', fontWeight: 600 }}>
-            {carModel.slug}
-            {carModel.vehicle_type ? ` | ${getVehicleTypeLabel(carModel.vehicle_type)}` : ''}
-            {carModel.fuel_type ? ` | ${getFuelTypeLabel(carModel.fuel_type)}` : ''}
-            {carModel.chassis_number ? ` | シャーシ: ${carModel.chassis_number}` : ''}
-            {carModel.model_code ? ` | 型式: ${carModel.model_code}` : ''}
-          </Typography>
-        </Box>
+        {/* Stats */}
+        <Stack direction="row" spacing={1} mb={1.5} flexWrap="wrap">
+          {carModel.engine_count > 0 && (
+            <Chip
+              icon={<EngineIcon sx={{ fontSize: 16 }} />}
+              label={`${carModel.engine_count} エンジン`}
+              size="small"
+              sx={{
+                bgcolor: alpha('#2196f3', 0.1),
+                color: '#2196f3',
+                fontWeight: 600,
+                fontSize: '0.75rem',
+                height: 24,
+                '& .MuiChip-icon': { color: '#2196f3' }
+              }}
+            />
+          )}
+          
+          {(carModel.year_from || carModel.year_to) && (
+            <Chip
+              icon={<CalendarIcon sx={{ fontSize: 16 }} />}
+              label={
+                carModel.year_to 
+                  ? `${carModel.year_from}-${carModel.year_to}` 
+                  : `${carModel.year_from}-現在`
+              }
+              size="small"
+              sx={{
+                bgcolor: alpha('#4caf50', 0.1),
+                color: '#4caf50',
+                fontWeight: 600,
+                fontSize: '0.75rem',
+                height: 24,
+                '& .MuiChip-icon': { color: '#4caf50' }
+              }}
+            />
+          )}
+
+          {carModel.vehicle_type && (
+            <Chip
+              label={getVehicleTypeLabel(carModel.vehicle_type)}
+              size="small"
+              sx={{
+                bgcolor: alpha('#ff9800', 0.1),
+                color: '#ff9800',
+                fontWeight: 600,
+                fontSize: '0.75rem',
+                height: 24
+              }}
+            />
+          )}
+        </Stack>
+
+        {/* Details */}
+        <Stack spacing={0.5}>
+          <Box sx={{ 
+            bgcolor: alpha('#1976d2', 0.08), 
+            px: 1.5, 
+            py: 0.5, 
+            borderRadius: 1.5,
+            display: 'inline-block'
+          }}>
+            <Typography variant="caption" sx={{ fontFamily: 'monospace', fontWeight: 600, fontSize: '0.7rem' }}>
+              {carModel.slug}
+            </Typography>
+          </Box>
+
+          {(carModel.model_code || carModel.chassis_code) && (
+            <Typography variant="caption" color="text.secondary">
+              {carModel.model_code && `型式: ${carModel.model_code}`}
+              {carModel.model_code && carModel.chassis_code && ' | '}
+              {carModel.chassis_code && `シャーシ: ${carModel.chassis_code}`}
+            </Typography>
+          )}
+        </Stack>
       </CardContent>
     </Card>
   );
@@ -333,15 +348,10 @@ const MobileCarModels = () => {
             size="small"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            InputProps={{
-              disableUnderline: true
-            }}
+            InputProps={{ disableUnderline: true }}
           />
           {searchTerm && (
-            <IconButton
-              size="small"
-              onClick={() => setSearchTerm('')}
-            >
+            <IconButton size="small" onClick={() => setSearchTerm('')}>
               <CloseIcon fontSize="small" />
             </IconButton>
           )}
@@ -368,12 +378,9 @@ const MobileCarModels = () => {
           </Card>
         ) : (
           <>
-            {/* Results Count */}
             <Typography variant="caption" color="text.secondary" display="block" mb={1.5} fontWeight={600}>
               {filteredCarModels.length} 件の車種
             </Typography>
-
-            {/* Car Model List */}
             <Stack spacing={1.5}>
               {filteredCarModels.map((carModel) => (
                 <CarModelCard key={carModel.id} carModel={carModel} />
@@ -389,19 +396,14 @@ const MobileCarModels = () => {
         onClose={() => setShowModal(false)}
         maxWidth="sm"
         fullWidth
-        PaperProps={{
-          sx: { borderRadius: 3, m: 2 }
-        }}
+        PaperProps={{ sx: { borderRadius: 3, m: 2 } }}
       >
         <DialogTitle sx={{ pb: 1 }}>
           <Stack direction="row" justifyContent="space-between" alignItems="center">
             <Typography variant="h6" fontWeight="bold">
               {editingCarModel ? '車種編集' : '車種追加'}
             </Typography>
-            <IconButton
-              onClick={() => setShowModal(false)}
-              size="small"
-            >
+            <IconButton onClick={() => setShowModal(false)} size="small">
               <CloseIcon />
             </IconButton>
           </Stack>
@@ -417,12 +419,9 @@ const MobileCarModels = () => {
                 onChange={handleChange}
                 error={!!errors.manufacturer}
                 helperText={errors.manufacturer}
+                required
                 fullWidth
-                sx={{
-                  '& .MuiOutlinedInput-root': {
-                    borderRadius: 2
-                  }
-                }}
+                sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2 } }}
               >
                 <MenuItem value="">選択してください...</MenuItem>
                 {manufacturers.map(m => (
@@ -436,31 +435,11 @@ const MobileCarModels = () => {
                 value={formData.name}
                 onChange={handleChange}
                 error={!!errors.name}
-                helperText={errors.name}
-                placeholder="例: カローラ"
+                helperText={errors.name || '例: Profia, Ranger'}
+                placeholder="例: Profia"
+                required
                 fullWidth
-                sx={{
-                  '& .MuiOutlinedInput-root': {
-                    borderRadius: 2
-                  }
-                }}
-              />
-
-              <TextField
-                label="スラッグ"
-                name="slug"
-                value={formData.slug}
-                onChange={handleChange}
-                error={!!errors.slug}
-                helperText={errors.slug || 'URL用の識別子（自動生成）'}
-                placeholder="例: corolla"
-                fullWidth
-                sx={{
-                  '& .MuiOutlinedInput-root': {
-                    borderRadius: 2,
-                    fontFamily: 'monospace'
-                  }
-                }}
+                sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2 } }}
               />
 
               <TextField
@@ -473,11 +452,7 @@ const MobileCarModels = () => {
                 helperText={errors.vehicle_type}
                 fullWidth
                 disabled={vehicleTypesLoading}
-                sx={{
-                  '& .MuiOutlinedInput-root': {
-                    borderRadius: 2
-                  }
-                }}
+                sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2 } }}
               >
                 <MenuItem value="">選択してください...</MenuItem>
                 {vehicleTypes.map(type => (
@@ -487,61 +462,32 @@ const MobileCarModels = () => {
                 ))}
               </TextField>
 
-              <TextField
-                select
-                label="燃料タイプ"
-                name="fuel_type"
-                value={formData.fuel_type}
-                onChange={handleChange}
-                error={!!errors.fuel_type}
-                helperText={errors.fuel_type}
-                fullWidth
-                disabled={fuelTypesLoading}
-                sx={{
-                  '& .MuiOutlinedInput-root': {
-                    borderRadius: 2
-                  }
-                }}
-              >
-                <MenuItem value="">選択してください...</MenuItem>
-                {fuelTypes.map(type => (
-                  <MenuItem key={type.value} value={type.value}>
-                    {type.label}
-                  </MenuItem>
-                ))}
-              </TextField>
-
-              <TextField
-                label="年式"
-                name="year"
-                value={formData.year}
-                onChange={handleChange}
-                error={!!errors.year}
-                helperText={errors.year}
-                placeholder="例: 2020"
-                fullWidth
-                sx={{
-                  '& .MuiOutlinedInput-root': {
-                    borderRadius: 2
-                  }
-                }}
-              />
-
-              <TextField
-                label="初度登録"
-                name="first_registration"
-                value={formData.first_registration}
-                onChange={handleChange}
-                error={!!errors.first_registration}
-                helperText={errors.first_registration}
-                placeholder="例: 2020-01"
-                fullWidth
-                sx={{
-                  '& .MuiOutlinedInput-root': {
-                    borderRadius: 2
-                  }
-                }}
-              />
+              <Stack direction="row" spacing={2}>
+                <TextField
+                  label="生産開始年"
+                  name="year_from"
+                  type="number"
+                  value={formData.year_from}
+                  onChange={handleChange}
+                  error={!!errors.year_from}
+                  helperText={errors.year_from}
+                  placeholder="2003"
+                  fullWidth
+                  sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2 } }}
+                />
+                <TextField
+                  label="生産終了年"
+                  name="year_to"
+                  type="number"
+                  value={formData.year_to}
+                  onChange={handleChange}
+                  error={!!errors.year_to}
+                  helperText={errors.year_to || '空白=現在'}
+                  placeholder="2017"
+                  fullWidth
+                  sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2 } }}
+                />
+              </Stack>
 
               <TextField
                 label="型式"
@@ -550,30 +496,61 @@ const MobileCarModels = () => {
                 onChange={handleChange}
                 error={!!errors.model_code}
                 helperText={errors.model_code}
-                placeholder="例: ZRE212"
+                placeholder="例: FR1EXEG"
                 fullWidth
-                sx={{
-                  '& .MuiOutlinedInput-root': {
-                    borderRadius: 2
-                  }
-                }}
+                sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2 } }}
               />
 
               <TextField
-                label="シャーシ番号"
-                name="chassis_number"
-                value={formData.chassis_number}
+                label="シャーシコード"
+                name="chassis_code"
+                value={formData.chassis_code}
                 onChange={handleChange}
-                error={!!errors.chassis_number}
-                helperText={errors.chassis_number}
-                placeholder="例: 123456"
+                error={!!errors.chassis_code}
+                helperText={errors.chassis_code}
+                placeholder="例: FR1E"
                 fullWidth
-                sx={{
-                  '& .MuiOutlinedInput-root': {
-                    borderRadius: 2
-                  }
-                }}
+                sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2 } }}
               />
+
+              <FormControl fullWidth>
+                <InputLabel>エンジンオプション</InputLabel>
+                <Select
+                  multiple
+                  value={formData.engines}
+                  onChange={handleEnginesChange}
+                  input={<OutlinedInput label="エンジンオプション" />}
+                  renderValue={(selected) => (
+                    <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
+                      {selected.map((value) => {
+                        const engine = engineModels.find(e => e.id === parseInt(value));
+                        return (
+                          <Chip 
+                            key={value} 
+                            label={engine?.name || value} 
+                            size="small" 
+                          />
+                        );
+                      })}
+                    </Box>
+                  )}
+                  sx={{ borderRadius: 2 }}
+                >
+                  {engineModels
+                    .filter(e => !formData.manufacturer || e.manufacturer === parseInt(formData.manufacturer))
+                    .map((engine) => (
+                      <MenuItem key={engine.id} value={engine.id}>
+                        {engine.name} ({engine.manufacturer_name})
+                      </MenuItem>
+                    ))}
+                </Select>
+              </FormControl>
+
+              {editingCarModel && (
+                <Alert severity="info" sx={{ borderRadius: 2 }}>
+                  スラッグは自動生成されます: <strong>{editingCarModel.slug}</strong>
+                </Alert>
+              )}
 
               {errors.submit && (
                 <Alert severity="error" sx={{ borderRadius: 2 }}>
@@ -585,23 +562,18 @@ const MobileCarModels = () => {
           <DialogActions sx={{ px: 3, pb: 3 }}>
             <Button
               onClick={() => setShowModal(false)}
-              sx={{
-                borderRadius: 2,
-                textTransform: 'none',
-                fontWeight: 600,
-                px: 3
-              }}
+              sx={{ borderRadius: 2, textTransform: 'none', fontWeight: 600, px: 3 }}
             >
               キャンセル
             </Button>
             <Button
               type="submit"
               variant="contained"
-              disabled={vehicleTypesLoading || fuelTypesLoading}
-              sx={{
-                borderRadius: 2,
-                textTransform: 'none',
-                fontWeight: 600,
+              disabled={vehicleTypesLoading}
+              sx={{ 
+                borderRadius: 2, 
+                textTransform: 'none', 
+                fontWeight: 600, 
                 px: 3,
                 boxShadow: '0 4px 12px rgba(25, 118, 210, 0.4)'
               }}
@@ -617,50 +589,28 @@ const MobileCarModels = () => {
         anchor="bottom"
         open={showActions}
         onClose={() => setShowActions(false)}
-        onOpen={() => { }}
+        onOpen={() => {}}
         disableSwipeToOpen
-        PaperProps={{
-          sx: {
-            borderTopLeftRadius: 24,
-            borderTopRightRadius: 24,
-            pb: 2
-          }
-        }}
+        PaperProps={{ sx: { borderTopLeftRadius: 24, borderTopRightRadius: 24, pb: 2 } }}
       >
         <Box sx={{ p: 2 }}>
-          {/* Drag Handle */}
-          <Box sx={{
-            width: 40,
-            height: 4,
-            bgcolor: 'grey.300',
-            borderRadius: 2,
-            mx: 'auto',
-            mb: 2
-          }} />
-
+          <Box sx={{ width: 40, height: 4, bgcolor: 'grey.300', borderRadius: 2, mx: 'auto', mb: 2 }} />
           {selectedCarModel && (
             <Box sx={{ mb: 2 }}>
               <Typography variant="body1" fontWeight="bold">
                 {selectedCarModel.name}
               </Typography>
               <Typography variant="caption" color="text.secondary">
-                {selectedCarModel.manufacturer_name}
+                {selectedCarModel.manufacturer_name} | {selectedCarModel.engine_count || 0} エンジン
               </Typography>
             </Box>
           )}
-
           <Stack spacing={1}>
             <Button
               fullWidth
               startIcon={<EditIcon />}
               onClick={handleEdit}
-              sx={{
-                py: 1.5,
-                justifyContent: 'flex-start',
-                textTransform: 'none',
-                fontWeight: 600,
-                borderRadius: 2
-              }}
+              sx={{ py: 1.5, justifyContent: 'flex-start', textTransform: 'none', fontWeight: 600, borderRadius: 2 }}
             >
               編集
             </Button>
@@ -670,13 +620,7 @@ const MobileCarModels = () => {
               color="error"
               startIcon={<DeleteIcon />}
               onClick={handleDelete}
-              sx={{
-                py: 1.5,
-                justifyContent: 'flex-start',
-                textTransform: 'none',
-                fontWeight: 600,
-                borderRadius: 2
-              }}
+              sx={{ py: 1.5, justifyContent: 'flex-start', textTransform: 'none', fontWeight: 600, borderRadius: 2 }}
             >
               削除
             </Button>
@@ -684,18 +628,11 @@ const MobileCarModels = () => {
         </Box>
       </SwipeableDrawer>
 
-      {/* Floating Action Button */}
       <Fab
         color="primary"
         aria-label="add"
         onClick={() => handleOpenModal()}
-        sx={{
-          position: 'fixed',
-          bottom: 80,
-          right: 16,
-          zIndex: 1000,
-          boxShadow: '0 4px 12px rgba(25, 118, 210, 0.4)'
-        }}
+        sx={{ position: 'fixed', bottom: 80, right: 16, zIndex: 1000, boxShadow: '0 4px 12px rgba(25, 118, 210, 0.4)' }}
       >
         <PlusIcon />
       </Fab>

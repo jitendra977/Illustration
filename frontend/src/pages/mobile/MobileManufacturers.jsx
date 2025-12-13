@@ -20,6 +20,7 @@ import {
   Fab,
   SwipeableDrawer,
   Divider,
+  Chip,
   alpha
 } from '@mui/material';
 import {
@@ -30,7 +31,9 @@ import {
   Public as PublicIcon,
   Close as CloseIcon,
   MoreVert as MoreIcon,
-  Language as LanguageIcon
+  Language as LanguageIcon,
+  DirectionsCar as CarIcon,
+  Build as EngineIcon
 } from '@mui/icons-material';
 import { useManufacturers } from '../../hooks/useIllustrations';
 
@@ -38,7 +41,7 @@ const MobileManufacturers = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [showModal, setShowModal] = useState(false);
   const [editingManufacturer, setEditingManufacturer] = useState(null);
-  const [formData, setFormData] = useState({ name: '', country: '', slug: '' });
+  const [formData, setFormData] = useState({ name: '', country: '' });
   const [errors, setErrors] = useState({});
   const [selectedManufacturer, setSelectedManufacturer] = useState(null);
   const [showActions, setShowActions] = useState(false);
@@ -69,11 +72,10 @@ const MobileManufacturers = () => {
       setFormData({
         name: manufacturer.name,
         country: manufacturer.country || '',
-        slug: manufacturer.slug,
       });
     } else {
       setEditingManufacturer(null);
-      setFormData({ name: '', country: '', slug: '' });
+      setFormData({ name: '', country: '' });
     }
     setErrors({});
     setShowModal(true);
@@ -82,12 +84,6 @@ const MobileManufacturers = () => {
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
-    
-    if (name === 'name' && !editingManufacturer) {
-      const slug = value.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
-      setFormData(prev => ({ ...prev, slug }));
-    }
-    
     setErrors(prev => ({ ...prev, [name]: '' }));
   };
 
@@ -96,7 +92,6 @@ const MobileManufacturers = () => {
     
     const newErrors = {};
     if (!formData.name.trim()) newErrors.name = '名前は必須です';
-    if (!formData.slug.trim()) newErrors.slug = 'スラッグは必須です';
     
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors);
@@ -110,7 +105,7 @@ const MobileManufacturers = () => {
         await createManufacturer(formData);
       }
       setShowModal(false);
-      setFormData({ name: '', country: '', slug: '' });
+      setFormData({ name: '', country: '' });
     } catch (err) {
       setErrors({ submit: err.response?.data?.message || '操作に失敗しました' });
     }
@@ -174,14 +169,53 @@ const MobileManufacturers = () => {
           </IconButton>
         </Stack>
 
+        {/* Stats */}
+        <Stack direction="row" spacing={1} flexWrap="wrap">
+          {/* Engine Count */}
+          <Chip
+            icon={<EngineIcon sx={{ fontSize: 16 }} />}
+            label={`${manufacturer.engine_count || 0} エンジン`}
+            size="small"
+            sx={{
+              bgcolor: alpha('#2196f3', 0.1),
+              color: '#2196f3',
+              fontWeight: 600,
+              fontSize: '0.75rem',
+              height: 24,
+              '& .MuiChip-icon': {
+                color: '#2196f3'
+              }
+            }}
+          />
+          
+          {/* Car Model Count */}
+          <Chip
+            icon={<CarIcon sx={{ fontSize: 16 }} />}
+            label={`${manufacturer.car_model_count || 0} 車両`}
+            size="small"
+            sx={{
+              bgcolor: alpha('#4caf50', 0.1),
+              color: '#4caf50',
+              fontWeight: 600,
+              fontSize: '0.75rem',
+              height: 24,
+              '& .MuiChip-icon': {
+                color: '#4caf50'
+              }
+            }}
+          />
+        </Stack>
+
+        {/* Slug */}
         <Box sx={{ 
           bgcolor: alpha('#1976d2', 0.08), 
           px: 1.5, 
-          py: 0.75, 
-          borderRadius: 2,
-          display: 'inline-block'
+          py: 0.5, 
+          borderRadius: 1.5,
+          display: 'inline-block',
+          mt: 1.5
         }}>
-          <Typography variant="caption" sx={{ fontFamily: 'monospace', fontWeight: 600 }}>
+          <Typography variant="caption" sx={{ fontFamily: 'monospace', fontWeight: 600, fontSize: '0.7rem' }}>
             {manufacturer.slug}
           </Typography>
         </Box>
@@ -294,9 +328,10 @@ const MobileManufacturers = () => {
                 value={formData.name}
                 onChange={handleChange}
                 error={!!errors.name}
-                helperText={errors.name}
-                placeholder="例: Toyota"
+                helperText={errors.name || '例: Hino, Isuzu, Toyota'}
+                placeholder="例: Hino"
                 fullWidth
+                required
                 sx={{
                   '& .MuiOutlinedInput-root': {
                     borderRadius: 2
@@ -310,6 +345,7 @@ const MobileManufacturers = () => {
                 value={formData.country}
                 onChange={handleChange}
                 placeholder="例: 日本"
+                helperText="製造国を入力（任意）"
                 fullWidth
                 sx={{
                   '& .MuiOutlinedInput-root': {
@@ -318,22 +354,11 @@ const MobileManufacturers = () => {
                 }}
               />
 
-              <TextField
-                label="スラッグ"
-                name="slug"
-                value={formData.slug}
-                onChange={handleChange}
-                error={!!errors.slug}
-                helperText={errors.slug || 'URL用の識別子（自動生成）'}
-                placeholder="例: toyota"
-                fullWidth
-                sx={{
-                  '& .MuiOutlinedInput-root': {
-                    borderRadius: 2,
-                    fontFamily: 'monospace'
-                  }
-                }}
-              />
+              {editingManufacturer && (
+                <Alert severity="info" sx={{ borderRadius: 2 }}>
+                  スラッグは自動生成されます: <strong>{editingManufacturer.slug}</strong>
+                </Alert>
+              )}
 
               {errors.submit && (
                 <Alert severity="error" sx={{ borderRadius: 2 }}>
@@ -402,11 +427,15 @@ const MobileManufacturers = () => {
               <Typography variant="body1" fontWeight="bold">
                 {selectedManufacturer.name}
               </Typography>
-              {selectedManufacturer.country && (
+              <Stack direction="row" spacing={1} mt={1}>
                 <Typography variant="caption" color="text.secondary">
-                  {selectedManufacturer.country}
+                  {selectedManufacturer.engine_count || 0} エンジン
                 </Typography>
-              )}
+                <Typography variant="caption" color="text.secondary">•</Typography>
+                <Typography variant="caption" color="text.secondary">
+                  {selectedManufacturer.car_model_count || 0} 車両
+                </Typography>
+              </Stack>
             </Box>
           )}
 

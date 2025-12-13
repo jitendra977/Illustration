@@ -91,122 +91,9 @@ export const useManufacturers = () => {
 };
 
 // ============================================================================
-// CAR MODELS HOOK - ✅ UPDATED: Use ID for all operations
+// ENGINE MODELS HOOK - ✅ UPDATED: Independent from CarModel
 // ============================================================================
-export const useCarModels = (manufacturerId = null) => {
-  const [carModels, setCarModels] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
-
-  const fetchCarModels = useCallback(async (params = {}) => {
-    setLoading(true);
-    setError(null);
-    try {
-      const { data } = manufacturerId
-        ? await carModelAPI.getByManufacturer(manufacturerId)
-        : await carModelAPI.getAll(params);
-      setCarModels(data.results || data);
-      return data;
-    } catch (err) {
-      const errorMessage = err.response?.data?.detail || 
-                          err.response?.data?.message || 
-                          'Failed to fetch car models';
-      setError(errorMessage);
-      throw err;
-    } finally {
-      setLoading(false);
-    }
-  }, [manufacturerId]);
-
-  const createCarModel = useCallback(async (carModelData) => {
-    setLoading(true);
-    setError(null);
-    try {
-      const { data } = await carModelAPI.create(carModelData);
-      setCarModels(prev => [data, ...prev]);
-      return data;
-    } catch (err) {
-      const errorMessage = err.response?.data?.detail || 
-                          err.response?.data?.message || 
-                          'Failed to create car model';
-      setError(errorMessage);
-      throw err;
-    } finally {
-      setLoading(false);
-    }
-  }, []);
-
-  // ✅ UPDATED: Use ID for updates
-  const updateCarModel = useCallback(async (id, carModelData) => {
-    setLoading(true);
-    setError(null);
-    try {
-      let response;
-      try {
-        // Try PATCH first
-        response = await carModelAPI.partialUpdate(id, carModelData);
-      } catch (patchError) {
-        // Fallback to PUT if PATCH fails
-        if (patchError.response?.status === 405 || patchError.response?.status === 404) {
-          response = await carModelAPI.update(id, carModelData);
-        } else {
-          throw patchError;
-        }
-      }
-      
-      const updatedData = response.data;
-      // Update state by matching id
-      setCarModels(prev => prev.map(c => c.id === id ? updatedData : c));
-      return updatedData;
-    } catch (err) {
-      const errorMessage = err.response?.data?.detail || 
-                          err.response?.data?.message || 
-                          Object.values(err.response?.data || {}).join(', ') ||
-                          'Failed to update car model';
-      setError(errorMessage);
-      throw err;
-    } finally {
-      setLoading(false);
-    }
-  }, []);
-
-  // ✅ UPDATED: Use ID for deletes
-  const deleteCarModel = useCallback(async (id) => {
-    setLoading(true);
-    setError(null);
-    try {
-      await carModelAPI.delete(id);
-      setCarModels(prev => prev.filter(c => c.id !== id));
-    } catch (err) {
-      const errorMessage = err.response?.data?.detail || 
-                          err.response?.data?.message || 
-                          'Failed to delete car model';
-      setError(errorMessage);
-      throw err;
-    } finally {
-      setLoading(false);
-    }
-  }, []);
-
-  useEffect(() => {
-    fetchCarModels();
-  }, [fetchCarModels]);
-
-  return {
-    carModels,
-    loading,
-    error,
-    fetchCarModels,
-    createCarModel,
-    updateCarModel,
-    deleteCarModel,
-  };
-};
-
-// ============================================================================
-// ENGINE MODELS HOOK
-// ============================================================================
-export const useEngineModels = (carModelId = null) => {
+export const useEngineModels = (manufacturerId = null) => {
   const [engineModels, setEngineModels] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -215,8 +102,8 @@ export const useEngineModels = (carModelId = null) => {
     setLoading(true);
     setError(null);
     try {
-      const { data } = carModelId
-        ? await engineModelAPI.getByCarModel(carModelId, params)
+      const { data } = manufacturerId
+        ? await engineModelAPI.getByManufacturer(manufacturerId)
         : await engineModelAPI.getAll(params);
       setEngineModels(data.results || data);
       return data;
@@ -229,7 +116,7 @@ export const useEngineModels = (carModelId = null) => {
     } finally {
       setLoading(false);
     }
-  }, [carModelId]);
+  }, [manufacturerId]);
 
   const createEngineModel = useCallback(async (engineModelData) => {
     setLoading(true);
@@ -300,7 +187,106 @@ export const useEngineModels = (carModelId = null) => {
 };
 
 // ============================================================================
-// PART CATEGORIES HOOK - COMPLETE
+// CAR MODELS HOOK - ✅ UPDATED: Uses slug, has engines (ManyToMany)
+// ============================================================================
+export const useCarModels = (manufacturerId = null) => {
+  const [carModels, setCarModels] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+
+  const fetchCarModels = useCallback(async (params = {}) => {
+    setLoading(true);
+    setError(null);
+    try {
+      const { data } = manufacturerId
+        ? await carModelAPI.getByManufacturer(manufacturerId)
+        : await carModelAPI.getAll(params);
+      setCarModels(data.results || data);
+      return data;
+    } catch (err) {
+      const errorMessage = err.response?.data?.detail || 
+                          err.response?.data?.message || 
+                          'Failed to fetch car models';
+      setError(errorMessage);
+      throw err;
+    } finally {
+      setLoading(false);
+    }
+  }, [manufacturerId]);
+
+  const createCarModel = useCallback(async (carModelData) => {
+    setLoading(true);
+    setError(null);
+    try {
+      const { data } = await carModelAPI.create(carModelData);
+      setCarModels(prev => [data, ...prev]);
+      return data;
+    } catch (err) {
+      const errorMessage = err.response?.data?.detail || 
+                          err.response?.data?.message || 
+                          'Failed to create car model';
+      setError(errorMessage);
+      throw err;
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  // ✅ UPDATED: Use slug for updates
+  const updateCarModel = useCallback(async (slug, carModelData) => {
+    setLoading(true);
+    setError(null);
+    try {
+      const { data } = await carModelAPI.partialUpdate(slug, carModelData);
+      setCarModels(prev => prev.map(c => c.slug === slug ? data : c));
+      return data;
+    } catch (err) {
+      const errorMessage = err.response?.data?.detail || 
+                          err.response?.data?.message || 
+                          Object.values(err.response?.data || {}).join(', ') ||
+                          'Failed to update car model';
+      setError(errorMessage);
+      throw err;
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  // ✅ UPDATED: Use slug for deletes
+  const deleteCarModel = useCallback(async (slug) => {
+    setLoading(true);
+    setError(null);
+    try {
+      await carModelAPI.delete(slug);
+      setCarModels(prev => prev.filter(c => c.slug !== slug));
+    } catch (err) {
+      const errorMessage = err.response?.data?.detail || 
+                          err.response?.data?.message || 
+                          'Failed to delete car model';
+      setError(errorMessage);
+      throw err;
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchCarModels();
+  }, [fetchCarModels]);
+
+  return {
+    carModels,
+    loading,
+    error,
+    fetchCarModels,
+    createCarModel,
+    updateCarModel,
+    deleteCarModel,
+  };
+};
+
+// ============================================================================
+// PART CATEGORIES HOOK
 // ============================================================================
 export const usePartCategories = (engineModelId = null) => {
   const [categories, setCategories] = useState([]);
@@ -396,7 +382,7 @@ export const usePartCategories = (engineModelId = null) => {
 };
 
 // ============================================================================
-// PART SUBCATEGORIES HOOK - COMPLETE
+// PART SUBCATEGORIES HOOK
 // ============================================================================
 export const usePartSubCategories = (categoryId = null) => {
   const [subCategories, setSubCategories] = useState([]);
@@ -492,7 +478,7 @@ export const usePartSubCategories = (categoryId = null) => {
 };
 
 // ============================================================================
-// ILLUSTRATIONS HOOK - COMPLETE
+// ILLUSTRATIONS HOOK - ✅ UPDATED: Added applicable_car_models support
 // ============================================================================
 export const useIllustrations = (filters = {}) => {
   const [illustrations, setIllustrations] = useState([]);
@@ -570,6 +556,26 @@ export const useIllustrations = (filters = {}) => {
     }
   }, []);
 
+  // ✅ NEW: Add files to existing illustration
+  const addFilesToIllustration = useCallback(async (id, files) => {
+    setLoading(true);
+    setError(null);
+    try {
+      const { data } = await illustrationAPI.addFiles(id, files);
+      // Refresh illustrations to get updated file count
+      await fetchIllustrations();
+      return data;
+    } catch (err) {
+      const errorMessage = err.response?.data?.detail || 
+                          err.response?.data?.message || 
+                          'Failed to add files';
+      setError(errorMessage);
+      throw err;
+    } finally {
+      setLoading(false);
+    }
+  }, [fetchIllustrations]);
+
   useEffect(() => {
     fetchIllustrations();
   }, [fetchIllustrations]);
@@ -582,10 +588,13 @@ export const useIllustrations = (filters = {}) => {
     createIllustration,
     updateIllustration,
     deleteIllustration,
+    addFilesToIllustration,
   };
 };
 
-// Add new hook for vehicle types
+// ============================================================================
+// VEHICLE TYPES HOOK
+// ============================================================================
 export const useVehicleTypes = () => {
   const [vehicleTypes, setVehicleTypes] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -610,7 +619,9 @@ export const useVehicleTypes = () => {
   return { vehicleTypes, loading, error };
 };
 
-// Add new hook for fuel types
+// ============================================================================
+// FUEL TYPES HOOK - ✅ MOVED to EngineModel
+// ============================================================================
 export const useFuelTypes = () => {
   const [fuelTypes, setFuelTypes] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -621,7 +632,8 @@ export const useFuelTypes = () => {
       setLoading(true);
       setError(null);
       try {
-        const { data } = await carModelAPI.getFuelTypes();
+        // ✅ CHANGED: Now calls engine-models/fuel-types
+        const { data } = await engineModelAPI.getFuelTypes();
         setFuelTypes(data);
       } catch (err) {
         setError(err.response?.data?.message || 'Failed to fetch fuel types');
