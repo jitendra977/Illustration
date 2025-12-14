@@ -12,7 +12,7 @@ import MobileIllustrations from '../pages/mobile/MobileIllustrations';
 import MobileManufacturers from '../pages/mobile/MobileManufacturers';
 import MobileCarModels from '../pages/mobile/MobileCarModels';
 import MobileEngineModels from '../pages/mobile/MobileEngineModels';
-import MobilePartCategories from '../pages/mobile/MobilePartCategories';
+import MobileSubPartCategories from '../pages/mobile/MobilePartSubCategories';
 import MobileProfile from '../pages/mobile/MobileProfile';
 import MobileSearch from '../pages/mobile/MobileSearch';
 
@@ -149,7 +149,7 @@ const MobileRoutes = () => {
       element: (
         <ProtectedRoute>
           <MobileLayout>
-            <MobilePartCategories />
+            <MobileSubPartCategories />
           </MobileLayout>
         </ProtectedRoute>
       ),
@@ -159,7 +159,27 @@ const MobileRoutes = () => {
       element: (
         <ProtectedRoute>
           <MobileLayout>
-            <MobilePartCategories />
+            <MobileSubPartCategories />
+          </MobileLayout>
+        </ProtectedRoute>
+      ),
+    },
+      {
+      path: "/part-subcategories",
+      element: (
+        <ProtectedRoute>
+          <MobileLayout>
+            <MobileSubPartCategories />
+          </MobileLayout>
+        </ProtectedRoute>
+      ),
+    },
+    {
+      path: "/part-subcategories/create",
+      element: (
+        <ProtectedRoute>
+          <MobileLayout>
+            <MobileSubPartCategories />
           </MobileLayout>
         </ProtectedRoute>
       ),

@@ -124,8 +124,6 @@ export const partCategoryAPI = {
     }
   },
   getById: (id) => api.get(`/part-categories/${id}/`),
-  getByEngineModel: (engineModelId) => 
-    api.get('/part-categories/', { params: { engine_model: engineModelId } }),
   create: (data) => api.post('/part-categories/', data),
   update: (id, data) => api.put(`/part-categories/${id}/`, data),
   partialUpdate: (id, data) => api.patch(`/part-categories/${id}/`, data),

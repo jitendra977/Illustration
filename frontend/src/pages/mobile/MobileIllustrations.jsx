@@ -141,15 +141,15 @@ const MobileIllustrations = () => {
             <CardMedia
               component="img"
               height="140"
-              image={illustration.files?.[0]?.file || '/placeholder.jpg'}
+              image={illustration.first_file?.file || '/placeholder.jpg'}  // Updated to use first_file
               alt={illustration.title}
               sx={{ objectFit: 'cover', height: '100%' }}
             />
 
-            {illustration.files?.length > 1 && (
+            {illustration.file_count > 1 && (  // Updated to use file_count
               <Chip
                 size="small"
-                label={`+${illustration.files.length - 1}`}
+                label={`+${illustration.file_count - 1}`}
                 sx={{
                   position: 'absolute',
                   top: 6,
@@ -181,10 +181,10 @@ const MobileIllustrations = () => {
 
           <CardContent sx={{ p: 1.5 }}>
             <Typography variant="caption" color="text.secondary" noWrap>
-              {illustration.engine_model?.name || 'エンジンモデルなし'}
+              {illustration.engine_model_name || 'エンジンモデルなし'}
             </Typography>
             <Typography variant="caption" color="text.secondary" noWrap>
-              {illustration.part_category?.name || 'カテゴリなし'}
+              {illustration.part_category_name || 'カテゴリなし'}
             </Typography>
             <Typography variant="caption" sx={{ fontSize: '0.65rem' }}>
               {new Date(illustration.created_at).toLocaleDateString('ja-JP')}
@@ -222,15 +222,15 @@ const MobileIllustrations = () => {
                 }}
               >
                 <img
-                  src={illustration.files?.[0]?.file || '/placeholder.jpg'}
+                  src={illustration.first_file?.file || '/placeholder.jpg'}  // Updated to use first_file
                   alt={illustration.title}
                   style={{ width: '100%', height: '100%', objectFit: 'cover' }}
                 />
 
-                {illustration.files?.length > 1 && (
+                {illustration.file_count > 1 && (  // Updated to use file_count
                   <Chip
                     size="small"
-                    label={`+${illustration.files.length - 1}`}
+                    label={`+${illustration.file_count - 1}`}
                     sx={{
                       position: 'absolute',
                       bottom: 4,
@@ -248,10 +248,10 @@ const MobileIllustrations = () => {
                   {illustration.title}
                 </Typography>
                 <Typography variant="caption" color="text.secondary" noWrap>
-                  {illustration.engine_model?.name || 'エンジンモデルなし'}
+                  {illustration.engine_model_name || 'エンジンモデルなし'}
                 </Typography>
                 <Typography variant="caption" color="text.secondary" noWrap>
-                  {illustration.part_category?.name || 'カテゴリなし'}
+                  {illustration.part_category_name || 'カテゴリなし'}
                 </Typography>
                 <Typography variant="caption" sx={{ fontSize: '0.65rem' }}>
                   {new Date(illustration.created_at).toLocaleDateString('ja-JP')}

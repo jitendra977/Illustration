@@ -288,7 +288,7 @@ export const useCarModels = (manufacturerId = null) => {
 // ============================================================================
 // PART CATEGORIES HOOK
 // ============================================================================
-export const usePartCategories = (engineModelId = null) => {
+export const usePartCategories = () => {  // Removed engineModelId parameter
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -297,9 +297,7 @@ export const usePartCategories = (engineModelId = null) => {
     setLoading(true);
     setError(null);
     try {
-      const { data } = engineModelId
-        ? await partCategoryAPI.getByEngineModel(engineModelId, params)
-        : await partCategoryAPI.getAll(params);
+      const { data } = await partCategoryAPI.getAll(params);  // Always fetch all, no engine filter
       setCategories(data.results || data);
       return data;
     } catch (err) {
@@ -311,7 +309,7 @@ export const usePartCategories = (engineModelId = null) => {
     } finally {
       setLoading(false);
     }
-  }, [engineModelId]);
+  }, []);  // Removed engineModelId from dependencies
 
   const createCategory = useCallback(async (categoryData) => {
     setLoading(true);

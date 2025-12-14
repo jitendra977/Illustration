@@ -50,7 +50,7 @@ class EngineModelAdmin(admin.ModelAdmin):
     list_display = [
         'name', 'engine_code', 'manufacturer_link', 'fuel_type',
         'displacement', 'horsepower', 'torque',
-        'car_model_count', 'part_category_count', 'slug'
+        'car_model_count', 'illustration_count', 'slug'
     ]
     list_filter = ['manufacturer', 'fuel_type']
     search_fields = ['name', 'engine_code', 'manufacturer__name']
@@ -70,7 +70,7 @@ class EngineModelAdmin(admin.ModelAdmin):
         qs = super().get_queryset(request)
         return qs.select_related('manufacturer').annotate(
             _car_model_count=Count('car_models', distinct=True),
-            _part_category_count=Count('part_categories', distinct=True)
+            _illustration_count=Count('illustrations', distinct=True)
         )
     
     def manufacturer_link(self, obj):
@@ -84,10 +84,10 @@ class EngineModelAdmin(admin.ModelAdmin):
     car_model_count.short_description = 'Car Models'
     car_model_count.admin_order_field = '_car_model_count'
     
-    def part_category_count(self, obj):
-        return obj._part_category_count
-    part_category_count.short_description = 'Part Categories'
-    part_category_count.admin_order_field = '_part_category_count'
+    def illustration_count(self, obj):
+        return obj._illustration_count
+    illustration_count.short_description = 'Illustrations'
+    illustration_count.admin_order_field = '_illustration_count'
 
 
 # ==========================================
@@ -152,22 +152,23 @@ class CarModelAdmin(admin.ModelAdmin):
 
 
 # ==========================================
-# Part Category Admin
+# Part Category Admin (UPDATED - No engine_model field)
 # ==========================================
 @admin.register(PartCategory)
 class PartCategoryAdmin(admin.ModelAdmin):
     list_display = [
-        'name', 'engine_model_link', 'subcategory_count', 
+        'name', 'name_ja', 'order', 'subcategory_count', 
         'illustration_count', 'slug'
     ]
-    list_filter = ['engine_model__manufacturer', 'engine_model']
-    search_fields = ['name', 'description', 'engine_model__name']
+    list_display_links = ['name']  # Make name clickable
+    list_editable = ['order']  # Allow quick reordering
+    search_fields = ['name', 'name_ja', 'description']
     prepopulated_fields = {'slug': ('name',)}
-    raw_id_fields = ['engine_model']
+    ordering = ['order', 'name']
     
     fieldsets = (
         ('Basic Information', {
-            'fields': ('engine_model', 'name', 'slug')
+            'fields': ('name', 'name_ja', 'slug', 'order')
         }),
         ('Details', {
             'fields': ('description',)
@@ -176,16 +177,10 @@ class PartCategoryAdmin(admin.ModelAdmin):
     
     def get_queryset(self, request):
         qs = super().get_queryset(request)
-        return qs.select_related('engine_model__manufacturer').annotate(
+        return qs.annotate(
             _subcategory_count=Count('subcategories', distinct=True),
             _illustration_count=Count('illustrations', distinct=True)
         )
-    
-    def engine_model_link(self, obj):
-        url = reverse('admin:illustrations_enginemodel_change', args=[obj.engine_model.id])
-        return format_html('<a href="{}">{}</a>', url, obj.engine_model)
-    engine_model_link.short_description = 'Engine Model'
-    engine_model_link.admin_order_field = 'engine_model__name'
     
     def subcategory_count(self, obj):
         return obj._subcategory_count
@@ -193,32 +188,35 @@ class PartCategoryAdmin(admin.ModelAdmin):
     subcategory_count.admin_order_field = '_subcategory_count'
     
     def illustration_count(self, obj):
-        return obj._illustration_count
+        count = obj._illustration_count
+        if count > 0:
+            url = f"/admin/illustrations/illustration/?part_category__id__exact={obj.id}"
+            return format_html('<a href="{}">{}</a>', url, count)
+        return count
     illustration_count.short_description = 'Illustrations'
     illustration_count.admin_order_field = '_illustration_count'
 
 
 # ==========================================
-# Part Subcategory Admin
+# Part Subcategory Admin (UPDATED - No engine_model reference)
 # ==========================================
 @admin.register(PartSubCategory)
 class PartSubCategoryAdmin(admin.ModelAdmin):
     list_display = [
-        'name', 'part_category_link', 'engine_model_info',
+        'name', 'name_ja', 'part_category_link', 'order',
         'illustration_count', 'slug'
     ]
-    list_filter = [
-        'part_category__engine_model__manufacturer',
-        'part_category__engine_model',
-        'part_category'
-    ]
-    search_fields = ['name', 'description', 'part_category__name']
+    list_display_links = ['name']  # Make name clickable
+    list_editable = ['order']  # Allow quick reordering
+    list_filter = ['part_category']
+    search_fields = ['name', 'name_ja', 'description', 'part_category__name']
     prepopulated_fields = {'slug': ('name',)}
     raw_id_fields = ['part_category']
+    ordering = ['part_category__order', 'order', 'name']
     
     fieldsets = (
         ('Basic Information', {
-            'fields': ('part_category', 'name', 'slug')
+            'fields': ('part_category', 'name', 'name_ja', 'slug', 'order')
         }),
         ('Details', {
             'fields': ('description',)
@@ -227,25 +225,25 @@ class PartSubCategoryAdmin(admin.ModelAdmin):
     
     def get_queryset(self, request):
         qs = super().get_queryset(request)
-        return qs.select_related(
-            'part_category__engine_model__manufacturer'
-        ).annotate(
+        return qs.select_related('part_category').annotate(
             _illustration_count=Count('illustrations', distinct=True)
         )
     
     def part_category_link(self, obj):
         url = reverse('admin:illustrations_partcategory_change', args=[obj.part_category.id])
-        return format_html('<a href="{}">{}</a>', url, obj.part_category.name)
+        display = f"{obj.part_category.name}"
+        if obj.part_category.name_ja:
+            display += f" ({obj.part_category.name_ja})"
+        return format_html('<a href="{}">{}</a>', url, display)
     part_category_link.short_description = 'Part Category'
     part_category_link.admin_order_field = 'part_category__name'
     
-    def engine_model_info(self, obj):
-        return f"{obj.part_category.engine_model}"
-    engine_model_info.short_description = 'Engine Model'
-    engine_model_info.admin_order_field = 'part_category__engine_model__name'
-    
     def illustration_count(self, obj):
-        return obj._illustration_count
+        count = obj._illustration_count
+        if count > 0:
+            url = f"/admin/illustrations/illustration/?part_subcategory__id__exact={obj.id}"
+            return format_html('<a href="{}">{}</a>', url, count)
+        return count
     illustration_count.short_description = 'Illustrations'
     illustration_count.admin_order_field = '_illustration_count'
 
@@ -281,13 +279,13 @@ class IllustrationFileInline(admin.TabularInline):
 
 
 # ==========================================
-# Illustration Admin
+# Illustration Admin (UPDATED)
 # ==========================================
 @admin.register(Illustration)
 class IllustrationAdmin(admin.ModelAdmin):
     list_display = [
         'title', 'user_display', 'engine_model_link', 
-        'part_category_link', 'part_subcategory_link', 
+        'part_category_display', 'part_subcategory_display', 
         'car_model_count', 'file_count', 'created_at'
     ]
     list_filter = [
@@ -301,7 +299,8 @@ class IllustrationAdmin(admin.ModelAdmin):
     search_fields = [
         'title', 'description',
         'user__username', 'user__email',
-        'engine_model__name', 'part_category__name'
+        'engine_model__name', 'part_category__name',
+        'part_category__name_ja'
     ]
     raw_id_fields = ['user', 'engine_model', 'part_category', 'part_subcategory']
     filter_horizontal = ['applicable_car_models']
@@ -314,7 +313,8 @@ class IllustrationAdmin(admin.ModelAdmin):
             'fields': ('user', 'title', 'description')
         }),
         ('Classification', {
-            'fields': ('engine_model', 'part_category', 'part_subcategory')
+            'fields': ('engine_model', 'part_category', 'part_subcategory'),
+            'description': 'Select the engine and universal part categories'
         }),
         ('Applicable Car Models', {
             'fields': ('applicable_car_models',),
@@ -331,7 +331,7 @@ class IllustrationAdmin(admin.ModelAdmin):
         return qs.select_related(
             'user', 
             'engine_model__manufacturer',
-            'part_category__engine_model',
+            'part_category',
             'part_subcategory__part_category'
         ).prefetch_related(
             'files',
@@ -352,19 +352,25 @@ class IllustrationAdmin(admin.ModelAdmin):
     engine_model_link.short_description = 'Engine Model'
     engine_model_link.admin_order_field = 'engine_model__name'
     
-    def part_category_link(self, obj):
+    def part_category_display(self, obj):
         url = reverse('admin:illustrations_partcategory_change', args=[obj.part_category.id])
-        return format_html('<a href="{}">{}</a>', url, obj.part_category.name)
-    part_category_link.short_description = 'Part Category'
-    part_category_link.admin_order_field = 'part_category__name'
+        display = obj.part_category.name
+        if obj.part_category.name_ja:
+            display += f" ({obj.part_category.name_ja})"
+        return format_html('<a href="{}">{}</a>', url, display)
+    part_category_display.short_description = 'Part Category'
+    part_category_display.admin_order_field = 'part_category__name'
     
-    def part_subcategory_link(self, obj):
+    def part_subcategory_display(self, obj):
         if obj.part_subcategory:
             url = reverse('admin:illustrations_partsubcategory_change', args=[obj.part_subcategory.id])
-            return format_html('<a href="{}">{}</a>', url, obj.part_subcategory.name)
+            display = obj.part_subcategory.name
+            if obj.part_subcategory.name_ja:
+                display += f" ({obj.part_subcategory.name_ja})"
+            return format_html('<a href="{}">{}</a>', url, display)
         return "-"
-    part_subcategory_link.short_description = 'Part Subcategory'
-    part_subcategory_link.admin_order_field = 'part_subcategory__name'
+    part_subcategory_display.short_description = 'Part Subcategory'
+    part_subcategory_display.admin_order_field = 'part_subcategory__name'
     
     def car_model_count(self, obj):
         return obj._car_model_count

@@ -1,4 +1,4 @@
-# views.py - CORRECTED FOR NEW MODEL STRUCTURE
+# views.py - FIXED FOR INDEPENDENT CATEGORIES
 
 from rest_framework import viewsets, filters, status
 from rest_framework.decorators import action
@@ -74,7 +74,8 @@ class EngineModelViewSet(viewsets.ModelViewSet):
     
     def get_queryset(self):
         return EngineModel.objects.select_related('manufacturer').annotate(
-            car_model_count=Count('car_models', distinct=True)
+            car_model_count=Count('car_models', distinct=True),
+            illustration_count=Count('illustrations', distinct=True)
         )
     
     def get_serializer_class(self):
@@ -134,9 +135,16 @@ class CarModelViewSet(viewsets.ModelViewSet):
         return Response(vehicle_types)
 
 
+# ========================================
+# PART CATEGORIES (FIXED - Independent of engines)
+# ========================================
+
 class PartCategoryViewSet(viewsets.ModelViewSet):
     """
-    Part Categories - Main part categories (Engine, Transmission, etc.)
+    Part Categories - Universal part categories (Engine Components, Cooling System, etc.)
+    
+    These categories are NOT tied to specific engines.
+    They are universal and can be used with any engine.
     
     Permissions:
     - Read: Anyone (including anonymous users)
@@ -144,23 +152,23 @@ class PartCategoryViewSet(viewsets.ModelViewSet):
     """
     serializer_class = PartCategorySerializer
     permission_classes = [IsAdminOrReadOnly]
-    filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
-    filterset_fields = ['engine_model', 'engine_model__manufacturer']
-    search_fields = ['name', 'description', 'engine_model__name']
-    ordering_fields = ['name', 'engine_model__name']
-    ordering = ['engine_model__manufacturer__name', 'engine_model__name', 'name']
+    filter_backends = [filters.SearchFilter, filters.OrderingFilter]
+    search_fields = ['name', 'name_ja', 'description']
+    ordering_fields = ['order', 'name']
+    ordering = ['order', 'name']
     
     def get_queryset(self):
-        return PartCategory.objects.select_related(
-            'engine_model__manufacturer'
-        ).annotate(
-            subcategory_count=Count('subcategories', distinct=True)
+        return PartCategory.objects.annotate(
+            subcategory_count=Count('subcategories', distinct=True),
+            illustration_count=Count('illustrations', distinct=True)
         )
 
 
 class PartSubCategoryViewSet(viewsets.ModelViewSet):
     """
     Part Subcategories - Specific part types (Pistons, Turbo, etc.)
+    
+    These are also universal and NOT tied to specific engines.
     
     Permissions:
     - Read: Anyone (including anonymous users)
@@ -169,14 +177,14 @@ class PartSubCategoryViewSet(viewsets.ModelViewSet):
     serializer_class = PartSubCategorySerializer
     permission_classes = [IsAdminOrReadOnly]
     filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
-    filterset_fields = ['part_category', 'part_category__engine_model']
-    search_fields = ['name', 'description', 'part_category__name']
-    ordering_fields = ['name', 'part_category__name']
-    ordering = ['part_category__name', 'name']
+    filterset_fields = ['part_category']
+    search_fields = ['name', 'name_ja', 'description', 'part_category__name']
+    ordering_fields = ['order', 'name', 'part_category__order']
+    ordering = ['part_category__order', 'order', 'name']
     
     def get_queryset(self):
-        return PartSubCategory.objects.select_related(
-            'part_category__engine_model__manufacturer'
+        return PartSubCategory.objects.select_related('part_category').annotate(
+            illustration_count=Count('illustrations', distinct=True)
         )
 
 
@@ -187,6 +195,11 @@ class PartSubCategoryViewSet(viewsets.ModelViewSet):
 class IllustrationViewSet(viewsets.ModelViewSet):
     """
     Illustrations - User-uploaded part illustrations/diagrams
+    
+    Illustrations link:
+    - Engine Model (which engine)
+    - Part Category (universal category like "Engine Components")
+    - Part Subcategory (specific part like "Pistons")
     
     Permissions:
     - Verified Staff: Can see and manage ALL illustrations from ALL users
@@ -214,7 +227,7 @@ class IllustrationViewSet(viewsets.ModelViewSet):
         queryset = Illustration.objects.select_related(
             'user',
             'engine_model__manufacturer',
-            'part_category__engine_model',
+            'part_category',
             'part_subcategory__part_category'
         ).prefetch_related(
             'files',

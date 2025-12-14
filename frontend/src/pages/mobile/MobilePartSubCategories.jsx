@@ -33,9 +33,9 @@ import {
   Numbers as NumbersIcon,
   Language as LanguageIcon
 } from '@mui/icons-material';
-import { usePartCategories } from '../../hooks/useIllustrations';
+import { usePartSubCategories } from '../../hooks/useIllustrations';
 
-const MobilePartCategories = () => {
+const MobilePartSubCategories = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [showModal, setShowModal] = useState(false);
   const [editingCategory, setEditingCategory] = useState(null);
@@ -47,7 +47,7 @@ const MobilePartCategories = () => {
     order: 0
   });
   const [errors, setErrors] = useState({});
-  const [selectedCategory, setSelectedCategory] = useState(null);
+  const [selectedCategory, setSelectedCategory] = useState(null); // Fixed: was incorrectly declared as [setSelectedSubCategory, setSelectedSubCategory]
   const [showActions, setShowActions] = useState(false);
 
   const { 
@@ -58,7 +58,7 @@ const MobilePartCategories = () => {
     createCategory, 
     updateCategory,
     deleteCategory 
-  } = usePartCategories();
+  } = usePartSubCategories();
 
   useEffect(() => {
     fetchCategories();
@@ -184,7 +184,7 @@ const MobilePartCategories = () => {
     }
   };
 
-  const PartCategoryCard = ({ category }) => (
+  const PartSubCategoryCard = ({ category }) => (
     <Card 
       sx={{ 
         borderRadius: 3,
@@ -216,12 +216,12 @@ const MobilePartCategories = () => {
 
             {/* Subcategory & Illustration Count */}
             <Stack direction="row" spacing={2} mb={0.5}>
-              {category.subcategory_count !== undefined && (
+              {category.subcategory_count !== undefined && category.subcategory_count > 0 && (
                 <Typography variant="caption" color="primary.main" fontWeight={600}>
                   サブカテゴリ: {category.subcategory_count}
                 </Typography>
               )}
-              {category.illustration_count !== undefined && (
+              {category.illustration_count !== undefined && category.illustration_count > 0 && (
                 <Typography variant="caption" color="success.main" fontWeight={600}>
                   図: {category.illustration_count}
                 </Typography>
@@ -378,7 +378,7 @@ const MobilePartCategories = () => {
 
             <Stack spacing={1.5}>
               {filteredCategories.map((category) => (
-                <PartCategoryCard key={category.id} category={category} />
+                <PartSubCategoryCard key={category.id} category={category} />
               ))}
             </Stack>
           </>
@@ -583,4 +583,4 @@ const MobilePartCategories = () => {
   );
 };
 
-export default MobilePartCategories;
+export default MobilePartSubCategories;

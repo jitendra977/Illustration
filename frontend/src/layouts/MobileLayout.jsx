@@ -280,6 +280,15 @@ const MobileLayout = ({ children, showHeader = true }) => {
                 <ListItemText primary="部品カテゴリー" />
               </ListItemButton>
             </ListItem>
+            <ListItem disablePadding>
+              <ListItemButton
+                onClick={() => { setMenuOpen(false); navigate('/part-subcategories'); }}
+                selected={location.pathname.startsWith('/part-subcategories')}
+              >
+                <ListItemIcon><CategoryIcon /></ListItemIcon>
+                <ListItemText primary="subcategory" />
+              </ListItemButton>
+            </ListItem>
             <Divider sx={{ my: 1 }} />
             <ListItem disablePadding>
               <ListItemButton

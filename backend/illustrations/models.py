@@ -309,35 +309,123 @@ class PartSubCategory(models.Model):
 
 
 # ------------------------------
-# Illustration
+# Part Category (FIXED - Now independent of engine)
+# ------------------------------
+class PartCategory(models.Model):
+    """
+    Universal part categories that apply to ALL engines.
+    Examples: Engine Components, Cooling System, Fuel System, etc.
+    
+    These categories are NOT tied to specific engines because:
+    - All diesel engines have similar systems
+    - Avoids duplicate categories across engines
+    - Makes searching and filtering easier
+    """
+    name = models.CharField(max_length=255, unique=True, help_text="Category name (e.g., Engine Components)")
+    name_ja = models.CharField(max_length=255, blank=True, help_text="Japanese name (e.g., エンジン本体)")
+    description = models.TextField(blank=True)
+    slug = models.SlugField(unique=True)
+    
+    # Display order for admin/frontend
+    order = models.IntegerField(default=0, help_text="Display order (lower = first)")
+
+    class Meta:
+        verbose_name = "Part Category"
+        verbose_name_plural = "Part Categories"
+        ordering = ['order', 'name']
+
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            self.slug = slugify(self.name)
+        super().save(*args, **kwargs)
+
+    def __str__(self):
+        return f"{self.name} ({self.name_ja})" if self.name_ja else self.name
+
+
+# ------------------------------
+# Part Subcategory (FIXED - Now independent of specific category-engine combo)
+# ------------------------------
+class PartSubCategory(models.Model):
+    """
+    Universal subcategories within part categories.
+    Examples: Pistons, Turbocharger, Fuel Injectors, etc.
+    
+    These are also NOT tied to specific engines because:
+    - Parts like "Piston" exist in all engines
+    - Different engines have different part numbers, but same part type
+    - Makes categorization consistent across all engines
+    """
+    part_category = models.ForeignKey(
+        PartCategory, 
+        on_delete=models.CASCADE,
+        related_name='subcategories'
+    )
+    name = models.CharField(max_length=255, help_text="Subcategory name (e.g., Pistons)")
+    name_ja = models.CharField(max_length=255, blank=True, help_text="Japanese name (e.g., ピストン)")
+    description = models.TextField(blank=True)
+    slug = models.SlugField()
+    
+    # Display order
+    order = models.IntegerField(default=0, help_text="Display order (lower = first)")
+
+    class Meta:
+        verbose_name = "Part Subcategory"
+        verbose_name_plural = "Part Subcategories"
+        ordering = ['part_category', 'order', 'name']
+        unique_together = ['part_category', 'name']  # Same name allowed across different categories
+
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            self.slug = slugify(self.name)
+        super().save(*args, **kwargs)
+
+    def __str__(self):
+        return f"{self.part_category.name} > {self.name}"
+
+
+# ------------------------------
+# Illustration (FIXED - Links category to specific engine)
 # ------------------------------
 class Illustration(models.Model):
     """
-    User-uploaded illustrations/diagrams for specific engine parts
+    User-uploaded illustrations/diagrams for specific engine parts.
+    
+    The ILLUSTRATION links:
+    - Which ENGINE (e.g., A09C)
+    - Which CATEGORY (e.g., Engine Components) 
+    - Which SUBCATEGORY (e.g., Pistons)
+    
+    This way, the same category can be used for multiple engines!
     """
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='illustrations')
+    
+    # CRITICAL: Engine + Category combination happens HERE, not in PartCategory
     engine_model = models.ForeignKey(
         EngineModel, 
         on_delete=models.CASCADE,
-        related_name='illustrations'
+        related_name='illustrations',
+        help_text="Which engine this illustration is for"
     )
     part_category = models.ForeignKey(
         PartCategory, 
         on_delete=models.CASCADE,
-        related_name='illustrations'
+        related_name='illustrations',
+        help_text="Universal part category (e.g., Engine Components)"
     )
     part_subcategory = models.ForeignKey(
         PartSubCategory, 
         on_delete=models.SET_NULL, 
         null=True, 
         blank=True,
-        related_name='illustrations'
+        related_name='illustrations',
+        help_text="Specific part type (e.g., Pistons)"
     )
 
     title = models.CharField(max_length=255)
     description = models.TextField(blank=True)
     
-    # Optional: Link to specific car models if needed
+    # Optional: Link to specific car models
     applicable_car_models = models.ManyToManyField(
         CarModel,
         blank=True,
@@ -357,9 +445,32 @@ class Illustration(models.Model):
             models.Index(fields=['engine_model', 'part_category']),
             models.Index(fields=['user', 'created_at']),
         ]
+        # Ensure no duplicate illustrations for same engine+category+subcategory+title
+        unique_together = ['engine_model', 'part_category', 'part_subcategory', 'title']
 
     def __str__(self):
-        return self.title
+        return f"{self.engine_model.name} - {self.title}"
+
+
+# ------------------------------
+# File Upload Path (UPDATED)
+# ------------------------------
+def illustration_file_path(instance, filename):
+    """
+    Generate upload path: illustrations/Manufacturer/EngineModel/PartCategory/PartSubCategory/IllustrationID/filename
+    """
+    ext = filename.split('.')[-1]
+    filename = f"{uuid.uuid4()}.{ext}"
+
+    return os.path.join(
+        "illustrations",
+        instance.illustration.engine_model.manufacturer.slug,
+        instance.illustration.engine_model.slug,
+        instance.illustration.part_category.slug,
+        instance.illustration.part_subcategory.slug if instance.illustration.part_subcategory else "general",
+        str(instance.illustration.id),
+        filename
+    )
 
 
 # ------------------------------

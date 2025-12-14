@@ -73,6 +73,7 @@ const CreateIllustrationModal = ({ open, onClose, onSuccess }) => {
   useEffect(() => {
     if (open) {
       fetchManufacturers();
+      fetchCategories();  // Fetch categories independently
     }
   }, [open]);
 
@@ -125,15 +126,10 @@ const CreateIllustrationModal = ({ open, onClose, onSuccess }) => {
     }
   };
 
-  const fetchCategories = async (engineModelId) => {
-    if (!engineModelId) {
-      setCategories([]);
-      return;
-    }
-    
+  const fetchCategories = async () => {
     setLoadingCategories(true);
     try {
-      const response = await partCategoryAPI.getAll({ engine_model: engineModelId });
+      const response = await partCategoryAPI.getAll();
       setCategories(response.data.results || response.data || []);
     } catch (error) {
       console.error('Failed to fetch part categories:', error);
@@ -158,7 +154,7 @@ const CreateIllustrationModal = ({ open, onClose, onSuccess }) => {
       setErrors({});
       setCarModels([]);
       setEngineModels([]);
-      setCategories([]);
+      // Categories are independent, so don't reset them
     }
   }, [open]);
 
@@ -174,7 +170,7 @@ const CreateIllustrationModal = ({ open, onClose, onSuccess }) => {
         part_category: '' 
       }));
       setEngineModels([]);
-      setCategories([]);
+      setCategories([]);  // No need to reset categories since they're independent
       fetchCarModels(value);
     } else if (name === 'car_model') {
       setFormData(prev => ({ 
@@ -182,11 +178,11 @@ const CreateIllustrationModal = ({ open, onClose, onSuccess }) => {
         engine_model: '', 
         part_category: '' 
       }));
-      setCategories([]);
+      setCategories([]);  // No need to reset categories
       fetchEngineModels(value);
     } else if (name === 'engine_model') {
       setFormData(prev => ({ ...prev, part_category: '' }));
-      fetchCategories(value);
+      // No need to fetch categories again since they're independent
     }
     
     // Clear error for this field
@@ -330,7 +326,7 @@ const CreateIllustrationModal = ({ open, onClose, onSuccess }) => {
     setLoading(false);
     setCarModels([]);
     setEngineModels([]);
-    setCategories([]);
+    // Categories are independent, so don't reset them
     onClose();
   };
 

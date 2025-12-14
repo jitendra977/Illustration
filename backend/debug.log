@@ -27520,3 +27520,867 @@ INFO 2025-12-13 22:47:56,206 basehttp "GET /api/car-models/vehicle-types/ HTTP/1
 INFO 2025-12-13 22:47:56,206 basehttp "GET /api/manufacturers/ HTTP/1.1" 200 241
 INFO 2025-12-13 22:47:56,211 basehttp "GET /api/engine-models/ HTTP/1.1" 200 1019
 INFO 2025-12-13 22:47:56,216 basehttp "GET /api/car-models/ HTTP/1.1" 200 709
+INFO 2025-12-14 13:28:32,925 autoreload Watching for file changes with StatReloader
+INFO 2025-12-14 13:28:40,405 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 400
+INFO 2025-12-14 13:28:40,410 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 400
+INFO 2025-12-14 13:28:40,414 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 400
+INFO 2025-12-14 13:28:40,419 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 400
+INFO 2025-12-14 13:28:40,537 basehttp "GET /api/manufacturers/?limit=1 HTTP/1.1" 200 241
+INFO 2025-12-14 13:28:40,548 basehttp "GET /api/car-models/?limit=1 HTTP/1.1" 200 709
+INFO 2025-12-14 13:28:40,548 basehttp "GET /api/illustrations/?limit=5&ordering=-created_at HTTP/1.1" 200 52
+INFO 2025-12-14 13:28:40,552 basehttp "GET /api/engine-models/?limit=1 HTTP/1.1" 200 1019
+INFO 2025-12-14 13:28:43,994 basehttp "GET /api/part-categories/ HTTP/1.1" 200 52
+INFO 2025-12-14 13:28:43,994 basehttp "GET /api/manufacturers/ HTTP/1.1" 200 241
+INFO 2025-12-14 13:28:43,995 basehttp "GET /api/illustrations/ HTTP/1.1" 200 52
+INFO 2025-12-14 13:28:43,998 basehttp "GET /api/car-models/ HTTP/1.1" 200 709
+INFO 2025-12-14 13:28:44,002 basehttp "GET /api/engine-models/ HTTP/1.1" 200 1019
+INFO 2025-12-14 13:28:44,010 basehttp "GET /api/part-categories/ HTTP/1.1" 200 52
+INFO 2025-12-14 13:28:44,016 basehttp "GET /api/manufacturers/ HTTP/1.1" 200 241
+INFO 2025-12-14 13:28:44,018 basehttp "GET /api/illustrations/ HTTP/1.1" 200 52
+INFO 2025-12-14 13:28:44,023 basehttp "GET /api/engine-models/ HTTP/1.1" 200 1019
+INFO 2025-12-14 13:28:44,024 basehttp "GET /api/car-models/ HTTP/1.1" 200 709
+INFO 2025-12-14 13:28:45,486 basehttp "GET /api/manufacturers/ HTTP/1.1" 200 241
+INFO 2025-12-14 13:28:51,801 basehttp "GET /api/car-models/?manufacturer=2 HTTP/1.1" 200 339
+INFO 2025-12-14 13:28:53,447 basehttp "GET /api/engine-models/?car_model=4 HTTP/1.1" 200 1019
+INFO 2025-12-14 13:28:55,004 basehttp "GET /api/part-categories/?engine_model=4 HTTP/1.1" 200 52
+INFO 2025-12-14 13:29:03,628 basehttp "GET /api/part-categories/ HTTP/1.1" 200 52
+INFO 2025-12-14 13:29:03,632 basehttp "GET /api/engine-models/ HTTP/1.1" 200 1019
+INFO 2025-12-14 13:29:03,638 basehttp "GET /api/part-categories/ HTTP/1.1" 200 52
+INFO 2025-12-14 13:29:03,643 basehttp "GET /api/engine-models/ HTTP/1.1" 200 1019
+INFO 2025-12-14 13:29:03,644 basehttp "GET /api/part-categories/ HTTP/1.1" 200 52
+INFO 2025-12-14 13:29:03,648 basehttp "GET /api/part-categories/ HTTP/1.1" 200 52
+INFO 2025-12-14 13:29:12,856 basehttp "POST /api/part-categories/ HTTP/1.1" 201 102
+INFO 2025-12-14 13:29:12,864 basehttp "GET /api/part-categories/ HTTP/1.1" 200 176
+INFO 2025-12-14 13:29:17,317 basehttp "GET /api/manufacturers/ HTTP/1.1" 200 241
+INFO 2025-12-14 13:29:17,322 basehttp "GET /api/illustrations/ HTTP/1.1" 200 52
+INFO 2025-12-14 13:29:17,329 basehttp "GET /api/part-categories/ HTTP/1.1" 200 176
+INFO 2025-12-14 13:29:17,333 basehttp "GET /api/car-models/ HTTP/1.1" 200 709
+INFO 2025-12-14 13:29:17,334 basehttp "GET /api/engine-models/ HTTP/1.1" 200 1019
+INFO 2025-12-14 13:29:17,336 basehttp "GET /api/manufacturers/ HTTP/1.1" 200 241
+INFO 2025-12-14 13:29:17,346 basehttp "GET /api/illustrations/ HTTP/1.1" 200 52
+INFO 2025-12-14 13:29:17,348 basehttp "GET /api/part-categories/ HTTP/1.1" 200 176
+INFO 2025-12-14 13:29:17,353 basehttp "GET /api/engine-models/ HTTP/1.1" 200 1019
+INFO 2025-12-14 13:29:17,355 basehttp "GET /api/car-models/ HTTP/1.1" 200 709
+INFO 2025-12-14 13:29:18,579 basehttp "GET /api/manufacturers/ HTTP/1.1" 200 241
+INFO 2025-12-14 13:29:22,767 basehttp "GET /api/car-models/?manufacturer=2 HTTP/1.1" 200 339
+INFO 2025-12-14 13:29:24,454 basehttp "GET /api/engine-models/?car_model=4 HTTP/1.1" 200 1019
+INFO 2025-12-14 13:29:25,650 basehttp "GET /api/part-categories/?engine_model=4 HTTP/1.1" 200 176
+INFO 2025-12-14 13:29:33,350 basehttp "POST /api/illustrations/ HTTP/1.1" 201 331
+INFO 2025-12-14 13:29:33,361 basehttp "GET /api/illustrations/ HTTP/1.1" 200 398
+INFO 2025-12-14 13:29:35,946 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 400
+INFO 2025-12-14 13:29:36,014 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 400
+INFO 2025-12-14 13:29:36,044 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 400
+INFO 2025-12-14 13:29:36,049 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 400
+INFO 2025-12-14 13:29:36,157 basehttp "GET /api/engine-models/ HTTP/1.1" 200 1019
+INFO 2025-12-14 13:29:36,162 basehttp "GET /api/manufacturers/ HTTP/1.1" 200 241
+INFO 2025-12-14 13:29:36,167 basehttp "GET /api/part-categories/ HTTP/1.1" 200 176
+INFO 2025-12-14 13:29:36,167 basehttp "GET /api/illustrations/ HTTP/1.1" 200 398
+INFO 2025-12-14 13:29:36,169 basehttp "GET /api/car-models/ HTTP/1.1" 200 709
+INFO 2025-12-14 13:29:36,180 basehttp "GET /api/engine-models/ HTTP/1.1" 200 1019
+INFO 2025-12-14 13:29:36,184 basehttp "GET /api/manufacturers/ HTTP/1.1" 200 241
+INFO 2025-12-14 13:29:36,184 basehttp "GET /api/part-categories/ HTTP/1.1" 200 176
+INFO 2025-12-14 13:29:36,193 basehttp "GET /api/car-models/ HTTP/1.1" 200 709
+INFO 2025-12-14 13:29:36,196 basehttp "GET /api/illustrations/ HTTP/1.1" 200 398
+INFO 2025-12-14 13:29:54,917 basehttp "GET /admin/illustrations/illustrationfile/ HTTP/1.1" 200 19337
+INFO 2025-12-14 13:29:54,953 basehttp "GET /admin/jsi18n/ HTTP/1.1" 200 3342
+INFO 2025-12-14 13:29:54,957 basehttp "GET /media/illustrations/qr20/dfgdg/general/1/34b8875b-aa70-44a0-b48e-bb941e2ec823.png HTTP/1.1" 200 1347799
+INFO 2025-12-14 13:30:00,553 basehttp "GET /admin/illustrations/partcategory/add/ HTTP/1.1" 200 16887
+INFO 2025-12-14 13:30:00,580 basehttp "GET /admin/jsi18n/ HTTP/1.1" 200 3342
+INFO 2025-12-14 21:59:01,597 autoreload Watching for file changes with StatReloader
+INFO 2025-12-14 21:59:30,406 autoreload Watching for file changes with StatReloader
+INFO 2025-12-14 22:00:29,647 basehttp "OPTIONS /api/auth/login/ HTTP/1.1" 200 0
+INFO 2025-12-14 22:00:29,878 basehttp "POST /api/auth/login/ HTTP/1.1" 200 489
+INFO 2025-12-14 22:00:29,882 basehttp "OPTIONS /api/auth/users/profile/ HTTP/1.1" 200 0
+INFO 2025-12-14 22:00:29,891 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 400
+INFO 2025-12-14 22:00:29,972 basehttp "OPTIONS /api/illustrations/?limit=5&ordering=-created_at HTTP/1.1" 200 0
+INFO 2025-12-14 22:00:29,979 basehttp "OPTIONS /api/manufacturers/?limit=1 HTTP/1.1" 200 0
+INFO 2025-12-14 22:00:29,979 basehttp "OPTIONS /api/engine-models/?limit=1 HTTP/1.1" 200 0
+INFO 2025-12-14 22:00:29,985 basehttp "OPTIONS /api/car-models/?limit=1 HTTP/1.1" 200 0
+INFO 2025-12-14 22:00:30,010 basehttp "GET /api/engine-models/?limit=1 HTTP/1.1" 200 1019
+INFO 2025-12-14 22:00:30,011 basehttp "GET /api/manufacturers/?limit=1 HTTP/1.1" 200 241
+INFO 2025-12-14 22:00:30,014 basehttp "GET /api/car-models/?limit=1 HTTP/1.1" 200 709
+ERROR 2025-12-14 22:00:30,051 log Internal Server Error: /api/illustrations/
+Traceback (most recent call last):
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/db/backends/utils.py", line 105, in _execute
+    return self.cursor.execute(sql, params)
+           ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/db/backends/sqlite3/base.py", line 360, in execute
+    return super().execute(query, params)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+sqlite3.OperationalError: no such column: illustrations_partcategory.engine_model_id
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/views/decorators/csrf.py", line 65, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/rest_framework/viewsets.py", line 125, in view
+    return self.dispatch(request, *args, **kwargs)
+           ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/rest_framework/views.py", line 515, in dispatch
+    response = self.handle_exception(exc)
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/rest_framework/views.py", line 475, in handle_exception
+    self.raise_uncaught_exception(exc)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/rest_framework/views.py", line 486, in raise_uncaught_exception
+    raise exc
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/rest_framework/views.py", line 512, in dispatch
+    response = handler(request, *args, **kwargs)
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/rest_framework/mixins.py", line 40, in list
+    page = self.paginate_queryset(queryset)
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/rest_framework/generics.py", line 175, in paginate_queryset
+    return self.paginator.paginate_queryset(queryset, self.request, view=self)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/rest_framework/pagination.py", line 222, in paginate_queryset
+    return list(self.page)
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/core/paginator.py", line 191, in __len__
+    return len(self.object_list)
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/db/models/query.py", line 368, in __len__
+    self._fetch_all()
+    ~~~~~~~~~~~~~~~^^
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/db/models/query.py", line 1954, in _fetch_all
+    self._result_cache = list(self._iterable_class(self))
+                         ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/db/models/query.py", line 93, in __iter__
+    results = compiler.execute_sql(
+        chunked_fetch=self.chunked_fetch, chunk_size=self.chunk_size
+    )
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/db/models/sql/compiler.py", line 1623, in execute_sql
+    cursor.execute(sql, params)
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/db/backends/utils.py", line 122, in execute
+    return super().execute(sql, params)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/db/backends/utils.py", line 79, in execute
+    return self._execute_with_wrappers(
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        sql, params, many=False, executor=self._execute
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/db/backends/utils.py", line 92, in _execute_with_wrappers
+    return executor(sql, params, many, context)
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/db/backends/utils.py", line 100, in _execute
+    with self.db.wrap_database_errors:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/db/utils.py", line 91, in __exit__
+    raise dj_exc_value.with_traceback(traceback) from exc_value
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/db/backends/utils.py", line 105, in _execute
+    return self.cursor.execute(sql, params)
+           ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/db/backends/sqlite3/base.py", line 360, in execute
+    return super().execute(query, params)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+django.db.utils.OperationalError: no such column: illustrations_partcategory.engine_model_id
+ERROR 2025-12-14 22:00:30,055 basehttp "GET /api/illustrations/?limit=5&ordering=-created_at HTTP/1.1" 500 231995
+INFO 2025-12-14 22:00:33,993 basehttp "OPTIONS /api/manufacturers/ HTTP/1.1" 200 0
+INFO 2025-12-14 22:00:33,993 basehttp "OPTIONS /api/car-models/ HTTP/1.1" 200 0
+INFO 2025-12-14 22:00:33,993 basehttp "OPTIONS /api/engine-models/ HTTP/1.1" 200 0
+INFO 2025-12-14 22:00:33,994 basehttp "OPTIONS /api/engine-models/ HTTP/1.1" 200 0
+INFO 2025-12-14 22:00:33,994 basehttp "OPTIONS /api/car-models/ HTTP/1.1" 200 0
+INFO 2025-12-14 22:00:33,994 basehttp "OPTIONS /api/manufacturers/ HTTP/1.1" 200 0
+INFO 2025-12-14 22:00:34,016 basehttp "GET /api/manufacturers/ HTTP/1.1" 200 241
+INFO 2025-12-14 22:00:34,022 basehttp "GET /api/car-models/ HTTP/1.1" 200 709
+INFO 2025-12-14 22:00:34,023 basehttp "GET /api/engine-models/ HTTP/1.1" 200 1019
+INFO 2025-12-14 22:00:34,032 basehttp "GET /api/manufacturers/ HTTP/1.1" 200 241
+INFO 2025-12-14 22:00:34,034 basehttp "GET /api/engine-models/ HTTP/1.1" 200 1019
+INFO 2025-12-14 22:00:34,037 basehttp "GET /api/car-models/ HTTP/1.1" 200 709
+INFO 2025-12-14 22:00:38,959 basehttp "GET /api/manufacturers/?limit=1 HTTP/1.1" 200 241
+INFO 2025-12-14 22:00:38,959 basehttp "GET /api/engine-models/?limit=1 HTTP/1.1" 200 1019
+INFO 2025-12-14 22:00:38,965 basehttp "GET /api/car-models/?limit=1 HTTP/1.1" 200 709
+ERROR 2025-12-14 22:00:38,997 log Internal Server Error: /api/illustrations/
+Traceback (most recent call last):
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/db/backends/utils.py", line 105, in _execute
+    return self.cursor.execute(sql, params)
+           ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/db/backends/sqlite3/base.py", line 360, in execute
+    return super().execute(query, params)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+sqlite3.OperationalError: no such column: illustrations_partcategory.engine_model_id
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/views/decorators/csrf.py", line 65, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/rest_framework/viewsets.py", line 125, in view
+    return self.dispatch(request, *args, **kwargs)
+           ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/rest_framework/views.py", line 515, in dispatch
+    response = self.handle_exception(exc)
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/rest_framework/views.py", line 475, in handle_exception
+    self.raise_uncaught_exception(exc)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/rest_framework/views.py", line 486, in raise_uncaught_exception
+    raise exc
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/rest_framework/views.py", line 512, in dispatch
+    response = handler(request, *args, **kwargs)
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/rest_framework/mixins.py", line 40, in list
+    page = self.paginate_queryset(queryset)
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/rest_framework/generics.py", line 175, in paginate_queryset
+    return self.paginator.paginate_queryset(queryset, self.request, view=self)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/rest_framework/pagination.py", line 222, in paginate_queryset
+    return list(self.page)
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/core/paginator.py", line 191, in __len__
+    return len(self.object_list)
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/db/models/query.py", line 368, in __len__
+    self._fetch_all()
+    ~~~~~~~~~~~~~~~^^
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/db/models/query.py", line 1954, in _fetch_all
+    self._result_cache = list(self._iterable_class(self))
+                         ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/db/models/query.py", line 93, in __iter__
+    results = compiler.execute_sql(
+        chunked_fetch=self.chunked_fetch, chunk_size=self.chunk_size
+    )
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/db/models/sql/compiler.py", line 1623, in execute_sql
+    cursor.execute(sql, params)
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/db/backends/utils.py", line 122, in execute
+    return super().execute(sql, params)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/db/backends/utils.py", line 79, in execute
+    return self._execute_with_wrappers(
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        sql, params, many=False, executor=self._execute
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/db/backends/utils.py", line 92, in _execute_with_wrappers
+    return executor(sql, params, many, context)
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/db/backends/utils.py", line 100, in _execute
+    with self.db.wrap_database_errors:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/db/utils.py", line 91, in __exit__
+    raise dj_exc_value.with_traceback(traceback) from exc_value
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/db/backends/utils.py", line 105, in _execute
+    return self.cursor.execute(sql, params)
+           ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/db/backends/sqlite3/base.py", line 360, in execute
+    return super().execute(query, params)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+django.db.utils.OperationalError: no such column: illustrations_partcategory.engine_model_id
+ERROR 2025-12-14 22:00:39,000 basehttp "GET /api/illustrations/?limit=5&ordering=-created_at HTTP/1.1" 500 231995
+INFO 2025-12-14 22:00:45,758 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 400
+INFO 2025-12-14 22:00:45,762 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 400
+INFO 2025-12-14 22:00:45,766 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 400
+INFO 2025-12-14 22:00:45,771 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 400
+INFO 2025-12-14 22:00:45,913 basehttp "GET /api/car-models/?limit=1 HTTP/1.1" 200 709
+INFO 2025-12-14 22:00:45,915 basehttp "GET /api/manufacturers/?limit=1 HTTP/1.1" 200 241
+INFO 2025-12-14 22:00:45,918 basehttp "GET /api/engine-models/?limit=1 HTTP/1.1" 200 1019
+ERROR 2025-12-14 22:00:45,955 log Internal Server Error: /api/illustrations/
+Traceback (most recent call last):
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/db/backends/utils.py", line 105, in _execute
+    return self.cursor.execute(sql, params)
+           ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/db/backends/sqlite3/base.py", line 360, in execute
+    return super().execute(query, params)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+sqlite3.OperationalError: no such column: illustrations_partcategory.engine_model_id
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/views/decorators/csrf.py", line 65, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/rest_framework/viewsets.py", line 125, in view
+    return self.dispatch(request, *args, **kwargs)
+           ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/rest_framework/views.py", line 515, in dispatch
+    response = self.handle_exception(exc)
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/rest_framework/views.py", line 475, in handle_exception
+    self.raise_uncaught_exception(exc)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/rest_framework/views.py", line 486, in raise_uncaught_exception
+    raise exc
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/rest_framework/views.py", line 512, in dispatch
+    response = handler(request, *args, **kwargs)
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/rest_framework/mixins.py", line 40, in list
+    page = self.paginate_queryset(queryset)
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/rest_framework/generics.py", line 175, in paginate_queryset
+    return self.paginator.paginate_queryset(queryset, self.request, view=self)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/rest_framework/pagination.py", line 222, in paginate_queryset
+    return list(self.page)
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/core/paginator.py", line 191, in __len__
+    return len(self.object_list)
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/db/models/query.py", line 368, in __len__
+    self._fetch_all()
+    ~~~~~~~~~~~~~~~^^
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/db/models/query.py", line 1954, in _fetch_all
+    self._result_cache = list(self._iterable_class(self))
+                         ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/db/models/query.py", line 93, in __iter__
+    results = compiler.execute_sql(
+        chunked_fetch=self.chunked_fetch, chunk_size=self.chunk_size
+    )
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/db/models/sql/compiler.py", line 1623, in execute_sql
+    cursor.execute(sql, params)
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/db/backends/utils.py", line 122, in execute
+    return super().execute(sql, params)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/db/backends/utils.py", line 79, in execute
+    return self._execute_with_wrappers(
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        sql, params, many=False, executor=self._execute
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/db/backends/utils.py", line 92, in _execute_with_wrappers
+    return executor(sql, params, many, context)
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/db/backends/utils.py", line 100, in _execute
+    with self.db.wrap_database_errors:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/db/utils.py", line 91, in __exit__
+    raise dj_exc_value.with_traceback(traceback) from exc_value
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/db/backends/utils.py", line 105, in _execute
+    return self.cursor.execute(sql, params)
+           ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/db/backends/sqlite3/base.py", line 360, in execute
+    return super().execute(query, params)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+django.db.utils.OperationalError: no such column: illustrations_partcategory.engine_model_id
+ERROR 2025-12-14 22:00:45,958 basehttp "GET /api/illustrations/?limit=5&ordering=-created_at HTTP/1.1" 500 231995
+INFO 2025-12-14 22:00:50,041 basehttp "OPTIONS /api/car-models/vehicle-types/ HTTP/1.1" 200 0
+INFO 2025-12-14 22:00:50,041 basehttp "OPTIONS /api/car-models/vehicle-types/ HTTP/1.1" 200 0
+INFO 2025-12-14 22:00:50,059 basehttp "GET /api/manufacturers/ HTTP/1.1" 200 241
+INFO 2025-12-14 22:00:50,059 basehttp "GET /api/car-models/vehicle-types/ HTTP/1.1" 200 1617
+INFO 2025-12-14 22:00:50,062 basehttp "GET /api/car-models/ HTTP/1.1" 200 709
+INFO 2025-12-14 22:00:50,063 basehttp "GET /api/engine-models/ HTTP/1.1" 200 1019
+INFO 2025-12-14 22:00:50,070 basehttp "GET /api/car-models/vehicle-types/ HTTP/1.1" 200 1617
+INFO 2025-12-14 22:00:50,072 basehttp "GET /api/manufacturers/ HTTP/1.1" 200 241
+INFO 2025-12-14 22:00:50,076 basehttp "GET /api/engine-models/ HTTP/1.1" 200 1019
+INFO 2025-12-14 22:00:50,079 basehttp "GET /api/car-models/ HTTP/1.1" 200 709
+INFO 2025-12-14 22:00:54,231 basehttp "OPTIONS /api/illustrations/ HTTP/1.1" 200 0
+INFO 2025-12-14 22:00:54,231 basehttp "OPTIONS /api/part-categories/ HTTP/1.1" 200 0
+INFO 2025-12-14 22:00:54,231 basehttp "OPTIONS /api/part-categories/ HTTP/1.1" 200 0
+INFO 2025-12-14 22:00:54,234 basehttp "OPTIONS /api/illustrations/ HTTP/1.1" 200 0
+INFO 2025-12-14 22:00:54,245 basehttp "GET /api/manufacturers/ HTTP/1.1" 200 241
+INFO 2025-12-14 22:00:54,251 basehttp "GET /api/car-models/ HTTP/1.1" 200 709
+INFO 2025-12-14 22:00:54,261 basehttp "GET /api/engine-models/ HTTP/1.1" 200 1019
+INFO 2025-12-14 22:00:54,272 basehttp "GET /api/manufacturers/ HTTP/1.1" 200 241
+INFO 2025-12-14 22:00:54,283 basehttp "GET /api/car-models/ HTTP/1.1" 200 709
+INFO 2025-12-14 22:00:54,284 basehttp "GET /api/engine-models/ HTTP/1.1" 200 1019
+ERROR 2025-12-14 22:00:54,321 log Internal Server Error: /api/part-categories/
+Traceback (most recent call last):
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/db/backends/utils.py", line 105, in _execute
+    return self.cursor.execute(sql, params)
+           ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/db/backends/sqlite3/base.py", line 360, in execute
+    return super().execute(query, params)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+sqlite3.OperationalError: no such column: illustrations_partcategory.engine_model_id
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/views/decorators/csrf.py", line 65, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/rest_framework/viewsets.py", line 125, in view
+    return self.dispatch(request, *args, **kwargs)
+           ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/rest_framework/views.py", line 515, in dispatch
+    response = self.handle_exception(exc)
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/rest_framework/views.py", line 475, in handle_exception
+    self.raise_uncaught_exception(exc)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/rest_framework/views.py", line 486, in raise_uncaught_exception
+    raise exc
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/rest_framework/views.py", line 512, in dispatch
+    response = handler(request, *args, **kwargs)
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/rest_framework/mixins.py", line 40, in list
+    page = self.paginate_queryset(queryset)
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/rest_framework/generics.py", line 175, in paginate_queryset
+    return self.paginator.paginate_queryset(queryset, self.request, view=self)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/rest_framework/pagination.py", line 222, in paginate_queryset
+    return list(self.page)
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/core/paginator.py", line 191, in __len__
+    return len(self.object_list)
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/db/models/query.py", line 368, in __len__
+    self._fetch_all()
+    ~~~~~~~~~~~~~~~^^
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/db/models/query.py", line 1954, in _fetch_all
+    self._result_cache = list(self._iterable_class(self))
+                         ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/db/models/query.py", line 93, in __iter__
+    results = compiler.execute_sql(
+        chunked_fetch=self.chunked_fetch, chunk_size=self.chunk_size
+    )
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/db/models/sql/compiler.py", line 1623, in execute_sql
+    cursor.execute(sql, params)
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/db/backends/utils.py", line 122, in execute
+    return super().execute(sql, params)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/db/backends/utils.py", line 79, in execute
+    return self._execute_with_wrappers(
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        sql, params, many=False, executor=self._execute
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/db/backends/utils.py", line 92, in _execute_with_wrappers
+    return executor(sql, params, many, context)
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/db/backends/utils.py", line 100, in _execute
+    with self.db.wrap_database_errors:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/db/utils.py", line 91, in __exit__
+    raise dj_exc_value.with_traceback(traceback) from exc_value
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/db/backends/utils.py", line 105, in _execute
+    return self.cursor.execute(sql, params)
+           ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/db/backends/sqlite3/base.py", line 360, in execute
+    return super().execute(query, params)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+django.db.utils.OperationalError: no such column: illustrations_partcategory.engine_model_id
+ERROR 2025-12-14 22:00:54,339 log Internal Server Error: /api/illustrations/
+Traceback (most recent call last):
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/db/backends/utils.py", line 105, in _execute
+    return self.cursor.execute(sql, params)
+           ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/db/backends/sqlite3/base.py", line 360, in execute
+    return super().execute(query, params)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+sqlite3.OperationalError: no such column: illustrations_partcategory.engine_model_id
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/views/decorators/csrf.py", line 65, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/rest_framework/viewsets.py", line 125, in view
+    return self.dispatch(request, *args, **kwargs)
+           ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/rest_framework/views.py", line 515, in dispatch
+    response = self.handle_exception(exc)
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/rest_framework/views.py", line 475, in handle_exception
+    self.raise_uncaught_exception(exc)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/rest_framework/views.py", line 486, in raise_uncaught_exception
+    raise exc
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/rest_framework/views.py", line 512, in dispatch
+    response = handler(request, *args, **kwargs)
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/rest_framework/mixins.py", line 40, in list
+    page = self.paginate_queryset(queryset)
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/rest_framework/generics.py", line 175, in paginate_queryset
+    return self.paginator.paginate_queryset(queryset, self.request, view=self)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/rest_framework/pagination.py", line 222, in paginate_queryset
+    return list(self.page)
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/core/paginator.py", line 191, in __len__
+    return len(self.object_list)
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/db/models/query.py", line 368, in __len__
+    self._fetch_all()
+    ~~~~~~~~~~~~~~~^^
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/db/models/query.py", line 1954, in _fetch_all
+    self._result_cache = list(self._iterable_class(self))
+                         ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/db/models/query.py", line 93, in __iter__
+    results = compiler.execute_sql(
+        chunked_fetch=self.chunked_fetch, chunk_size=self.chunk_size
+    )
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/db/models/sql/compiler.py", line 1623, in execute_sql
+    cursor.execute(sql, params)
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/db/backends/utils.py", line 122, in execute
+    return super().execute(sql, params)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/db/backends/utils.py", line 79, in execute
+    return self._execute_with_wrappers(
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        sql, params, many=False, executor=self._execute
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/db/backends/utils.py", line 92, in _execute_with_wrappers
+    return executor(sql, params, many, context)
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/db/backends/utils.py", line 100, in _execute
+    with self.db.wrap_database_errors:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/db/utils.py", line 91, in __exit__
+    raise dj_exc_value.with_traceback(traceback) from exc_value
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/db/backends/utils.py", line 105, in _execute
+    return self.cursor.execute(sql, params)
+           ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/db/backends/sqlite3/base.py", line 360, in execute
+    return super().execute(query, params)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+django.db.utils.OperationalError: no such column: illustrations_partcategory.engine_model_id
+ERROR 2025-12-14 22:00:54,345 basehttp "GET /api/part-categories/ HTTP/1.1" 500 202783
+ERROR 2025-12-14 22:00:54,346 basehttp "GET /api/illustrations/ HTTP/1.1" 500 231117
+ERROR 2025-12-14 22:00:54,425 log Internal Server Error: /api/part-categories/
+Traceback (most recent call last):
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/db/backends/utils.py", line 105, in _execute
+    return self.cursor.execute(sql, params)
+           ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/db/backends/sqlite3/base.py", line 360, in execute
+    return super().execute(query, params)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+sqlite3.OperationalError: no such column: illustrations_partcategory.engine_model_id
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/views/decorators/csrf.py", line 65, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/rest_framework/viewsets.py", line 125, in view
+    return self.dispatch(request, *args, **kwargs)
+           ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/rest_framework/views.py", line 515, in dispatch
+    response = self.handle_exception(exc)
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/rest_framework/views.py", line 475, in handle_exception
+    self.raise_uncaught_exception(exc)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/rest_framework/views.py", line 486, in raise_uncaught_exception
+    raise exc
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/rest_framework/views.py", line 512, in dispatch
+    response = handler(request, *args, **kwargs)
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/rest_framework/mixins.py", line 40, in list
+    page = self.paginate_queryset(queryset)
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/rest_framework/generics.py", line 175, in paginate_queryset
+    return self.paginator.paginate_queryset(queryset, self.request, view=self)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/rest_framework/pagination.py", line 222, in paginate_queryset
+    return list(self.page)
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/core/paginator.py", line 191, in __len__
+    return len(self.object_list)
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/db/models/query.py", line 368, in __len__
+    self._fetch_all()
+    ~~~~~~~~~~~~~~~^^
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/db/models/query.py", line 1954, in _fetch_all
+    self._result_cache = list(self._iterable_class(self))
+                         ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/db/models/query.py", line 93, in __iter__
+    results = compiler.execute_sql(
+        chunked_fetch=self.chunked_fetch, chunk_size=self.chunk_size
+    )
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/db/models/sql/compiler.py", line 1623, in execute_sql
+    cursor.execute(sql, params)
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/db/backends/utils.py", line 122, in execute
+    return super().execute(sql, params)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/db/backends/utils.py", line 79, in execute
+    return self._execute_with_wrappers(
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        sql, params, many=False, executor=self._execute
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/db/backends/utils.py", line 92, in _execute_with_wrappers
+    return executor(sql, params, many, context)
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/db/backends/utils.py", line 100, in _execute
+    with self.db.wrap_database_errors:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/db/utils.py", line 91, in __exit__
+    raise dj_exc_value.with_traceback(traceback) from exc_value
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/db/backends/utils.py", line 105, in _execute
+    return self.cursor.execute(sql, params)
+           ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/db/backends/sqlite3/base.py", line 360, in execute
+    return super().execute(query, params)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+django.db.utils.OperationalError: no such column: illustrations_partcategory.engine_model_id
+ERROR 2025-12-14 22:00:54,442 log Internal Server Error: /api/illustrations/
+Traceback (most recent call last):
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/db/backends/utils.py", line 105, in _execute
+    return self.cursor.execute(sql, params)
+           ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/db/backends/sqlite3/base.py", line 360, in execute
+    return super().execute(query, params)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+sqlite3.OperationalError: no such column: illustrations_partcategory.engine_model_id
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/views/decorators/csrf.py", line 65, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/rest_framework/viewsets.py", line 125, in view
+    return self.dispatch(request, *args, **kwargs)
+           ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/rest_framework/views.py", line 515, in dispatch
+    response = self.handle_exception(exc)
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/rest_framework/views.py", line 475, in handle_exception
+    self.raise_uncaught_exception(exc)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/rest_framework/views.py", line 486, in raise_uncaught_exception
+    raise exc
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/rest_framework/views.py", line 512, in dispatch
+    response = handler(request, *args, **kwargs)
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/rest_framework/mixins.py", line 40, in list
+    page = self.paginate_queryset(queryset)
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/rest_framework/generics.py", line 175, in paginate_queryset
+    return self.paginator.paginate_queryset(queryset, self.request, view=self)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/rest_framework/pagination.py", line 222, in paginate_queryset
+    return list(self.page)
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/core/paginator.py", line 191, in __len__
+    return len(self.object_list)
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/db/models/query.py", line 368, in __len__
+    self._fetch_all()
+    ~~~~~~~~~~~~~~~^^
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/db/models/query.py", line 1954, in _fetch_all
+    self._result_cache = list(self._iterable_class(self))
+                         ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/db/models/query.py", line 93, in __iter__
+    results = compiler.execute_sql(
+        chunked_fetch=self.chunked_fetch, chunk_size=self.chunk_size
+    )
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/db/models/sql/compiler.py", line 1623, in execute_sql
+    cursor.execute(sql, params)
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/db/backends/utils.py", line 122, in execute
+    return super().execute(sql, params)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/db/backends/utils.py", line 79, in execute
+    return self._execute_with_wrappers(
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        sql, params, many=False, executor=self._execute
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/db/backends/utils.py", line 92, in _execute_with_wrappers
+    return executor(sql, params, many, context)
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/db/backends/utils.py", line 100, in _execute
+    with self.db.wrap_database_errors:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/db/utils.py", line 91, in __exit__
+    raise dj_exc_value.with_traceback(traceback) from exc_value
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/db/backends/utils.py", line 105, in _execute
+    return self.cursor.execute(sql, params)
+           ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "/Volumes/Programming/React-Python/YAW/Illustration-System/backend/venv/lib/python3.13/site-packages/django/db/backends/sqlite3/base.py", line 360, in execute
+    return super().execute(query, params)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+django.db.utils.OperationalError: no such column: illustrations_partcategory.engine_model_id
+ERROR 2025-12-14 22:00:54,445 basehttp "GET /api/part-categories/ HTTP/1.1" 500 202783
+ERROR 2025-12-14 22:00:54,448 basehttp "GET /api/illustrations/ HTTP/1.1" 500 231117
+INFO 2025-12-14 22:02:20,005 autoreload /Volumes/Programming/React-Python/YAW/Illustration-System/backend/illustrations/models.py changed, reloading.
+INFO 2025-12-14 22:02:20,462 autoreload Watching for file changes with StatReloader
+INFO 2025-12-14 22:04:53,925 autoreload Watching for file changes with StatReloader
+INFO 2025-12-14 22:05:04,224 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 400
+INFO 2025-12-14 22:05:04,229 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 400
+INFO 2025-12-14 22:05:04,233 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 400
+INFO 2025-12-14 22:05:04,239 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 400
+INFO 2025-12-14 22:05:04,399 basehttp "GET /api/illustrations/ HTTP/1.1" 200 457
+INFO 2025-12-14 22:05:04,409 basehttp "GET /api/illustrations/ HTTP/1.1" 200 457
+INFO 2025-12-14 22:05:08,125 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 400
+INFO 2025-12-14 22:05:08,132 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 400
+INFO 2025-12-14 22:05:08,136 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 400
+INFO 2025-12-14 22:05:08,142 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 400
+INFO 2025-12-14 22:05:08,306 basehttp "GET /api/manufacturers/ HTTP/1.1" 200 241
+INFO 2025-12-14 22:05:08,318 basehttp "GET /api/engine-models/ HTTP/1.1" 200 1019
+INFO 2025-12-14 22:05:08,327 basehttp "GET /api/car-models/ HTTP/1.1" 200 709
+INFO 2025-12-14 22:05:08,329 basehttp "GET /api/part-categories/ HTTP/1.1" 200 178
+INFO 2025-12-14 22:05:08,334 basehttp "GET /api/manufacturers/ HTTP/1.1" 200 241
+INFO 2025-12-14 22:05:08,342 basehttp "GET /api/illustrations/ HTTP/1.1" 200 457
+INFO 2025-12-14 22:05:08,346 basehttp "GET /api/engine-models/ HTTP/1.1" 200 1019
+INFO 2025-12-14 22:05:08,358 basehttp "GET /api/car-models/ HTTP/1.1" 200 709
+INFO 2025-12-14 22:05:08,358 basehttp "GET /api/part-categories/ HTTP/1.1" 200 178
+INFO 2025-12-14 22:05:08,362 basehttp "GET /api/illustrations/ HTTP/1.1" 200 457
+INFO 2025-12-14 22:09:37,968 basehttp "GET /admin/illustrations/partcategory/add/ HTTP/1.1" 200 17777
+INFO 2025-12-14 22:09:38,011 basehttp "GET /admin/jsi18n/ HTTP/1.1" 200 3342
+WARNING 2025-12-14 22:09:38,261 log Not Found: /favicon.ico
+WARNING 2025-12-14 22:09:38,262 basehttp "GET /favicon.ico HTTP/1.1" 404 3518
+INFO 2025-12-14 22:10:12,807 basehttp "GET /admin/illustrations/partsubcategory/ HTTP/1.1" 200 14012
+INFO 2025-12-14 22:10:12,833 basehttp "GET /admin/jsi18n/ HTTP/1.1" 200 3342
+INFO 2025-12-14 22:10:15,119 basehttp "GET /admin/illustrations/partsubcategory/add/ HTTP/1.1" 200 18592
+INFO 2025-12-14 22:10:15,150 basehttp "GET /admin/jsi18n/ HTTP/1.1" 200 3342
+INFO 2025-12-14 22:12:31,993 basehttp "GET /api/part-categories/ HTTP/1.1" 200 178
+INFO 2025-12-14 22:12:31,998 basehttp "GET /api/part-categories/ HTTP/1.1" 200 178
+INFO 2025-12-14 22:12:32,003 basehttp "GET /api/part-categories/ HTTP/1.1" 200 178
+INFO 2025-12-14 22:12:32,008 basehttp "GET /api/part-categories/ HTTP/1.1" 200 178
+INFO 2025-12-14 22:13:10,245 basehttp "OPTIONS /api/part-categories/1/ HTTP/1.1" 200 0
+INFO 2025-12-14 22:13:10,256 basehttp "PUT /api/part-categories/1/ HTTP/1.1" 200 147
+INFO 2025-12-14 22:13:10,268 basehttp "GET /api/part-categories/ HTTP/1.1" 200 199
+INFO 2025-12-14 22:20:36,305 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 400
+INFO 2025-12-14 22:20:36,311 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 400
+INFO 2025-12-14 22:20:36,317 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 400
+INFO 2025-12-14 22:20:36,322 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 400
+INFO 2025-12-14 22:20:39,859 basehttp "GET /api/engine-models/ HTTP/1.1" 200 1019
+INFO 2025-12-14 22:20:39,862 basehttp "GET /api/part-categories/ HTTP/1.1" 200 199
+INFO 2025-12-14 22:20:39,874 basehttp "GET /api/engine-models/ HTTP/1.1" 200 1019
+INFO 2025-12-14 22:20:39,874 basehttp "GET /api/part-categories/ HTTP/1.1" 200 199
+INFO 2025-12-14 22:20:39,882 basehttp "GET /api/part-categories/ HTTP/1.1" 200 199
+INFO 2025-12-14 22:20:39,887 basehttp "GET /api/part-categories/ HTTP/1.1" 200 199
+INFO 2025-12-14 22:21:10,357 basehttp "GET /api/part-categories/ HTTP/1.1" 200 199
+INFO 2025-12-14 22:21:10,373 basehttp "GET /api/part-categories/ HTTP/1.1" 200 199
+INFO 2025-12-14 22:29:50,287 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 400
+INFO 2025-12-14 22:29:50,291 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 400
+INFO 2025-12-14 22:29:50,297 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 400
+INFO 2025-12-14 22:29:50,302 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 400
+INFO 2025-12-14 22:29:50,439 basehttp "GET /api/car-models/vehicle-types/ HTTP/1.1" 200 1617
+INFO 2025-12-14 22:29:50,447 basehttp "GET /api/car-models/ HTTP/1.1" 200 709
+INFO 2025-12-14 22:29:50,448 basehttp "GET /api/manufacturers/ HTTP/1.1" 200 241
+INFO 2025-12-14 22:29:50,453 basehttp "GET /api/engine-models/ HTTP/1.1" 200 1019
+INFO 2025-12-14 22:29:50,463 basehttp "GET /api/car-models/vehicle-types/ HTTP/1.1" 200 1617
+INFO 2025-12-14 22:29:50,467 basehttp "GET /api/car-models/ HTTP/1.1" 200 709
+INFO 2025-12-14 22:29:50,473 basehttp "GET /api/manufacturers/ HTTP/1.1" 200 241
+INFO 2025-12-14 22:29:50,475 basehttp "GET /api/engine-models/ HTTP/1.1" 200 1019
+INFO 2025-12-14 22:33:42,612 autoreload /Volumes/Programming/React-Python/YAW/Illustration-System/backend/illustrations/serializers.py changed, reloading.
+INFO 2025-12-14 22:33:43,457 autoreload Watching for file changes with StatReloader
+INFO 2025-12-14 22:33:54,965 basehttp "GET /api/car-models/vehicle-types/ HTTP/1.1" 200 1617
+INFO 2025-12-14 22:33:54,976 basehttp "GET /api/manufacturers/ HTTP/1.1" 200 241
+INFO 2025-12-14 22:33:54,990 basehttp "GET /api/car-models/ HTTP/1.1" 200 709
+INFO 2025-12-14 22:33:54,993 basehttp "GET /api/engine-models/ HTTP/1.1" 200 1019
+INFO 2025-12-14 22:33:54,997 basehttp "GET /api/car-models/vehicle-types/ HTTP/1.1" 200 1617
+INFO 2025-12-14 22:33:55,014 basehttp "GET /api/manufacturers/ HTTP/1.1" 200 241
+INFO 2025-12-14 22:33:55,027 basehttp "GET /api/engine-models/ HTTP/1.1" 200 1019
+INFO 2025-12-14 22:33:55,033 basehttp "GET /api/car-models/ HTTP/1.1" 200 709
+INFO 2025-12-14 22:34:02,805 basehttp "GET /api/car-models/vehicle-types/ HTTP/1.1" 200 1617
+INFO 2025-12-14 22:34:02,809 basehttp "GET /api/manufacturers/ HTTP/1.1" 200 241
+INFO 2025-12-14 22:34:02,809 basehttp "GET /api/engine-models/ HTTP/1.1" 200 1019
+INFO 2025-12-14 22:34:02,811 basehttp "GET /api/car-models/ HTTP/1.1" 200 709
+INFO 2025-12-14 22:34:03,647 autoreload /Volumes/Programming/React-Python/YAW/Illustration-System/backend/illustrations/serializers.py changed, reloading.
+INFO 2025-12-14 22:34:04,185 autoreload Watching for file changes with StatReloader
+INFO 2025-12-14 22:34:10,200 basehttp "GET /api/manufacturers/ HTTP/1.1" 200 241
+INFO 2025-12-14 22:34:10,200 basehttp "GET /api/car-models/vehicle-types/ HTTP/1.1" 200 1617
+INFO 2025-12-14 22:34:10,207 basehttp "GET /api/car-models/ HTTP/1.1" 200 709
+INFO 2025-12-14 22:34:10,209 basehttp "GET /api/engine-models/ HTTP/1.1" 200 1019
+INFO 2025-12-14 22:34:10,216 basehttp "GET /api/car-models/vehicle-types/ HTTP/1.1" 200 1617
+INFO 2025-12-14 22:34:10,222 basehttp "GET /api/car-models/ HTTP/1.1" 200 709
+INFO 2025-12-14 22:34:10,224 basehttp "GET /api/manufacturers/ HTTP/1.1" 200 241
+INFO 2025-12-14 22:34:10,224 basehttp "GET /api/engine-models/ HTTP/1.1" 200 1019
+INFO 2025-12-14 22:34:12,822 basehttp "GET /api/car-models/ HTTP/1.1" 200 709
+INFO 2025-12-14 22:34:12,864 basehttp "GET /api/manufacturers/ HTTP/1.1" 200 241
+INFO 2025-12-14 22:34:12,885 basehttp "GET /api/car-models/ HTTP/1.1" 200 709
+INFO 2025-12-14 22:34:12,914 basehttp "GET /api/engine-models/ HTTP/1.1" 200 1019
+INFO 2025-12-14 22:34:12,934 basehttp "GET /api/part-categories/ HTTP/1.1" 200 199
+INFO 2025-12-14 22:34:12,934 basehttp "GET /api/manufacturers/ HTTP/1.1" 200 241
+INFO 2025-12-14 22:34:12,940 basehttp "GET /api/illustrations/ HTTP/1.1" 200 701
+INFO 2025-12-14 22:34:12,946 basehttp "GET /api/part-categories/ HTTP/1.1" 200 199
+INFO 2025-12-14 22:34:12,946 basehttp "GET /api/engine-models/ HTTP/1.1" 200 1019
+INFO 2025-12-14 22:34:12,956 basehttp "GET /api/illustrations/ HTTP/1.1" 200 701
+INFO 2025-12-14 22:34:22,879 basehttp "GET /admin/ HTTP/1.1" 200 17244
+INFO 2025-12-14 22:34:25,148 basehttp "GET /admin/illustrations/illustrationfile/ HTTP/1.1" 200 19337
+INFO 2025-12-14 22:34:25,168 basehttp "GET /media/illustrations/qr20/dfgdg/general/1/34b8875b-aa70-44a0-b48e-bb941e2ec823.png HTTP/1.1" 304 0
+INFO 2025-12-14 22:34:25,174 basehttp "GET /admin/jsi18n/ HTTP/1.1" 200 3342
+INFO 2025-12-14 22:34:30,708 basehttp "GET /admin/illustrations/illustration/1/change/ HTTP/1.1" 200 28491
+INFO 2025-12-14 22:34:30,737 basehttp "GET /admin/jsi18n/ HTTP/1.1" 200 3342
+INFO 2025-12-14 22:34:41,249 basehttp "POST /admin/illustrations/illustration/1/change/ HTTP/1.1" 302 0
+INFO 2025-12-14 22:34:41,271 basehttp "GET /admin/illustrations/illustration/ HTTP/1.1" 200 19099
+INFO 2025-12-14 22:34:41,300 basehttp "GET /admin/jsi18n/ HTTP/1.1" 200 3342
+INFO 2025-12-14 22:34:46,118 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 400
+INFO 2025-12-14 22:34:46,126 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 400
+INFO 2025-12-14 22:34:46,132 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 400
+INFO 2025-12-14 22:34:46,137 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 400
+INFO 2025-12-14 22:34:46,314 basehttp "GET /api/part-categories/ HTTP/1.1" 200 199
+INFO 2025-12-14 22:34:46,319 basehttp "GET /api/car-models/ HTTP/1.1" 200 709
+INFO 2025-12-14 22:34:46,323 basehttp "GET /api/engine-models/ HTTP/1.1" 200 1019
+INFO 2025-12-14 22:34:46,325 basehttp "GET /api/manufacturers/ HTTP/1.1" 200 241
+INFO 2025-12-14 22:34:46,335 basehttp "GET /api/illustrations/ HTTP/1.1" 200 704
+INFO 2025-12-14 22:34:46,346 basehttp "GET /api/part-categories/ HTTP/1.1" 200 199
+INFO 2025-12-14 22:34:46,352 basehttp "GET /api/car-models/ HTTP/1.1" 200 709
+INFO 2025-12-14 22:34:46,356 basehttp "GET /api/manufacturers/ HTTP/1.1" 200 241
+INFO 2025-12-14 22:34:46,356 basehttp "GET /api/engine-models/ HTTP/1.1" 200 1019
+INFO 2025-12-14 22:34:46,360 basehttp "GET /api/illustrations/ HTTP/1.1" 200 704
+INFO 2025-12-14 22:35:54,722 autoreload /Volumes/Programming/React-Python/YAW/Illustration-System/backend/illustrations/views.py changed, reloading.
+INFO 2025-12-14 22:35:55,316 autoreload Watching for file changes with StatReloader
+INFO 2025-12-14 22:35:56,622 autoreload /Volumes/Programming/React-Python/YAW/Illustration-System/backend/illustrations/serializers.py changed, reloading.
+INFO 2025-12-14 22:35:57,028 autoreload Watching for file changes with StatReloader
+INFO 2025-12-14 22:36:53,100 autoreload /Volumes/Programming/React-Python/YAW/Illustration-System/backend/illustrations/models.py changed, reloading.
+INFO 2025-12-14 22:36:53,606 autoreload Watching for file changes with StatReloader
+INFO 2025-12-14 22:37:51,694 autoreload /Volumes/Programming/React-Python/YAW/Illustration-System/backend/illustrations/models.py changed, reloading.
+INFO 2025-12-14 22:37:52,147 autoreload Watching for file changes with StatReloader
+INFO 2025-12-14 22:39:34,763 autoreload /Volumes/Programming/React-Python/YAW/Illustration-System/backend/illustrations/models.py changed, reloading.
+INFO 2025-12-14 22:39:35,661 autoreload Watching for file changes with StatReloader
+INFO 2025-12-14 22:39:40,180 basehttp "GET /api/manufacturers/ HTTP/1.1" 200 241
+INFO 2025-12-14 22:39:40,199 basehttp "GET /api/car-models/ HTTP/1.1" 200 709
+INFO 2025-12-14 22:39:40,199 basehttp "GET /api/engine-models/ HTTP/1.1" 200 1019
+INFO 2025-12-14 22:39:40,201 basehttp "GET /api/part-categories/ HTTP/1.1" 200 199
+INFO 2025-12-14 22:39:40,203 basehttp "GET /api/illustrations/ HTTP/1.1" 200 704
+INFO 2025-12-14 22:39:47,294 basehttp "GET /api/part-categories/ HTTP/1.1" 200 199
+INFO 2025-12-14 22:39:47,295 basehttp "GET /api/manufacturers/ HTTP/1.1" 200 241
+INFO 2025-12-14 22:39:47,299 basehttp "GET /api/car-models/ HTTP/1.1" 200 709
+INFO 2025-12-14 22:39:47,300 basehttp "GET /api/engine-models/ HTTP/1.1" 200 1019
+INFO 2025-12-14 22:39:47,302 basehttp "GET /api/illustrations/ HTTP/1.1" 200 704
+INFO 2025-12-14 22:40:10,645 basehttp "GET /api/part-categories/ HTTP/1.1" 200 199
+INFO 2025-12-14 22:40:10,648 basehttp "GET /api/engine-models/ HTTP/1.1" 200 1019
+INFO 2025-12-14 22:40:10,651 basehttp "GET /api/car-models/ HTTP/1.1" 200 709
+INFO 2025-12-14 22:40:10,657 basehttp "GET /api/manufacturers/ HTTP/1.1" 200 241
+INFO 2025-12-14 22:40:10,658 basehttp "GET /api/illustrations/ HTTP/1.1" 200 704
+INFO 2025-12-14 22:40:14,095 basehttp "GET /api/manufacturers/ HTTP/1.1" 200 241
+INFO 2025-12-14 22:40:14,101 basehttp "GET /api/part-categories/ HTTP/1.1" 200 199
+INFO 2025-12-14 22:40:14,104 basehttp "GET /api/illustrations/ HTTP/1.1" 200 704
+INFO 2025-12-14 22:40:14,105 basehttp "GET /api/car-models/ HTTP/1.1" 200 709
+INFO 2025-12-14 22:40:14,105 basehttp "GET /api/engine-models/ HTTP/1.1" 200 1019
+INFO 2025-12-14 22:40:26,559 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 400
+INFO 2025-12-14 22:40:26,566 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 400
+INFO 2025-12-14 22:40:26,574 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 400
+INFO 2025-12-14 22:40:26,583 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 400
+INFO 2025-12-14 22:40:26,786 basehttp "GET /api/manufacturers/ HTTP/1.1" 200 241
+INFO 2025-12-14 22:40:26,788 basehttp "GET /api/car-models/ HTTP/1.1" 200 709
+INFO 2025-12-14 22:40:26,789 basehttp "GET /api/illustrations/ HTTP/1.1" 200 704
+INFO 2025-12-14 22:40:26,793 basehttp "GET /api/part-categories/ HTTP/1.1" 200 199
+INFO 2025-12-14 22:40:26,800 basehttp "GET /api/engine-models/ HTTP/1.1" 200 1019
+INFO 2025-12-14 22:40:26,824 basehttp "GET /api/illustrations/ HTTP/1.1" 200 704
+INFO 2025-12-14 22:40:26,829 basehttp "GET /api/car-models/ HTTP/1.1" 200 709
+INFO 2025-12-14 22:40:26,830 basehttp "GET /api/manufacturers/ HTTP/1.1" 200 241
+INFO 2025-12-14 22:40:26,838 basehttp "GET /api/part-categories/ HTTP/1.1" 200 199
+INFO 2025-12-14 22:40:26,839 basehttp "GET /api/engine-models/ HTTP/1.1" 200 1019
+INFO 2025-12-14 22:41:54,786 autoreload /Volumes/Programming/React-Python/YAW/Illustration-System/backend/illustrations/serializers.py changed, reloading.
+INFO 2025-12-14 22:41:55,299 autoreload Watching for file changes with StatReloader
+INFO 2025-12-14 22:41:59,656 autoreload /Volumes/Programming/React-Python/YAW/Illustration-System/backend/illustrations/serializers.py changed, reloading.
+INFO 2025-12-14 22:42:00,076 autoreload Watching for file changes with StatReloader
+INFO 2025-12-14 22:42:04,331 autoreload /Volumes/Programming/React-Python/YAW/Illustration-System/backend/illustrations/serializers.py changed, reloading.
+INFO 2025-12-14 22:42:04,672 autoreload Watching for file changes with StatReloader
+INFO 2025-12-14 22:42:17,189 autoreload /Volumes/Programming/React-Python/YAW/Illustration-System/backend/illustrations/serializers.py changed, reloading.
+INFO 2025-12-14 22:42:17,546 autoreload Watching for file changes with StatReloader
+INFO 2025-12-14 22:42:47,725 autoreload /Volumes/Programming/React-Python/YAW/Illustration-System/backend/illustrations/serializers.py changed, reloading.
+INFO 2025-12-14 22:42:48,207 autoreload Watching for file changes with StatReloader
+INFO 2025-12-14 22:42:49,400 autoreload /Volumes/Programming/React-Python/YAW/Illustration-System/backend/illustrations/serializers.py changed, reloading.
+INFO 2025-12-14 22:42:49,769 autoreload Watching for file changes with StatReloader
+INFO 2025-12-14 22:42:59,095 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 400
+INFO 2025-12-14 22:42:59,099 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 400
+INFO 2025-12-14 22:42:59,104 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 400
+INFO 2025-12-14 22:42:59,109 basehttp "GET /api/auth/users/profile/ HTTP/1.1" 200 400
+INFO 2025-12-14 22:42:59,229 basehttp "GET /api/manufacturers/ HTTP/1.1" 200 241
+INFO 2025-12-14 22:42:59,240 basehttp "GET /api/car-models/ HTTP/1.1" 200 709
+INFO 2025-12-14 22:42:59,251 basehttp "GET /api/engine-models/ HTTP/1.1" 200 1019
+INFO 2025-12-14 22:42:59,270 basehttp "GET /api/engine-models/ HTTP/1.1" 200 1019
+INFO 2025-12-14 22:42:59,276 basehttp "GET /api/manufacturers/ HTTP/1.1" 200 241
+INFO 2025-12-14 22:42:59,288 basehttp "GET /api/car-models/ HTTP/1.1" 200 709
+INFO 2025-12-14 22:42:59,310 basehttp "GET /api/illustrations/ HTTP/1.1" 200 725
+INFO 2025-12-14 22:42:59,321 basehttp "GET /api/part-categories/ HTTP/1.1" 200 199
+INFO 2025-12-14 22:42:59,326 basehttp "GET /api/illustrations/ HTTP/1.1" 200 725
+INFO 2025-12-14 22:42:59,333 basehttp "GET /api/part-categories/ HTTP/1.1" 200 199
+INFO 2025-12-14 22:42:59,417 basehttp "GET /media/illustrations/qr20/dfgdg/general/1/34b8875b-aa70-44a0-b48e-bb941e2ec823.png HTTP/1.1" 200 1347799
+INFO 2025-12-14 22:43:28,727 basehttp "POST /api/auth/login/ HTTP/1.1" 200 489
+INFO 2025-12-14 22:43:41,552 basehttp "GET /api/illustrations/ HTTP/1.1" 200 725
+INFO 2025-12-14 22:44:26,385 autoreload /Volumes/Programming/React-Python/YAW/Illustration-System/backend/illustrations/serializers.py changed, reloading.
+INFO 2025-12-14 22:44:26,853 autoreload Watching for file changes with StatReloader
+INFO 2025-12-14 22:44:30,080 basehttp "GET /api/illustrations/ HTTP/1.1" 200 725
+INFO 2025-12-14 22:44:33,710 autoreload Watching for file changes with StatReloader
+INFO 2025-12-14 22:44:35,679 basehttp "GET /api/illustrations/ HTTP/1.1" 200 725
