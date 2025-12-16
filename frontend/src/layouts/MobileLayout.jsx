@@ -276,7 +276,7 @@ const MobileLayout = ({ children, showHeader = true }) => {
                 onClick={() => { setMenuOpen(false); navigate('/part-categories'); }}
                 selected={location.pathname.startsWith('/part-categories')}
               >
-                <ListItemIcon><CategoryIcon /></ListItemIcon>
+                <ListItemIcon><SettingsIcon /></ListItemIcon>
                 <ListItemText primary="部品カテゴリー" />
               </ListItemButton>
             </ListItem>
@@ -285,8 +285,8 @@ const MobileLayout = ({ children, showHeader = true }) => {
                 onClick={() => { setMenuOpen(false); navigate('/part-subcategories'); }}
                 selected={location.pathname.startsWith('/part-subcategories')}
               >
-                <ListItemIcon><CategoryIcon /></ListItemIcon>
-                <ListItemText primary="subcategory" />
+                <ListItemIcon><SettingsIcon /></ListItemIcon>
+                <ListItemText primary="サ-ブ カテゴリー" />
               </ListItemButton>
             </ListItem>
             <Divider sx={{ my: 1 }} />

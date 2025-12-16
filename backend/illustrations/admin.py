@@ -48,12 +48,10 @@ class ManufacturerAdmin(admin.ModelAdmin):
 class EngineModelAdmin(admin.ModelAdmin):
     list_display = [
         'name', 'engine_code', 'manufacturer_link', 'fuel_type',
-        'displacement', 'horsepower', 'torque',
         'car_model_count', 'illustration_count', 'slug'
     ]
     list_filter = ['manufacturer', 'fuel_type']
     search_fields = ['name', 'engine_code', 'manufacturer__name']
-    readonly_fields = ['slug']
     raw_id_fields = ['manufacturer']
     
     fieldsets = (
@@ -61,7 +59,7 @@ class EngineModelAdmin(admin.ModelAdmin):
             'fields': ('manufacturer', 'name', 'engine_code', 'slug')
         }),
         ('Technical Specifications', {
-            'fields': ('fuel_type', 'displacement', 'horsepower', 'torque')
+            'fields': ('fuel_type',)
         }),
     )
     

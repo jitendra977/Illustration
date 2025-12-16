@@ -33,7 +33,7 @@ class EngineModelSerializer(serializers.ModelSerializer):
         model = EngineModel
         fields = [
             'id', 'manufacturer', 'manufacturer_name', 'name', 'engine_code',
-            'displacement', 'horsepower', 'torque', 'fuel_type', 'fuel_type_display',
+            'fuel_type', 'fuel_type_display',
             'slug', 'car_model_count'
         ]
         read_only_fields = ['id', 'slug', 'manufacturer_name', 'fuel_type_display', 'car_model_count']
@@ -303,8 +303,7 @@ class EngineModelDetailSerializer(serializers.ModelSerializer):
     class Meta:
         model = EngineModel
         fields = [
-            'id', 'manufacturer', 'name', 'engine_code',
-            'displacement', 'horsepower', 'torque', 'fuel_type',
+            'id', 'manufacturer', 'name', 'engine_code','fuel_type',
             'slug', 'car_models', 'illustration_count'
         ]
 

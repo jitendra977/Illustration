@@ -1,5 +1,5 @@
 // src/pages/mobile/MobileEngineModels.jsx
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Box,
   Container,
@@ -34,10 +34,19 @@ import {
   MoreVert as MoreIcon,
   DirectionsCar as CarIcon,
   Store as StoreIcon,
-  LocalGasStation as FuelIcon,
-  Settings as SettingsIcon
+  LocalGasStation as FuelIcon
 } from '@mui/icons-material';
-import { useEngineModels, useManufacturers, useFuelTypes } from '../../hooks/useIllustrations';
+import { useEngineModels, useManufacturers } from '../../hooks/useIllustrations';
+import ConfirmDialog from "../../components/dialog/ConfirmDialog";
+
+// ✅ Static fuel types - matches backend FUEL_TYPES choices
+const FUEL_TYPES = [
+  { value: 'diesel', label: 'ディーゼル' },
+  { value: 'petrol', label: 'ガソリン' },
+  { value: 'hybrid', label: 'ハイブリッド' },
+  { value: 'electric', label: '電気(EV)' },
+  { value: 'lpg', label: 'LPG(液化プロパンガス)' }
+];
 
 const MobileEngineModels = () => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -47,26 +56,29 @@ const MobileEngineModels = () => {
     manufacturer: '',
     name: '',
     engine_code: '',
-    displacement: '',
-    horsepower: '',
-    torque: '',
-    fuel_type: ''
+    fuel_type: 'diesel'
   });
   const [errors, setErrors] = useState({});
   const [selectedEngine, setSelectedEngine] = useState(null);
   const [showActions, setShowActions] = useState(false);
+  const [showConfirmDelete, setShowConfirmDelete] = useState(false);
 
   const { 
     engineModels, 
     loading, 
-    error, 
+    error,
+    fetchEngineModels, // ✅ Add this
     createEngineModel, 
     updateEngineModel,
     deleteEngineModel 
   } = useEngineModels();
   
   const { manufacturers } = useManufacturers();
-  const { fuelTypes, loading: fuelTypesLoading } = useFuelTypes();
+
+  // ✅ Fetch engines on mount
+  useEffect(() => {
+    fetchEngineModels();
+  }, []);
 
   const filteredEngines = engineModels.filter(e =>
     e.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -81,10 +93,7 @@ const MobileEngineModels = () => {
         manufacturer: engine.manufacturer || '',
         name: engine.name || '',
         engine_code: engine.engine_code || '',
-        displacement: engine.displacement || '',
-        horsepower: engine.horsepower || '',
-        torque: engine.torque || '',
-        fuel_type: engine.fuel_type || ''
+        fuel_type: engine.fuel_type || 'diesel'
       });
     } else {
       setEditingEngine(null);
@@ -92,10 +101,7 @@ const MobileEngineModels = () => {
         manufacturer: '',
         name: '',
         engine_code: '',
-        displacement: '',
-        horsepower: '',
-        torque: '',
-        fuel_type: ''
+        fuel_type: 'diesel'
       });
     }
     setErrors({});
@@ -114,6 +120,7 @@ const MobileEngineModels = () => {
     const newErrors = {};
     if (!formData.manufacturer) newErrors.manufacturer = 'メーカーは必須です';
     if (!formData.name?.trim()) newErrors.name = '名前は必須です';
+    if (!formData.fuel_type) newErrors.fuel_type = '燃料タイプは必須です';
     
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors);
@@ -124,34 +131,25 @@ const MobileEngineModels = () => {
       const payload = {
         manufacturer: parseInt(formData.manufacturer),
         name: formData.name.trim(),
-        engine_code: formData.engine_code?.trim() || undefined,
-        displacement: formData.displacement ? parseFloat(formData.displacement) : undefined,
-        horsepower: formData.horsepower ? parseInt(formData.horsepower) : undefined,
-        torque: formData.torque ? parseInt(formData.torque) : undefined,
-        fuel_type: formData.fuel_type || undefined
+        engine_code: formData.engine_code?.trim() || '',
+        fuel_type: formData.fuel_type
       };
-
-      // Remove undefined values
-      Object.keys(payload).forEach(key => {
-        if (payload[key] === undefined || payload[key] === '') {
-          delete payload[key];
-        }
-      });
       
       if (editingEngine) {
-        await updateEngineModel(editingEngine.slug, payload);
+        await updateEngineModel(editingEngine.id, payload);
       } else {
         await createEngineModel(payload);
       }
+
+      // ✅ Refresh the list after create/update
+      await fetchEngineModels();
+      
       setShowModal(false);
       setFormData({ 
         manufacturer: '',
         name: '',
         engine_code: '',
-        displacement: '',
-        horsepower: '',
-        torque: '',
-        fuel_type: ''
+        fuel_type: 'diesel'
       });
       setEditingEngine(null);
     } catch (err) {
@@ -181,19 +179,24 @@ const MobileEngineModels = () => {
     handleOpenModal(selectedEngine);
   };
 
-  const handleDelete = async () => {
+  const handleDelete = () => {
+    setShowConfirmDelete(true);
+  };
+
+  const performDelete = async () => {
     setShowActions(false);
-    if (window.confirm(`${selectedEngine.name}を削除しますか？`)) {
-      try {
-        await deleteEngineModel(selectedEngine.slug);
-      } catch (err) {
-        alert(`削除に失敗しました: ${err.response?.data?.message || err.message}`);
-      }
+    try {
+      await deleteEngineModel(selectedEngine.id);
+      // ✅ Refresh the list after delete
+      await fetchEngineModels();
+      setShowConfirmDelete(false);
+    } catch (err) {
+      alert(`削除に失敗しました: ${err.response?.data?.message || err.message}`);
     }
   };
 
   const getFuelTypeLabel = (value) => {
-    const type = fuelTypes.find(t => t.value === value);
+    const type = FUEL_TYPES.find(t => t.value === value);
     return type ? type.label : value;
   };
 
@@ -239,58 +242,11 @@ const MobileEngineModels = () => {
           </IconButton>
         </Stack>
 
-        {/* Engine Specs */}
         <Stack direction="row" spacing={1} mb={1.5} flexWrap="wrap">
-          {engine.displacement && (
-            <Chip
-              icon={<SettingsIcon sx={{ fontSize: 16 }} />}
-              label={`${engine.displacement}L`}
-              size="small"
-              sx={{
-                bgcolor: alpha('#2196f3', 0.1),
-                color: '#2196f3',
-                fontWeight: 600,
-                fontSize: '0.75rem',
-                height: 24,
-                '& .MuiChip-icon': { color: '#2196f3' }
-              }}
-            />
-          )}
-          
-          {engine.horsepower && (
-            <Chip
-              icon={<SpeedIcon sx={{ fontSize: 16 }} />}
-              label={`${engine.horsepower}HP`}
-              size="small"
-              sx={{
-                bgcolor: alpha('#f44336', 0.1),
-                color: '#f44336',
-                fontWeight: 600,
-                fontSize: '0.75rem',
-                height: 24,
-                '& .MuiChip-icon': { color: '#f44336' }
-              }}
-            />
-          )}
-
-          {engine.torque && (
-            <Chip
-              label={`${engine.torque}Nm`}
-              size="small"
-              sx={{
-                bgcolor: alpha('#ff9800', 0.1),
-                color: '#ff9800',
-                fontWeight: 600,
-                fontSize: '0.75rem',
-                height: 24
-              }}
-            />
-          )}
-
           {engine.fuel_type && (
             <Chip
               icon={<FuelIcon sx={{ fontSize: 16 }} />}
-              label={getFuelTypeLabel(engine.fuel_type)}
+              label={engine.fuel_type_display || getFuelTypeLabel(engine.fuel_type)}
               size="small"
               sx={{
                 bgcolor: alpha('#4caf50', 0.1),
@@ -338,7 +294,6 @@ const MobileEngineModels = () => {
   return (
     <Box>
       <Container maxWidth="sm" sx={{ px: 2, py: 2 }}>
-        {/* Search Bar */}
         <Paper
           sx={{
             display: 'flex',
@@ -367,7 +322,6 @@ const MobileEngineModels = () => {
           )}
         </Paper>
 
-        {/* Content */}
         {loading ? (
           <Box display="flex" justifyContent="center" py={8}>
             <CircularProgress />
@@ -400,7 +354,6 @@ const MobileEngineModels = () => {
         )}
       </Container>
 
-      {/* Create/Edit Modal */}
       <Dialog 
         open={showModal} 
         onClose={() => setShowModal(false)} 
@@ -453,7 +406,7 @@ const MobileEngineModels = () => {
               />
 
               <TextField
-                label="エンジンコード"
+                label="エンジンコード（任意）"
                 name="engine_code"
                 value={formData.engine_code}
                 onChange={handleChange}
@@ -465,61 +418,18 @@ const MobileEngineModels = () => {
               />
 
               <TextField
-                label="排気量 (L)"
-                name="displacement"
-                type="number"
-                inputProps={{ step: "0.1", min: "0" }}
-                value={formData.displacement}
-                onChange={handleChange}
-                error={!!errors.displacement}
-                helperText={errors.displacement || '例: 8.9, 7.8'}
-                placeholder="8.9"
-                fullWidth
-                sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2 } }}
-              />
-
-              <Stack direction="row" spacing={2}>
-                <TextField
-                  label="馬力 (HP)"
-                  name="horsepower"
-                  type="number"
-                  value={formData.horsepower}
-                  onChange={handleChange}
-                  error={!!errors.horsepower}
-                  helperText={errors.horsepower}
-                  placeholder="380"
-                  fullWidth
-                  sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2 } }}
-                />
-
-                <TextField
-                  label="トルク (Nm)"
-                  name="torque"
-                  type="number"
-                  value={formData.torque}
-                  onChange={handleChange}
-                  error={!!errors.torque}
-                  helperText={errors.torque}
-                  placeholder="1715"
-                  fullWidth
-                  sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2 } }}
-                />
-              </Stack>
-
-              <TextField
                 select
                 label="燃料タイプ"
                 name="fuel_type"
                 value={formData.fuel_type}
                 onChange={handleChange}
                 error={!!errors.fuel_type}
-                helperText={errors.fuel_type}
+                helperText={errors.fuel_type || '燃料の種類を選択してください'}
+                required
                 fullWidth
-                disabled={fuelTypesLoading}
                 sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2 } }}
               >
-                <MenuItem value="">選択してください...</MenuItem>
-                {fuelTypes.map(type => (
+                {FUEL_TYPES.map(type => (
                   <MenuItem key={type.value} value={type.value}>
                     {type.label}
                   </MenuItem>
@@ -549,7 +459,6 @@ const MobileEngineModels = () => {
             <Button 
               type="submit" 
               variant="contained"
-              disabled={fuelTypesLoading}
               sx={{ 
                 borderRadius: 2,
                 textTransform: 'none',
@@ -564,7 +473,6 @@ const MobileEngineModels = () => {
         </form>
       </Dialog>
 
-      {/* Actions Bottom Sheet */}
       <SwipeableDrawer
         anchor="bottom"
         open={showActions}
@@ -582,7 +490,7 @@ const MobileEngineModels = () => {
               </Typography>
               <Typography variant="caption" color="text.secondary">
                 {selectedEngine.manufacturer_name}
-                {selectedEngine.displacement && ` | ${selectedEngine.displacement}L`}
+                {selectedEngine.fuel_type_display && ` | ${selectedEngine.fuel_type_display}`}
                 {selectedEngine.car_model_count > 0 && ` | ${selectedEngine.car_model_count} 車両`}
               </Typography>
             </Box>
@@ -609,6 +517,16 @@ const MobileEngineModels = () => {
           </Stack>
         </Box>
       </SwipeableDrawer>
+
+      <ConfirmDialog
+        open={showConfirmDelete}
+        onClose={() => setShowConfirmDelete(false)}
+        title="削除確認"
+        content={`本当に「${selectedEngine?.name}」を削除しますか？この操作は取り消せません。`}
+        onConfirm={performDelete}
+        confirmText="削除"
+        cancelText="キャンセル"
+      />
 
       <Fab
         color="primary"

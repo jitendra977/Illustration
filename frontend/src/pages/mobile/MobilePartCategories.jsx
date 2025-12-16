@@ -421,7 +421,6 @@ const MobilePartCategories = () => {
                 placeholder="engine-components"
                 fullWidth
                 required
-                disabled={!!editingCategory}  // ✅ Keep disabled only when editing
                 sx={{
                   '& .MuiOutlinedInput-root': {
                     borderRadius: 2,

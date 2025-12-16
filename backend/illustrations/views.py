@@ -70,7 +70,7 @@ class EngineModelViewSet(viewsets.ModelViewSet):
     search_fields = ['name', 'engine_code', 'manufacturer__name']
     ordering_fields = ['name', 'manufacturer__name']
     ordering = ['manufacturer__name', 'name']
-    lookup_field = 'slug'
+
     
     def get_queryset(self):
         return EngineModel.objects.select_related('manufacturer').annotate(

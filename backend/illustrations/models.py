@@ -62,15 +62,6 @@ class EngineModel(models.Model):
     )
     name = models.CharField(max_length=255, help_text="Engine name (e.g., A09C, 6HK1)")
     engine_code = models.CharField(max_length=255, blank=True, help_text="Official engine code")
-    displacement = models.DecimalField(
-        max_digits=5, 
-        decimal_places=2, 
-        null=True, 
-        blank=True,
-        help_text="Engine displacement in liters (e.g., 8.9)"
-    )
-    horsepower = models.IntegerField(null=True, blank=True, help_text="Horsepower (HP)")
-    torque = models.IntegerField(null=True, blank=True, help_text="Torque (Nm)")
     
     FUEL_TYPES = [
         ('diesel', 'ディーゼル'),
@@ -92,28 +83,6 @@ class EngineModel(models.Model):
         verbose_name_plural = "Engine Models"
         ordering = ['manufacturer', 'name']
         unique_together = ['manufacturer', 'name']
-
-    def save(self, *args, **kwargs):
-        if not self.slug:
-            # Create slug: manufacturer-engine (e.g., hino-a09c)
-            base_slug = slugify(f"{self.manufacturer.name}-{self.name}")
-            slug = base_slug
-            counter = 1
-            
-            queryset = EngineModel.objects.filter(slug=slug)
-            if self.pk:
-                queryset = queryset.exclude(pk=self.pk)
-            
-            while queryset.exists():
-                slug = f"{base_slug}-{counter}"
-                counter += 1
-                queryset = EngineModel.objects.filter(slug=slug)
-                if self.pk:
-                    queryset = queryset.exclude(pk=self.pk)
-            
-            self.slug = slug
-        
-        super().save(*args, **kwargs)
 
     def __str__(self):
         return f"{self.manufacturer.name} {self.name}"
