@@ -239,117 +239,32 @@ class CarModel(models.Model):
     def __str__(self):
         return f"{self.manufacturer.name} {self.name}"
 
-
 # ------------------------------
-# Part Category
-# ------------------------------
-class PartCategory(models.Model):
-    """
-    Main part categories (e.g., Engine, Transmission, Electrical)
-    Categories are specific to engine models
-    """
-    engine_model = models.ForeignKey(
-        EngineModel, 
-        on_delete=models.CASCADE,
-        related_name='part_categories'
-    )
-    name = models.CharField(max_length=255, help_text="Category name (e.g., Engine, Cooling System)")
-    description = models.TextField(blank=True)
-    slug = models.SlugField()
-
-    class Meta:
-        verbose_name = "Part Category"
-        verbose_name_plural = "Part Categories"
-        ordering = ['engine_model', 'name']
-        unique_together = ['engine_model', 'name']
-
-    def save(self, *args, **kwargs):
-        if not self.slug:
-            self.slug = slugify(self.name)
-        super().save(*args, **kwargs)
-
-    def __str__(self):
-        return f"{self.engine_model.name} - {self.name}"
-
-
-# ------------------------------
-# Part Subcategory
-# ------------------------------
-class PartSubCategory(models.Model):
-    """
-    Subcategories within part categories (e.g., Pistons, Turbocharger, Fuel Injectors)
-    """
-    part_category = models.ForeignKey(
-        PartCategory, 
-        on_delete=models.CASCADE,
-        related_name='subcategories'
-    )
-    name = models.CharField(max_length=255, help_text="Subcategory name (e.g., Pistons, Turbo)")
-    description = models.TextField(blank=True)
-    slug = models.SlugField()
-
-    class Meta:
-        verbose_name = "Part Subcategory"
-        verbose_name_plural = "Part Subcategories"
-        ordering = ['part_category', 'name']
-        unique_together = ['part_category', 'name']
-
-    def save(self, *args, **kwargs):
-        if not self.slug:
-            self.slug = slugify(self.name)
-        super().save(*args, **kwargs)
-
-    def __str__(self):
-        return f"{self.part_category.name} > {self.name}"
-
-
-# ------------------------------
-# Part Category (FIXED - Now independent of engine)
+# Part Category Model (FIXED)
 # ------------------------------
 class PartCategory(models.Model):
     """
     Universal part categories that apply to ALL engines.
-    Examples: Engine Components, Cooling System, Fuel System, etc.
-    
-    These categories are NOT tied to specific engines because:
-    - All diesel engines have similar systems
-    - Avoids duplicate categories across engines
-    - Makes searching and filtering easier
     """
     name = models.CharField(max_length=255, unique=True, help_text="Category name (e.g., Engine Components)")
-    name_ja = models.CharField(max_length=255, blank=True, help_text="Japanese name (e.g., エンジン本体)")
     description = models.TextField(blank=True)
     slug = models.SlugField(unique=True)
+    order = models.IntegerField(default=0, help_text="Display order (lower = first)")  # ✅ Fixed indentation
     
-    # Display order for admin/frontend
-    order = models.IntegerField(default=0, help_text="Display order (lower = first)")
-
-    class Meta:
+    class Meta:  # ✅ Fixed indentation
         verbose_name = "Part Category"
         verbose_name_plural = "Part Categories"
         ordering = ['order', 'name']
-
-    def save(self, *args, **kwargs):
-        if not self.slug:
-            self.slug = slugify(self.name)
-        super().save(*args, **kwargs)
-
-    def __str__(self):
-        return f"{self.name} ({self.name_ja})" if self.name_ja else self.name
-
+    
+    def __str__(self):  # ✅ Fixed indentation
+        return f"{self.name}"
 
 # ------------------------------
-# Part Subcategory (FIXED - Now independent of specific category-engine combo)
+# Part Subcategory Model (FIXED)
 # ------------------------------
 class PartSubCategory(models.Model):
     """
     Universal subcategories within part categories.
-    Examples: Pistons, Turbocharger, Fuel Injectors, etc.
-    
-    These are also NOT tied to specific engines because:
-    - Parts like "Piston" exist in all engines
-    - Different engines have different part numbers, but same part type
-    - Makes categorization consistent across all engines
     """
     part_category = models.ForeignKey(
         PartCategory, 
@@ -357,27 +272,18 @@ class PartSubCategory(models.Model):
         related_name='subcategories'
     )
     name = models.CharField(max_length=255, help_text="Subcategory name (e.g., Pistons)")
-    name_ja = models.CharField(max_length=255, blank=True, help_text="Japanese name (e.g., ピストン)")
     description = models.TextField(blank=True)
     slug = models.SlugField()
+    order = models.IntegerField(default=0, help_text="Display order (lower = first)")  # ✅ Fixed indentation
     
-    # Display order
-    order = models.IntegerField(default=0, help_text="Display order (lower = first)")
-
-    class Meta:
+    class Meta:  # ✅ Fixed indentation
         verbose_name = "Part Subcategory"
         verbose_name_plural = "Part Subcategories"
         ordering = ['part_category', 'order', 'name']
-        unique_together = ['part_category', 'name']  # Same name allowed across different categories
-
-    def save(self, *args, **kwargs):
-        if not self.slug:
-            self.slug = slugify(self.name)
-        super().save(*args, **kwargs)
-
-    def __str__(self):
+        unique_together = ['part_category', 'name']
+    
+    def __str__(self):  # ✅ Fixed indentation
         return f"{self.part_category.name} > {self.name}"
-
 
 # ------------------------------
 # Illustration (FIXED - Links category to specific engine)

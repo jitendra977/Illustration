@@ -134,55 +134,39 @@ class CarModelViewSet(viewsets.ModelViewSet):
         ]
         return Response(vehicle_types)
 
-
 # ========================================
-# PART CATEGORIES (FIXED - Independent of engines)
+# PART CATEGORIES VIEWSET (FIXED)
 # ========================================
-
 class PartCategoryViewSet(viewsets.ModelViewSet):
     """
     Part Categories - Universal part categories (Engine Components, Cooling System, etc.)
-    
-    These categories are NOT tied to specific engines.
-    They are universal and can be used with any engine.
-    
-    Permissions:
-    - Read: Anyone (including anonymous users)
-    - Write: Verified staff only
     """
     serializer_class = PartCategorySerializer
     permission_classes = [IsAdminOrReadOnly]
     filter_backends = [filters.SearchFilter, filters.OrderingFilter]
-    search_fields = ['name', 'name_ja', 'description']
+    search_fields = ['name', 'description', 'slug']
     ordering_fields = ['order', 'name']
     ordering = ['order', 'name']
     
-    def get_queryset(self):
+    def get_queryset(self):  # ✅ Fixed indentation
         return PartCategory.objects.annotate(
             subcategory_count=Count('subcategories', distinct=True),
             illustration_count=Count('illustrations', distinct=True)
         )
 
-
 class PartSubCategoryViewSet(viewsets.ModelViewSet):
     """
     Part Subcategories - Specific part types (Pistons, Turbo, etc.)
-    
-    These are also universal and NOT tied to specific engines.
-    
-    Permissions:
-    - Read: Anyone (including anonymous users)
-    - Write: Verified staff only
     """
     serializer_class = PartSubCategorySerializer
     permission_classes = [IsAdminOrReadOnly]
     filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
     filterset_fields = ['part_category']
-    search_fields = ['name', 'name_ja', 'description', 'part_category__name']
+    search_fields = ['name', 'description', 'part_category__name']
     ordering_fields = ['order', 'name', 'part_category__order']
     ordering = ['part_category__order', 'order', 'name']
     
-    def get_queryset(self):
+    def get_queryset(self):  # ✅ Fixed indentation
         return PartSubCategory.objects.select_related('part_category').annotate(
             illustration_count=Count('illustrations', distinct=True)
         )

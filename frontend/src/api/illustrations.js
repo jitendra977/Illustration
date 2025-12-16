@@ -166,74 +166,75 @@ export const carModelAPI = {
 };
 
 // ============================================================================
-// PART CATEGORIES
+// PART CATEGORIES (CORRECTED)
 // ============================================================================
 export const partCategoryAPI = {
   getAll: async (params = {}) => {
     try {
       const response = await api.get('/part-categories/', { params });
-      return response.data; // ✅ Fixed
+      return response.data;
     } catch (error) {
       console.error('Part Category API error:', error);
       throw error;
     }
   },
   getById: async (id) => {
-    const response = await api.get(`/part-categories/${id}/`);
-    return response.data; // ✅ Fixed
+    const response = await api.get(`/part-categories/${id}/`);  // ✅ Correct syntax
+    return response.data;
   },
   create: async (data) => {
     const response = await api.post('/part-categories/', data);
-    return response.data; // ✅ Fixed
+    return response.data;
   },
   update: async (id, data) => {
-    const response = await api.put(`/part-categories/${id}/`, data);
-    return response.data; // ✅ Fixed
+    const response = await api.put(`/part-categories/${id}/`, data);  // ✅ Correct syntax
+    return response.data;
   },
   partialUpdate: async (id, data) => {
-    const response = await api.patch(`/part-categories/${id}/`, data);
-    return response.data; // ✅ Fixed
+    const response = await api.patch(`/part-categories/${id}/`, data);  // ✅ Correct syntax
+    return response.data;
   },
   delete: async (id) => {
-    const response = await api.delete(`/part-categories/${id}/`);
-    return response.data; // ✅ Fixed
+    const response = await api.delete(`/part-categories/${id}/`);  // ✅ Correct syntax
+    return response.data;
   },
 };
 
 // ============================================================================
-// PART SUBCATEGORIES
+// PART SUBCATEGORIES (CORRECTED)
 // ============================================================================
 export const partSubCategoryAPI = {
-  getAll: async (params) => {
+  getAll: async (params = {}) => {  // ✅ Added default empty object
     const response = await api.get('/part-subcategories/', { params });
-    return response.data; // ✅ Fixed
+    return response.data;
   },
   getById: async (id) => {
-    const response = await api.get(`/part-subcategories/${id}/`);
-    return response.data; // ✅ Fixed
+    const response = await api.get(`/part-subcategories/${id}/`);  // ✅ Correct syntax
+    return response.data;
   },
   getByCategory: async (categoryId) => {
-    const response = await api.get('/part-subcategories/', { params: { part_category: categoryId } });
-    return response.data; // ✅ Fixed
+    const response = await api.get('/part-subcategories/', { 
+      params: { part_category: categoryId } 
+    });
+    return response.data;
   },
   create: async (data) => {
     const response = await api.post('/part-subcategories/', data);
-    return response.data; // ✅ Fixed
+    return response.data;
   },
   update: async (id, data) => {
-    const response = await api.put(`/part-subcategories/${id}/`, data);
-    return response.data; // ✅ Fixed
+    const response = await api.put(`/part-subcategories/${id}/`, data);  // ✅ Correct syntax
+    return response.data;
   },
   partialUpdate: async (id, data) => {
-    const response = await api.patch(`/part-subcategories/${id}/`, data);
-    return response.data; // ✅ Fixed
+    const response = await api.patch(`/part-subcategories/${id}/`, data);  // ✅ Correct syntax
+    return response.data;
   },
   delete: async (id) => {
-    const response = await api.delete(`/part-subcategories/${id}/`);
-    return response.data; // ✅ Fixed
+    const response = await api.delete(`/part-subcategories/${id}/`);  // ✅ Correct syntax
+    return response.data;
   },
 };
-
 // ============================================================================
 // ILLUSTRATIONS
 // ============================================================================

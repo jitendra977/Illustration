@@ -74,41 +74,37 @@ class CarModelSerializer(serializers.ModelSerializer):
             for engine in obj.engines.all()
         ]
 
-
 # ------------------------------
-# Part Category Serializer (FIXED - No engine_model)
+# Part Category Serializer (FIXED)
 # ------------------------------
 class PartCategorySerializer(serializers.ModelSerializer):
     subcategory_count = serializers.IntegerField(read_only=True)
     illustration_count = serializers.IntegerField(read_only=True)
     
-    class Meta:
+    class Meta:  # ✅ Fixed indentation
         model = PartCategory
         fields = [
-            'id', 'name', 'name_ja', 'description', 
+            'id', 'name', 'description', 
             'slug', 'order', 'subcategory_count', 'illustration_count'
         ]
-        read_only_fields = ['id', 'slug', 'subcategory_count', 'illustration_count']
-
+        read_only_fields = ['id', 'subcategory_count', 'illustration_count']
 
 # ------------------------------
-# Part Subcategory Serializer (FIXED - No engine_model reference)
+# Part Subcategory Serializer (FIXED)
 # ------------------------------
 class PartSubCategorySerializer(serializers.ModelSerializer):
     part_category_name = serializers.CharField(source='part_category.name', read_only=True)
-    part_category_name_ja = serializers.CharField(source='part_category.name_ja', read_only=True)
     illustration_count = serializers.IntegerField(read_only=True)
     
-    class Meta:
+    class Meta:  # ✅ Fixed indentation
         model = PartSubCategory
         fields = [
-            'id', 'part_category', 'part_category_name', 'part_category_name_ja',
-            'name', 'name_ja', 'description', 'slug', 'order', 'illustration_count'
+            'id', 'part_category', 'part_category_name',
+            'name', 'description', 'slug', 'order', 'illustration_count'
         ]
         read_only_fields = [
-            'id', 'slug', 'part_category_name', 'part_category_name_ja', 'illustration_count'
+            'id', 'part_category_name', 'illustration_count'
         ]
-
 
 # ------------------------------
 # Illustration File Serializer
@@ -138,9 +134,7 @@ class IllustrationSerializer(serializers.ModelSerializer):
     user_name = serializers.CharField(source='user.username', read_only=True)
     engine_model_name = serializers.CharField(source='engine_model.name', read_only=True)
     part_category_name = serializers.CharField(source='part_category.name', read_only=True)
-    part_category_name_ja = serializers.CharField(source='part_category.name_ja', read_only=True)
     part_subcategory_name = serializers.CharField(source='part_subcategory.name', read_only=True, allow_null=True)
-    part_subcategory_name_ja = serializers.CharField(source='part_subcategory.name_ja', read_only=True, allow_null=True)
     
     # File count
     file_count = serializers.IntegerField(read_only=True)
@@ -153,8 +147,8 @@ class IllustrationSerializer(serializers.ModelSerializer):
         fields = [
             'id', 'user', 'user_name',
             'engine_model', 'engine_model_name',
-            'part_category', 'part_category_name', 'part_category_name_ja',
-            'part_subcategory', 'part_subcategory_name', 'part_subcategory_name_ja',
+            'part_category', 'part_category_name', 
+            'part_subcategory', 'part_subcategory_name',
             'title', 'description',
             'applicable_car_models',
             'created_at', 'updated_at',
@@ -162,8 +156,8 @@ class IllustrationSerializer(serializers.ModelSerializer):
         ]
         read_only_fields = [
             'id', 'user', 'user_name', 'engine_model_name',
-            'part_category_name', 'part_category_name_ja',
-            'part_subcategory_name', 'part_subcategory_name_ja',
+            'part_category_name', 
+            'part_subcategory_name', 
             'created_at', 'updated_at', 'file_count'
         ]
     
@@ -264,7 +258,6 @@ class IllustrationDetailSerializer(serializers.ModelSerializer):
         return {
             'id': obj.part_category.id,
             'name': obj.part_category.name,
-            'name_ja': obj.part_category.name_ja,
             'slug': obj.part_category.slug
         }
     
@@ -274,7 +267,6 @@ class IllustrationDetailSerializer(serializers.ModelSerializer):
         return {
             'id': obj.part_subcategory.id,
             'name': obj.part_subcategory.name,
-            'name_ja': obj.part_subcategory.name_ja,
             'slug': obj.part_subcategory.slug
         }
     

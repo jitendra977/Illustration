@@ -156,18 +156,18 @@ class CarModelAdmin(admin.ModelAdmin):
 @admin.register(PartCategory)
 class PartCategoryAdmin(admin.ModelAdmin):
     list_display = [
-        'name', 'name_ja', 'order', 'subcategory_count', 
+        'name', 'order', 'subcategory_count', 
         'illustration_count', 'slug'
     ]
     list_display_links = ['name']  # Make name clickable
     list_editable = ['order']  # Allow quick reordering
-    search_fields = ['name', 'name_ja', 'description']
+    search_fields = ['name',  'description']
     prepopulated_fields = {'slug': ('name',)}
     ordering = ['order', 'name']
     
     fieldsets = (
         ('Basic Information', {
-            'fields': ('name', 'name_ja', 'slug', 'order')
+            'fields': ('name',  'slug', 'order')
         }),
         ('Details', {
             'fields': ('description',)
@@ -202,20 +202,20 @@ class PartCategoryAdmin(admin.ModelAdmin):
 @admin.register(PartSubCategory)
 class PartSubCategoryAdmin(admin.ModelAdmin):
     list_display = [
-        'name', 'name_ja', 'part_category_link', 'order',
+        'name',  'part_category_link', 'order',
         'illustration_count', 'slug'
     ]
     list_display_links = ['name']  # Make name clickable
     list_editable = ['order']  # Allow quick reordering
     list_filter = ['part_category']
-    search_fields = ['name', 'name_ja', 'description', 'part_category__name']
+    search_fields = ['name',  'description', 'part_category__name']
     prepopulated_fields = {'slug': ('name',)}
     raw_id_fields = ['part_category']
     ordering = ['part_category__order', 'order', 'name']
     
     fieldsets = (
         ('Basic Information', {
-            'fields': ('part_category', 'name', 'name_ja', 'slug', 'order')
+            'fields': ('part_category', 'name', 'slug', 'order')
         }),
         ('Details', {
             'fields': ('description',)
@@ -231,9 +231,7 @@ class PartSubCategoryAdmin(admin.ModelAdmin):
     def part_category_link(self, obj):
         url = reverse('admin:illustrations_partcategory_change', args=[obj.part_category.id])
         display = f"{obj.part_category.name}"
-        if obj.part_category.name_ja:
-            display += f" ({obj.part_category.name_ja})"
-        return format_html('<a href="{}">{}</a>', url, display)
+        
     part_category_link.short_description = 'Part Category'
     part_category_link.admin_order_field = 'part_category__name'
     
@@ -299,7 +297,7 @@ class IllustrationAdmin(admin.ModelAdmin):
         'title', 'description',
         'user__username', 'user__email',
         'engine_model__name', 'part_category__name',
-        'part_category__name_ja'
+        
     ]
     raw_id_fields = ['user', 'engine_model', 'part_category', 'part_subcategory']
     filter_horizontal = ['applicable_car_models']
@@ -354,9 +352,7 @@ class IllustrationAdmin(admin.ModelAdmin):
     def part_category_display(self, obj):
         url = reverse('admin:illustrations_partcategory_change', args=[obj.part_category.id])
         display = obj.part_category.name
-        if obj.part_category.name_ja:
-            display += f" ({obj.part_category.name_ja})"
-        return format_html('<a href="{}">{}</a>', url, display)
+        
     part_category_display.short_description = 'Part Category'
     part_category_display.admin_order_field = 'part_category__name'
     
@@ -364,9 +360,7 @@ class IllustrationAdmin(admin.ModelAdmin):
         if obj.part_subcategory:
             url = reverse('admin:illustrations_partsubcategory_change', args=[obj.part_subcategory.id])
             display = obj.part_subcategory.name
-            if obj.part_subcategory.name_ja:
-                display += f" ({obj.part_subcategory.name_ja})"
-            return format_html('<a href="{}">{}</a>', url, display)
+          
         return "-"
     part_subcategory_display.short_description = 'Part Subcategory'
     part_subcategory_display.admin_order_field = 'part_subcategory__name'

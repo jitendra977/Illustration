@@ -30,8 +30,7 @@ import {
   Close as CloseIcon,
   MoreVert as MoreIcon,
   Description as DescriptionIcon,
-  Numbers as NumbersIcon,
-  Language as LanguageIcon
+  Numbers as NumbersIcon
 } from '@mui/icons-material';
 import { usePartCategories } from '../../hooks/useIllustrations';
 import ConfirmDialog from "../../components/dialog/ConfirmDialog";
@@ -40,9 +39,8 @@ const MobilePartCategories = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [showModal, setShowModal] = useState(false);
   const [editingCategory, setEditingCategory] = useState(null);
-  const [formData, setFormData] = useState({ 
-    name: '', 
-    name_ja: '',
+  const [formData, setFormData] = useState({
+    name: '',
     slug: '',
     description: '',
     order: 0
@@ -52,14 +50,14 @@ const MobilePartCategories = () => {
   const [showActions, setShowActions] = useState(false);
   const [showConfirmDelete, setShowConfirmDelete] = useState(false);
 
-  const { 
-    categories, 
-    loading, 
-    error, 
+  const {
+    categories,
+    loading,
+    error,
     fetchCategories,
-    createCategory, 
+    createCategory,
     updateCategory,
-    deleteCategory 
+    deleteCategory
   } = usePartCategories();
 
   useEffect(() => {
@@ -68,7 +66,6 @@ const MobilePartCategories = () => {
 
   const filteredCategories = (categories || []).filter(c =>
     c.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    c.name_ja?.toLowerCase().includes(searchTerm.toLowerCase()) ||
     c.slug?.toLowerCase().includes(searchTerm.toLowerCase()) ||
     c.description?.toLowerCase().includes(searchTerm.toLowerCase())
   );
@@ -78,17 +75,15 @@ const MobilePartCategories = () => {
       setEditingCategory(category);
       setFormData({
         name: category.name,
-        name_ja: category.name_ja || '',
         slug: category.slug,
         description: category.description || '',
         order: category.order || 0
       });
     } else {
       setEditingCategory(null);
-      setFormData({ 
-        name: '', 
-        name_ja: '', 
-        slug: '', 
+      setFormData({
+        name: '',
+        slug: '',
         description: '',
         order: (categories || []).length > 0 ? Math.max(...(categories || []).map(c => c.order || 0)) + 1 : 1
       });
@@ -100,26 +95,26 @@ const MobilePartCategories = () => {
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
-    
-    // Auto-generate slug from name (English)
-    if (name === 'name' && !editingCategory) {
+
+    // ✅ Auto-generate slug from name ONLY if slug is empty
+    if (name === 'name' && !editingCategory && !formData.slug) {
       const slug = value.toLowerCase()
         .replace(/[^a-z0-9\s-]/g, '')
         .replace(/\s+/g, '-')
         .replace(/(^-|-$)/g, '');
       setFormData(prev => ({ ...prev, slug }));
     }
-    
+
     setErrors(prev => ({ ...prev, [name]: '' }));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     const newErrors = {};
     if (!formData.name?.trim()) newErrors.name = '英語名は必須です';
     if (!formData.slug?.trim()) newErrors.slug = 'スラッグは必須です';
-    
+
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors);
       return;
@@ -128,30 +123,29 @@ const MobilePartCategories = () => {
     try {
       const payload = {
         name: formData.name.trim(),
-        name_ja: formData.name_ja.trim(),
         slug: formData.slug.trim(),
         description: formData.description.trim(),
         order: parseInt(formData.order) || 0
       };
-      
+
       if (editingCategory) {
         await updateCategory(editingCategory.id, payload);
       } else {
         await createCategory(payload);
       }
-      
+
       await fetchCategories();
       setShowModal(false);
-      setFormData({ name: '', name_ja: '', slug: '', description: '', order: 0 });
+      setFormData({ name: '', slug: '', description: '', order: 0 });
       setEditingCategory(null);
     } catch (err) {
       const apiError = err.response?.data;
       if (apiError) {
         const fieldErrors = {};
         Object.keys(apiError).forEach(key => {
-          if (['slug', 'name', 'name_ja', 'description', 'order'].includes(key)) {
-            fieldErrors[key] = Array.isArray(apiError[key]) 
-              ? apiError[key].join(', ') 
+          if (['slug', 'name', 'description', 'order'].includes(key)) {
+            fieldErrors[key] = Array.isArray(apiError[key])
+              ? apiError[key].join(', ')
               : apiError[key];
           } else if (key === 'non_field_errors') {
             fieldErrors.submit = apiError[key];
@@ -190,8 +184,8 @@ const MobilePartCategories = () => {
   };
 
   const PartCategoryCard = ({ category }) => (
-    <Card 
-      sx={{ 
+    <Card
+      sx={{
         borderRadius: 3,
         transition: 'all 0.2s',
         border: 1,
@@ -205,19 +199,10 @@ const MobilePartCategories = () => {
       <CardContent sx={{ p: 2 }}>
         <Stack direction="row" justifyContent="space-between" alignItems="start" mb={1.5}>
           <Box sx={{ flex: 1, minWidth: 0 }}>
-            {/* English & Japanese Names */}
+            {/* Name */}
             <Typography variant="body1" fontWeight="bold" noWrap mb={0.5}>
               {category.name}
             </Typography>
-            
-            {category.name_ja && (
-              <Stack direction="row" alignItems="center" spacing={0.5} mb={0.5}>
-                <LanguageIcon sx={{ fontSize: 14, color: 'text.secondary' }} />
-                <Typography variant="caption" color="text.secondary" noWrap>
-                  {category.name_ja}
-                </Typography>
-              </Stack>
-            )}
 
             {/* Subcategory & Illustration Count */}
             <Stack direction="row" spacing={2} mb={0.5}>
@@ -237,8 +222,8 @@ const MobilePartCategories = () => {
             {category.description && (
               <Stack direction="row" alignItems="start" spacing={0.5} mt={0.5}>
                 <DescriptionIcon sx={{ fontSize: 14, color: 'text.secondary', mt: 0.2 }} />
-                <Typography 
-                  variant="caption" 
+                <Typography
+                  variant="caption"
                   color="text.secondary"
                   sx={{
                     display: '-webkit-box',
@@ -252,9 +237,9 @@ const MobilePartCategories = () => {
               </Stack>
             )}
           </Box>
-          
-          <IconButton 
-            size="small" 
+
+          <IconButton
+            size="small"
             onClick={() => handleOpenActions(category)}
             sx={{ ml: 1 }}
           >
@@ -264,10 +249,10 @@ const MobilePartCategories = () => {
 
         {/* Slug & Order Badge */}
         <Stack direction="row" spacing={1} alignItems="center">
-          <Box sx={{ 
-            bgcolor: alpha('#9c27b0', 0.08), 
-            px: 1.5, 
-            py: 0.75, 
+          <Box sx={{
+            bgcolor: alpha('#9c27b0', 0.08),
+            px: 1.5,
+            py: 0.75,
             borderRadius: 2,
             display: 'inline-block'
           }}>
@@ -275,12 +260,12 @@ const MobilePartCategories = () => {
               {category.slug}
             </Typography>
           </Box>
-          
+
           {category.order !== undefined && category.order > 0 && (
-            <Box sx={{ 
-              bgcolor: alpha('#2196f3', 0.08), 
-              px: 1, 
-              py: 0.5, 
+            <Box sx={{
+              bgcolor: alpha('#2196f3', 0.08),
+              px: 1,
+              py: 0.5,
               borderRadius: 2,
               display: 'inline-flex',
               alignItems: 'center',
@@ -391,10 +376,10 @@ const MobilePartCategories = () => {
       </Container>
 
       {/* Create/Edit Modal */}
-      <Dialog 
-        open={showModal} 
-        onClose={() => setShowModal(false)} 
-        maxWidth="sm" 
+      <Dialog
+        open={showModal}
+        onClose={() => setShowModal(false)}
+        maxWidth="sm"
         fullWidth
         PaperProps={{
           sx: { borderRadius: 3, m: 2 }
@@ -414,7 +399,7 @@ const MobilePartCategories = () => {
           <DialogContent sx={{ pt: 2 }}>
             <Stack spacing={2.5}>
               <TextField
-                label="カテゴリ名（英語）"
+                label="カテゴリ名"
                 name="name"
                 value={formData.name}
                 onChange={handleChange}
@@ -427,28 +412,16 @@ const MobilePartCategories = () => {
               />
 
               <TextField
-                label="カテゴリ名（日本語）"
-                name="name_ja"
-                value={formData.name_ja}
-                onChange={handleChange}
-                error={!!errors.name_ja}
-                helperText={errors.name_ja || '例: エンジン本体'}
-                placeholder="エンジン本体"
-                fullWidth
-                sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2 } }}
-              />
-
-              <TextField
                 label="スラッグ"
                 name="slug"
                 value={formData.slug}
                 onChange={handleChange}
                 error={!!errors.slug}
-                helperText={errors.slug || 'URL用の識別子（自動生成）'}
+                helperText={errors.slug || 'URL用の識別子（手動入力可能）'}
                 placeholder="engine-components"
                 fullWidth
                 required
-                disabled={!!editingCategory}
+                disabled={!!editingCategory}  // ✅ Keep disabled only when editing
                 sx={{
                   '& .MuiOutlinedInput-root': {
                     borderRadius: 2,
@@ -492,16 +465,16 @@ const MobilePartCategories = () => {
             </Stack>
           </DialogContent>
           <DialogActions sx={{ px: 3, pb: 3 }}>
-            <Button 
+            <Button
               onClick={() => setShowModal(false)}
               sx={{ borderRadius: 2, textTransform: 'none', fontWeight: 600, px: 3 }}
             >
               キャンセル
             </Button>
-            <Button 
-              type="submit" 
+            <Button
+              type="submit"
               variant="contained"
-              sx={{ 
+              sx={{
                 borderRadius: 2,
                 textTransform: 'none',
                 fontWeight: 600,
@@ -520,7 +493,7 @@ const MobilePartCategories = () => {
         anchor="bottom"
         open={showActions}
         onClose={() => setShowActions(false)}
-        onOpen={() => {}}
+        onOpen={() => { }}
         disableSwipeToOpen
         PaperProps={{
           sx: { borderTopLeftRadius: 24, borderTopRightRadius: 24, pb: 2 }
@@ -528,17 +501,12 @@ const MobilePartCategories = () => {
       >
         <Box sx={{ p: 2 }}>
           <Box sx={{ width: 40, height: 4, bgcolor: 'grey.300', borderRadius: 2, mx: 'auto', mb: 2 }} />
-          
+
           {selectedCategory && (
             <Box sx={{ mb: 2 }}>
               <Typography variant="body1" fontWeight="bold">
                 {selectedCategory.name}
               </Typography>
-              {selectedCategory.name_ja && (
-                <Typography variant="caption" color="text.secondary" display="block">
-                  {selectedCategory.name_ja}
-                </Typography>
-              )}
               {selectedCategory.description && (
                 <Typography variant="caption" color="text.secondary" display="block" mt={0.5}>
                   {selectedCategory.description}

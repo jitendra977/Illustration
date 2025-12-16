@@ -15,7 +15,7 @@ import MobileEngineModels from '../pages/mobile/MobileEngineModels';
 import MobileSubPartCategories from '../pages/mobile/MobilePartSubCategories';
 import MobileProfile from '../pages/mobile/MobileProfile';
 import MobileSearch from '../pages/mobile/MobileSearch';
-
+import MobilePartCategories from '../pages/mobile/MobilePartCategories';
 const MobileRoutes = () => {
   const router = createBrowserRouter([
     // ==================== HOME ====================
@@ -149,7 +149,7 @@ const MobileRoutes = () => {
       element: (
         <ProtectedRoute>
           <MobileLayout>
-            <MobileSubPartCategories />
+            <MobilePartCategories />
           </MobileLayout>
         </ProtectedRoute>
       ),
@@ -159,7 +159,7 @@ const MobileRoutes = () => {
       element: (
         <ProtectedRoute>
           <MobileLayout>
-            <MobileSubPartCategories />
+            <MobilePartCategories />
           </MobileLayout>
         </ProtectedRoute>
       ),
