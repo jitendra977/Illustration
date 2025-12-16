@@ -1,5 +1,5 @@
-// src/pages/mobile/MobileManufacturers.jsx
-import React, { useState, useEffect } from 'react';
+// src/pages/mobile/MobileManufacturers.jsx - CORRECTED VERSION
+import { useState, useEffect } from 'react';
 import {
   Box,
   Container,
@@ -36,34 +36,42 @@ import {
   Build as EngineIcon
 } from '@mui/icons-material';
 import { useManufacturers } from '../../hooks/useIllustrations';
-
+import ConfirmDialog from "../../components/dialog/ConfirmDialog";
 const MobileManufacturers = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [showModal, setShowModal] = useState(false);
   const [editingManufacturer, setEditingManufacturer] = useState(null);
-  const [formData, setFormData] = useState({ name: '', country: '' });
+  const [formData, setFormData] = useState({ name: '', slug: '' });
   const [errors, setErrors] = useState({});
   const [selectedManufacturer, setSelectedManufacturer] = useState(null);
   const [showActions, setShowActions] = useState(false);
+  const [showConfirmDelete, setShowConfirmDelete] = useState(false);
 
+  const {
+    manufacturers,
+    loading,
+    error,
+    fetchManufacturers,  // ✅ Make sure this is available
+    createManufacturer,
+    updateManufacturer,
+    deleteManufacturer,
+  } = useManufacturers();
+
+  // ✅ Fetch on mount
+  useEffect(() => {
+    fetchManufacturers();
+  }, [fetchManufacturers]);
+
+  // ✅ Listen for modal trigger
   useEffect(() => {
     const handleOpenModal = () => setShowModal(true);
     window.addEventListener('openManufacturerModal', handleOpenModal);
     return () => window.removeEventListener('openManufacturerModal', handleOpenModal);
   }, []);
 
-  const {
-    manufacturers,
-    loading,
-    error,
-    createManufacturer,
-    updateManufacturer,
-    deleteManufacturer,
-  } = useManufacturers();
-
   const filteredManufacturers = manufacturers.filter(m =>
-    m.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    m.country?.toLowerCase().includes(searchTerm.toLowerCase())
+    m.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    m.slug?.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   const handleOpenModal = (manufacturer = null) => {
@@ -71,11 +79,11 @@ const MobileManufacturers = () => {
       setEditingManufacturer(manufacturer);
       setFormData({
         name: manufacturer.name,
-        country: manufacturer.country || '',
+        slug: manufacturer.slug || '',
       });
     } else {
       setEditingManufacturer(null);
-      setFormData({ name: '', country: '' });
+      setFormData({ name: '', slug: '' });
     }
     setErrors({});
     setShowModal(true);
@@ -90,8 +98,11 @@ const MobileManufacturers = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     
+    // ✅ Validation
     const newErrors = {};
-    if (!formData.name.trim()) newErrors.name = '名前は必須です';
+    if (!formData.name?.trim()) {
+      newErrors.name = '名前は必須です';
+    }
     
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors);
@@ -99,15 +110,51 @@ const MobileManufacturers = () => {
     }
 
     try {
+      // ✅ Prepare payload
+      const payload = {
+        name: formData.name.trim(),
+        slug: formData.slug?.trim()
+           };
+
+      console.log('Submitting:', payload); // ✅ Debug log
+
       if (editingManufacturer) {
-        await updateManufacturer(editingManufacturer.slug, formData);
+        await updateManufacturer(editingManufacturer.id, payload);
       } else {
-        await createManufacturer(formData);
+        await createManufacturer(payload);
       }
+      
+      // ✅ Refresh list after successful create/update
+      await fetchManufacturers();
+      
+      // ✅ Close modal and reset
       setShowModal(false);
-      setFormData({ name: '', country: '' });
+      setFormData({ name: '', slug: '' });
+      setEditingManufacturer(null);
+      
     } catch (err) {
-      setErrors({ submit: err.response?.data?.message || '操作に失敗しました' });
+      console.error('Submit error:', err); // ✅ Debug log
+      
+      // ✅ Better error handling
+      const apiError = err.response?.data;
+      if (apiError) {
+        // Handle field-specific errors
+        const fieldErrors = {};
+        Object.keys(apiError).forEach(key => {
+          if (['name', 'slug'].includes(key)) {
+            fieldErrors[key] = Array.isArray(apiError[key]) 
+              ? apiError[key].join(', ') 
+              : apiError[key];
+          } else if (key === 'non_field_errors' || key === 'detail') {
+            fieldErrors.submit = Array.isArray(apiError[key])
+              ? apiError[key].join(', ')
+              : apiError[key];
+          }
+        });
+        setErrors(fieldErrors);
+      } else {
+        setErrors({ submit: err.message || '操作に失敗しました' });
+      }
     }
   };
 
@@ -116,22 +163,26 @@ const MobileManufacturers = () => {
     setShowActions(true);
   };
 
-  const handleEdit = () => {
-    setShowActions(false);
-    handleOpenModal(selectedManufacturer);
-  };
+const handleEdit = () => {
+  setShowActions(false);
+  handleOpenModal(selectedManufacturer);
+};
 
-  const handleDelete = async () => {
-    setShowActions(false);
-    if (window.confirm(`${selectedManufacturer.name}を削除しますか？`)) {
-      try {
-        await deleteManufacturer(selectedManufacturer.slug);
-      } catch (err) {
-        alert('削除に失敗しました');
-      }
-    }
-  };
+const handleDelete = () => {
+  setShowConfirmDelete(true);
+};
 
+const performDelete = async () => {
+  try {
+    await deleteManufacturer(selectedManufacturer.id);
+    await fetchManufacturers();
+    setShowActions(false);
+    setShowConfirmDelete(false);
+  } catch (err) {
+    console.error('Delete error:', err);
+    alert(`削除に失敗しました: ${err.response?.data?.message || err.message}`);
+  }
+};
   const ManufacturerCard = ({ manufacturer }) => (
     <Card 
       sx={{ 
@@ -151,11 +202,11 @@ const MobileManufacturers = () => {
             <Typography variant="body1" fontWeight="bold" noWrap>
               {manufacturer.name}
             </Typography>
-            {manufacturer.country && (
+            {manufacturer.slug && (
               <Stack direction="row" alignItems="center" spacing={0.5} mt={0.5}>
                 <LanguageIcon sx={{ fontSize: 14, color: 'text.secondary' }} />
                 <Typography variant="caption" color="text.secondary">
-                  {manufacturer.country}
+                  {manufacturer.slug}
                 </Typography>
               </Stack>
             )}
@@ -171,7 +222,6 @@ const MobileManufacturers = () => {
 
         {/* Stats */}
         <Stack direction="row" spacing={1} flexWrap="wrap">
-          {/* Engine Count */}
           <Chip
             icon={<EngineIcon sx={{ fontSize: 16 }} />}
             label={`${manufacturer.engine_count || 0} エンジン`}
@@ -182,13 +232,10 @@ const MobileManufacturers = () => {
               fontWeight: 600,
               fontSize: '0.75rem',
               height: 24,
-              '& .MuiChip-icon': {
-                color: '#2196f3'
-              }
+              '& .MuiChip-icon': { color: '#2196f3' }
             }}
           />
           
-          {/* Car Model Count */}
           <Chip
             icon={<CarIcon sx={{ fontSize: 16 }} />}
             label={`${manufacturer.car_model_count || 0} 車両`}
@@ -199,9 +246,7 @@ const MobileManufacturers = () => {
               fontWeight: 600,
               fontSize: '0.75rem',
               height: 24,
-              '& .MuiChip-icon': {
-                color: '#4caf50'
-              }
+              '& .MuiChip-icon': { color: '#4caf50' }
             }}
           />
         </Stack>
@@ -246,15 +291,10 @@ const MobileManufacturers = () => {
             size="small"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            InputProps={{
-              disableUnderline: true
-            }}
+            slotProps={{ input: { disableUnderline: true } }}
           />
           {searchTerm && (
-            <IconButton
-              size="small"
-              onClick={() => setSearchTerm('')}
-            >
+            <IconButton size="small" onClick={() => setSearchTerm('')}>
               <CloseIcon fontSize="small" />
             </IconButton>
           )}
@@ -281,12 +321,10 @@ const MobileManufacturers = () => {
           </Card>
         ) : (
           <>
-            {/* Results Count */}
             <Typography variant="caption" color="text.secondary" display="block" mb={1.5} fontWeight={600}>
               {filteredManufacturers.length} 件のメーカー
             </Typography>
 
-            {/* Manufacturer List */}
             <Stack spacing={1.5}>
               {filteredManufacturers.map((manufacturer) => (
                 <ManufacturerCard key={manufacturer.id} manufacturer={manufacturer} />
@@ -302,19 +340,14 @@ const MobileManufacturers = () => {
         onClose={() => setShowModal(false)} 
         maxWidth="sm" 
         fullWidth
-        PaperProps={{
-          sx: { borderRadius: 3, m: 2 }
-        }}
+        slotProps={{ paper: { sx: { borderRadius: 3, m: 2 } } }}
       >
         <DialogTitle sx={{ pb: 1 }}>
           <Stack direction="row" justifyContent="space-between" alignItems="center">
             <Typography variant="h6" fontWeight="bold">
               {editingManufacturer ? 'メーカー編集' : 'メーカー追加'}
             </Typography>
-            <IconButton
-              onClick={() => setShowModal(false)}
-              size="small"
-            >
+            <IconButton onClick={() => setShowModal(false)} size="small">
               <CloseIcon />
             </IconButton>
           </Stack>
@@ -332,31 +365,24 @@ const MobileManufacturers = () => {
                 placeholder="例: Hino"
                 fullWidth
                 required
-                sx={{
-                  '& .MuiOutlinedInput-root': {
-                    borderRadius: 2
-                  }
-                }}
+                autoFocus
+                sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2 } }}
               />
 
               <TextField
-                label="国"
-                name="country"
-                value={formData.country}
+                label="Slug"
+                name="slug"
+                value={formData.slug}
                 onChange={handleChange}
-                placeholder="例: 日本"
-                helperText="製造国を入力（任意）"
+                error={!!errors.slug}
+                helperText={errors.slug || '例: hino, isuzu, toyota'}
+                placeholder="例: hino"
                 fullWidth
-                sx={{
-                  '& .MuiOutlinedInput-root': {
-                    borderRadius: 2
-                  }
-                }}
+                sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2 } }}
               />
-
               {editingManufacturer && (
-                <Alert severity="info" sx={{ borderRadius: 2 }}>
-                  スラッグは自動生成されます: <strong>{editingManufacturer.slug}</strong>
+                <Alert severity="info" sx={{ borderRadius: 2 }}>  
+                  Slugは一度設定すると変更できません。新しいSlugが必要な場合は、メーカーを削除して再作成してください。
                 </Alert>
               )}
 
@@ -370,12 +396,7 @@ const MobileManufacturers = () => {
           <DialogActions sx={{ px: 3, pb: 3 }}>
             <Button 
               onClick={() => setShowModal(false)}
-              sx={{ 
-                borderRadius: 2,
-                textTransform: 'none',
-                fontWeight: 600,
-                px: 3
-              }}
+              sx={{ borderRadius: 2, textTransform: 'none', fontWeight: 600, px: 3 }}
             >
               キャンセル
             </Button>
@@ -403,24 +424,14 @@ const MobileManufacturers = () => {
         onClose={() => setShowActions(false)}
         onOpen={() => {}}
         disableSwipeToOpen
-        PaperProps={{
-          sx: {
-            borderTopLeftRadius: 24,
-            borderTopRightRadius: 24,
-            pb: 2
+        slotProps={{
+          paper: {
+            sx: { borderTopLeftRadius: 24, borderTopRightRadius: 24, pb: 2 }
           }
         }}
       >
         <Box sx={{ p: 2 }}>
-          {/* Drag Handle */}
-          <Box sx={{ 
-            width: 40, 
-            height: 4, 
-            bgcolor: 'grey.300', 
-            borderRadius: 2, 
-            mx: 'auto', 
-            mb: 2 
-          }} />
+          <Box sx={{ width: 40, height: 4, bgcolor: 'grey.300', borderRadius: 2, mx: 'auto', mb: 2 }} />
 
           {selectedManufacturer && (
             <Box sx={{ mb: 2 }}>
@@ -474,7 +485,16 @@ const MobileManufacturers = () => {
         </Box>
       </SwipeableDrawer>
 
-      {/* Floating Action Button */}
+      <ConfirmDialog
+        open={showConfirmDelete}
+        onClose={() => setShowConfirmDelete(false)}
+        title="削除確認"
+        content={`本当に「${selectedManufacturer?.name}」を削除しますか？この操作は取り消せません。`}
+        onConfirm={performDelete}
+        confirmText="削除"
+        cancelText="キャンセル"
+      />
+
       <Fab
         color="primary"
         aria-label="add"

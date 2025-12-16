@@ -26,7 +26,7 @@ from .permissions import (
 
 
 # ========================================
-# CATALOG DATA (Public Read, Admin Write)
+# ManufacturerViewSet
 # ========================================
 
 class ManufacturerViewSet(viewsets.ModelViewSet):
@@ -39,10 +39,10 @@ class ManufacturerViewSet(viewsets.ModelViewSet):
     """
     permission_classes = [IsAdminOrReadOnly]
     filter_backends = [filters.SearchFilter, filters.OrderingFilter]
-    search_fields = ['name', 'country']
-    ordering_fields = ['name', 'country']
+    search_fields = ['slug', 'name']
+    ordering_fields = ['name']
     ordering = ['name']
-    lookup_field = 'slug'
+
     
     def get_queryset(self):
         return Manufacturer.objects.annotate(

@@ -34,6 +34,7 @@ import {
   Language as LanguageIcon
 } from '@mui/icons-material';
 import { usePartCategories } from '../../hooks/useIllustrations';
+import ConfirmDialog from "../../components/dialog/ConfirmDialog";
 
 const MobilePartCategories = () => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -49,6 +50,7 @@ const MobilePartCategories = () => {
   const [errors, setErrors] = useState({});
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [showActions, setShowActions] = useState(false);
+  const [showConfirmDelete, setShowConfirmDelete] = useState(false);
 
   const { 
     categories, 
@@ -64,7 +66,7 @@ const MobilePartCategories = () => {
     fetchCategories();
   }, []);
 
-  const filteredCategories = categories.filter(c =>
+  const filteredCategories = (categories || []).filter(c =>
     c.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
     c.name_ja?.toLowerCase().includes(searchTerm.toLowerCase()) ||
     c.slug?.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -88,7 +90,7 @@ const MobilePartCategories = () => {
         name_ja: '', 
         slug: '', 
         description: '',
-        order: categories.length > 0 ? Math.max(...categories.map(c => c.order || 0)) + 1 : 1
+        order: (categories || []).length > 0 ? Math.max(...(categories || []).map(c => c.order || 0)) + 1 : 1
       });
     }
     setErrors({});
@@ -172,15 +174,18 @@ const MobilePartCategories = () => {
     handleOpenModal(selectedCategory);
   };
 
-  const handleDelete = async () => {
+  const handleDelete = () => {
+    setShowConfirmDelete(true);
+  };
+
+  const performDelete = async () => {
     setShowActions(false);
-    if (window.confirm(`${selectedCategory.name}を削除しますか？関連するサブカテゴリも削除されます。`)) {
-      try {
-        await deleteCategory(selectedCategory.id);
-        await fetchCategories();
-      } catch (err) {
-        alert(`削除に失敗しました: ${err.response?.data?.message || err.message}`);
-      }
+    try {
+      await deleteCategory(selectedCategory.id);
+      await fetchCategories();
+      setShowConfirmDelete(false);
+    } catch (err) {
+      alert(`削除に失敗しました: ${err.response?.data?.message || err.message}`);
     }
   };
 
@@ -564,6 +569,16 @@ const MobilePartCategories = () => {
           </Stack>
         </Box>
       </SwipeableDrawer>
+
+      <ConfirmDialog
+        open={showConfirmDelete}
+        onClose={() => setShowConfirmDelete(false)}
+        title="削除確認"
+        content={`本当に「${selectedCategory?.name}」を削除しますか？この操作は取り消せません。`}
+        onConfirm={performDelete}
+        confirmText="削除"
+        cancelText="キャンセル"
+      />
 
       <Fab
         color="primary"

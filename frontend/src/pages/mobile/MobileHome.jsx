@@ -71,13 +71,13 @@ const MobileHome = () => {
 
       const getData = (result) => {
         if (result.status === 'rejected') return [];
-        const data = result.value.data;
+        const data = result.value; // ✅ Fixed: No .data property
         return data.results || data || [];
       };
 
       const getCount = (result) => {
         if (result.status === 'rejected') return 0;
-        const data = result.value.data;
+        const data = result.value; // ✅ Fixed: No .data property
         return data.count || (Array.isArray(data) ? data.length : 0);
       };
 

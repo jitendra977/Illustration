@@ -35,7 +35,6 @@ class Manufacturer(models.Model):
     Vehicle manufacturer (e.g., Hino, Isuzu, Toyota, Mitsubishi Fuso)
     """
     name = models.CharField(max_length=255, unique=True)
-    country = models.CharField(max_length=100, blank=True)
     slug = models.SlugField(unique=True)
 
     class Meta:
@@ -43,10 +42,6 @@ class Manufacturer(models.Model):
         verbose_name_plural = "Manufacturers"
         ordering = ['name']
 
-    def save(self, *args, **kwargs):
-        if not self.slug:
-            self.slug = slugify(self.name)
-        super().save(*args, **kwargs)
 
     def __str__(self):
         return self.name
@@ -81,8 +76,8 @@ class EngineModel(models.Model):
         ('diesel', 'ディーゼル'),
         ('petrol', 'ガソリン'),
         ('hybrid', 'ハイブリッド'),
-        ('electric', '電気（EV）'),
-        ('lpg', 'LPG（液化プロパンガス）'),
+        ('electric', '電気(EV)'),
+        ('lpg', 'LPG(液化プロパンガス）'),
     ]
     fuel_type = models.CharField(
         max_length=20, 

@@ -18,10 +18,9 @@ User = get_user_model()
 # ==========================================
 @admin.register(Manufacturer)
 class ManufacturerAdmin(admin.ModelAdmin):
-    list_display = ['name', 'country', 'engine_count', 'car_model_count', 'slug']
-    search_fields = ['name', 'country']
-    prepopulated_fields = {'slug': ('name',)}
-    list_filter = ['country']
+    list_display = ['name', 'slug', 'engine_count', 'car_model_count']
+    search_fields = ['name', 'slug']
+    list_filter = ['name']
     ordering = ['name']
     
     def get_queryset(self, request):

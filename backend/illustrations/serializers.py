@@ -17,8 +17,8 @@ class ManufacturerSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = Manufacturer
-        fields = ['id', 'name', 'country', 'slug', 'engine_count', 'car_model_count']
-        read_only_fields = ['id', 'slug', 'engine_count', 'car_model_count']
+        fields = ['id', 'name',  'slug', 'engine_count', 'car_model_count']
+        read_only_fields = ['id', 'engine_count', 'car_model_count']
 
 
 # ------------------------------
@@ -295,12 +295,11 @@ class IllustrationDetailSerializer(serializers.ModelSerializer):
 # ------------------------------
 class ManufacturerDetailSerializer(serializers.ModelSerializer):
     """Detailed manufacturer with engines and car models"""
-    engines = EngineModelSerializer(many=True, read_only=True)
     car_models = CarModelSerializer(many=True, read_only=True)
     
     class Meta:
         model = Manufacturer
-        fields = ['id', 'name', 'country', 'slug', 'engines', 'car_models']
+        fields = ['id', 'name', 'slug',  'car_models']
 
 
 class EngineModelDetailSerializer(serializers.ModelSerializer):

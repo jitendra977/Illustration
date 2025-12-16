@@ -20,7 +20,7 @@ export const useManufacturers = () => {
     setLoading(true);
     setError(null);
     try {
-      const { data } = await manufacturerAPI.getAll(params);
+      const data = await manufacturerAPI.getAll(params); // ✅ Fixed: No destructuring
       setManufacturers(data.results || data);
       return data;
     } catch (err) {
@@ -35,7 +35,7 @@ export const useManufacturers = () => {
     setLoading(true);
     setError(null);
     try {
-      const { data } = await manufacturerAPI.create(manufacturerData);
+      const data = await manufacturerAPI.create(manufacturerData); // ✅ Fixed
       setManufacturers(prev => [data, ...prev]);
       return data;
     } catch (err) {
@@ -50,7 +50,7 @@ export const useManufacturers = () => {
     setLoading(true);
     setError(null);
     try {
-      const { data } = await manufacturerAPI.update(slug, manufacturerData);
+      const data = await manufacturerAPI.update(slug, manufacturerData); // ✅ Fixed
       setManufacturers(prev => prev.map(m => m.slug === slug ? data : m));
       return data;
     } catch (err) {
@@ -91,7 +91,7 @@ export const useManufacturers = () => {
 };
 
 // ============================================================================
-// ENGINE MODELS HOOK - ✅ UPDATED: Independent from CarModel
+// ENGINE MODELS HOOK
 // ============================================================================
 export const useEngineModels = (manufacturerId = null) => {
   const [engineModels, setEngineModels] = useState([]);
@@ -102,7 +102,7 @@ export const useEngineModels = (manufacturerId = null) => {
     setLoading(true);
     setError(null);
     try {
-      const { data } = manufacturerId
+      const data = manufacturerId // ✅ Fixed
         ? await engineModelAPI.getByManufacturer(manufacturerId)
         : await engineModelAPI.getAll(params);
       setEngineModels(data.results || data);
@@ -122,7 +122,7 @@ export const useEngineModels = (manufacturerId = null) => {
     setLoading(true);
     setError(null);
     try {
-      const { data } = await engineModelAPI.create(engineModelData);
+      const data = await engineModelAPI.create(engineModelData); // ✅ Fixed
       setEngineModels(prev => [data, ...prev]);
       return data;
     } catch (err) {
@@ -140,7 +140,7 @@ export const useEngineModels = (manufacturerId = null) => {
     setLoading(true);
     setError(null);
     try {
-      const { data } = await engineModelAPI.update(slug, engineModelData);
+      const data = await engineModelAPI.update(slug, engineModelData); // ✅ Fixed
       setEngineModels(prev => prev.map(e => e.slug === slug ? data : e));
       return data;
     } catch (err) {
@@ -187,7 +187,7 @@ export const useEngineModels = (manufacturerId = null) => {
 };
 
 // ============================================================================
-// CAR MODELS HOOK - ✅ UPDATED: Uses slug, has engines (ManyToMany)
+// CAR MODELS HOOK
 // ============================================================================
 export const useCarModels = (manufacturerId = null) => {
   const [carModels, setCarModels] = useState([]);
@@ -198,7 +198,7 @@ export const useCarModels = (manufacturerId = null) => {
     setLoading(true);
     setError(null);
     try {
-      const { data } = manufacturerId
+      const data = manufacturerId // ✅ Fixed
         ? await carModelAPI.getByManufacturer(manufacturerId)
         : await carModelAPI.getAll(params);
       setCarModels(data.results || data);
@@ -218,7 +218,7 @@ export const useCarModels = (manufacturerId = null) => {
     setLoading(true);
     setError(null);
     try {
-      const { data } = await carModelAPI.create(carModelData);
+      const data = await carModelAPI.create(carModelData); // ✅ Fixed
       setCarModels(prev => [data, ...prev]);
       return data;
     } catch (err) {
@@ -232,12 +232,11 @@ export const useCarModels = (manufacturerId = null) => {
     }
   }, []);
 
-  // ✅ UPDATED: Use slug for updates
   const updateCarModel = useCallback(async (slug, carModelData) => {
     setLoading(true);
     setError(null);
     try {
-      const { data } = await carModelAPI.partialUpdate(slug, carModelData);
+      const data = await carModelAPI.partialUpdate(slug, carModelData); // ✅ Fixed
       setCarModels(prev => prev.map(c => c.slug === slug ? data : c));
       return data;
     } catch (err) {
@@ -252,7 +251,6 @@ export const useCarModels = (manufacturerId = null) => {
     }
   }, []);
 
-  // ✅ UPDATED: Use slug for deletes
   const deleteCarModel = useCallback(async (slug) => {
     setLoading(true);
     setError(null);
@@ -288,7 +286,7 @@ export const useCarModels = (manufacturerId = null) => {
 // ============================================================================
 // PART CATEGORIES HOOK
 // ============================================================================
-export const usePartCategories = () => {  // Removed engineModelId parameter
+export const usePartCategories = () => {
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -297,7 +295,7 @@ export const usePartCategories = () => {  // Removed engineModelId parameter
     setLoading(true);
     setError(null);
     try {
-      const { data } = await partCategoryAPI.getAll(params);  // Always fetch all, no engine filter
+      const data = await partCategoryAPI.getAll(params); // ✅ Fixed
       setCategories(data.results || data);
       return data;
     } catch (err) {
@@ -309,13 +307,13 @@ export const usePartCategories = () => {  // Removed engineModelId parameter
     } finally {
       setLoading(false);
     }
-  }, []);  // Removed engineModelId from dependencies
+  }, []);
 
   const createCategory = useCallback(async (categoryData) => {
     setLoading(true);
     setError(null);
     try {
-      const { data } = await partCategoryAPI.create(categoryData);
+      const data = await partCategoryAPI.create(categoryData); // ✅ Fixed
       setCategories(prev => [data, ...prev]);
       return data;
     } catch (err) {
@@ -333,7 +331,7 @@ export const usePartCategories = () => {  // Removed engineModelId parameter
     setLoading(true);
     setError(null);
     try {
-      const { data } = await partCategoryAPI.update(id, categoryData);
+      const data = await partCategoryAPI.update(id, categoryData); // ✅ Fixed
       setCategories(prev => prev.map(c => c.id === id ? data : c));
       return data;
     } catch (err) {
@@ -391,7 +389,7 @@ export const usePartSubCategories = (categoryId = null) => {
     setLoading(true);
     setError(null);
     try {
-      const { data } = categoryId
+      const data = categoryId // ✅ Fixed
         ? await partSubCategoryAPI.getByCategory(categoryId)
         : await partSubCategoryAPI.getAll(params);
       setSubCategories(data.results || data);
@@ -411,7 +409,7 @@ export const usePartSubCategories = (categoryId = null) => {
     setLoading(true);
     setError(null);
     try {
-      const { data } = await partSubCategoryAPI.create(subCategoryData);
+      const data = await partSubCategoryAPI.create(subCategoryData); // ✅ Fixed
       setSubCategories(prev => [data, ...prev]);
       return data;
     } catch (err) {
@@ -429,7 +427,7 @@ export const usePartSubCategories = (categoryId = null) => {
     setLoading(true);
     setError(null);
     try {
-      const { data } = await partSubCategoryAPI.update(id, subCategoryData);
+      const data = await partSubCategoryAPI.update(id, subCategoryData); // ✅ Fixed
       setSubCategories(prev => prev.map(s => s.id === id ? data : s));
       return data;
     } catch (err) {
@@ -476,7 +474,7 @@ export const usePartSubCategories = (categoryId = null) => {
 };
 
 // ============================================================================
-// ILLUSTRATIONS HOOK - ✅ UPDATED: Added applicable_car_models support
+// ILLUSTRATIONS HOOK
 // ============================================================================
 export const useIllustrations = (filters = {}) => {
   const [illustrations, setIllustrations] = useState([]);
@@ -487,7 +485,7 @@ export const useIllustrations = (filters = {}) => {
     setLoading(true);
     setError(null);
     try {
-      const { data } = await illustrationAPI.getAll({ ...filters, ...params });
+      const data = await illustrationAPI.getAll({ ...filters, ...params }); // ✅ Fixed
       setIllustrations(data.results || data);
       return data;
     } catch (err) {
@@ -505,7 +503,7 @@ export const useIllustrations = (filters = {}) => {
     setLoading(true);
     setError(null);
     try {
-      const { data } = await illustrationAPI.create(illustrationData);
+      const data = await illustrationAPI.create(illustrationData); // ✅ Fixed
       setIllustrations(prev => [data, ...prev]);
       return data;
     } catch (err) {
@@ -523,7 +521,7 @@ export const useIllustrations = (filters = {}) => {
     setLoading(true);
     setError(null);
     try {
-      const { data } = await illustrationAPI.update(id, illustrationData);
+      const data = await illustrationAPI.update(id, illustrationData); // ✅ Fixed
       setIllustrations(prev => prev.map(i => i.id === id ? data : i));
       return data;
     } catch (err) {
@@ -554,12 +552,11 @@ export const useIllustrations = (filters = {}) => {
     }
   }, []);
 
-  // ✅ NEW: Add files to existing illustration
   const addFilesToIllustration = useCallback(async (id, files) => {
     setLoading(true);
     setError(null);
     try {
-      const { data } = await illustrationAPI.addFiles(id, files);
+      const data = await illustrationAPI.addFiles(id, files); // ✅ Fixed
       // Refresh illustrations to get updated file count
       await fetchIllustrations();
       return data;
@@ -603,7 +600,7 @@ export const useVehicleTypes = () => {
       setLoading(true);
       setError(null);
       try {
-        const { data } = await carModelAPI.getVehicleTypes();
+        const data = await carModelAPI.getVehicleTypes(); // ✅ Fixed
         setVehicleTypes(data);
       } catch (err) {
         setError(err.response?.data?.message || 'Failed to fetch vehicle types');
@@ -618,7 +615,7 @@ export const useVehicleTypes = () => {
 };
 
 // ============================================================================
-// FUEL TYPES HOOK - ✅ MOVED to EngineModel
+// FUEL TYPES HOOK
 // ============================================================================
 export const useFuelTypes = () => {
   const [fuelTypes, setFuelTypes] = useState([]);
@@ -630,8 +627,7 @@ export const useFuelTypes = () => {
       setLoading(true);
       setError(null);
       try {
-        // ✅ CHANGED: Now calls engine-models/fuel-types
-        const { data } = await engineModelAPI.getFuelTypes();
+        const data = await engineModelAPI.getFuelTypes(); // ✅ Fixed
         setFuelTypes(data);
       } catch (err) {
         setError(err.response?.data?.message || 'Failed to fetch fuel types');

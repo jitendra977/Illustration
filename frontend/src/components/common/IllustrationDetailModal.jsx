@@ -53,7 +53,7 @@ const IllustrationDetailModal = ({ open, onClose, illustration }) => {
   };
 
   const handleNextImage = () => {
-    if (selectedImageIndex < illustration.files.length - 1) {
+    if (illustration.files && selectedImageIndex < illustration.files.length - 1) {
       setSelectedImageIndex(selectedImageIndex + 1);
     }
   };
@@ -69,13 +69,18 @@ const IllustrationDetailModal = ({ open, onClose, illustration }) => {
   };
 
   const formatDate = (dateString) => {
-    return new Date(dateString).toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
-    });
+    if (!dateString) return 'N/A';
+    try {
+      return new Date(dateString).toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+      });
+    } catch (error) {
+      return 'Invalid Date';
+    }
   };
 
   const InfoRow = ({ icon, label, value }) => (
@@ -90,11 +95,11 @@ const IllustrationDetailModal = ({ open, onClose, illustration }) => {
       }}>
         {icon}
       </Box>
-      <Box>
+      <Box sx={{ flex: 1, minWidth: 0 }}>
         <Typography variant="caption" color="text.secondary" display="block">
           {label}
         </Typography>
-        <Typography variant="body2" fontWeight="medium">
+        <Typography variant="body2" fontWeight="medium" noWrap>
           {value || 'N/A'}
         </Typography>
       </Box>
@@ -118,11 +123,11 @@ const IllustrationDetailModal = ({ open, onClose, illustration }) => {
       >
         <DialogTitle>
           <Stack direction="row" justifyContent="space-between" alignItems="center">
-            <Stack spacing={0.5}>
-              <Typography variant="h5" fontWeight="bold">
-                {illustration.title}
+            <Stack spacing={0.5} sx={{ flex: 1, minWidth: 0, mr: 2 }}>
+              <Typography variant="h5" fontWeight="bold" noWrap>
+                {illustration.title || 'Untitled Illustration'}
               </Typography>
-              <Stack direction="row" spacing={1} alignItems="center">
+              <Stack direction="row" spacing={1} alignItems="center" flexWrap="wrap">
                 <Chip 
                   icon={<ImageIcon />}
                   label={`${illustration.files?.length || 0} files`}
@@ -130,12 +135,14 @@ const IllustrationDetailModal = ({ open, onClose, illustration }) => {
                   variant="outlined"
                   color="primary"
                 />
-                <Typography variant="caption" color="text.secondary">
-                  ID: {illustration.id}
-                </Typography>
+                {illustration.id && (
+                  <Typography variant="caption" color="text.secondary">
+                    ID: {illustration.id}
+                  </Typography>
+                )}
               </Stack>
             </Stack>
-            <IconButton onClick={onClose}>
+            <IconButton onClick={onClose} edge="end">
               <CloseIcon />
             </IconButton>
           </Stack>
@@ -178,10 +185,14 @@ const IllustrationDetailModal = ({ open, onClose, illustration }) => {
                               component="img"
                               height="120"
                               image={file.file}
-                              alt={`${illustration.title} - Image ${index + 1}`}
+                              alt={`${illustration.title || 'Illustration'} - Image ${index + 1}`}
                               sx={{ 
                                 bgcolor: 'grey.100',
                                 objectFit: 'cover'
+                              }}
+                              onError={(e) => {
+                                e.target.style.display = 'none';
+                                e.target.nextSibling.style.display = 'flex';
                               }}
                             />
                             <Box
@@ -218,7 +229,7 @@ const IllustrationDetailModal = ({ open, onClose, illustration }) => {
                               size="small"
                               onClick={(e) => {
                                 e.stopPropagation();
-                                handleDownload(file.file, `${illustration.title}_${index + 1}`);
+                                handleDownload(file.file, `${illustration.title || 'illustration'}_${index + 1}`);
                               }}
                             >
                               <DownloadIcon fontSize="small" />
@@ -236,7 +247,7 @@ const IllustrationDetailModal = ({ open, onClose, illustration }) => {
                       color: 'text.secondary' 
                     }}
                   >
-                    <ImageIcon sx={{ fontSize: 48, mb: 1 }} />
+                    <ImageIcon sx={{ fontSize: 48, mb: 1, opacity: 0.5 }} />
                     <Typography variant="body2">No files available</Typography>
                   </Box>
                 )}
@@ -257,7 +268,7 @@ const IllustrationDetailModal = ({ open, onClose, illustration }) => {
                   <Typography variant="subtitle1" fontWeight="bold" gutterBottom>
                     Description
                   </Typography>
-                  <Typography variant="body2" color="text.secondary">
+                  <Typography variant="body2" color="text.secondary" sx={{ whiteSpace: 'pre-wrap' }}>
                     {illustration.description}
                   </Typography>
                 </Paper>
@@ -287,7 +298,7 @@ const IllustrationDetailModal = ({ open, onClose, illustration }) => {
                         illustration.car_model?.manufacturer?.name || 
                         illustration.manufacturer_name || 
                         illustration.engine_model?.car_model?.manufacturer?.name ||
-                        'N/A'
+                        null
                       }
                     />
                     <InfoRow
@@ -297,7 +308,7 @@ const IllustrationDetailModal = ({ open, onClose, illustration }) => {
                         illustration.car_model?.name || 
                         illustration.car_model_name || 
                         illustration.engine_model?.car_model?.name ||
-                        'N/A'
+                        null
                       }
                     />
                     <InfoRow
@@ -306,7 +317,7 @@ const IllustrationDetailModal = ({ open, onClose, illustration }) => {
                       value={
                         illustration.engine_model?.name || 
                         illustration.engine_model_name || 
-                        'N/A'
+                        null
                       }
                     />
                     <InfoRow
@@ -315,7 +326,7 @@ const IllustrationDetailModal = ({ open, onClose, illustration }) => {
                       value={
                         illustration.part_category?.name || 
                         illustration.part_category_name || 
-                        'N/A'
+                        null
                       }
                     />
                   </Stack>
@@ -361,15 +372,17 @@ const IllustrationDetailModal = ({ open, onClose, illustration }) => {
                   fullWidth
                   size="large"
                   onClick={() => {
-                    illustration.files?.forEach((file, index) => {
-                      setTimeout(() => {
-                        handleDownload(file.file, `${illustration.title}_${index + 1}`);
-                      }, index * 500);
-                    });
+                    if (illustration.files && illustration.files.length > 0) {
+                      illustration.files.forEach((file, index) => {
+                        setTimeout(() => {
+                          handleDownload(file.file, `${illustration.title || 'illustration'}_${index + 1}`);
+                        }, index * 500);
+                      });
+                    }
                   }}
                   disabled={!illustration.files || illustration.files.length === 0}
                 >
-                  Download All Files
+                  Download All Files ({illustration.files?.length || 0})
                 </Button>
               </Stack>
             </Grid>
@@ -377,7 +390,7 @@ const IllustrationDetailModal = ({ open, onClose, illustration }) => {
         </DialogContent>
 
         <DialogActions sx={{ p: 2 }}>
-          <Button onClick={onClose}>Close</Button>
+          <Button onClick={onClose} variant="outlined">Close</Button>
         </DialogActions>
       </Dialog>
 
@@ -431,33 +444,35 @@ const IllustrationDetailModal = ({ open, onClose, illustration }) => {
             }}
           >
             <Typography variant="body2" color="white">
-              {selectedImageIndex + 1} / {illustration.files?.length || 0}
+              {selectedImageIndex !== null ? selectedImageIndex + 1 : 0} / {illustration.files?.length || 0}
             </Typography>
           </Paper>
 
           {/* Download Button */}
-          <IconButton
-            onClick={() => {
-              const file = illustration.files[selectedImageIndex];
-              handleDownload(file.file, `${illustration.title}_${selectedImageIndex + 1}`);
-            }}
-            sx={{
-              position: 'absolute',
-              top: 16,
-              left: 16,
-              color: 'white',
-              bgcolor: 'rgba(255, 255, 255, 0.1)',
-              '&:hover': {
-                bgcolor: 'rgba(255, 255, 255, 0.2)'
-              },
-              zIndex: 2
-            }}
-          >
-            <DownloadIcon />
-          </IconButton>
+          {selectedImageIndex !== null && illustration.files?.[selectedImageIndex] && (
+            <IconButton
+              onClick={() => {
+                const file = illustration.files[selectedImageIndex];
+                handleDownload(file.file, `${illustration.title || 'illustration'}_${selectedImageIndex + 1}`);
+              }}
+              sx={{
+                position: 'absolute',
+                top: 16,
+                left: 16,
+                color: 'white',
+                bgcolor: 'rgba(255, 255, 255, 0.1)',
+                '&:hover': {
+                  bgcolor: 'rgba(255, 255, 255, 0.2)'
+                },
+                zIndex: 2
+              }}
+            >
+              <DownloadIcon />
+            </IconButton>
+          )}
 
           {/* Previous Button */}
-          {selectedImageIndex > 0 && (
+          {selectedImageIndex !== null && selectedImageIndex > 0 && (
             <IconButton
               onClick={handlePreviousImage}
               sx={{
@@ -477,92 +492,81 @@ const IllustrationDetailModal = ({ open, onClose, illustration }) => {
             </IconButton>
           )}
 
-          {/* Next Button */}
-          {selectedImageIndex < illustration.files.length - 1 && (
-            <IconButton
-              onClick={handleNextImage}
-              sx={{
-                position: 'absolute',
-                right: 16,
-                top: '50%',
-                transform: 'translateY(-50%)',
-                color: 'white',
-                bgcolor: 'rgba(255, 255, 255, 0.1)',
-                '&:hover': {
-                  bgcolor: 'rgba(255, 255, 255, 0.2)'
-                },
-                zIndex: 2
-              }}
-            >
-              <ArrowForwardIcon />
-            </IconButton>
-          )}
+        
 
           {/* Main Image */}
           {selectedImageIndex !== null && illustration.files?.[selectedImageIndex] && (
             <Box
               component="img"
               src={illustration.files[selectedImageIndex].file}
-              alt={`${illustration.title} - Image ${selectedImageIndex + 1}`}
+              alt={`${illustration.title || 'Illustration'} - Image ${selectedImageIndex + 1}`}
               sx={{
                 maxWidth: '95%',
                 maxHeight: '95%',
                 objectFit: 'contain',
                 userSelect: 'none'
               }}
+              onError={(e) => {
+                console.error('Failed to load image:', e);
+              }}
             />
           )}
 
           {/* Thumbnail Strip */}
-          <Box
-            sx={{
-              position: 'absolute',
-              bottom: 16,
-              left: '50%',
-              transform: 'translateX(-50%)',
-              display: 'flex',
-              gap: 1,
-              p: 1,
-              bgcolor: 'rgba(255, 255, 255, 0.1)',
-              backdropFilter: 'blur(10px)',
-              borderRadius: 2,
-              maxWidth: '90%',
-              overflowX: 'auto',
-              '&::-webkit-scrollbar': {
-                height: 6
-              },
-              '&::-webkit-scrollbar-thumb': {
-                bgcolor: 'rgba(255, 255, 255, 0.3)',
-                borderRadius: 3
-              }
-            }}
-          >
-            {illustration.files?.map((file, index) => (
-              <Box
-                key={file.id || index}
-                component="img"
-                src={file.file}
-                alt={`Thumbnail ${index + 1}`}
-                onClick={() => setSelectedImageIndex(index)}
-                sx={{
-                  width: 60,
-                  height: 60,
-                  objectFit: 'cover',
-                  borderRadius: 1,
-                  cursor: 'pointer',
-                  border: selectedImageIndex === index 
-                    ? '2px solid white' 
-                    : '2px solid transparent',
-                  opacity: selectedImageIndex === index ? 1 : 0.6,
-                  transition: 'all 0.2s ease',
-                  '&:hover': {
-                    opacity: 1,
-                    transform: 'scale(1.1)'
-                  }
-                }}
-              />
-            ))}
-          </Box>
+          {illustration.files && illustration.files.length > 1 && (
+            <Box
+              sx={{
+                position: 'absolute',
+                bottom: 16,
+                left: '50%',
+                transform: 'translateX(-50%)',
+                display: 'flex',
+                gap: 1,
+                p: 1,
+                bgcolor: 'rgba(255, 255, 255, 0.1)',
+                backdropFilter: 'blur(10px)',
+                borderRadius: 2,
+                maxWidth: '90%',
+                overflowX: 'auto',
+                '&::-webkit-scrollbar': {
+                  height: 6
+                },
+                '&::-webkit-scrollbar-thumb': {
+                  bgcolor: 'rgba(255, 255, 255, 0.3)',
+                  borderRadius: 3
+                }
+              }}
+            >
+              {illustration.files.map((file, index) => (
+                <Box
+                  key={file.id || index}
+                  component="img"
+                  src={file.file}
+                  alt={`Thumbnail ${index + 1}`}
+                  onClick={() => setSelectedImageIndex(index)}
+                  sx={{
+                    width: 60,
+                    height: 60,
+                    objectFit: 'cover',
+                    borderRadius: 1,
+                    cursor: 'pointer',
+                    border: selectedImageIndex === index 
+                      ? '2px solid white' 
+                      : '2px solid transparent',
+                    opacity: selectedImageIndex === index ? 1 : 0.6,
+                    transition: 'all 0.2s ease',
+                    '&:hover': {
+                      opacity: 1,
+                      transform: 'scale(1.1)'
+                    }
+                  }}
+                  onError={(e) => {
+                    e.target.style.opacity = '0.3';
+                  }}
+                />
+              ))}
+            </Box>
+          )}
         </DialogContent>
       </Dialog>
     </>
