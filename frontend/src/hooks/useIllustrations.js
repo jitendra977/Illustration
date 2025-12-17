@@ -640,3 +640,285 @@ export const useFuelTypes = () => {
 
   return { fuelTypes, loading, error };
 };
+
+// ============================================================================
+// ILLUSTRATION FILES HOOK
+// ============================================================================
+export const useIllustrationFiles = (illustrationId = null, fileType = null) => {
+  const [files, setFiles] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const [pagination, setPagination] = useState({
+    count: 0,
+    next: null,
+    previous: null,
+  });
+
+  const fetchIllustrationFiles = useCallback(async (params = {}) => {
+    setLoading(true);
+    setError(null);
+    
+    // Build query parameters based on props
+    const queryParams = { ...params };
+    
+    if (illustrationId) {
+      queryParams.illustration = illustrationId;
+    }
+    
+    if (fileType) {
+      queryParams.file_type = fileType;
+    }
+    
+    try {
+      const data = await illustrationFileAPI.getAll(queryParams);
+      setFiles(data.results || data);
+      
+      // Handle pagination if available
+      if (data.count !== undefined) {
+        setPagination({
+          count: data.count,
+          next: data.next,
+          previous: data.previous,
+        });
+      }
+      
+      return data;
+    } catch (err) {
+      const errorMessage = err.response?.data?.detail || 
+                          err.response?.data?.message || 
+                          'Failed to fetch illustration files';
+      setError(errorMessage);
+      throw err;
+    } finally {
+      setLoading(false);
+    }
+  }, [illustrationId, fileType]);
+
+  const createIllustrationFile = useCallback(async (fileData) => {
+    setLoading(true);
+    setError(null);
+    try {
+      const data = await illustrationFileAPI.create(fileData);
+      setFiles(prev => [data, ...prev]);
+      return data;
+    } catch (err) {
+      const errorMessage = err.response?.data?.detail || 
+                          err.response?.data?.message || 
+                          Object.values(err.response?.data || {}).join(', ') ||
+                          'Failed to create illustration file';
+      setError(errorMessage);
+      throw err;
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  const updateIllustrationFile = useCallback(async (id, fileData) => {
+    setLoading(true);
+    setError(null);
+    try {
+      const data = await illustrationFileAPI.partialUpdate(id, fileData);
+      setFiles(prev => prev.map(f => f.id === id ? data : f));
+      return data;
+    } catch (err) {
+      const errorMessage = err.response?.data?.detail || 
+                          err.response?.data?.message || 
+                          Object.values(err.response?.data || {}).join(', ') ||
+                          'Failed to update illustration file';
+      setError(errorMessage);
+      throw err;
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  const deleteIllustrationFile = useCallback(async (id) => {
+    setLoading(true);
+    setError(null);
+    try {
+      await illustrationFileAPI.delete(id);
+      setFiles(prev => prev.filter(f => f.id !== id));
+    } catch (err) {
+      const errorMessage = err.response?.data?.detail || 
+                          err.response?.data?.message || 
+                          'Failed to delete illustration file';
+      setError(errorMessage);
+      throw err;
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  // Function to upload multiple files to an illustration
+  const uploadFilesToIllustration = useCallback(async (illustrationId, files) => {
+    setLoading(true);
+    setError(null);
+    
+    const uploadPromises = files.map(file => {
+      return illustrationFileAPI.create({
+        illustration: illustrationId,
+        file: file,
+        // You can specify file_type if you have different file types
+        // file_type: 'IMAGE' // or 'PDF', 'DWG', etc.
+      });
+    });
+    
+    try {
+      const results = await Promise.all(uploadPromises);
+      // Refresh the files list
+      await fetchIllustrationFiles({ illustration: illustrationId });
+      return results;
+    } catch (err) {
+      const errorMessage = err.response?.data?.detail || 
+                          err.response?.data?.message || 
+                          'Failed to upload files';
+      setError(errorMessage);
+      throw err;
+    } finally {
+      setLoading(false);
+    }
+  }, [fetchIllustrationFiles]);
+
+  // Fetch files on component mount or when illustrationId/fileType changes
+  useEffect(() => {
+    if (illustrationId || fileType) {
+      fetchIllustrationFiles();
+    }
+  }, [fetchIllustrationFiles]);
+
+  return {
+    files,
+    loading,
+    error,
+    pagination,
+    fetchIllustrationFiles,
+    createIllustrationFile,
+    updateIllustrationFile,
+    deleteIllustrationFile,
+    uploadFilesToIllustration,
+  };
+};
+
+// ============================================================================
+// FILE TYPES HOOK (for getting file type choices)
+// ============================================================================
+export const useFileTypes = () => {
+  const [fileTypes, setFileTypes] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const fetchFileTypes = async () => {
+      setLoading(true);
+      setError(null);
+      try {
+        // This would require adding an endpoint to your backend
+        // For now, we'll use the hardcoded choices
+        const mockFileTypes = [
+          { value: 'IMAGE', label: 'Image' },
+          { value: 'PDF', label: 'PDF Document' },
+          { value: 'DWG', label: 'CAD Drawing' },
+          { value: 'STEP', label: 'STEP File' },
+          { value: 'OTHER', label: 'Other' },
+        ];
+        setFileTypes(mockFileTypes);
+      } catch (err) {
+        setError(err.response?.data?.message || 'Failed to fetch file types');
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchFileTypes();
+  }, []);
+
+  return { fileTypes, loading, error };
+};
+
+// ============================================================================
+// COMPREHENSIVE ILLUSTRATION HOOK (with files management)
+// ============================================================================
+export const useIllustrationWithFiles = (illustrationId) => {
+  const [illustration, setIllustration] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+  
+  const {
+    files: illustrationFiles,
+    loading: filesLoading,
+    error: filesError,
+    fetchIllustrationFiles,
+    createIllustrationFile,
+    deleteIllustrationFile,
+    uploadFilesToIllustration,
+  } = useIllustrationFiles(illustrationId);
+
+  const fetchIllustration = useCallback(async () => {
+    if (!illustrationId) return;
+    
+    setLoading(true);
+    setError(null);
+    try {
+      const data = await illustrationAPI.getById(illustrationId);
+      setIllustration(data);
+      return data;
+    } catch (err) {
+      const errorMessage = err.response?.data?.detail || 
+                          err.response?.data?.message || 
+                          'Failed to fetch illustration';
+      setError(errorMessage);
+      throw err;
+    } finally {
+      setLoading(false);
+    }
+  }, [illustrationId]);
+
+  const updateIllustrationWithFiles = useCallback(async (illustrationData, files = []) => {
+    setLoading(true);
+    setError(null);
+    try {
+      // Update illustration first
+      const updatedIllustration = await illustrationAPI.update(
+        illustrationId, 
+        illustrationData
+      );
+      setIllustration(updatedIllustration);
+      
+      // Upload files if any
+      if (files.length > 0) {
+        await uploadFilesToIllustration(illustrationId, files);
+      }
+      
+      return updatedIllustration;
+    } catch (err) {
+      const errorMessage = err.response?.data?.detail || 
+                          err.response?.data?.message || 
+                          'Failed to update illustration';
+      setError(errorMessage);
+      throw err;
+    } finally {
+      setLoading(false);
+    }
+  }, [illustrationId, uploadFilesToIllustration]);
+
+  useEffect(() => {
+    if (illustrationId) {
+      fetchIllustration();
+      fetchIllustrationFiles();
+    }
+  }, [illustrationId, fetchIllustration, fetchIllustrationFiles]);
+
+  return {
+    illustration,
+    files: illustrationFiles,
+    loading: loading || filesLoading,
+    error: error || filesError,
+    fetchIllustration,
+    updateIllustration: updateIllustrationWithFiles,
+    uploadFilesToIllustration,
+    deleteIllustrationFile,
+    refresh: () => {
+      fetchIllustration();
+      fetchIllustrationFiles();
+    },
+  };
+};
