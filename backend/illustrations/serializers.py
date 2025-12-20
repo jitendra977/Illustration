@@ -320,3 +320,29 @@ class CarModelDetailSerializer(serializers.ModelSerializer):
             'vehicle_type', 'year_from', 'year_to',
             'model_code', 'chassis_code', 'engines'
         ]
+
+class IllustrationFileSerializer(serializers.ModelSerializer):
+    file_type_display = serializers.CharField(source='get_file_type_display', read_only=True)
+    file_name = serializers.SerializerMethodField(read_only=True)
+    download_url = serializers.SerializerMethodField(read_only=True)
+    
+    class Meta:
+        model = IllustrationFile
+        fields = [
+            'id', 'illustration', 'file', 'file_name', 'file_type', 
+            'file_type_display', 'uploaded_at', 'download_url'
+        ]
+        read_only_fields = ['id', 'file_type', 'file_type_display', 'uploaded_at', 'file_name', 'download_url']
+    
+    def get_file_name(self, obj):
+        """Extract readable filename from stored path"""
+        if obj.file:
+            return obj.file.name.split('/')[-1]
+        return 'file'
+    
+    def get_download_url(self, obj):
+        """Build download URL"""
+        request = self.context.get('request')
+        if request:
+            return request.build_absolute_uri(f'/api/illustration-files/{obj.id}/download/')
+        return None

@@ -512,7 +512,14 @@ export const illustrationFileAPI = {
       illustration: illustrationId,
       file: file,
     });
-  }
+  },
+  // Download single file (direct browser download)
+  download: (fileId) => {
+    return `${API_BASE_URL}/illustration-files/${fileId}/download/`;
+  },
+
+  
+
 };
 
 export default api;

@@ -24,7 +24,7 @@ CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",  # for local development
 ]
 
-# CORS_ALLOW_ALL_ORIGINS = True
+CORS_ALLOW_ALL_ORIGINS = True
 
 # Application definition
 

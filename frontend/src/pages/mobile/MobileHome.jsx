@@ -1,4 +1,4 @@
-// src/pages/mobile/MobileHome.jsx
+// src/pages/mobile/MobileHome.jsx - No PDF Preview in List
 import React, { useState, useEffect, useRef } from 'react';
 import {
   Box,
@@ -28,10 +28,11 @@ import {
   Add as AddIcon,
   ChevronRight as ChevronRightIcon,
   Dashboard as DashboardIcon,
+  PictureAsPdf as PdfIcon,
 } from '@mui/icons-material';
 import { illustrationAPI, manufacturerAPI, carModelAPI, engineModelAPI } from '../../api/illustrations';
 import { useNavigate } from 'react-router-dom';
-import MobileIllustrationFormModal from '../../components/forms/MobileIllustrationFormModal'; // Changed to correct component
+import MobileIllustrationFormModal from '../../components/forms/MobileIllustrationFormModal';
 import MobileLayout from '../../layouts/MobileLayout';
 import { useManufacturers } from '../../hooks/useIllustrations';
 import { useEngineModels } from '../../hooks/useIllustrations';
@@ -199,7 +200,11 @@ const MobileHome = () => {
   );
 
   const IllustrationCard = ({ illustration, index }) => {
-    const firstFile = illustration.first_file?.file || illustration.files?.[0]?.file;
+    // Check if first file is an image
+    const firstFile = illustration.first_file;
+    const isImage = firstFile?.file_type === 'image';
+    const isPdf = firstFile?.file_type === 'pdf';
+    
     const timeAgo = getTimeAgo(illustration.created_at);
     const fileCount = illustration.file_count || (illustration.files?.length || 0);
     const title = illustration.title || 'タイトルなし';
@@ -230,51 +235,75 @@ const MobileHome = () => {
         >
           <CardContent sx={{ p: 1.5 }}>
             <Stack direction="row" spacing={1.5} alignItems="center">
-              {/* Thumbnail */}
+              {/* Thumbnail - Only show for images, not PDFs */}
               <Box sx={{ 
                 width: 64,
                 height: 64,
                 borderRadius: 2.5,
-                backgroundColor: firstFile ? 'transparent' : alpha(theme.palette.primary.main, 0.08),
+                backgroundColor: isImage ? 'transparent' : alpha(theme.palette.primary.main, 0.08),
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
                 overflow: 'hidden',
                 flexShrink: 0,
-                border: !firstFile ? `2px dashed ${alpha(theme.palette.primary.main, 0.3)}` : 'none',
+                border: !isImage ? `2px dashed ${alpha(theme.palette.primary.main, 0.3)}` : 'none',
                 position: 'relative'
               }}>
-                {firstFile ? (
-                  <img 
-                    src={firstFile} 
-                    alt={title}
-                    style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                    onError={(e) => {
-                      e.target.style.display = 'none';
-                      e.target.parentNode.style.backgroundColor = alpha(theme.palette.primary.main, 0.08);
-                    }}
-                  />
+                {isImage ? (
+                  <>
+                    <img 
+                      src={firstFile.file} 
+                      alt={title}
+                      style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                      onError={(e) => {
+                        e.target.style.display = 'none';
+                        e.target.parentNode.style.backgroundColor = alpha(theme.palette.primary.main, 0.08);
+                      }}
+                    />
+                    {/* File count badge for images */}
+                    {fileCount > 1 && (
+                      <Chip
+                        label={`+${fileCount - 1}`}
+                        size="small"
+                        sx={{
+                          position: 'absolute',
+                          bottom: 4,
+                          right: 4,
+                          bgcolor: alpha('#000', 0.7),
+                          color: 'white',
+                          fontSize: '0.6rem',
+                          height: 18,
+                          minWidth: 20,
+                          '& .MuiChip-label': { px: 0.5 }
+                        }}
+                      />
+                    )}
+                  </>
+                ) : isPdf ? (
+                  <>
+                    <PdfIcon sx={{ color: theme.palette.error.main, fontSize: 32 }} />
+                    {/* File count badge for PDFs */}
+                    {fileCount > 1 && (
+                      <Chip
+                        label={fileCount}
+                        size="small"
+                        sx={{
+                          position: 'absolute',
+                          bottom: 4,
+                          right: 4,
+                          bgcolor: theme.palette.error.main,
+                          color: 'white',
+                          fontSize: '0.6rem',
+                          height: 18,
+                          minWidth: 20,
+                          fontWeight: 'bold',
+                          '& .MuiChip-label': { px: 0.5 }
+                        }}
+                      />
+                    )}
+                  </>
                 ) : (
                   <ImageIcon sx={{ color: theme.palette.primary.main, fontSize: 28, opacity: 0.6 }} />
-                )}
-                
-                {/* File count badge */}
-                {fileCount > 1 && (
-                  <Chip
-                    label={`+${fileCount - 1}`}
-                    size="small"
-                    sx={{
-                      position: 'absolute',
-                      bottom: 4,
-                      right: 4,
-                      bgcolor: alpha('#000', 0.7),
-                      color: 'white',
-                      fontSize: '0.6rem',
-                      height: 18,
-                      minWidth: 20,
-                      '& .MuiChip-label': { px: 0.5 }
-                    }}
-                  />
                 )}
               </Box>
               
@@ -290,6 +319,23 @@ const MobileHome = () => {
                 </Typography>
                 
                 <Stack direction="row" spacing={1} alignItems="center" flexWrap="wrap" sx={{ gap: 0.5 }}>
+                  {/* PDF Indicator */}
+                  {isPdf && (
+                    <Chip 
+                      icon={<PdfIcon sx={{ fontSize: 12 }} />}
+                      label="PDF"
+                      size="small"
+                      sx={{ 
+                        height: 22,
+                        fontSize: '0.7rem',
+                        fontWeight: 600,
+                        borderRadius: 1.5,
+                        bgcolor: alpha(theme.palette.error.main, 0.1),
+                        color: theme.palette.error.main,
+                      }}
+                    />
+                  )}
+                  
                   {categoryName && (
                     <Chip 
                       label={categoryName}
@@ -461,9 +507,6 @@ const MobileHome = () => {
                 <Typography variant="h5" fontWeight="bold">
                   ダッシュボード
                 </Typography>
-                <Typography variant="caption" sx={{ opacity: 0.9, fontSize: '0.75rem' }}>
-                  {stats.lastUpdated ? `更新: ${getTimeAgo(stats.lastUpdated)}` : '読み込み中...'}
-                </Typography>
               </Stack>
             </Stack>
             
@@ -523,8 +566,9 @@ const MobileHome = () => {
           <Box sx={{ 
             display: 'grid', 
             gridTemplateColumns: 'repeat(2, 1fr)',
-            gap: 1.5,
-            mb: 3
+            gap: 1,
+            mt: 5,
+            mb: 1
           }}>
             <StatCard
               title="イラスト"
