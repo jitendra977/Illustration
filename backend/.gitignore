@@ -1,0 +1,51 @@
+# ------------------------
+# Environment variables
+# ------------------------
+.env
+.env.local
+.env.production
+
+# ------------------------
+# Python
+# ------------------------
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+*.egg-info/
+dist/
+build/
+
+# ------------------------
+# Django
+# ------------------------
+*.log
+db.sqlite3
+media/
+staticfiles/
+*.pot
+*.pyc
+
+# ------------------------
+# Migrations
+# ------------------------
+# Ignore compiled migration files
+**/migrations/__pycache__/
+# Keep migration scripts (so remove if you don't want to track)
+# **/migrations/*.pyc
+
+# ------------------------
+# IDEs / Editors
+# ------------------------
+.vscode/
+.idea/
+*.swo
+*.swp
+
+# ------------------------
+# Mac / OS files
+# ------------------------
+.DS_Store
