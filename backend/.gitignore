@@ -43,3 +43,6 @@ staticfiles/
 # Usually you want to track initial migrations
 # Ignore __pycache__ inside migrations
 */migrations/__pycache__/
+# Django migrations
+**/migrations/*.py
+**/migrations/*.pyc
