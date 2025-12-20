@@ -1,13 +1,13 @@
-# ------------------------
+# ------------------------------
 # Environment variables
-# ------------------------
+# ------------------------------
 .env
 .env.local
 .env.production
 
-# ------------------------
+# ------------------------------
 # Python
-# ------------------------
+# ------------------------------
 __pycache__/
 *.py[cod]
 *$py.class
@@ -19,9 +19,9 @@ venv/
 dist/
 build/
 
-# ------------------------
+# ------------------------------
 # Django
-# ------------------------
+# ------------------------------
 *.log
 db.sqlite3
 media/
@@ -29,23 +29,17 @@ staticfiles/
 *.pot
 *.pyc
 
-# ------------------------
-# Migrations
-# ------------------------
-# Ignore compiled migration files
-**/migrations/__pycache__/
-# Keep migration scripts (so remove if you don't want to track)
-# **/migrations/*.pyc
-
-# ------------------------
-# IDEs / Editors
-# ------------------------
+# ------------------------------
+# IDE / Editor
+# ------------------------------
 .vscode/
 .idea/
-*.swo
 *.swp
+*.swo
 
-# ------------------------
-# Mac / OS files
-# ------------------------
-.DS_Store
+# ------------------------------
+# Migrations (optional)
+# ------------------------------
+# Usually you want to track initial migrations
+# Ignore __pycache__ inside migrations
+*/migrations/__pycache__/
