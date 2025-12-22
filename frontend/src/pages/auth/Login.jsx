@@ -25,7 +25,7 @@ import {
   Visibility,
   VisibilityOff,
   LockOutlined,
-  PersonOutline,
+  EmailOutlined,
   Shield,
   Google,
   GitHub,
@@ -36,7 +36,10 @@ const Login = () => {
   const location = useLocation();
   const [successMessage, setSuccessMessage] = useState('');
   const { login } = useAuth();
-  const [form, setForm] = useState({ username: '', password: '' });
+  const [form, setForm] = useState({ 
+    email: '', 
+    password: '' 
+  });
   const [errors, setErrors] = useState({});
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
@@ -71,7 +74,7 @@ const Login = () => {
         case 'SERVER_ERROR':
           return '🚨 サーバーエラーが発生しました。後ほど再度お試しいただくか、サポートにお問い合わせください。';
         case 'UNAUTHORIZED':
-          return '❌ ユーザー名またはパスワードが正しくありません。';
+          return '❌ メールアドレスまたはパスワードが正しくありません。';
         case 'REQUEST_CONFIG_ERROR':
           return '⚙️ リクエスト設定エラーが発生しました。再度お試しください。';
         default:
@@ -81,7 +84,7 @@ const Login = () => {
 
     if (error.response) {
       if (error.response.status === 401) {
-        return '❌ ユーザー名またはパスワードが正しくありません。';
+        return '❌ メールアドレスまたはパスワードが正しくありません。';
       } else if (error.response.status >= 500) {
         return `🚨 サーバーエラー（${error.response.status}）が発生しました。後ほど再度お試しください。`;
       } else {
@@ -295,20 +298,21 @@ const Login = () => {
                 )}
 
                 <TextField
-                  type="text"
-                  label="ユーザー名"
-                  placeholder="ユーザー名を入力"
-                  value={form.username}
-                  onChange={(e) => setForm({ ...form, username: e.target.value })}
-                  error={!!errors.username}
-                  helperText={errors.username}
+                  type="email"
+                  label="メールアドレス"
+                  placeholder="メールアドレスを入力"
+                  value={form.email || ''}
+                  onChange={(e) => setForm({ ...form, email: e.target.value })}
+                  error={!!errors.email}
+                  helperText={errors.email}
                   required
                   disabled={isLoading}
                   fullWidth
+                  autoComplete="email"
                   InputProps={{
                     startAdornment: (
                       <InputAdornment position="start">
-                        <PersonOutline sx={{ color: 'rgba(255, 255, 255, 0.5)' }} />
+                        <EmailOutlined sx={{ color: 'rgba(255, 255, 255, 0.5)' }} />
                       </InputAdornment>
                     ),
                   }}
@@ -345,13 +349,14 @@ const Login = () => {
                   type={showPassword ? 'text' : 'password'}
                   label="パスワード"
                   placeholder="パスワードを入力"
-                  value={form.password}
+                  value={form.password || ''}
                   onChange={(e) => setForm({ ...form, password: e.target.value })}
                   error={!!errors.password}
                   helperText={errors.password}
                   required
                   disabled={isLoading}
                   fullWidth
+                  autoComplete="current-password"
                   InputProps={{
                     startAdornment: (
                       <InputAdornment position="start">

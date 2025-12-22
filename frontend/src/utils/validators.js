@@ -55,7 +55,7 @@ export const validateConfirmPassword = (password, confirmPassword) => {
 export const validateStrongPassword = (password) => {
   const basicError = validatePassword(password);
   if (basicError) return basicError;
-  
+
   if (!/(?=.*[a-z])/.test(password)) {
     return 'Password must contain at least one lowercase letter';
   }
@@ -74,34 +74,45 @@ export const validateStrongPassword = (password) => {
 // Form validation functions
 export const validateLoginForm = (form) => {
   const errors = {};
-  
-  const usernameError = validateUsername(form.username);
-  if (usernameError) errors.username = usernameError;
-  
+
+  // Check if using email or username for login
+  if (form.email !== undefined) {
+    // Email-based login
+    const emailError = validateEmail(form.email);
+    if (emailError) errors.email = emailError;
+  } else if (form.username !== undefined) {
+    // Username-based login
+    const usernameError = validateUsername(form.username);
+    if (usernameError) errors.username = usernameError;
+  } else {
+    // Neither email nor username provided
+    errors.general = 'Email or username is required';
+  }
+
   const passwordError = validatePassword(form.password);
   if (passwordError) errors.password = passwordError;
-  
+
   return errors;
 };
 
 export const validateRegisterForm = (form) => {
   const errors = {};
-  
+
   const usernameError = validateUsername(form.username);
   if (usernameError) errors.username = usernameError;
-  
+
   const emailError = validateEmail(form.email);
   if (emailError) errors.email = emailError;
-  
+
   const passwordError = validatePassword(form.password);
   if (passwordError) errors.password = passwordError;
-  
+
   // If you have confirm password field
   if (form.confirmPassword !== undefined) {
     const confirmPasswordError = validateConfirmPassword(form.password, form.confirmPassword);
     if (confirmPasswordError) errors.confirmPassword = confirmPasswordError;
   }
-  
+
   return errors;
 };
 
@@ -128,6 +139,12 @@ export const validateForm = (form, rules) => {
 // Validation rules objects for reusability
 export const loginValidationRules = {
   username: validateUsername,
+  password: validatePassword,
+};
+
+// Email-based login validation rules
+export const emailLoginValidationRules = {
+  email: validateEmail,
   password: validatePassword,
 };
 
