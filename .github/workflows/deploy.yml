@@ -1,6 +1,5 @@
-
 # ========================================
-# .github/workflows/deploy.yml
+# .github/workflows/deploy.yml (FINAL)
 # ========================================
 name: Deploy to Production
 
@@ -19,17 +18,47 @@ jobs:
     
     - name: Create backend .env file
       run: |
-        cat > backend/.env << EOF
+        cat > backend/.env << 'EOF'
         ${{ secrets.BACKEND_ENV }}
         EOF
+        echo "✅ Backend .env created"
     
-    - name: Create frontend .env file
+    - name: Create frontend .env file  
       run: |
-        cat > frontend/.env << EOF
+        cat > frontend/.env << 'EOF'
         ${{ secrets.FRONTEND_ENV }}
         EOF
+        echo "✅ Frontend .env created"
     
-    - name: Deploy to server via SSH
+    - name: Setup SSH directory
+      run: |
+        mkdir -p ~/.ssh
+        chmod 700 ~/.ssh
+    
+    - name: Add SSH key
+      run: |
+        echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/deploy_key
+        chmod 600 ~/.ssh/deploy_key
+    
+    - name: Add server to known hosts
+      run: |
+        ssh-keyscan -p ${{ secrets.SSH_PORT || '22' }} -H ${{ secrets.SSH_HOST }} >> ~/.ssh/known_hosts 2>/dev/null || true
+    
+    - name: Copy .env files to server
+      run: |
+        scp -i ~/.ssh/deploy_key -P ${{ secrets.SSH_PORT || '22' }} \
+          -o StrictHostKeyChecking=no \
+          backend/.env \
+          ${{ secrets.SSH_USERNAME }}@${{ secrets.SSH_HOST }}:${{ secrets.DEPLOY_PATH }}/backend/.env
+        
+        scp -i ~/.ssh/deploy_key -P ${{ secrets.SSH_PORT || '22' }} \
+          -o StrictHostKeyChecking=no \
+          frontend/.env \
+          ${{ secrets.SSH_USERNAME }}@${{ secrets.SSH_HOST }}:${{ secrets.DEPLOY_PATH }}/frontend/.env
+        
+        echo "✅ Environment files copied to server"
+    
+    - name: Deploy to server
       uses: appleboy/ssh-action@v1.0.0
       with:
         host: ${{ secrets.SSH_HOST }}
@@ -37,36 +66,57 @@ jobs:
         key: ${{ secrets.SSH_PRIVATE_KEY }}
         port: ${{ secrets.SSH_PORT || 22 }}
         script: |
-          # Navigate to project directory
-          cd ${{ secrets.DEPLOY_PATH || '/var/www/illustration-system' }}
+          set -e
           
-          # Pull latest code
+          echo "📂 Navigating to project directory..."
+          cd ${{ secrets.DEPLOY_PATH }}
+          
+          echo "📦 Pulling latest code from GitHub..."
           git fetch origin
           git reset --hard origin/main
           
-          # Stop running containers
-          docker-compose down
+          echo "🛑 Stopping existing containers..."
+          sudo docker compose down || true
           
-          # Remove old images
-          docker image prune -af
+          echo "🧹 Removing old images..."
+          sudo docker compose down --rmi local || true
           
-          # Rebuild and start containers
-          docker-compose up -d --build
+          echo "🏗️ Building and starting containers..."
+          sudo docker compose build --no-cache
+          sudo docker compose up -d
           
-          # Run migrations
-          docker-compose exec -T yaw-backend python manage.py migrate
+          echo "⏳ Waiting for services to be ready..."
+          sleep 15
           
-          # Collect static files
-          docker-compose exec -T yaw-backend python manage.py collectstatic --noinput
+          echo "🔄 Running database migrations..."
+          sudo docker compose exec -T yaw-backend python manage.py migrate --noinput
           
-          # Show running containers
-          docker-compose ps
+          echo "📁 Collecting static files..."
+          sudo docker compose exec -T yaw-backend python manage.py collectstatic --noinput --clear
+          
+          echo "🔍 Checking container status..."
+          sudo docker compose ps
+          
+          echo "📊 Checking logs for errors..."
+          sudo docker compose logs --tail=50 yaw-backend
+          
+          echo "🎉 Deployment completed successfully!"
     
-    - name: Deploy status notification
+    - name: Cleanup
+      if: always()
+      run: |
+        rm -f ~/.ssh/deploy_key
+        rm -f backend/.env
+        rm -f frontend/.env
+    
+    - name: Deployment status
       if: always()
       run: |
         if [ ${{ job.status }} == 'success' ]; then
-          echo "✅ Deployment successful!"
+          echo "✅ 🎉 Deployment successful!"
+          echo "🌐 Frontend: https://yaw.nishanaweb.cloud"
+          echo "🔧 Backend API: https://api.yaw.nishanaweb.cloud"
         else
-          echo "❌ Deployment failed!"
+          echo "❌ Deployment failed! Check the logs above."
+          exit 1
         fi
