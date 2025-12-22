@@ -1,31 +1,33 @@
 import os
 from datetime import timedelta
 from pathlib import Path
-from dotenv import load_dotenv
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-# Load environment variables from .env file
-load_dotenv(os.path.join(BASE_DIR, '.env.local'))  # or .env.production
 
-
+# Quick-start development settings - unsuitable for production
+# See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.getenv('SECRET_KEY', 'django-insecure-default-key-change-this')
+SECRET_KEY = 'django-insecure-ohak$$(o7yeraznr)1fy1lma=#wfl#ttj38&@xww(iw$%-jgc^'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.getenv('DEBUG', 'False') == 'True'
+DEBUG = True
 
-ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', 'localhost,127.0.0.1').split(',')
+ALLOWED_HOSTS = ['api.yaw.nishanaweb.cloud', 'yaw.nishanaweb.cloud', 'localhost', '127.0.0.1']
 
-# Add or update CORS settings
-CORS_ALLOWED_ORIGINS = os.getenv('CORS_ALLOWED_ORIGINS', '').split(',')
+# Add or update CORS settings (add these if not present)
+CORS_ALLOWED_ORIGINS = [
+    "https://yaw.nishanaweb.cloud",
+    "http://localhost:55173",  # for local development
+    "http://localhost:3000",  # for local development
+]
 
-# Uncomment if you want to allow all origins (not recommended for production)
-# CORS_ALLOW_ALL_ORIGINS = os.getenv('CORS_ALLOW_ALL_ORIGINS', 'False') == 'True'
+CORS_ALLOW_ALL_ORIGINS = True
 
 # Application definition
+
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -41,10 +43,11 @@ INSTALLED_APPS = [
     'corsheaders',
     'django_filters',
     'drf_yasg',
+    'django_extensions',
 
     # Local apps
-    'accounts',
-    'illustrations',
+    'apps.accounts',
+    'apps.illustrations',
 ]
 
 MIDDLEWARE = [
@@ -58,12 +61,12 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-ROOT_URLCONF = 'main.urls'
+ROOT_URLCONF = 'config.urls'
 
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [os.path.join(BASE_DIR, 'templates')],
+        'DIRS': [os.path.join(BASE_DIR, 'templates')],  # Add templates directory
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -76,30 +79,18 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'main.wsgi.application'
+WSGI_APPLICATION = 'config.wsgi.application'
 
 
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
-if os.getenv('DATABASE_ENGINE') == 'django.db.backends.postgresql':
-    DATABASES = {
-        'default': {
-            'ENGINE': os.getenv('DATABASE_ENGINE'),
-            'NAME': os.getenv('DATABASE_NAME'),
-            'USER': os.getenv('DATABASE_USER'),
-            'PASSWORD': os.getenv('DATABASE_PASSWORD'),
-            'HOST': os.getenv('DATABASE_HOST', 'localhost'),
-            'PORT': os.getenv('DATABASE_PORT', '5432'),
-        }
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
     }
-else:
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.sqlite3',
-            'NAME': BASE_DIR / os.getenv('DATABASE_NAME', 'db.sqlite3'),
-        }
-    }
+}
 
 
 # Password validation
@@ -128,8 +119,11 @@ AUTH_PASSWORD_VALIDATORS = [
 # https://docs.djangoproject.com/en/5.2/topics/i18n/
 
 LANGUAGE_CODE = 'en-us'
+
 TIME_ZONE = 'UTC'
+
 USE_I18N = True
+
 USE_TZ = True
 
 
@@ -142,26 +136,33 @@ AUTH_USER_MODEL = 'accounts.User'
 # ============================================
 # STATIC FILES CONFIGURATION
 # ============================================
-STATIC_URL = os.getenv('STATIC_URL', '/static/')
-STATIC_ROOT = os.getenv('STATIC_ROOT', os.path.join(BASE_DIR, 'staticfiles'))
+STATIC_URL = '/static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+
+# Only add STATICFILES_DIRS if you have a 'static' folder in BASE_DIR
+# Comment this out if the folder doesn't exist
+# STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
+
 
 # ============================================
 # MEDIA FILES CONFIGURATION
 # ============================================
-MEDIA_URL = os.getenv('MEDIA_URL', '/media/')
-MEDIA_ROOT = os.getenv('MEDIA_ROOT', os.path.join(BASE_DIR, 'media'))
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 
 # ============================================
 # REST FRAMEWORK CONFIGURATION
 # ============================================
 REST_FRAMEWORK = {
+    'DEFAULT_SCHEMA_CLASS': 'rest_framework.schemas.coreapi.AutoSchema',
+    
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework_simplejwt.authentication.JWTAuthentication',
         'rest_framework.authentication.SessionAuthentication',
     ],
     'DEFAULT_PERMISSION_CLASSES': [
-        'rest_framework.permissions.AllowAny',
+        'rest_framework.permissions.AllowAny',  # Changed to AllowAny for registration
     ],
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
     'PAGE_SIZE': 10,
@@ -180,6 +181,7 @@ REST_FRAMEWORK = {
         'rest_framework.parsers.FormParser',
         'rest_framework.parsers.MultiPartParser',
     ],
+    'APPEND_SLASH': False,
 }
 
 
@@ -187,10 +189,10 @@ REST_FRAMEWORK = {
 # JWT CONFIGURATION
 # ============================================
 SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=int(os.getenv('JWT_ACCESS_TOKEN_LIFETIME', 60))),
-    'REFRESH_TOKEN_LIFETIME': timedelta(minutes=int(os.getenv('JWT_REFRESH_TOKEN_LIFETIME', 10080))),
-    'ROTATE_REFRESH_TOKENS': os.getenv('JWT_ROTATE_REFRESH_TOKENS', 'True') == 'True',
-    'BLACKLIST_AFTER_ROTATION': os.getenv('JWT_BLACKLIST_AFTER_ROTATION', 'True') == 'True',
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=60),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=7),
+    'ROTATE_REFRESH_TOKENS': True,
+    'BLACKLIST_AFTER_ROTATION': True,
     'UPDATE_LAST_LOGIN': True,
     
     'ALGORITHM': 'HS256',
@@ -215,15 +217,17 @@ SIMPLE_JWT = {
 }
 
 
+
 # ============================================
 # CSRF Settings
 # ============================================
-CSRF_TRUSTED_ORIGINS = os.getenv('CSRF_TRUSTED_ORIGINS', '').split(',')
+CSRF_TRUSTED_ORIGINS = [
+    "https://api.yaw.nishanaweb.cloud",
+    "https://yaw.nishanaweb.cloud",
+
+]
 
 
-# ============================================
-# CORS Configuration
-# ============================================
 CORS_ALLOW_METHODS = [
     'DELETE',
     'GET',
@@ -232,7 +236,6 @@ CORS_ALLOW_METHODS = [
     'POST',
     'PUT',
 ]
-
 CORS_ALLOW_HEADERS = [
     'accept',
     'accept-encoding',
@@ -245,47 +248,32 @@ CORS_ALLOW_HEADERS = [
     'x-requested-with',
 ]
 
-
 # ============================================
 # EMAIL CONFIGURATION
 # ============================================
-EMAIL_BACKEND = os.getenv('EMAIL_BACKEND', 'django.core.mail.backends.smtp.EmailBackend')
-EMAIL_HOST = os.getenv('EMAIL_HOST', 'smtp.gmail.com')
-EMAIL_PORT = int(os.getenv('EMAIL_PORT', 587))
-EMAIL_USE_TLS = os.getenv('EMAIL_USE_TLS', 'True') == 'True'
-EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER', '')
-EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD', '')
-DEFAULT_FROM_EMAIL = os.getenv('DEFAULT_FROM_EMAIL', '')
-SUPPORT_EMAIL = os.getenv('SUPPORT_EMAIL', '')
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = 'jitendrakhadka444@gmail.com'
+EMAIL_HOST_PASSWORD = 'xpjo wrpg akxt tlik'
+DEFAULT_FROM_EMAIL = 'jitendrakhadka444@gmail.com'
+SUPPORT_EMAIL = 'nishanaweb@gmail.com'
 
 
 # ============================================
 # FILE UPLOAD SETTINGS
 # ============================================
-FILE_UPLOAD_MAX_MEMORY_SIZE = int(os.getenv('FILE_UPLOAD_MAX_MEMORY_SIZE', 5242880))
-DATA_UPLOAD_MAX_MEMORY_SIZE = int(os.getenv('DATA_UPLOAD_MAX_MEMORY_SIZE', 5242880))
+# Maximum file size: 5MB
+FILE_UPLOAD_MAX_MEMORY_SIZE = 5242880  # 5MB
+DATA_UPLOAD_MAX_MEMORY_SIZE = 5242880  # 5MB
 
 # Allowed file extensions for profile images
 ALLOWED_IMAGE_EXTENSIONS = ['jpg', 'jpeg', 'png', 'gif']
 
 
 # ============================================
-# SECURITY SETTINGS (Production)
-# ============================================
-if not DEBUG:
-    SECURE_SSL_REDIRECT = os.getenv('SECURE_SSL_REDIRECT', 'True') == 'True'
-    SESSION_COOKIE_SECURE = os.getenv('SESSION_COOKIE_SECURE', 'True') == 'True'
-    CSRF_COOKIE_SECURE = os.getenv('CSRF_COOKIE_SECURE', 'True') == 'True'
-    SECURE_BROWSER_XSS_FILTER = os.getenv('SECURE_BROWSER_XSS_FILTER', 'True') == 'True'
-    SECURE_CONTENT_TYPE_NOSNIFF = os.getenv('SECURE_CONTENT_TYPE_NOSNIFF', 'True') == 'True'
-    X_FRAME_OPTIONS = os.getenv('X_FRAME_OPTIONS', 'DENY')
-    SECURE_HSTS_SECONDS = int(os.getenv('SECURE_HSTS_SECONDS', 31536000))
-    SECURE_HSTS_INCLUDE_SUBDOMAINS = os.getenv('SECURE_HSTS_INCLUDE_SUBDOMAINS', 'True') == 'True'
-    SECURE_HSTS_PRELOAD = os.getenv('SECURE_HSTS_PRELOAD', 'True') == 'True'
-
-
-# ============================================
-# LOGGING CONFIGURATION
+# LOGGING CONFIGURATION (Optional but recommended)
 # ============================================
 LOGGING = {
     'version': 1,
@@ -309,17 +297,17 @@ LOGGING = {
     },
     'root': {
         'handlers': ['console', 'file'],
-        'level': os.getenv('LOG_LEVEL', 'INFO'),
+        'level': 'INFO',
     },
     'loggers': {
         'django': {
             'handlers': ['console', 'file'],
-            'level': os.getenv('LOG_LEVEL', 'INFO'),
+            'level': 'INFO',
             'propagate': False,
         },
         'accounts': {
             'handlers': ['console', 'file'],
-            'level': 'DEBUG' if DEBUG else 'INFO',
+            'level': 'DEBUG',
             'propagate': False,
         },
     },

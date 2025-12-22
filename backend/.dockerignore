@@ -1,25 +1,24 @@
 
 # ========================================
-# backend/.gitignore
+# backend/.dockerignore
 # ========================================
-# Python
-__pycache__/
-*.py[cod]
-*$py.class
-*.so
-.Python
-*.egg
-*.egg-info/
-dist/
-build/
-*.pyc
-*.pyo
-
 # Virtual Environment
 venv/
 env/
 ENV/
 .venv/
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+*.so
+*.egg
+*.egg-info/
+dist/
+build/
 
 # Django
 *.log
@@ -27,39 +26,42 @@ db.sqlite3
 db.sqlite3-journal
 /media
 /staticfiles
-/static
 
-# Environment Variables
+# Environment files
 .env
 .env.local
 .env.*.local
+
+# Git
+.git/
+.gitignore
+.gitattributes
 
 # IDEs
 .vscode/
 .idea/
 *.swp
 *.swo
-*~
-.DS_Store
 
 # Testing
 .coverage
 .pytest_cache/
 htmlcov/
 .tox/
-*.cover
 
-# Celery
-celerybeat-schedule
-celerybeat.pid
+# Documentation
+README.md
+docs/
+*.md
+
+# CI/CD
+.github/
+.gitlab-ci.yml
 
 # Backup files
 *.bak
 *.backup
-*.sql
-*.dump
 
 # OS
-Thumbs.db
 .DS_Store
-
+Thumbs.db

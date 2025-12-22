@@ -8,7 +8,7 @@ Usage: python manage.py generate_sample_data
 from django.core.management.base import BaseCommand
 from django.contrib.auth import get_user_model
 from django.utils.text import slugify
-from illustrations.models import (
+from apps.illustrations.models import (
     Manufacturer, EngineModel, CarModel, 
     PartCategory, PartSubCategory, Illustration
 )
