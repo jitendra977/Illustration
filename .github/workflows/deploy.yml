@@ -1,0 +1,72 @@
+
+# ========================================
+# .github/workflows/deploy.yml
+# ========================================
+name: Deploy to Production
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Create backend .env file
+      run: |
+        cat > backend/.env << EOF
+        ${{ secrets.BACKEND_ENV }}
+        EOF
+    
+    - name: Create frontend .env file
+      run: |
+        cat > frontend/.env << EOF
+        ${{ secrets.FRONTEND_ENV }}
+        EOF
+    
+    - name: Deploy to server via SSH
+      uses: appleboy/ssh-action@v1.0.0
+      with:
+        host: ${{ secrets.SSH_HOST }}
+        username: ${{ secrets.SSH_USERNAME }}
+        key: ${{ secrets.SSH_PRIVATE_KEY }}
+        port: ${{ secrets.SSH_PORT || 22 }}
+        script: |
+          # Navigate to project directory
+          cd ${{ secrets.DEPLOY_PATH || '/var/www/illustration-system' }}
+          
+          # Pull latest code
+          git fetch origin
+          git reset --hard origin/main
+          
+          # Stop running containers
+          docker-compose down
+          
+          # Remove old images
+          docker image prune -af
+          
+          # Rebuild and start containers
+          docker-compose up -d --build
+          
+          # Run migrations
+          docker-compose exec -T yaw-backend python manage.py migrate
+          
+          # Collect static files
+          docker-compose exec -T yaw-backend python manage.py collectstatic --noinput
+          
+          # Show running containers
+          docker-compose ps
+    
+    - name: Deploy status notification
+      if: always()
+      run: |
+        if [ ${{ job.status }} == 'success' ]; then
+          echo "✅ Deployment successful!"
+        else
+          echo "❌ Deployment failed!"
+        fi
