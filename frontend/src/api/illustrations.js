@@ -51,41 +51,32 @@ export const manufacturerAPI = {
   getAll: async (params = {}) => {
     try {
       const response = await api.get('/manufacturers/', { params });
-      return response;
+      return response.data;
     } catch (error) {
       console.error('Manufacturer API error:', error);
       throw error;
     }
   },
-  getBySlug: (slug) => api.get(`/manufacturers/${slug}/`),
-  create: (data) => api.post('/manufacturers/', data),
-  update: (slug, data) => api.put(`/manufacturers/${slug}/`, data),
-  partialUpdate: (slug, data) => api.patch(`/manufacturers/${slug}/`, data),
-  delete: (slug) => api.delete(`/manufacturers/${slug}/`),
-};
-
-// ============================================================================
-// CAR MODELS - ✅ UPDATED: Use ID for all operations
-// ============================================================================
-export const carModelAPI = {
-  getAll: async (params = {}) => {
-    try {
-      const response = await api.get('/car-models/', { params });
-      return response;
-    } catch (error) {
-      console.error('Car Model API error:', error);
-      throw error;
-    }
+  getBySlug: async (slug) => {
+    const response = await api.get(`/manufacturers/${slug}/`);
+    return response.data;
   },
-  getById: (id) => api.get(`/car-models/${id}/`),
-  getByManufacturer: (manufacturerId) => 
-    api.get('/car-models/', { params: { manufacturer: manufacturerId } }),
-  create: (data) => api.post('/car-models/', data),
-  update: (id, data) => api.put(`/car-models/${id}/`, data),
-  partialUpdate: (id, data) => api.patch(`/car-models/${id}/`, data),
-  delete: (id) => api.delete(`/car-models/${id}/`),
-  getVehicleTypes: () => api.get('/car-models/vehicle-types/'),
-  getFuelTypes: () => api.get('/car-models/fuel-types/'),
+  create: async (data) => {
+    const response = await api.post('/manufacturers/', data);
+    return response.data;
+  },
+  update: async (slug, data) => {
+    const response = await api.put(`/manufacturers/${slug}/`, data);
+    return response.data;
+  },
+  partialUpdate: async (slug, data) => {
+    const response = await api.patch(`/manufacturers/${slug}/`, data);
+    return response.data;
+  },
+  delete: async (slug) => {
+    const response = await api.delete(`/manufacturers/${slug}/`);
+    return response.data;
+  },
 };
 
 // ============================================================================
@@ -95,21 +86,83 @@ export const engineModelAPI = {
   getAll: async (params = {}) => {
     try {
       const response = await api.get('/engine-models/', { params });
-      return response;
+      return response.data;
     } catch (error) {
       console.error('Engine Model API error:', error);
       throw error;
     }
   },
-  getBySlug: (slug) => api.get(`/engine-models/${slug}/`),
-  getByCarModel: (carModelId) => 
-    api.get('/engine-models/', { params: { car_model: carModelId } }),
-  getByManufacturer: (manufacturerId) => 
-    api.get('/engine-models/', { params: { car_model__manufacturer: manufacturerId } }),
-  create: (data) => api.post('/engine-models/', data),
-  update: (slug, data) => api.put(`/engine-models/${slug}/`, data),
-  partialUpdate: (slug, data) => api.patch(`/engine-models/${slug}/`, data),
-  delete: (slug) => api.delete(`/engine-models/${slug}/`),
+  getBySlug: async (slug) => {
+    const response = await api.get(`/engine-models/${slug}/`);
+    return response.data;
+  },
+  getByManufacturer: async (manufacturerId) => {
+    const response = await api.get('/engine-models/', { params: { manufacturer: manufacturerId } });
+    return response.data;
+  },
+  getFuelTypes: async () => {
+    const response = await api.get('/engine-models/fuel-types/');
+    return response.data;
+  },
+  create: async (data) => {
+    const response = await api.post('/engine-models/', data);
+    return response.data;
+  },
+  update: async (slug, data) => {
+    const response = await api.put(`/engine-models/${slug}/`, data);
+    return response.data;
+  },
+  partialUpdate: async (slug, data) => {
+    const response = await api.patch(`/engine-models/${slug}/`, data);
+    return response.data;
+  },
+  delete: async (slug) => {
+    const response = await api.delete(`/engine-models/${slug}/`);
+    return response.data;
+  },
+};
+
+// ============================================================================
+// CAR MODELS
+// ============================================================================
+export const carModelAPI = {
+  getAll: async (params = {}) => {
+    try {
+      const response = await api.get('/car-models/', { params });
+      return response.data;
+    } catch (error) {
+      console.error('Car Model API error:', error);
+      throw error;
+    }
+  },
+  getBySlug: async (slug) => {
+    const response = await api.get(`/car-models/${slug}/`);
+    return response.data;
+  },
+  getByManufacturer: async (manufacturerId) => {
+    const response = await api.get('/car-models/', { params: { manufacturer: manufacturerId } });
+    return response.data;
+  },
+  create: async (data) => {
+    const response = await api.post('/car-models/', data);
+    return response.data;
+  },
+  update: async (slug, data) => {
+    const response = await api.put(`/car-models/${slug}/`, data);
+    return response.data;
+  },
+  partialUpdate: async (slug, data) => {
+    const response = await api.patch(`/car-models/${slug}/`, data);
+    return response.data;
+  },
+  delete: async (slug) => {
+    const response = await api.delete(`/car-models/${slug}/`);
+    return response.data;
+  },
+  getVehicleTypes: async () => {
+    const response = await api.get('/car-models/vehicle-types/');
+    return response.data;
+  },
 };
 
 // ============================================================================
@@ -119,120 +172,354 @@ export const partCategoryAPI = {
   getAll: async (params = {}) => {
     try {
       const response = await api.get('/part-categories/', { params });
-      return response;
+      return response.data;
     } catch (error) {
       console.error('Part Category API error:', error);
       throw error;
     }
   },
-  getById: (id) => api.get(`/part-categories/${id}/`),
-  getByEngineModel: (engineModelId) => 
-    api.get('/part-categories/', { params: { engine_model: engineModelId } }),
-  create: (data) => api.post('/part-categories/', data),
-  update: (id, data) => api.put(`/part-categories/${id}/`, data),
-  partialUpdate: (id, data) => api.patch(`/part-categories/${id}/`, data),
-  delete: (id) => api.delete(`/part-categories/${id}/`),
+  getById: async (id) => {
+    const response = await api.get(`/part-categories/${id}/`);
+    return response.data;
+  },
+  create: async (data) => {
+    const response = await api.post('/part-categories/', data);
+    return response.data;
+  },
+  update: async (id, data) => {
+    const response = await api.put(`/part-categories/${id}/`, data);
+    return response.data;
+  },
+  partialUpdate: async (id, data) => {
+    const response = await api.patch(`/part-categories/${id}/`, data);
+    return response.data;
+  },
+  delete: async (id) => {
+    const response = await api.delete(`/part-categories/${id}/`);
+    return response.data;
+  },
 };
 
 // ============================================================================
 // PART SUBCATEGORIES
 // ============================================================================
 export const partSubCategoryAPI = {
-  getAll: (params) => api.get('/part-subcategories/', { params }),
-  getById: (id) => api.get(`/part-subcategories/${id}/`),
-  getByCategory: (categoryId) => 
-    api.get('/part-subcategories/', { params: { part_category: categoryId } }),
-  create: (data) => api.post('/part-subcategories/', data),
-  update: (id, data) => api.put(`/part-subcategories/${id}/`, data),
-  partialUpdate: (id, data) => api.patch(`/part-subcategories/${id}/`, data),
-  delete: (id) => api.delete(`/part-subcategories/${id}/`),
+  getAll: async (params = {}) => {
+    const response = await api.get('/part-subcategories/', { params });
+    return response.data;
+  },
+  getById: async (id) => {
+    const response = await api.get(`/part-subcategories/${id}/`);
+    return response.data;
+  },
+  getByCategory: async (categoryId) => {
+    const response = await api.get('/part-subcategories/', {
+      params: { part_category: categoryId }
+    });
+    return response.data;
+  },
+  create: async (data) => {
+    const response = await api.post('/part-subcategories/', data);
+    return response.data;
+  },
+  update: async (id, data) => {
+    const response = await api.put(`/part-subcategories/${id}/`, data);
+    return response.data;
+  },
+  partialUpdate: async (id, data) => {
+    const response = await api.patch(`/part-subcategories/${id}/`, data);
+    return response.data;
+  },
+  delete: async (id) => {
+    const response = await api.delete(`/part-subcategories/${id}/`);
+    return response.data;
+  },
 };
 
 // ============================================================================
-// ILLUSTRATIONS
+// ILLUSTRATIONS API
 // ============================================================================
 export const illustrationAPI = {
-  getAll: (params) => api.get('/illustrations/', { params }),
-  getById: (id) => api.get(`/illustrations/${id}/`),
-  create: (data) => {
+  getAll: async (params = {}) => {
+    try {
+      const response = await api.get('/illustrations/', { params });
+      return response.data;
+    } catch (error) {
+      console.error('Illustration API error:', error);
+      throw error;
+    }
+  },
+
+  getById: async (id) => {
+    try {
+      const response = await api.get(`/illustrations/${id}/`);
+      return response.data;
+    } catch (error) {
+      console.error('Illustration API error:', error);
+      throw error;
+    }
+  },
+
+  create: async (data) => {
     const formData = new FormData();
-    
+
     // Add regular fields
     Object.keys(data).forEach(key => {
-      if (key !== 'uploaded_files' && data[key] !== null && data[key] !== undefined) {
+      if (key === 'uploaded_files') {
+        return; // Handle files separately
+      }
+      if (key === 'applicable_car_models' && Array.isArray(data[key])) {
+        data[key].forEach(id => {
+          formData.append('applicable_car_models', id);
+        });
+      } else if (data[key] !== null && data[key] !== undefined) {
         formData.append(key, data[key]);
       }
     });
-    
+
     // Add files
     if (data.uploaded_files && data.uploaded_files.length > 0) {
       data.uploaded_files.forEach(file => {
         formData.append('uploaded_files', file);
       });
     }
-    
-    return api.post('/illustrations/', formData, {
-      headers: { 'Content-Type': 'multipart/form-data' }
-    });
+
+    try {
+      const response = await api.post('/illustrations/', formData, {
+        headers: { 'Content-Type': 'multipart/form-data' }
+      });
+      return response.data;
+    } catch (error) {
+      console.error('Illustration API error:', error);
+      throw error;
+    }
   },
-  update: (id, data) => {
+
+  update: async (id, data) => {
     const formData = new FormData();
+
+    // Add regular fields
     Object.keys(data).forEach(key => {
-      if (key !== 'uploaded_files' && data[key] !== null && data[key] !== undefined) {
+      if (key === 'uploaded_files') {
+        return; // Handle files separately
+      }
+      if (key === 'applicable_car_models' && Array.isArray(data[key])) {
+        data[key].forEach(id => {
+          formData.append('applicable_car_models', id);
+        });
+      } else if (data[key] !== null && data[key] !== undefined) {
         formData.append(key, data[key]);
       }
     });
-    
-    // Use PUT for full updates
-    return api.put(`/illustrations/${id}/`, formData, {
-      headers: { 'Content-Type': 'multipart/form-data' }
-    });
-  },
-  partialUpdate: (id, data) => {
-    // Handle both FormData and regular JSON for PATCH
-    if (data instanceof FormData || (data.uploaded_files && data.uploaded_files.length > 0)) {
-      const formData = data instanceof FormData ? data : new FormData();
-      
-      if (!(data instanceof FormData)) {
-        Object.keys(data).forEach(key => {
-          if (key !== 'uploaded_files' && data[key] !== null && data[key] !== undefined) {
-            formData.append(key, data[key]);
-          }
-        });
-        
-        if (data.uploaded_files && data.uploaded_files.length > 0) {
-          data.uploaded_files.forEach(file => {
-            formData.append('uploaded_files', file);
-          });
-        }
-      }
-      
-      return api.patch(`/illustrations/${id}/`, formData, {
+
+    // Add files
+    if (data.uploaded_files && data.uploaded_files.length > 0) {
+      data.uploaded_files.forEach(file => {
+        formData.append('uploaded_files', file);
+      });
+    }
+
+    try {
+      const response = await api.put(`/illustrations/${id}/`, formData, {
         headers: { 'Content-Type': 'multipart/form-data' }
       });
-    } else {
-      return api.patch(`/illustrations/${id}/`, data);
+      return response.data;
+    } catch (error) {
+      console.error('Illustration API error:', error);
+      throw error;
     }
   },
-  delete: (id) => api.delete(`/illustrations/${id}/`),
+
+  partialUpdate: async (id, data) => {
+    try {
+      const response = await api.patch(`/illustrations/${id}/`, data);
+      return response.data;
+    } catch (error) {
+      console.error('Illustration API error:', error);
+      throw error;
+    }
+  },
+
+  delete: async (id) => {
+    try {
+      const response = await api.delete(`/illustrations/${id}/`);
+      return response.data;
+    } catch (error) {
+      console.error('Illustration API error:', error);
+      throw error;
+    }
+  },
+
+  // File management methods
+  uploadFiles: async (id, files) => {
+    const formData = new FormData();
+    files.forEach(file => {
+      formData.append('files', file);
+    });
+
+    try {
+      const response = await api.post(`/illustrations/${id}/upload-files/`, formData, {
+        headers: { 'Content-Type': 'multipart/form-data' }
+      });
+      return response.data;
+    } catch (error) {
+      console.error('Illustration API error:', error);
+      throw error;
+    }
+  },
+
+  deleteFile: async (illustrationId, fileId) => {
+    try {
+      const response = await api.delete(`/illustrations/${illustrationId}/files/${fileId}/`);
+      return response.data;
+    } catch (error) {
+      console.error('Illustration API error:', error);
+      throw error;
+    }
+  },
+
+  // Statistics
+  getStats: async () => {
+    try {
+      const response = await api.get('/illustrations/stats/');
+      return response.data;
+    } catch (error) {
+      console.error('Illustration API error:', error);
+      throw error;
+    }
+  },
+
+  // Batch operations
+  bulkDelete: async (ids) => {
+    try {
+      const response = await api.post('/illustrations/bulk-delete/', { ids });
+      return response.data;
+    } catch (error) {
+      console.error('Illustration API error:', error);
+      throw error;
+    }
+  },
 };
 
 // ============================================================================
-// ILLUSTRATION FILES
+// ILLUSTRATION FILES API
 // ============================================================================
 export const illustrationFileAPI = {
-  getAll: (params) => api.get('/illustration-files/', { params }),
-  getById: (id) => api.get(`/illustration-files/${id}/`),
-  create: (illustrationId, file) => {
+  getAll: async (params = {}) => {
+    try {
+      const response = await api.get('/illustration-files/', { params });
+      return response.data;
+    } catch (error) {
+      console.error('Illustration File API error:', error);
+      throw error;
+    }
+  },
+
+  getById: async (id) => {
+    try {
+      const response = await api.get(`/illustration-files/${id}/`);
+      return response.data;
+    } catch (error) {
+      console.error('Illustration File API error:', error);
+      throw error;
+    }
+  },
+
+  create: async (data) => {
     const formData = new FormData();
-    formData.append('illustration', illustrationId);
-    formData.append('file', file);
-    return api.post('/illustration-files/', formData, {
-      headers: { 'Content-Type': 'multipart/form-data' }
+
+    // Add fields to form data
+    Object.keys(data).forEach(key => {
+      if (data[key] !== null && data[key] !== undefined) {
+        // For file field, append as is
+        if (key === 'file') {
+          formData.append(key, data[key]);
+        } else {
+          formData.append(key, data[key].toString());
+        }
+      }
+    });
+
+    try {
+      const response = await api.post('/illustration-files/', formData, {
+        headers: { 'Content-Type': 'multipart/form-data' }
+      });
+      return response.data;
+    } catch (error) {
+      console.error('Illustration File API error:', error);
+      throw error;
+    }
+  },
+
+  update: async (id, data) => {
+    try {
+      const response = await api.put(`/illustration-files/${id}/`, data);
+      return response.data;
+    } catch (error) {
+      console.error('Illustration File API error:', error);
+      throw error;
+    }
+  },
+
+  partialUpdate: async (id, data) => {
+    try {
+      const response = await api.patch(`/illustration-files/${id}/`, data);
+      return response.data;
+    } catch (error) {
+      console.error('Illustration File API error:', error);
+      throw error;
+    }
+  },
+
+  delete: async (id) => {
+    try {
+      const response = await api.delete(`/illustration-files/${id}/`);
+      return response.data;
+    } catch (error) {
+      console.error('Illustration File API error:', error);
+      throw error;
+    }
+  },
+
+  // Additional helper methods
+  getByIllustration: async (illustrationId) => {
+    try {
+      const response = await api.get('/illustration-files/', {
+        params: { illustration: illustrationId }
+      });
+      return response.data;
+    } catch (error) {
+      console.error('Illustration File API error:', error);
+      throw error;
+    }
+  },
+
+  getByFileType: async (fileType) => {
+    try {
+      const response = await api.get('/illustration-files/', {
+        params: { file_type: fileType }
+      });
+      return response.data;
+    } catch (error) {
+      console.error('Illustration File API error:', error);
+      throw error;
+    }
+  },
+
+  // Helper method for backward compatibility
+  createWithIllustrationId: async (illustrationId, file) => {
+    return illustrationFileAPI.create({
+      illustration: illustrationId,
+      file: file,
     });
   },
-  update: (id, data) => api.patch(`/illustration-files/${id}/`, data),
-  delete: (id) => api.delete(`/illustration-files/${id}/`),
+  // Download single file (direct browser download)
+  download: (fileId) => {
+    return `${API_BASE_URL}/illustration-files/${fileId}/download/`;
+  },
+
+  
+
 };
 
 export default api;

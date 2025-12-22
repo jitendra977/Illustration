@@ -1,468 +1,286 @@
 // src/components/mobile/MobileFilterPanel.jsx
 import React, { useState, useEffect } from 'react';
 import {
+  Drawer,
   Box,
-  Button,
-  TextField,
-  MenuItem,
-  Stack,
   Typography,
-  Chip,
-  SwipeableDrawer,
   IconButton,
+  Button,
+  Stack,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
+  Chip,
   Divider,
-  Accordion,
-  AccordionSummary,
-  AccordionDetails,
-  Slide,
-  Fade
 } from '@mui/material';
 import {
-  FilterList as FilterIcon,
   Close as CloseIcon,
-  ExpandMore as ExpandMoreIcon,
-  CheckCircle as CheckIcon,
-  RadioButtonUnchecked as UncheckedIcon
+  FilterList as FilterIcon,
 } from '@mui/icons-material';
-import {
-  useManufacturers,
-  useCarModels,
-  useEngineModels,
-  usePartCategories,
-} from '../../hooks/useIllustrations';
+import { useManufacturers, useEngineModels, usePartCategories, usePartSubCategories, useCarModels } from '../../hooks/useIllustrations';
 
-const MobileFilterPanel = ({ open, onClose, onFilterChange }) => {
+const MobileFilterPanel = ({
+  open,
+  onClose,
+  onFilterChange,
+  currentFilters = {},
+}) => {
   const [filters, setFilters] = useState({
     manufacturer: '',
-    car_model: '',
     engine_model: '',
     part_category: '',
+    part_subcategory: '',
+    car_model: '',
   });
 
-  const [expanded, setExpanded] = useState('manufacturer');
-
   const { manufacturers } = useManufacturers();
-  const { carModels, fetchCarModels } = useCarModels();
-  const { engineModels, fetchEngineModels } = useEngineModels();
-  const { categories, fetchCategories } = usePartCategories();
+  const { engineModels } = useEngineModels();
+  const { categories } = usePartCategories();
+  const { subCategories } = usePartSubCategories();
+  const { carModels } = useCarModels();
 
+  // Filtered data
+  const [filteredEngines, setFilteredEngines] = useState([]);
+  const [filteredSubCategories, setFilteredSubCategories] = useState([]);
+  const [filteredCarModels, setFilteredCarModels] = useState([]);
+
+  // Initialize filters from current filters
+  useEffect(() => {
+    setFilters(prev => ({
+      ...prev,
+      ...currentFilters,
+    }));
+  }, [currentFilters]);
+
+  // Filter engines by manufacturer
   useEffect(() => {
     if (filters.manufacturer) {
-      fetchCarModels({ manufacturer: filters.manufacturer });
+      setFilteredEngines(
+        engineModels.filter(e => e.manufacturer === filters.manufacturer)
+      );
+      setFilteredCarModels(
+        carModels.filter(c => c.manufacturer === filters.manufacturer)
+      );
+    } else {
+      setFilteredEngines(engineModels);
+      setFilteredCarModels(carModels);
     }
-  }, [filters.manufacturer]);
+  }, [filters.manufacturer, engineModels, carModels]);
 
+  // Filter subcategories by category
   useEffect(() => {
-    if (filters.car_model) {
-      fetchEngineModels({ car_model: filters.car_model });
+    if (filters.part_category) {
+      setFilteredSubCategories(
+        subCategories.filter(s => s.part_category === filters.part_category)
+      );
+    } else {
+      setFilteredSubCategories(subCategories);
     }
-  }, [filters.car_model]);
+  }, [filters.part_category, subCategories]);
 
-  useEffect(() => {
-    if (filters.engine_model) {
-      fetchCategories({ engine_model: filters.engine_model });
-    }
-  }, [filters.engine_model]);
+  const handleChange = (field, value) => {
+    setFilters(prev => {
+      const newFilters = { ...prev, [field]: value };
 
-  const handleFilterChange = (name, value) => {
-    const newFilters = { ...filters, [name]: value };
-    
-    if (name === 'manufacturer') {
-      newFilters.car_model = '';
-      newFilters.engine_model = '';
-      newFilters.part_category = '';
-      setExpanded('car_model');
-    } else if (name === 'car_model') {
-      newFilters.engine_model = '';
-      newFilters.part_category = '';
-      setExpanded('engine_model');
-    } else if (name === 'engine_model') {
-      newFilters.part_category = '';
-      setExpanded('part_category');
-    }
+      // Reset dependent fields
+      if (field === 'manufacturer') {
+        newFilters.engine_model = '';
+        newFilters.car_model = '';
+      }
+      if (field === 'part_category') {
+        newFilters.part_subcategory = '';
+      }
 
-    setFilters(newFilters);
+      return newFilters;
+    });
   };
 
-  const handleApplyFilters = () => {
+  const handleApply = () => {
+    // Remove empty filters
     const activeFilters = Object.entries(filters).reduce((acc, [key, value]) => {
-      if (value) acc[key] = value;
+      if (value) {
+        acc[key] = value;
+      }
       return acc;
     }, {});
+
     onFilterChange(activeFilters);
-    onClose();
   };
 
-  const handleClearFilters = () => {
-    setFilters({
+  const handleClear = () => {
+    const clearedFilters = {
       manufacturer: '',
-      car_model: '',
       engine_model: '',
       part_category: '',
-    });
-    onFilterChange({});
-    setExpanded('manufacturer');
-  };
-
-  const hasActiveFilters = Object.values(filters).some(v => v);
-
-  const getFilterLabel = (type, value) => {
-    const items = {
-      manufacturer: manufacturers,
-      car_model: carModels,
-      engine_model: engineModels,
-      part_category: categories
+      part_subcategory: '',
+      car_model: '',
     };
-    const item = items[type]?.find(item => item.id == value);
-    return item?.name || value;
+    setFilters(clearedFilters);
+    onFilterChange({});
   };
 
-  const FilterOption = ({ value, label, isSelected, onClick }) => (
-    <Box
-      onClick={onClick}
-      sx={{
-        display: 'flex',
-        alignItems: 'center',
-        gap: 1.5,
-        p: 1.5,
-        borderRadius: 2,
-        cursor: 'pointer',
-        bgcolor: isSelected ? 'primary.lighter' : 'transparent',
-        border: 1,
-        borderColor: isSelected ? 'primary.main' : 'divider',
-        transition: 'all 0.2s',
-        '&:active': {
-          transform: 'scale(0.98)'
-        }
-      }}
-    >
-      {isSelected ? (
-        <CheckIcon sx={{ color: 'primary.main', fontSize: 22 }} />
-      ) : (
-        <UncheckedIcon sx={{ color: 'text.secondary', fontSize: 22 }} />
-      )}
-      <Typography 
-        variant="body2" 
-        fontWeight={isSelected ? 600 : 400}
-        sx={{ flex: 1 }}
-      >
-        {label}
-      </Typography>
-    </Box>
-  );
+  const activeFilterCount = Object.values(filters).filter(v => v).length;
 
   return (
-    <SwipeableDrawer
+    <Drawer
       anchor="bottom"
       open={open}
       onClose={onClose}
-      onOpen={() => {}}
-      disableSwipeToOpen
       PaperProps={{
         sx: {
-          borderTopLeftRadius: 24,
-          borderTopRightRadius: 24,
-          maxHeight: '90vh'
+          borderTopLeftRadius: 16,
+          borderTopRightRadius: 16,
+          maxHeight: '85vh',
         }
       }}
     >
-      <Box>
+      <Box sx={{ p: 2 }}>
         {/* Header */}
-        <Box sx={{ 
-          p: 2, 
-          borderBottom: 1, 
-          borderColor: 'divider',
-          position: 'sticky',
-          top: 0,
-          bgcolor: 'background.paper',
-          zIndex: 1,
-          borderTopLeftRadius: 24,
-          borderTopRightRadius: 24
-        }}>
-          {/* Drag Handle */}
-          <Box sx={{ 
-            width: 40, 
-            height: 4, 
-            bgcolor: 'grey.300', 
-            borderRadius: 2, 
-            mx: 'auto', 
-            mb: 2 
-          }} />
-          
-          <Stack direction="row" alignItems="center" justifyContent="space-between">
-            <Stack direction="row" alignItems="center" spacing={1}>
-              <FilterIcon color="primary" />
-              <Typography variant="h6" fontWeight="bold">
-                フィルター
-              </Typography>
-              {hasActiveFilters && (
-                <Chip 
-                  label={Object.values(filters).filter(v => v).length} 
-                  size="small" 
-                  color="primary"
-                  sx={{ height: 20, fontSize: '0.7rem' }}
-                />
-              )}
-            </Stack>
-            <IconButton onClick={onClose} size="small">
-              <CloseIcon />
-            </IconButton>
-          </Stack>
-        </Box>
-
-        {/* Content */}
-        <Box sx={{ 
-          p: 2, 
-          maxHeight: 'calc(90vh - 150px)', 
-          overflowY: 'auto',
-          overflowX: 'hidden'
-        }}>
-          <Stack spacing={2}>
-            {/* Manufacturer */}
-            <Accordion 
-              expanded={expanded === 'manufacturer'}
-              onChange={() => setExpanded(expanded === 'manufacturer' ? '' : 'manufacturer')}
-              sx={{ 
-                borderRadius: 3,
-                '&:before': { display: 'none' },
-                boxShadow: 'none',
-                border: 1,
-                borderColor: 'divider'
-              }}
-            >
-              <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-                <Stack direction="row" alignItems="center" justifyContent="space-between" width="100%">
-                  <Typography fontWeight={600}>メーカー</Typography>
-                  {filters.manufacturer && (
-                    <Chip 
-                      label={getFilterLabel('manufacturer', filters.manufacturer)}
-                      size="small"
-                      onDelete={(e) => {
-                        e.stopPropagation();
-                        handleFilterChange('manufacturer', '');
-                      }}
-                      sx={{ mr: 1, maxWidth: 150 }}
-                    />
-                  )}
-                </Stack>
-              </AccordionSummary>
-              <AccordionDetails>
-                <Stack spacing={1}>
-                  <FilterOption
-                    value=""
-                    label="すべてのメーカー"
-                    isSelected={!filters.manufacturer}
-                    onClick={() => handleFilterChange('manufacturer', '')}
-                  />
-                  {manufacturers.map(m => (
-                    <FilterOption
-                      key={m.id}
-                      value={m.id}
-                      label={m.name}
-                      isSelected={filters.manufacturer == m.id}
-                      onClick={() => handleFilterChange('manufacturer', m.id)}
-                    />
-                  ))}
-                </Stack>
-              </AccordionDetails>
-            </Accordion>
-
-            {/* Car Model */}
-            <Accordion 
-              expanded={expanded === 'car_model'}
-              onChange={() => setExpanded(expanded === 'car_model' ? '' : 'car_model')}
-              disabled={!filters.manufacturer}
-              sx={{ 
-                borderRadius: 3,
-                '&:before': { display: 'none' },
-                boxShadow: 'none',
-                border: 1,
-                borderColor: 'divider'
-              }}
-            >
-              <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-                <Stack direction="row" alignItems="center" justifyContent="space-between" width="100%">
-                  <Typography fontWeight={600}>車種</Typography>
-                  {filters.car_model && (
-                    <Chip 
-                      label={getFilterLabel('car_model', filters.car_model)}
-                      size="small"
-                      onDelete={(e) => {
-                        e.stopPropagation();
-                        handleFilterChange('car_model', '');
-                      }}
-                      sx={{ mr: 1, maxWidth: 150 }}
-                    />
-                  )}
-                </Stack>
-              </AccordionSummary>
-              <AccordionDetails>
-                <Stack spacing={1}>
-                  <FilterOption
-                    value=""
-                    label="すべての車種"
-                    isSelected={!filters.car_model}
-                    onClick={() => handleFilterChange('car_model', '')}
-                  />
-                  {carModels.map(c => (
-                    <FilterOption
-                      key={c.id}
-                      value={c.id}
-                      label={c.name}
-                      isSelected={filters.car_model == c.id}
-                      onClick={() => handleFilterChange('car_model', c.id)}
-                    />
-                  ))}
-                </Stack>
-              </AccordionDetails>
-            </Accordion>
-
-            {/* Engine Model */}
-            <Accordion 
-              expanded={expanded === 'engine_model'}
-              onChange={() => setExpanded(expanded === 'engine_model' ? '' : 'engine_model')}
-              disabled={!filters.car_model}
-              sx={{ 
-                borderRadius: 3,
-                '&:before': { display: 'none' },
-                boxShadow: 'none',
-                border: 1,
-                borderColor: 'divider'
-              }}
-            >
-              <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-                <Stack direction="row" alignItems="center" justifyContent="space-between" width="100%">
-                  <Typography fontWeight={600}>エンジン</Typography>
-                  {filters.engine_model && (
-                    <Chip 
-                      label={getFilterLabel('engine_model', filters.engine_model)}
-                      size="small"
-                      onDelete={(e) => {
-                        e.stopPropagation();
-                        handleFilterChange('engine_model', '');
-                      }}
-                      sx={{ mr: 1, maxWidth: 150 }}
-                    />
-                  )}
-                </Stack>
-              </AccordionSummary>
-              <AccordionDetails>
-                <Stack spacing={1}>
-                  <FilterOption
-                    value=""
-                    label="すべてのエンジン"
-                    isSelected={!filters.engine_model}
-                    onClick={() => handleFilterChange('engine_model', '')}
-                  />
-                  {engineModels.map(e => (
-                    <FilterOption
-                      key={e.id}
-                      value={e.id}
-                      label={e.name}
-                      isSelected={filters.engine_model == e.id}
-                      onClick={() => handleFilterChange('engine_model', e.id)}
-                    />
-                  ))}
-                </Stack>
-              </AccordionDetails>
-            </Accordion>
-
-            {/* Part Category */}
-            <Accordion 
-              expanded={expanded === 'part_category'}
-              onChange={() => setExpanded(expanded === 'part_category' ? '' : 'part_category')}
-              disabled={!filters.engine_model}
-              sx={{ 
-                borderRadius: 3,
-                '&:before': { display: 'none' },
-                boxShadow: 'none',
-                border: 1,
-                borderColor: 'divider'
-              }}
-            >
-              <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-                <Stack direction="row" alignItems="center" justifyContent="space-between" width="100%">
-                  <Typography fontWeight={600}>部品カテゴリー</Typography>
-                  {filters.part_category && (
-                    <Chip 
-                      label={getFilterLabel('part_category', filters.part_category)}
-                      size="small"
-                      onDelete={(e) => {
-                        e.stopPropagation();
-                        handleFilterChange('part_category', '');
-                      }}
-                      sx={{ mr: 1, maxWidth: 150 }}
-                    />
-                  )}
-                </Stack>
-              </AccordionSummary>
-              <AccordionDetails>
-                <Stack spacing={1}>
-                  <FilterOption
-                    value=""
-                    label="すべてのカテゴリー"
-                    isSelected={!filters.part_category}
-                    onClick={() => handleFilterChange('part_category', '')}
-                  />
-                  {categories.map(c => (
-                    <FilterOption
-                      key={c.id}
-                      value={c.id}
-                      label={c.name}
-                      isSelected={filters.part_category == c.id}
-                      onClick={() => handleFilterChange('part_category', c.id)}
-                    />
-                  ))}
-                </Stack>
-              </AccordionDetails>
-            </Accordion>
-          </Stack>
-        </Box>
-
-        {/* Footer Actions */}
-        <Box sx={{ 
-          p: 2, 
-          borderTop: 1, 
-          borderColor: 'divider',
-          bgcolor: 'background.paper',
-          position: 'sticky',
-          bottom: 0
-        }}>
-          <Stack spacing={1.5}>
-            {hasActiveFilters && (
-              <Button
-                fullWidth
-                variant="outlined"
-                onClick={handleClearFilters}
-                sx={{ 
-                  py: 1.5,
-                  borderRadius: 3,
-                  fontWeight: 600,
-                  textTransform: 'none'
-                }}
-              >
-                すべてクリア
-              </Button>
+        <Box
+          sx={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            mb: 2,
+          }}
+        >
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+            <FilterIcon />
+            <Typography variant="h6">フィルター</Typography>
+            {activeFilterCount > 0 && (
+              <Chip
+                label={activeFilterCount}
+                size="small"
+                color="primary"
+              />
             )}
-            <Button
-              fullWidth
-              variant="contained"
-              onClick={handleApplyFilters}
-              disabled={!hasActiveFilters}
-              sx={{ 
-                py: 1.5,
-                borderRadius: 3,
-                fontWeight: 600,
-                textTransform: 'none',
-                boxShadow: '0 4px 12px rgba(25, 118, 210, 0.4)'
-              }}
-            >
-              フィルターを適用 {hasActiveFilters && `(${Object.values(filters).filter(v => v).length})`}
-            </Button>
-          </Stack>
+          </Box>
+          <IconButton onClick={onClose}>
+            <CloseIcon />
+          </IconButton>
         </Box>
+
+        <Divider sx={{ mb: 2 }} />
+
+        {/* Filter Controls */}
+        <Stack spacing={2}>
+          {/* Manufacturer */}
+          <FormControl fullWidth>
+            <InputLabel>メーカー</InputLabel>
+            <Select
+              value={filters.manufacturer}
+              onChange={(e) => handleChange('manufacturer', e.target.value)}
+              label="メーカー"
+            >
+              <MenuItem value="">
+                <em>すべて</em>
+              </MenuItem>
+              {manufacturers.map(m => (
+                <MenuItem key={m.id} value={m.id}>
+                  {m.name}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+
+          {/* Engine Model */}
+          <FormControl fullWidth disabled={!filters.manufacturer}>
+            <InputLabel>エンジンモデル</InputLabel>
+            <Select
+              value={filters.engine_model}
+              onChange={(e) => handleChange('engine_model', e.target.value)}
+              label="エンジンモデル"
+            >
+              <MenuItem value="">
+                <em>すべて</em>
+              </MenuItem>
+              {filteredEngines.map(e => (
+                <MenuItem key={e.id} value={e.id}>
+                  {e.name} {e.engine_code && `(${e.engine_code})`}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+
+          {/* Part Category */}
+          <FormControl fullWidth>
+            <InputLabel>パーツカテゴリ</InputLabel>
+            <Select
+              value={filters.part_category}
+              onChange={(e) => handleChange('part_category', e.target.value)}
+              label="パーツカテゴリ"
+            >
+              <MenuItem value="">
+                <em>すべて</em>
+              </MenuItem>
+              {categories.map(c => (
+                <MenuItem key={c.id} value={c.id}>
+                  {c.name}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+
+          {/* Part Subcategory */}
+          <FormControl fullWidth disabled={!filters.part_category}>
+            <InputLabel>パーツサブカテゴリ</InputLabel>
+            <Select
+              value={filters.part_subcategory}
+              onChange={(e) => handleChange('part_subcategory', e.target.value)}
+              label="パーツサブカテゴリ"
+            >
+              <MenuItem value="">
+                <em>すべて</em>
+              </MenuItem>
+              {filteredSubCategories.map(s => (
+                <MenuItem key={s.id} value={s.id}>
+                  {s.name}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+
+          {/* Car Model */}
+          <FormControl fullWidth disabled={!filters.manufacturer}>
+            <InputLabel>車種</InputLabel>
+            <Select
+              value={filters.car_model}
+              onChange={(e) => handleChange('car_model', e.target.value)}
+              label="車種"
+            >
+              <MenuItem value="">
+                <em>すべて</em>
+              </MenuItem>
+              {filteredCarModels.map(c => (
+                <MenuItem key={c.id} value={c.id}>
+                  {c.name}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+        </Stack>
+
+        {/* Action Buttons */}
+        <Stack direction="row" spacing={1} sx={{ mt: 3 }}>
+          <Button
+            fullWidth
+            variant="outlined"
+            onClick={handleClear}
+            disabled={activeFilterCount === 0}
+          >
+            クリア
+          </Button>
+          <Button
+            fullWidth
+            variant="contained"
+            onClick={handleApply}
+          >
+            適用
+          </Button>
+        </Stack>
       </Box>
-    </SwipeableDrawer>
+    </Drawer>
   );
 };
 

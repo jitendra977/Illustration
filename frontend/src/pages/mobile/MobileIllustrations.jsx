@@ -9,45 +9,55 @@ import {
   Paper,
   Card,
   CardContent,
-  CardMedia,
   Chip,
   Stack,
   CircularProgress,
   Alert,
   Fab,
-  ToggleButton,
-  ToggleButtonGroup,
-  MenuItem
+  MenuItem,
+  Fade,
+  useTheme,
+  alpha,
+  Button,
+  Badge,
+  Avatar,
+  Divider,
 } from '@mui/material';
-
 import {
   Add as PlusIcon,
   Search as SearchIcon,
   FilterList as FilterIcon,
-  GridView as GridIcon,
-  ViewList as ListIcon,
   Image as ImageIcon,
-  Close as CloseIcon
+  Close as CloseIcon,
 } from '@mui/icons-material';
 
-import { useIllustrations } from '../../hooks/useIllustrations';
+import { useIllustrations, useManufacturers, useEngineModels, usePartCategories, usePartSubCategories, useCarModels } from '../../hooks/useIllustrations';
+import { illustrationAPI } from '../../api/illustrations';
 import IllustrationDetailModal from '../../components/common/IllustrationDetailModal';
-import IllustrationFormModal from '../../components/forms/CreateIllustrationModal';
+import IllustrationListCard from '../../components/mobile/IllustrationListCard';
+import MobileIllustrationFormModal from '../../components/forms/MobileIllustrationFormModal';
 import MobileFilterPanel from '../../components/mobile/MobileFilterPanel';
-
+import FloatingAddButton from '../../components/mobile/FloatingAddButton';
 
 const MobileIllustrations = () => {
-  const [viewMode, setViewMode] = useState('grid');
+  const theme = useTheme();
   const [searchTerm, setSearchTerm] = useState('');
   const [showFilters, setShowFilters] = useState(false);
-
   const [formModalOpen, setFormModalOpen] = useState(false);
   const [detailModalOpen, setDetailModalOpen] = useState(false);
   const [selectedIllustration, setSelectedIllustration] = useState(null);
+  const [selectedIllustrationDetail, setSelectedIllustrationDetail] = useState(null);
   const [filters, setFilters] = useState({});
   const [sortBy, setSortBy] = useState('newest');
+  const [editMode, setEditMode] = useState('create');
+  const [favorites, setFavorites] = useState([]);
 
   const { illustrations, loading, error, fetchIllustrations } = useIllustrations(filters);
+  const { manufacturers } = useManufacturers();
+  const { engineModels } = useEngineModels();
+  const { categories } = usePartCategories();
+  const { subCategories } = usePartSubCategories();
+  const { carModels } = useCarModels();
 
   const handleSearch = (e) => {
     e.preventDefault();
@@ -60,23 +70,53 @@ const MobileIllustrations = () => {
     setShowFilters(false);
   };
 
-  const handleCardClick = (illustration) => {
-    setSelectedIllustration(illustration);
-    setDetailModalOpen(true);
+  const toggleFavorite = (id, e) => {
+    e.stopPropagation();
+    setFavorites((prev) =>
+      prev.includes(id) ? prev.filter((f) => f !== id) : [...prev, id]
+    );
+  };
+
+  const handleCardClick = async (illustration) => {
+    try {
+      const detailData = await illustrationAPI.getById(illustration.id);
+      setSelectedIllustrationDetail(detailData);
+      setDetailModalOpen(true);
+    } catch {
+      setSelectedIllustrationDetail(illustration);
+      setDetailModalOpen(true);
+    }
   };
 
   const handleCloseDetailModal = () => {
     setDetailModalOpen(false);
-    setSelectedIllustration(null);
+    setSelectedIllustrationDetail(null);
   };
 
   const handleFormModalClose = () => {
     setFormModalOpen(false);
+    setSelectedIllustration(null);
+    setEditMode('create');
   };
 
-  const handleFormModalSuccess = () => {
-    setFormModalOpen(false);
-    fetchIllustrations();
+  const handleCreateClick = () => {
+    setEditMode('create');
+    setSelectedIllustration(null);
+    setFormModalOpen(true);
+  };
+
+  const handleEditClick = async (illustration) => {
+    try {
+      const detailData = await illustrationAPI.getById(illustration.id);
+      setEditMode('edit');
+      setSelectedIllustration(detailData);
+      setFormModalOpen(true);
+      setDetailModalOpen(false);
+    } catch { }
+  };
+
+  const handleFormModalSuccess = async () => {
+    await fetchIllustrations();
   };
 
   const handleDetailModalUpdate = () => {
@@ -85,227 +125,91 @@ const MobileIllustrations = () => {
 
   const handleDetailModalDelete = (deletedId) => {
     fetchIllustrations();
-    if (selectedIllustration?.id === deletedId) {
-      setDetailModalOpen(false);
-    }
+    if (selectedIllustrationDetail?.id === deletedId) setDetailModalOpen(false);
   };
 
-  // Filter + Search
-  const filteredIllustrations = illustrations.filter((ill) => {
-    const term = searchTerm.toLowerCase();
-    return (
-      ill.title?.toLowerCase().includes(term) ||
-      ill.description?.toLowerCase().includes(term) ||
-      ill.engine_model?.name?.toLowerCase().includes(term) ||
-      ill.part_category?.name?.toLowerCase().includes(term)
-    );
-  });
-
-  // Sorting
-  const sortedIllustrations = [...filteredIllustrations].sort((a, b) => {
-    switch (sortBy) {
-      case 'popular':
-        return (b.downloads || 0) - (a.downloads || 0);
-      case 'rating':
-        return (b.rating || 0) - (a.rating || 0);
-      case 'oldest':
-        return new Date(a.created_at) - new Date(b.created_at);
-      case 'newest':
-      default:
-        return new Date(b.created_at) - new Date(a.created_at);
-    }
-  });
-
-  // GRID VIEW
-  const IllustrationGrid = ({ illustrations }) => (
-    <Box
-      sx={{
-        display: 'grid',
-        gridTemplateColumns: 'repeat(2, 1fr)',
-        gap: 1.5
-      }}
-    >
-      {illustrations.map((illustration) => (
-        <Card
-          key={illustration.id}
-          sx={{
-            borderRadius: 3,
-            cursor: 'pointer',
-            transition: 'transform 0.2s, box-shadow 0.2s',
-            '&:hover': { boxShadow: '0 4px 12px rgba(0,0,0,0.15)' },
-            '&:active': { transform: 'scale(0.97)' }
-          }}
-          onClick={() => handleCardClick(illustration)}
-        >
-          <Box sx={{ position: 'relative', height: 140 }}>
-            <CardMedia
-              component="img"
-              height="140"
-              image={illustration.files?.[0]?.file || '/placeholder.jpg'}
-              alt={illustration.title}
-              sx={{ objectFit: 'cover', height: '100%' }}
-            />
-
-            {illustration.files?.length > 1 && (
-              <Chip
-                size="small"
-                label={`+${illustration.files.length - 1}`}
-                sx={{
-                  position: 'absolute',
-                  top: 6,
-                  right: 6,
-                  bgcolor: 'rgba(0,0,0,0.7)',
-                  color: 'white',
-                  fontWeight: 'bold'
-                }}
-              />
-            )}
-
-            <Box
-              sx={{
-                position: 'absolute',
-                bottom: 0,
-                width: '100%',
-                height: '30%',
-                background: 'linear-gradient(transparent, rgba(0,0,0,0.7))',
-                display: 'flex',
-                alignItems: 'flex-end',
-                p: 1
-              }}
-            >
-              <Typography variant="caption" sx={{ color: 'white' }} noWrap>
-                {illustration.title}
-              </Typography>
-            </Box>
-          </Box>
-
-          <CardContent sx={{ p: 1.5 }}>
-            <Typography variant="caption" color="text.secondary" noWrap>
-              {illustration.engine_model?.name || 'エンジンモデルなし'}
-            </Typography>
-            <Typography variant="caption" color="text.secondary" noWrap>
-              {illustration.part_category?.name || 'カテゴリなし'}
-            </Typography>
-            <Typography variant="caption" sx={{ fontSize: '0.65rem' }}>
-              {new Date(illustration.created_at).toLocaleDateString('ja-JP')}
-            </Typography>
-          </CardContent>
-        </Card>
-      ))}
-    </Box>
+  const filtered = illustrations.filter((ill) =>
+    (
+      ill.title +
+      ill.description +
+      ill.engine_model_name +
+      ill.part_category_name
+    )
+      .toLowerCase()
+      .includes(searchTerm.toLowerCase())
   );
 
-  // LIST VIEW
-  const IllustrationList = ({ illustrations }) => (
-    <Stack spacing={1.5}>
-      {illustrations.map((illustration) => (
-        <Card
-          key={illustration.id}
-          sx={{
-            borderRadius: 3,
-            cursor: 'pointer',
-            transition: 'all 0.2s',
-            '&:hover': { boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }
-          }}
-          onClick={() => handleCardClick(illustration)}
-        >
-          <Box sx={{ p: 1.5 }}>
-            <Stack direction="row" spacing={1.5}>
-              <Box
-                sx={{
-                  width: 80,
-                  height: 80,
-                  borderRadius: 2,
-                  overflow: 'hidden',
-                  bgcolor: 'grey.100',
-                  position: 'relative'
-                }}
-              >
-                <img
-                  src={illustration.files?.[0]?.file || '/placeholder.jpg'}
-                  alt={illustration.title}
-                  style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                />
+  const sortedIllustrations = [...filtered].sort((a, b) => {
+    if (sortBy === 'oldest') return new Date(a.created_at) - new Date(b.created_at);
+    if (sortBy === 'title') return (a.title || '').localeCompare(b.title || '');
+    return new Date(b.created_at) - new Date(a.created_at);
+  });
 
-                {illustration.files?.length > 1 && (
-                  <Chip
-                    size="small"
-                    label={`+${illustration.files.length - 1}`}
-                    sx={{
-                      position: 'absolute',
-                      bottom: 4,
-                      right: 4,
-                      bgcolor: 'rgba(0,0,0,0.7)',
-                      color: 'white',
-                      fontSize: '0.6rem'
-                    }}
-                  />
-                )}
-              </Box>
-
-              <Box sx={{ flex: 1, minWidth: 0 }}>
-                <Typography variant="body2" fontWeight="bold" noWrap>
-                  {illustration.title}
-                </Typography>
-                <Typography variant="caption" color="text.secondary" noWrap>
-                  {illustration.engine_model?.name || 'エンジンモデルなし'}
-                </Typography>
-                <Typography variant="caption" color="text.secondary" noWrap>
-                  {illustration.part_category?.name || 'カテゴリなし'}
-                </Typography>
-                <Typography variant="caption" sx={{ fontSize: '0.65rem' }}>
-                  {new Date(illustration.created_at).toLocaleDateString('ja-JP')}
-                </Typography>
-              </Box>
-            </Stack>
-          </Box>
-        </Card>
-      ))}
-    </Stack>
-  );
+  const activeFilterCount = Object.keys(filters).length;
 
   return (
-    <Box sx={{ minHeight: '100vh' }}>
-      <Container maxWidth="sm" sx={{ px: 2, py: 2 }}>
+    <Box
+      sx={{
+        minHeight: '100vh',
+        pb: 10,
+        bgcolor: theme.palette.background.default,
+      }}
+    >
+      <Container maxWidth="sm" sx={{ px: 2, py: 3 }}>
+        {/* Header */}
+        <Box sx={{ mb: 3 }}>
+          <Typography variant="h5" fontWeight="bold" gutterBottom>
+            イラストライブラリ
+          </Typography>
+          <Typography variant="body2" color="text.secondary">
+            エンジンパーツの図解・イラスト集
+          </Typography>
+        </Box>
 
-        {/* SEARCH BAR */}
+        {/* Search Bar */}
         <Paper
           component="form"
           onSubmit={handleSearch}
+          elevation={0}
           sx={{
-            px: 2,
-            py: 1,
+            p: 1,
             display: 'flex',
+            alignItems: 'center',
             borderRadius: 3,
-            mb: 2
+            mb: 2,
+            border: `1px solid ${theme.palette.divider}`,
           }}
         >
-          <SearchIcon sx={{ mr: 1 }} />
+          <SearchIcon sx={{ mx: 1, color: 'text.secondary' }} />
           <TextField
             fullWidth
-            placeholder="イラストを検索..."
+            placeholder="タイトル、説明で検索..."
             variant="standard"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            InputProps={{ disableUnderline: true }}
+            InputProps={{
+              disableUnderline: true,
+            }}
           />
-
           {searchTerm && (
-            <IconButton onClick={() => setSearchTerm('')}>
-              <CloseIcon />
+            <IconButton size="small" onClick={() => setSearchTerm('')}>
+              <CloseIcon fontSize="small" />
             </IconButton>
           )}
         </Paper>
 
-        {/* TOOLBAR */}
-        <Stack direction="row" spacing={1} mb={2}>
-          <IconButton
-            onClick={() => setShowFilters(true)}
-            sx={{ border: 1, borderRadius: 2 }}
-          >
-            <FilterIcon />
-          </IconButton>
-
+        {/* Toolbar */}
+        <Stack direction="row" spacing={1} mb={2} alignItems="center">
+          <Badge badgeContent={activeFilterCount} color="primary">
+            <Button
+              variant={activeFilterCount > 0 ? 'contained' : 'outlined'}
+              onClick={() => setShowFilters(true)}
+              startIcon={<FilterIcon />}
+              sx={{ borderRadius: 2, textTransform: 'none' }}
+            >
+              フィルター
+            </Button>
+          </Badge>
           <TextField
             select
             size="small"
@@ -315,21 +219,56 @@ const MobileIllustrations = () => {
           >
             <MenuItem value="newest">新しい順</MenuItem>
             <MenuItem value="oldest">古い順</MenuItem>
-            <MenuItem value="popular">人気順</MenuItem>
-            <MenuItem value="rating">評価順</MenuItem>
+            <MenuItem value="title">タイトル順</MenuItem>
           </TextField>
-
-          <ToggleButtonGroup value={viewMode} exclusive onChange={(e, mode) => mode && setViewMode(mode)}>
-            <ToggleButton value="grid">
-              <GridIcon />
-            </ToggleButton>
-            <ToggleButton value="list">
-              <ListIcon />
-            </ToggleButton>
-          </ToggleButtonGroup>
         </Stack>
 
-        {/* FILTER PANEL */}
+        {/* Active Filters */}
+        {activeFilterCount > 0 && (
+          <Fade in>
+            <Paper
+              elevation={0}
+              sx={{
+                p: 1.5,
+                mb: 2,
+                borderRadius: 2,
+                bgcolor: alpha(theme.palette.primary.main, 0.05),
+                border: `1px solid ${alpha(theme.palette.primary.main, 0.2)}`,
+              }}
+            >
+              <Stack
+                direction="row"
+                spacing={1}
+                alignItems="center"
+                flexWrap="wrap"
+                gap={1}
+              >
+                <Typography variant="caption" fontWeight="bold" color="primary">
+                  適用中:
+                </Typography>
+                {Object.entries(filters).map(([k, v]) => (
+                  <Chip
+                    key={k}
+                    label={`${k}:${v}`}
+                    size="small"
+                    onDelete={() =>
+                      handleFilterChange({ ...filters, [k]: undefined })
+                    }
+                    sx={{ borderRadius: 1.5 }}
+                  />
+                ))}
+                <Button
+                  size="small"
+                  onClick={() => handleFilterChange({})}
+                  sx={{ ml: 'auto', textTransform: 'none' }}
+                >
+                  クリア
+                </Button>
+              </Stack>
+            </Paper>
+          </Fade>
+        )}
+
         <MobileFilterPanel
           open={showFilters}
           onClose={() => setShowFilters(false)}
@@ -337,66 +276,111 @@ const MobileIllustrations = () => {
           currentFilters={filters}
         />
 
-        {/* LOADING */}
+        {/* Loading */}
         {loading && (
           <Box textAlign="center" py={8}>
-            <CircularProgress />
+            <CircularProgress size={40} />
+            <Typography variant="body2" color="text.secondary" sx={{ mt: 2 }}>
+              読み込み中...
+            </Typography>
           </Box>
         )}
 
-        {/* ERROR */}
+        {/* Error */}
         {error && !loading && (
-          <Alert severity="error" sx={{ mb: 2 }}>
+          <Alert severity="error" sx={{ mb: 2, borderRadius: 2 }}>
             {error}
           </Alert>
         )}
 
-        {/* NO RESULT */}
+        {/* No Results */}
         {!loading && !error && sortedIllustrations.length === 0 && (
-          <Card sx={{ borderRadius: 3, p: 4, textAlign: 'center' }}>
-            <ImageIcon sx={{ fontSize: 56, color: 'grey.400', mb: 1 }} />
-            <Typography variant="h6">イラストが見つかりません</Typography>
-
-            {!searchTerm && Object.keys(filters).length === 0 && (
-              <Fab color="primary" size="small" onClick={() => setFormModalOpen(true)}>
-                <PlusIcon />
-              </Fab>
-            )}
-          </Card>
+          <Fade in>
+            <Card
+              sx={{
+                borderRadius: 3,
+                p: 4,
+                textAlign: 'center',
+                border: `2px dashed ${theme.palette.divider}`,
+              }}
+            >
+              <Avatar
+                sx={{
+                  width: 64,
+                  height: 64,
+                  margin: '0 auto',
+                  mb: 2,
+                  bgcolor: alpha(theme.palette.primary.main, 0.1),
+                }}
+              >
+                <ImageIcon sx={{ fontSize: 32, color: theme.palette.primary.main }} />
+              </Avatar>
+              <Typography variant="h6" gutterBottom fontWeight="bold">
+                イラストが見つかりません
+              </Typography>
+              <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
+                {searchTerm || activeFilterCount > 0
+                  ? '検索条件を変更してください'
+                  : '最初のイラストを作成しましょう'}
+              </Typography>
+              {!searchTerm && activeFilterCount === 0 && (
+                <Button
+                  variant="contained"
+                  startIcon={<PlusIcon />}
+                  onClick={handleCreateClick}
+                  sx={{ borderRadius: 2, textTransform: 'none' }}
+                >
+                  イラストを作成
+                </Button>
+              )}
+            </Card>
+          </Fade>
         )}
 
-        {/* LIST OR GRID */}
+        {/* Results - List View */}
         {!loading && !error && sortedIllustrations.length > 0 && (
-          <>
-            <Typography variant="caption" color="text.secondary" mb={1}>
-              {sortedIllustrations.length} 件のイラスト
-            </Typography>
-
-            {viewMode === 'grid' ? (
-              <IllustrationGrid illustrations={sortedIllustrations} />
-            ) : (
-              <IllustrationList illustrations={sortedIllustrations} />
-            )}
-          </>
+          <Stack spacing={2}>
+            {sortedIllustrations.map((ill, i) => (
+              <Fade key={ill.id} in timeout={200 + i * 30}>
+                <Box>
+                  <IllustrationListCard
+                    illustration={ill}
+                    toggleFavorite={toggleFavorite}
+                    favorites={favorites}
+                    onClick={() => handleCardClick(ill)}
+                    theme={theme}
+                  />
+                </Box>
+              </Fade>
+            ))}
+          </Stack>
         )}
       </Container>
+      
+      {/* create illustration button */}
+      <FloatingAddButton onClick={handleCreateClick} />
 
-      {/* FORM MODAL */}
-      <IllustrationFormModal
+      <MobileIllustrationFormModal
         open={formModalOpen}
         onClose={handleFormModalClose}
         onSuccess={handleFormModalSuccess}
-        mode="create"
+        mode={editMode}
+        illustration={selectedIllustration}
+        manufacturers={manufacturers}
+        engineModels={engineModels}
+        categories={categories}
+        subCategories={subCategories}
+        carModels={carModels}
       />
 
-      {/* DETAIL MODAL */}
-      {selectedIllustration && (
+      {selectedIllustrationDetail && (
         <IllustrationDetailModal
           open={detailModalOpen}
-          illustration={selectedIllustration}
+          illustration={selectedIllustrationDetail}
           onClose={handleCloseDetailModal}
           onUpdate={handleDetailModalUpdate}
           onDelete={handleDetailModalDelete}
+          onEdit={() => handleEditClick(selectedIllustrationDetail)}
         />
       )}
     </Box>

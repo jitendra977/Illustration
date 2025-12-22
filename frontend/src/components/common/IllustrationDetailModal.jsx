@@ -1,570 +1,205 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Dialog,
-  DialogTitle,
   DialogContent,
-  DialogActions,
   Button,
-  IconButton,
   Box,
   Typography,
-  Stack,
+  IconButton,
   Chip,
-  Grid,
-  Card,
-  CardMedia,
-  Paper,
+  Stack,
+  Alert,
+  Menu,
+  MenuItem,
   alpha,
-  useTheme
+  useTheme,
 } from '@mui/material';
 import {
   Close as CloseIcon,
-  Download as DownloadIcon,
-  ZoomIn as ZoomInIcon,
-  ArrowBack as ArrowBackIcon,
-  ArrowForward as ArrowForwardIcon,
-  CalendarToday as CalendarIcon,
+  Edit as EditIcon,
+  Delete as DeleteIcon,
+  Share as ShareIcon,
+  MoreVert as MoreIcon,
+  Favorite as FavoriteIcon,
+  FavoriteBorder as FavoriteBorderIcon,
   Person as PersonIcon,
-  Category as CategoryIcon,
-  Build as BuildIcon,
-  DirectionsCar as CarIcon,
-  Store as StoreIcon,
-  Image as ImageIcon
+  CalendarToday as CalendarIcon,
+  GetApp as GetAppIcon,
 } from '@mui/icons-material';
+import { illustrationFileAPI, illustrationAPI } from '../../api/illustrations';
 
-const IllustrationDetailModal = ({ open, onClose, illustration }) => {
-  const [selectedImageIndex, setSelectedImageIndex] = useState(null);
+const IllustrationDetailModal = ({
+  open,
+  onClose,
+  illustration,
+  onUpdate,
+  onDelete,
+  onEdit,
+  userRole = 'user',
+  currentUserId,
+}) => {
   const theme = useTheme();
+  const [error, setError] = useState(null);
+  const [success, setSuccess] = useState(null);
+  const [files, setFiles] = useState([]);
+  const [isFavorite, setIsFavorite] = useState(false);
+  const [menuAnchor, setMenuAnchor] = useState(null);
 
-  if (!illustration) return null;
+  const currentUser = JSON.parse(localStorage.getItem('user') || '{}');
+  const userId = currentUserId || currentUser?.id;
+  const canEdit = userRole === 'admin' || userRole === 'staff' || (userRole === 'user' && illustration?.user_id === userId);
 
-  const handleImageClick = (index) => {
-    setSelectedImageIndex(index);
-  };
+  useEffect(() => {
+    if (open && illustration?.id) {
+      fetchFiles();
+      const favorites = JSON.parse(localStorage.getItem('favorites') || '[]');
+      setIsFavorite(favorites.includes(illustration.id));
+    }
+  }, [open, illustration?.id]);
 
-  const handleCloseImageViewer = () => {
-    setSelectedImageIndex(null);
-  };
-
-  const handlePreviousImage = () => {
-    if (selectedImageIndex > 0) {
-      setSelectedImageIndex(selectedImageIndex - 1);
+  const fetchFiles = async () => {
+    try {
+      const data = await illustrationFileAPI.getByIllustration(illustration.id);
+      setFiles(data.results || data);
+    } catch (err) {
+      console.error('Failed to fetch files:', err);
     }
   };
 
-  const handleNextImage = () => {
-    if (selectedImageIndex < illustration.files.length - 1) {
-      setSelectedImageIndex(selectedImageIndex + 1);
+  const handleDelete = async () => {
+    if (!window.confirm('本当に削除しますか？')) return;
+    try {
+      await illustrationAPI.delete(illustration.id);
+      onDelete(illustration.id);
+      setSuccess('削除しました');
+      setTimeout(() => onClose(), 1000);
+    } catch (err) {
+      setError('削除失敗');
     }
   };
 
-  const handleDownload = (fileUrl, fileName) => {
+  // ============================================================================
+// FRONTEND - Fixed Download with Proper Authentication
+// ============================================================================
+
+const handleDownload = async (file) => {
+  try {
+    // Use the download endpoint instead of direct file URL
+    const downloadUrl = file.download_url || `/api/illustration-files/${file.id}/download/`;
+    
+    const response = await fetch(downloadUrl, {
+      headers: {
+        'Authorization': `Bearer ${localStorage.getItem('access_token')}` // Add if using auth
+      }
+    });
+    
+    if (!response.ok) throw new Error('Download failed');
+    
+    const blob = await response.blob();
+    const url = window.URL.createObjectURL(blob);
     const link = document.createElement('a');
-    link.href = fileUrl;
-    link.download = fileName || 'download';
-    link.target = '_blank';
+    link.href = url;
+    link.download = file.file_name || `${illustration.title}_${file.id}`;
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
+    window.URL.revokeObjectURL(url);
+    
+    setSuccess('ダウンロード中');
+  } catch (err) {
+    setError('ダウンロード失敗');
+  }
+};
+
+  const handleShare = async () => {
+    if (files[0]) {
+      navigator.clipboard.writeText(files[0].file);
+      setSuccess('リンクをコピー');
+    }
   };
 
-  const formatDate = (dateString) => {
-    return new Date(dateString).toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
-    });
+  const handleFavorite = () => {
+    const favorites = JSON.parse(localStorage.getItem('favorites') || '[]');
+    if (isFavorite) {
+      localStorage.setItem('favorites', JSON.stringify(favorites.filter(id => id !== illustration.id)));
+      setIsFavorite(false);
+    } else {
+      favorites.push(illustration.id);
+      localStorage.setItem('favorites', JSON.stringify(favorites));
+      setIsFavorite(true);
+    }
   };
-
-  const InfoRow = ({ icon, label, value }) => (
-    <Stack direction="row" spacing={1.5} alignItems="center">
-      <Box sx={{ 
-        p: 1, 
-        borderRadius: 1, 
-        bgcolor: alpha(theme.palette.primary.main, 0.1),
-        color: theme.palette.primary.main,
-        display: 'flex',
-        alignItems: 'center'
-      }}>
-        {icon}
-      </Box>
-      <Box>
-        <Typography variant="caption" color="text.secondary" display="block">
-          {label}
-        </Typography>
-        <Typography variant="body2" fontWeight="medium">
-          {value || 'N/A'}
-        </Typography>
-      </Box>
-    </Stack>
-  );
 
   return (
     <>
-      {/* Main Detail Modal */}
-      <Dialog 
-        open={open} 
-        onClose={onClose}
-        maxWidth="lg"
-        fullWidth
-        PaperProps={{
-          sx: {
-            borderRadius: 3,
-            maxHeight: '90vh'
-          }
-        }}
-      >
-        <DialogTitle>
-          <Stack direction="row" justifyContent="space-between" alignItems="center">
-            <Stack spacing={0.5}>
-              <Typography variant="h5" fontWeight="bold">
-                {illustration.title}
-              </Typography>
+      <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth>
+        <Box sx={{ p: 2, borderBottom: 1, borderColor: 'divider', bgcolor: alpha(theme.palette.primary.main, 0.02) }}>
+          <Stack direction="row" alignItems="center" spacing={1}>
+            <IconButton onClick={onClose} size="small"><CloseIcon /></IconButton>
+            <Typography variant="h6" fontWeight={700} sx={{ flex: 1 }} noWrap>{illustration?.title}</Typography>
+            <IconButton onClick={handleFavorite} size="small" color={isFavorite ? 'error' : 'default'}>
+              {isFavorite ? <FavoriteIcon /> : <FavoriteBorderIcon />}
+            </IconButton>
+            <IconButton onClick={handleShare} size="small"><ShareIcon /></IconButton>
+            <IconButton onClick={(e) => setMenuAnchor(e.currentTarget)} size="small"><MoreIcon /></IconButton>
+          </Stack>
+        </Box>
+
+        <DialogContent sx={{ p: 0 }}>
+          {error && <Alert severity="error" onClose={() => setError(null)} sx={{ m: 2 }}>{error}</Alert>}
+          {success && <Alert severity="success" onClose={() => setSuccess(null)} sx={{ m: 2 }}>{success}</Alert>}
+
+          <Stack spacing={3} sx={{ p: 3 }}>
+            <Typography variant="body2" color="text.secondary">{illustration?.description || '説明なし'}</Typography>
+
+            <Stack direction="row" spacing={1} flexWrap="wrap">
+              {illustration?.engine_model_name && <Chip label={illustration.engine_model_name} size="small" color="primary" />}
+              {illustration?.part_category_name && <Chip label={illustration.part_category_name} size="small" color="secondary" />}
+            </Stack>
+
+            <Box>
+              <Typography variant="subtitle2" fontWeight={700} sx={{ mb: 1.5 }}>ファイル ({files.length})</Typography>
+              <Stack spacing={1}>
+                {files.map((file, i) => (
+                  <Box key={file.id} sx={{ p: 2, borderRadius: 2, border: 1, borderColor: 'divider', bgcolor: alpha(theme.palette.primary.main, 0.02), '&:hover': { bgcolor: alpha(theme.palette.primary.main, 0.05) } }}>
+                    <Stack direction="row" alignItems="center" spacing={2}>
+                      <Box sx={{ flex: 1 }}>
+                        <Typography variant="body2" fontWeight={600}>{file.file_type_display || 'ファイル'} #{i + 1}</Typography>
+                        <Typography variant="caption" color="text.secondary">{file.file_name || file.file?.split('/').pop()}</Typography>
+                      </Box>
+                      <IconButton onClick={() => handleDownload(file)} color="primary" sx={{ bgcolor: alpha(theme.palette.primary.main, 0.1) }}>
+                        <GetAppIcon />
+                      </IconButton>
+                    </Stack>
+                  </Box>
+                ))}
+              </Stack>
+            </Box>
+
+            <Stack spacing={1.5}>
               <Stack direction="row" spacing={1} alignItems="center">
-                <Chip 
-                  icon={<ImageIcon />}
-                  label={`${illustration.files?.length || 0} files`}
-                  size="small"
-                  variant="outlined"
-                  color="primary"
-                />
-                <Typography variant="caption" color="text.secondary">
-                  ID: {illustration.id}
-                </Typography>
+                <PersonIcon fontSize="small" color="action" />
+                <Typography variant="body2">{illustration?.user_name || '不明'}</Typography>
+              </Stack>
+              <Stack direction="row" spacing={1} alignItems="center">
+                <CalendarIcon fontSize="small" color="action" />
+                <Typography variant="body2">{new Date(illustration?.created_at).toLocaleDateString('ja-JP')}</Typography>
               </Stack>
             </Stack>
-            <IconButton onClick={onClose}>
-              <CloseIcon />
-            </IconButton>
-          </Stack>
-        </DialogTitle>
 
-        <DialogContent dividers>
-          <Grid container spacing={3}>
-            {/* Left Column - Images */}
-            <Grid item xs={12} md={7}>
-              <Paper 
-                elevation={0} 
-                sx={{ 
-                  p: 2, 
-                  bgcolor: alpha(theme.palette.primary.main, 0.03),
-                  borderRadius: 2,
-                  border: `1px solid ${alpha(theme.palette.primary.main, 0.1)}`
-                }}
-              >
-                <Typography variant="subtitle1" fontWeight="bold" gutterBottom>
-                  Files & Images ({illustration.files?.length || 0})
-                </Typography>
-                
-                {illustration.files && illustration.files.length > 0 ? (
-                  <Grid container spacing={2}>
-                    {illustration.files.map((file, index) => (
-                      <Grid item xs={6} sm={4} key={file.id || index}>
-                        <Card 
-                          sx={{ 
-                            cursor: 'pointer',
-                            transition: 'all 0.3s ease',
-                            '&:hover': {
-                              transform: 'translateY(-4px)',
-                              boxShadow: theme.shadows[8]
-                            }
-                          }}
-                          onClick={() => handleImageClick(index)}
-                        >
-                          <Box sx={{ position: 'relative' }}>
-                            <CardMedia
-                              component="img"
-                              height="120"
-                              image={file.file}
-                              alt={`${illustration.title} - Image ${index + 1}`}
-                              sx={{ 
-                                bgcolor: 'grey.100',
-                                objectFit: 'cover'
-                              }}
-                            />
-                            <Box
-                              sx={{
-                                position: 'absolute',
-                                top: 0,
-                                left: 0,
-                                right: 0,
-                                bottom: 0,
-                                bgcolor: 'rgba(0,0,0,0.4)',
-                                display: 'flex',
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                                opacity: 0,
-                                transition: 'opacity 0.3s ease',
-                                '&:hover': {
-                                  opacity: 1
-                                }
-                              }}
-                            >
-                              <ZoomInIcon sx={{ color: 'white', fontSize: 32 }} />
-                            </Box>
-                          </Box>
-                          <Stack 
-                            direction="row" 
-                            justifyContent="space-between" 
-                            alignItems="center"
-                            sx={{ p: 1, bgcolor: 'grey.50' }}
-                          >
-                            <Typography variant="caption" noWrap sx={{ flex: 1 }}>
-                              Image {index + 1}
-                            </Typography>
-                            <IconButton 
-                              size="small"
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                handleDownload(file.file, `${illustration.title}_${index + 1}`);
-                              }}
-                            >
-                              <DownloadIcon fontSize="small" />
-                            </IconButton>
-                          </Stack>
-                        </Card>
-                      </Grid>
-                    ))}
-                  </Grid>
-                ) : (
-                  <Box 
-                    sx={{ 
-                      textAlign: 'center', 
-                      py: 4,
-                      color: 'text.secondary' 
-                    }}
-                  >
-                    <ImageIcon sx={{ fontSize: 48, mb: 1 }} />
-                    <Typography variant="body2">No files available</Typography>
-                  </Box>
-                )}
-              </Paper>
-
-              {/* Description Section */}
-              {illustration.description && (
-                <Paper 
-                  elevation={0} 
-                  sx={{ 
-                    p: 2, 
-                    mt: 2,
-                    bgcolor: alpha(theme.palette.secondary.main, 0.03),
-                    borderRadius: 2,
-                    border: `1px solid ${alpha(theme.palette.secondary.main, 0.1)}`
-                  }}
-                >
-                  <Typography variant="subtitle1" fontWeight="bold" gutterBottom>
-                    Description
-                  </Typography>
-                  <Typography variant="body2" color="text.secondary">
-                    {illustration.description}
-                  </Typography>
-                </Paper>
-              )}
-            </Grid>
-
-            {/* Right Column - Details */}
-            <Grid item xs={12} md={5}>
-              <Stack spacing={2}>
-                {/* Basic Information */}
-                <Paper 
-                  elevation={0} 
-                  sx={{ 
-                    p: 2.5, 
-                    borderRadius: 2,
-                    border: `1px solid ${theme.palette.divider}`
-                  }}
-                >
-                  <Typography variant="subtitle1" fontWeight="bold" gutterBottom sx={{ mb: 2 }}>
-                    Information
-                  </Typography>
-                  <Stack spacing={2}>
-                    <InfoRow
-                      icon={<StoreIcon fontSize="small" />}
-                      label="Manufacturer"
-                      value={
-                        illustration.car_model?.manufacturer?.name || 
-                        illustration.manufacturer_name || 
-                        illustration.engine_model?.car_model?.manufacturer?.name ||
-                        'N/A'
-                      }
-                    />
-                    <InfoRow
-                      icon={<CarIcon fontSize="small" />}
-                      label="Car Model"
-                      value={
-                        illustration.car_model?.name || 
-                        illustration.car_model_name || 
-                        illustration.engine_model?.car_model?.name ||
-                        'N/A'
-                      }
-                    />
-                    <InfoRow
-                      icon={<BuildIcon fontSize="small" />}
-                      label="Engine Model"
-                      value={
-                        illustration.engine_model?.name || 
-                        illustration.engine_model_name || 
-                        'N/A'
-                      }
-                    />
-                    <InfoRow
-                      icon={<CategoryIcon fontSize="small" />}
-                      label="Part Category"
-                      value={
-                        illustration.part_category?.name || 
-                        illustration.part_category_name || 
-                        'N/A'
-                      }
-                    />
-                  </Stack>
-                </Paper>
-
-                {/* Metadata */}
-                <Paper 
-                  elevation={0} 
-                  sx={{ 
-                    p: 2.5, 
-                    borderRadius: 2,
-                    border: `1px solid ${theme.palette.divider}`
-                  }}
-                >
-                  <Typography variant="subtitle1" fontWeight="bold" gutterBottom sx={{ mb: 2 }}>
-                    Metadata
-                  </Typography>
-                  <Stack spacing={2}>
-                    <InfoRow
-                      icon={<PersonIcon fontSize="small" />}
-                      label="Created By"
-                      value={illustration.user_name || illustration.user?.username || 'Unknown'}
-                    />
-                    <InfoRow
-                      icon={<CalendarIcon fontSize="small" />}
-                      label="Created At"
-                      value={formatDate(illustration.created_at)}
-                    />
-                    {illustration.updated_at && illustration.updated_at !== illustration.created_at && (
-                      <InfoRow
-                        icon={<CalendarIcon fontSize="small" />}
-                        label="Last Updated"
-                        value={formatDate(illustration.updated_at)}
-                      />
-                    )}
-                  </Stack>
-                </Paper>
-
-                {/* Download All Button */}
-                <Button
-                  variant="contained"
-                  startIcon={<DownloadIcon />}
-                  fullWidth
-                  size="large"
-                  onClick={() => {
-                    illustration.files?.forEach((file, index) => {
-                      setTimeout(() => {
-                        handleDownload(file.file, `${illustration.title}_${index + 1}`);
-                      }, index * 500);
-                    });
-                  }}
-                  disabled={!illustration.files || illustration.files.length === 0}
-                >
-                  Download All Files
-                </Button>
+            {canEdit && (
+              <Stack direction="row" spacing={2}>
+                <Button fullWidth variant="outlined" startIcon={<EditIcon />} onClick={onEdit}>編集</Button>
+                <Button fullWidth variant="outlined" color="error" startIcon={<DeleteIcon />} onClick={handleDelete}>削除</Button>
               </Stack>
-            </Grid>
-          </Grid>
-        </DialogContent>
-
-        <DialogActions sx={{ p: 2 }}>
-          <Button onClick={onClose}>Close</Button>
-        </DialogActions>
-      </Dialog>
-
-      {/* Image Viewer Dialog (Lightbox) */}
-      <Dialog
-        open={selectedImageIndex !== null}
-        onClose={handleCloseImageViewer}
-        maxWidth="xl"
-        fullWidth
-        PaperProps={{
-          sx: {
-            bgcolor: 'rgba(0, 0, 0, 0.95)',
-            borderRadius: 0,
-            m: 0,
-            maxHeight: '100vh',
-            height: '100vh'
-          }
-        }}
-      >
-        <DialogContent sx={{ p: 0, position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-          {/* Close Button */}
-          <IconButton
-            onClick={handleCloseImageViewer}
-            sx={{
-              position: 'absolute',
-              top: 16,
-              right: 16,
-              color: 'white',
-              bgcolor: 'rgba(255, 255, 255, 0.1)',
-              '&:hover': {
-                bgcolor: 'rgba(255, 255, 255, 0.2)'
-              },
-              zIndex: 2
-            }}
-          >
-            <CloseIcon />
-          </IconButton>
-
-          {/* Image Counter */}
-          <Paper
-            sx={{
-              position: 'absolute',
-              top: 16,
-              left: '50%',
-              transform: 'translateX(-50%)',
-              px: 2,
-              py: 1,
-              bgcolor: 'rgba(255, 255, 255, 0.1)',
-              backdropFilter: 'blur(10px)',
-              zIndex: 2
-            }}
-          >
-            <Typography variant="body2" color="white">
-              {selectedImageIndex + 1} / {illustration.files?.length || 0}
-            </Typography>
-          </Paper>
-
-          {/* Download Button */}
-          <IconButton
-            onClick={() => {
-              const file = illustration.files[selectedImageIndex];
-              handleDownload(file.file, `${illustration.title}_${selectedImageIndex + 1}`);
-            }}
-            sx={{
-              position: 'absolute',
-              top: 16,
-              left: 16,
-              color: 'white',
-              bgcolor: 'rgba(255, 255, 255, 0.1)',
-              '&:hover': {
-                bgcolor: 'rgba(255, 255, 255, 0.2)'
-              },
-              zIndex: 2
-            }}
-          >
-            <DownloadIcon />
-          </IconButton>
-
-          {/* Previous Button */}
-          {selectedImageIndex > 0 && (
-            <IconButton
-              onClick={handlePreviousImage}
-              sx={{
-                position: 'absolute',
-                left: 16,
-                top: '50%',
-                transform: 'translateY(-50%)',
-                color: 'white',
-                bgcolor: 'rgba(255, 255, 255, 0.1)',
-                '&:hover': {
-                  bgcolor: 'rgba(255, 255, 255, 0.2)'
-                },
-                zIndex: 2
-              }}
-            >
-              <ArrowBackIcon />
-            </IconButton>
-          )}
-
-          {/* Next Button */}
-          {selectedImageIndex < illustration.files.length - 1 && (
-            <IconButton
-              onClick={handleNextImage}
-              sx={{
-                position: 'absolute',
-                right: 16,
-                top: '50%',
-                transform: 'translateY(-50%)',
-                color: 'white',
-                bgcolor: 'rgba(255, 255, 255, 0.1)',
-                '&:hover': {
-                  bgcolor: 'rgba(255, 255, 255, 0.2)'
-                },
-                zIndex: 2
-              }}
-            >
-              <ArrowForwardIcon />
-            </IconButton>
-          )}
-
-          {/* Main Image */}
-          {selectedImageIndex !== null && illustration.files?.[selectedImageIndex] && (
-            <Box
-              component="img"
-              src={illustration.files[selectedImageIndex].file}
-              alt={`${illustration.title} - Image ${selectedImageIndex + 1}`}
-              sx={{
-                maxWidth: '95%',
-                maxHeight: '95%',
-                objectFit: 'contain',
-                userSelect: 'none'
-              }}
-            />
-          )}
-
-          {/* Thumbnail Strip */}
-          <Box
-            sx={{
-              position: 'absolute',
-              bottom: 16,
-              left: '50%',
-              transform: 'translateX(-50%)',
-              display: 'flex',
-              gap: 1,
-              p: 1,
-              bgcolor: 'rgba(255, 255, 255, 0.1)',
-              backdropFilter: 'blur(10px)',
-              borderRadius: 2,
-              maxWidth: '90%',
-              overflowX: 'auto',
-              '&::-webkit-scrollbar': {
-                height: 6
-              },
-              '&::-webkit-scrollbar-thumb': {
-                bgcolor: 'rgba(255, 255, 255, 0.3)',
-                borderRadius: 3
-              }
-            }}
-          >
-            {illustration.files?.map((file, index) => (
-              <Box
-                key={file.id || index}
-                component="img"
-                src={file.file}
-                alt={`Thumbnail ${index + 1}`}
-                onClick={() => setSelectedImageIndex(index)}
-                sx={{
-                  width: 60,
-                  height: 60,
-                  objectFit: 'cover',
-                  borderRadius: 1,
-                  cursor: 'pointer',
-                  border: selectedImageIndex === index 
-                    ? '2px solid white' 
-                    : '2px solid transparent',
-                  opacity: selectedImageIndex === index ? 1 : 0.6,
-                  transition: 'all 0.2s ease',
-                  '&:hover': {
-                    opacity: 1,
-                    transform: 'scale(1.1)'
-                  }
-                }}
-              />
-            ))}
-          </Box>
+            )}
+          </Stack>
         </DialogContent>
       </Dialog>
+
+      <Menu anchorEl={menuAnchor} open={Boolean(menuAnchor)} onClose={() => setMenuAnchor(null)}>
+        <MenuItem onClick={() => { navigator.clipboard.writeText(illustration?.title); setSuccess('コピー'); setMenuAnchor(null); }}>タイトルをコピー</MenuItem>
+      </Menu>
     </>
   );
 };

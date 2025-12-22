@@ -19,7 +19,11 @@ import {
   Fab,
   SwipeableDrawer,
   Divider,
-  alpha
+  alpha,
+  MenuItem,
+  FormControl,
+  InputLabel,
+  Select
 } from '@mui/material';
 import {
   Add as PlusIcon,
@@ -32,14 +36,15 @@ import {
   Description as DescriptionIcon,
   Numbers as NumbersIcon
 } from '@mui/icons-material';
-import { usePartCategories } from '../../hooks/useIllustrations';
+import { usePartSubCategories, usePartCategories } from '../../hooks/useIllustrations';
 import ConfirmDialog from "../../components/dialog/ConfirmDialog";
 
-const MobilePartCategories = () => {
+const MobilePartSubCategories = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [showModal, setShowModal] = useState(false);
   const [editingCategory, setEditingCategory] = useState(null);
   const [formData, setFormData] = useState({
+    part_category: '', // ✅ Changed from null to empty string
     name: '',
     slug: '',
     description: '',
@@ -51,13 +56,19 @@ const MobilePartCategories = () => {
   const [showConfirmDelete, setShowConfirmDelete] = useState(false);
 
   const {
-    categories,
+    subCategories: categories,
     loading,
     error,
-    fetchCategories,
-    createCategory,
-    updateCategory,
-    deleteCategory
+    fetchSubCategories: fetchCategories,
+    createSubCategory: createCategory,
+    updateSubCategory: updateCategory,
+    deleteSubCategory: deleteCategory
+  } = usePartSubCategories();
+
+  // ✅ Fetch parent categories for dropdown
+  const {
+    categories: parentCategories,
+    loading: parentLoading
   } = usePartCategories();
 
   useEffect(() => {
@@ -67,13 +78,15 @@ const MobilePartCategories = () => {
   const filteredCategories = (categories || []).filter(c =>
     c.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
     c.slug?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    c.description?.toLowerCase().includes(searchTerm.toLowerCase())
+    c.description?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    c.part_category_name?.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   const handleOpenModal = (category = null) => {
     if (category) {
       setEditingCategory(category);
       setFormData({
+        part_category: category.part_category || '',
         name: category.name,
         slug: category.slug,
         description: category.description || '',
@@ -82,6 +95,7 @@ const MobilePartCategories = () => {
     } else {
       setEditingCategory(null);
       setFormData({
+        part_category: '',
         name: '',
         slug: '',
         description: '',
@@ -112,6 +126,7 @@ const MobilePartCategories = () => {
     e.preventDefault();
 
     const newErrors = {};
+    if (!formData.part_category) newErrors.part_category = '親カテゴリは必須です'; // ✅ Validate parent category
     if (!formData.name?.trim()) newErrors.name = '英語名は必須です';
     if (!formData.slug?.trim()) newErrors.slug = 'スラッグは必須です';
 
@@ -122,6 +137,7 @@ const MobilePartCategories = () => {
 
     try {
       const payload = {
+        part_category: parseInt(formData.part_category), // ✅ Send as integer
         name: formData.name.trim(),
         slug: formData.slug.trim(),
         description: formData.description.trim(),
@@ -136,19 +152,21 @@ const MobilePartCategories = () => {
 
       await fetchCategories();
       setShowModal(false);
-      setFormData({ name: '', slug: '', description: '', order: 0 });
+      setFormData({ part_category: '', name: '', slug: '', description: '', order: 0 });
       setEditingCategory(null);
     } catch (err) {
       const apiError = err.response?.data;
       if (apiError) {
         const fieldErrors = {};
         Object.keys(apiError).forEach(key => {
-          if (['slug', 'name', 'description', 'order'].includes(key)) {
+          if (['part_category', 'slug', 'name', 'description', 'order'].includes(key)) {
             fieldErrors[key] = Array.isArray(apiError[key])
               ? apiError[key].join(', ')
               : apiError[key];
           } else if (key === 'non_field_errors') {
-            fieldErrors.submit = apiError[key];
+            fieldErrors.submit = Array.isArray(apiError[key])
+              ? apiError[key].join(', ')
+              : apiError[key];
           }
         });
         setErrors(fieldErrors);
@@ -183,7 +201,7 @@ const MobilePartCategories = () => {
     }
   };
 
-  const PartCategoryCard = ({ category }) => (
+  const PartSubCategoryCard = ({ category }) => (
     <Card
       sx={{
         borderRadius: 3,
@@ -199,24 +217,33 @@ const MobilePartCategories = () => {
       <CardContent sx={{ p: 2 }}>
         <Stack direction="row" justifyContent="space-between" alignItems="start" mb={1.5}>
           <Box sx={{ flex: 1, minWidth: 0 }}>
+            {/* Parent Category Badge */}
+            {category.part_category_name && (
+              <Box sx={{
+                bgcolor: alpha('#f44336', 0.08),
+                px: 1.5,
+                py: 0.5,
+                borderRadius: 2,
+                display: 'inline-block',
+                mb: 1
+              }}>
+                <Typography variant="caption" sx={{ fontWeight: 600, color: 'error.main' }}>
+                  {category.part_category_name}
+                </Typography>
+              </Box>
+            )}
+
             {/* Name */}
             <Typography variant="body1" fontWeight="bold" noWrap mb={0.5}>
               {category.name}
             </Typography>
 
-            {/* Subcategory & Illustration Count */}
-            <Stack direction="row" spacing={2} mb={0.5}>
-              {category.subcategory_count !== undefined && (
-                <Typography variant="caption" color="primary.main" fontWeight={600}>
-                  サブカテゴリ: {category.subcategory_count}
-                </Typography>
-              )}
-              {category.illustration_count !== undefined && (
-                <Typography variant="caption" color="success.main" fontWeight={600}>
-                  図: {category.illustration_count}
-                </Typography>
-              )}
-            </Stack>
+            {/* Illustration Count */}
+            {category.illustration_count !== undefined && category.illustration_count > 0 && (
+              <Typography variant="caption" color="success.main" fontWeight={600} display="block" mb={0.5}>
+                図: {category.illustration_count}
+              </Typography>
+            )}
 
             {/* Description */}
             {category.description && (
@@ -299,11 +326,11 @@ const MobilePartCategories = () => {
           <Stack direction="row" spacing={1} alignItems="center" mb={1}>
             <CategoryIcon sx={{ color: 'primary.main' }} />
             <Typography variant="body2" fontWeight="bold">
-              ユニバーサルカテゴリ
+              部品サブカテゴリ
             </Typography>
           </Stack>
           <Typography variant="caption" color="text.secondary">
-            すべてのエンジンで共通して使用できる部品カテゴリです
+            親カテゴリ内の具体的な部品タイプです
           </Typography>
         </Paper>
 
@@ -322,7 +349,7 @@ const MobilePartCategories = () => {
           <SearchIcon fontSize="small" sx={{ color: 'text.secondary', mr: 1 }} />
           <TextField
             fullWidth
-            placeholder="カテゴリを検索..."
+            placeholder="サブカテゴリを検索..."
             variant="standard"
             size="small"
             value={searchTerm}
@@ -354,28 +381,28 @@ const MobilePartCategories = () => {
           <Card sx={{ borderRadius: 3, p: 4, textAlign: 'center' }}>
             <CategoryIcon sx={{ fontSize: 56, color: 'grey.300', mb: 2 }} />
             <Typography variant="h6" fontWeight="bold" gutterBottom>
-              カテゴリが見つかりません
+              サブカテゴリが見つかりません
             </Typography>
             <Typography variant="body2" color="text.secondary">
-              {searchTerm ? '検索条件を変更してください' : '最初のカテゴリを追加しましょう'}
+              {searchTerm ? '検索条件を変更してください' : '最初のサブカテゴリを追加しましょう'}
             </Typography>
           </Card>
         ) : (
           <>
             <Typography variant="caption" color="text.secondary" display="block" mb={1.5} fontWeight={600}>
-              {filteredCategories.length} 件のカテゴリ
+              {filteredCategories.length} 件のサブカテゴリ
             </Typography>
 
             <Stack spacing={1.5}>
               {filteredCategories.map((category) => (
-                <PartCategoryCard key={category.id} category={category} />
+                <PartSubCategoryCard key={category.id} category={category} />
               ))}
             </Stack>
           </>
         )}
       </Container>
 
-      {/* Create/Edit Modal */}
+      {/* Create/Edit Modal - ✅ CORRECTED */}
       <Dialog
         open={showModal}
         onClose={() => setShowModal(false)}
@@ -388,7 +415,7 @@ const MobilePartCategories = () => {
         <DialogTitle sx={{ pb: 1 }}>
           <Stack direction="row" justifyContent="space-between" alignItems="center">
             <Typography variant="h6" fontWeight="bold">
-              {editingCategory ? 'カテゴリ編集' : 'カテゴリ追加'}
+              {editingCategory ? 'サブカテゴリ編集' : 'サブカテゴリ追加'}
             </Typography>
             <IconButton onClick={() => setShowModal(false)} size="small">
               <CloseIcon />
@@ -398,14 +425,43 @@ const MobilePartCategories = () => {
         <form onSubmit={handleSubmit}>
           <DialogContent sx={{ pt: 2 }}>
             <Stack spacing={2.5}>
+              {/* ✅ Parent Category Dropdown */}
+              <FormControl fullWidth required error={!!errors.part_category}>
+                <InputLabel>親カテゴリ</InputLabel>
+                <Select
+                  name="part_category"
+                  value={formData.part_category}
+                  onChange={handleChange}
+                  label="親カテゴリ"
+                  sx={{ borderRadius: 2 }}
+                >
+                  {parentLoading ? (
+                    <MenuItem disabled>
+                      <CircularProgress size={20} />
+                    </MenuItem>
+                  ) : (
+                    (parentCategories || []).map((cat) => (
+                      <MenuItem key={cat.id} value={cat.id}>
+                        {cat.name}
+                      </MenuItem>
+                    ))
+                  )}
+                </Select>
+                {errors.part_category && (
+                  <Typography variant="caption" color="error" sx={{ mt: 0.5, ml: 1.5 }}>
+                    {errors.part_category}
+                  </Typography>
+                )}
+              </FormControl>
+
               <TextField
-                label="カテゴリ名"
+                label="サブカテゴリ名"
                 name="name"
                 value={formData.name}
                 onChange={handleChange}
                 error={!!errors.name}
-                helperText={errors.name || 'Example: Engine Components'}
-                placeholder="Engine Components"
+                helperText={errors.name || 'Example: Pistons'}
+                placeholder="Pistons"
                 fullWidth
                 required
                 sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2 } }}
@@ -418,7 +474,7 @@ const MobilePartCategories = () => {
                 onChange={handleChange}
                 error={!!errors.slug}
                 helperText={errors.slug || 'URL用の識別子（手動入力可能）'}
-                placeholder="engine-components"
+                placeholder="pistons"
                 fullWidth
                 required
                 sx={{
@@ -449,7 +505,7 @@ const MobilePartCategories = () => {
                 onChange={handleChange}
                 error={!!errors.description}
                 helperText={errors.description}
-                placeholder="カテゴリの詳細説明"
+                placeholder="サブカテゴリの詳細説明"
                 fullWidth
                 multiline
                 rows={3}
@@ -473,6 +529,7 @@ const MobilePartCategories = () => {
             <Button
               type="submit"
               variant="contained"
+              disabled={parentLoading}
               sx={{
                 borderRadius: 2,
                 textTransform: 'none',
@@ -503,6 +560,9 @@ const MobilePartCategories = () => {
 
           {selectedCategory && (
             <Box sx={{ mb: 2 }}>
+              <Typography variant="caption" color="error.main" fontWeight={600} display="block" mb={0.5}>
+                {selectedCategory.part_category_name}
+              </Typography>
               <Typography variant="body1" fontWeight="bold">
                 {selectedCategory.name}
               </Typography>
@@ -565,4 +625,4 @@ const MobilePartCategories = () => {
   );
 };
 
-export default MobilePartCategories;
+export default MobilePartSubCategories;
