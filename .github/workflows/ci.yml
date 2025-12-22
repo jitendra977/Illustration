@@ -1,5 +1,5 @@
 # ========================================
-# .github/workflows/ci.yml (FIXED)
+# .github/workflows/ci.yml
 # ========================================
 name: CI Pipeline
 
@@ -58,8 +58,6 @@ jobs:
           DJANGO_SETTINGS_MODULE: config.settings
           SECRET_KEY: test-secret-key-for-ci
           DEBUG: True
-          DB_ENGINE: django.db.backends.sqlite3
-          DB_NAME: ':memory:'
 
   frontend-lint-and-test:
     runs-on: ubuntu-latest
@@ -97,13 +95,6 @@ jobs:
           bun run build
         env:
           VITE_API_URL: http://localhost:8000/api
-          VITE_API_BASE_URL: http://localhost:8000/api
-          VITE_APP_NAME: Yaw Illustration
-          VITE_APP_URL: http://localhost
-          VITE_ENV: test
-          NODE_ENV: production
-          VITE_MEDIA_URL: http://localhost:8000/media
-          VITE_STATIC_URL: http://localhost:8000/static
 
   docker-build-test:
     runs-on: ubuntu-latest
@@ -115,6 +106,19 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
+      - name: Create external network for testing
+        run: |
+          docker network create app-network || true
+
+      - name: Create test .env file
+        run: |
+          cat > backend/.env << 'EOF'
+          DJANGO_SECRET_KEY=test-secret-key-for-ci-only
+          DEBUG=True
+          DB_ENGINE=django.db.backends.sqlite3
+          DB_NAME=:memory:
+          EOF
+
       - name: Build backend image
         run: |
           docker build -t yaw-backend:test ./backend
@@ -123,10 +127,19 @@ jobs:
         run: |
           docker build -t yaw-frontend:test ./frontend
 
-      - name: Test docker compose config
+      - name: Test docker-compose config
         run: |
-          docker compose config
+          docker compose -f docker-compose.yml -f docker-compose.ci.yml config
 
       - name: Verify Docker Compose version
         run: |
           docker compose version
+
+      - name: Validate compose file syntax
+        run: |
+          docker compose -f docker-compose.yml config --quiet
+
+      - name: Cleanup
+        if: always()
+        run: |
+          docker network rm app-network || true
