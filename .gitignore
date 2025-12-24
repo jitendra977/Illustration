@@ -80,3 +80,21 @@ Desktop.ini
 *.bak
 *.swp
 *.swo
+
+
+# ========================================
+# .gitignore (UPDATE - ROOT)
+# ========================================
+# Add to existing .gitignore
+
+# Docker volumes
+mysql/data/
+
+# Logs
+*.log
+
+# Scripts
+start.sh
+stop.sh
+restart.sh
+logs.sh
