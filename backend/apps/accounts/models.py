@@ -3,18 +3,60 @@ from django.db import models
 from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.utils import timezone
+from django.utils.text import slugify
+import unicodedata
 import uuid
 import os
 from django.db.models.signals import pre_save, post_delete
 from django.dispatch import receiver
 
 
+def safe_folder_name(value):
+    """
+    Convert text to filesystem-safe name.
+    Keeps Japanese characters.
+    """
+    value = unicodedata.normalize("NFKC", value)
+    value = value.replace(" ", "_")
+    return value
+
 # ================= PROFILE IMAGE PATH =================
 def user_profile_image_path(instance, filename):
-    ext = filename.split('.')[-1]
-    uid = instance.pk or uuid.uuid4().hex[:8]
-    return f'users/{uid}/profile/profile.{ext}'
+    """
+    media/factories/<factory_name>/<username>/profile/profile_<uuid>.ext
+    """
 
+    ext = filename.split('.')[-1].lower()
+    unique_id = uuid.uuid4().hex
+
+    factory_name = (
+        safe_folder_name(instance.factory.name)
+        if instance.factory else
+        "no_factory"
+    )
+
+    username = safe_folder_name(instance.username or "user")
+
+    return (
+        f"Users/"
+        f"{factory_name}/"
+        f"{username}/"
+        f"profile/"
+        f"profile_{unique_id}.{ext}"
+    )
+
+class Factory(models.Model):
+    name = models.CharField(max_length=100)
+    address = models.CharField(max_length=150)
+
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.name} - {self.address}"
+
+    class Meta:
+        verbose_name = "Factory"
+        verbose_name_plural = "Factories"
 
 # ================= USER MODEL =================
 class User(AbstractUser):
@@ -24,6 +66,15 @@ class User(AbstractUser):
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['username']
 
+     # ----- FACTORY RELATION -----
+    factory = models.ForeignKey(
+        Factory,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="members"
+    )
+    
     # ----- EXTRA INFO -----
     phone_number = models.CharField(max_length=20, blank=True, null=True)
     address = models.CharField(max_length=150, blank=True, null=True)
@@ -82,16 +133,19 @@ class User(AbstractUser):
 def delete_old_profile_image(sender, instance, **kwargs):
     if not instance.pk:
         return
+
     try:
         old = sender.objects.get(pk=instance.pk)
-        if old.profile_image and old.profile_image != instance.profile_image:
-            if os.path.isfile(old.profile_image.path):
-                os.remove(old.profile_image.path)
     except sender.DoesNotExist:
-        pass
+        return
+
+    if old.profile_image and old.profile_image != instance.profile_image:
+        if old.profile_image.name and os.path.exists(old.profile_image.path):
+            os.remove(old.profile_image.path)
 
 
 @receiver(post_delete, sender=User)
 def delete_profile_image_on_delete(sender, instance, **kwargs):
-    if instance.profile_image and os.path.isfile(instance.profile_image.path):
-        os.remove(instance.profile_image.path)
+    if instance.profile_image:
+        if instance.profile_image.name and os.path.exists(instance.profile_image.path):
+            os.remove(instance.profile_image.path)

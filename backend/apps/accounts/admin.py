@@ -1,9 +1,22 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 from django.utils.html import format_html
-from .models import User
+from .models import User, Factory
 
 
+# ================= FACTORY ADMIN =================
+@admin.register(Factory)
+class FactoryAdmin(admin.ModelAdmin):
+    list_display = ('name', 'address', 'member_count', 'created_at')
+    search_fields = ('name', 'address')
+    ordering = ('name',)
+
+    def member_count(self, obj):
+        return obj.members.count()
+    member_count.short_description = "Members"
+
+
+# ================= USER ADMIN =================
 @admin.register(User)
 class CustomUserAdmin(UserAdmin):
 
@@ -12,6 +25,7 @@ class CustomUserAdmin(UserAdmin):
         'profile_image_display',
         'email',
         'username',
+        'factory',
         'phone_number',
         'is_verified',
         'is_active',
@@ -20,7 +34,9 @@ class CustomUserAdmin(UserAdmin):
     )
 
     list_display_links = ('profile_image_display', 'email')
+
     list_filter = (
+        'factory',
         'is_verified',
         'is_active',
         'is_staff',
@@ -28,7 +44,14 @@ class CustomUserAdmin(UserAdmin):
         'last_login',
     )
 
-    search_fields = ('email', 'username', 'phone_number', 'address')
+    search_fields = (
+        'email',
+        'username',
+        'phone_number',
+        'address',
+        'factory__name',
+    )
+
     ordering = ('-created_at',)
 
     readonly_fields = (
@@ -52,6 +75,9 @@ class CustomUserAdmin(UserAdmin):
                 'first_name',
                 'last_name',
             )
+        }),
+        ('Factory', {
+            'fields': ('factory',)
         }),
         ('Contact', {
             'fields': ('phone_number', 'address')
@@ -89,9 +115,9 @@ class CustomUserAdmin(UserAdmin):
             'fields': (
                 'email',
                 'username',
+                'factory',
                 'password1',
                 'password2',
-                'profile_image',
             ),
         }),
     )
@@ -127,18 +153,9 @@ class CustomUserAdmin(UserAdmin):
     profile_image_preview.short_description = "Profile Preview"
 
     # ================= ACTIONS =================
-    actions = ['mark_verified', 'resend_verification']
+    actions = ['mark_verified']
 
     def mark_verified(self, request, queryset):
         count = queryset.update(is_verified=True, verification_token=None)
         self.message_user(request, f"{count} users marked as verified.")
     mark_verified.short_description = "Mark selected users as verified"
-
-    def resend_verification(self, request, queryset):
-        sent = 0
-        for user in queryset:
-            user.generate_verification_token()
-            if user.send_verification_email():
-                sent += 1
-        self.message_user(request, f"Verification email sent to {sent} users.")
-    resend_verification.short_description = "Resend verification email"

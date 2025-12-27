@@ -77,19 +77,59 @@ const MobileLayout = ({ children, showHeader = true, onRefresh, refreshing = fal
           px: 2,
           flexShrink: 0
         }}>
-          <Stack direction="row" justifyContent="space-between" alignItems="center">
-            <Stack direction="row" spacing={1.5} alignItems="center">
-              <IconButton onClick={() => setMenuOpen(true)} sx={{ color: 'white', bgcolor: 'rgba(255,255,255,0.2)' }}>
-                <MenuIcon />
-              </IconButton>
-              <Typography variant="h6" fontWeight="bold">YAW 楽天検索丸</Typography>
-            </Stack>
-            {onRefresh && (
-              <IconButton onClick={onRefresh} disabled={refreshing} sx={{ color: 'white', bgcolor: 'rgba(255,255,255,0.2)' }}>
-                <RefreshIcon sx={{ animation: refreshing ? 'spin 1s linear infinite' : 'none' }} />
-              </IconButton>
-            )}
-          </Stack>
+         <Stack direction="row" justifyContent="space-between" alignItems="center">
+  <Stack direction="row" spacing={1.5} alignItems="center">
+    <IconButton
+      onClick={() => setMenuOpen(true)}
+      sx={{
+        color: 'white',
+        bgcolor: 'rgba(255,255,255,0.2)'
+      }}
+    >
+      <MenuIcon />
+    </IconButton>
+
+    {/* TITLE + FACTORY */}
+    <Stack spacing={0}>
+      <Typography
+        variant="h6"
+        fontWeight="bold"
+        lineHeight={1.2}
+      >
+        YAW 楽天検索丸
+      </Typography>
+
+      {user?.factory && (
+        <Typography
+          variant="caption"
+          sx={{
+            color: 'rgba(255,255,255,0.75)',
+            letterSpacing: '0.08em'
+          }}
+        >
+          {user.factory}
+        </Typography>
+      )}
+    </Stack>
+  </Stack>
+
+  {onRefresh && (
+    <IconButton
+      onClick={onRefresh}
+      disabled={refreshing}
+      sx={{
+        color: 'white',
+        bgcolor: 'rgba(255,255,255,0.2)'
+      }}
+    >
+      <RefreshIcon
+        sx={{
+          animation: refreshing ? 'spin 1s linear infinite' : 'none'
+        }}
+      />
+    </IconButton>
+  )}
+</Stack>
         </Box>
       )}
 

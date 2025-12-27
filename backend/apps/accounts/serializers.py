@@ -7,12 +7,19 @@ from django.core.exceptions import ValidationError as DjangoValidationError
 from rest_framework import serializers
 from rest_framework_simplejwt.tokens import RefreshToken
 from django.utils import timezone
-from .models import User
+from .models import User,Factory
 
-
+class FactorySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Factory
+        fields = ['id', 'name', 'address']
+        
 class UserSerializer(serializers.ModelSerializer):
     """Serializer for user model (read operations)."""
-    
+    factory = serializers.CharField(
+        source='factory.name',
+        read_only=True
+    )
     last_login = serializers.DateTimeField(format="%Y-%m-%d %H:%M:%S", read_only=True)
     created_at = serializers.DateTimeField(format="%Y-%m-%d %H:%M:%S", read_only=True)
     updated_at = serializers.DateTimeField(format="%Y-%m-%d %H:%M:%S", read_only=True)
@@ -21,7 +28,7 @@ class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = [
-            'id', 'username', 'email', 'address', 'first_name', 'last_name',
+            'id', 'username', 'email','factory', 'address', 'first_name', 'last_name',
             'is_active', 'is_staff', 'is_superuser', 'date_joined',
             'phone_number', 'profile_image', 'groups', 'user_permissions',
             'is_verified', 'created_at', 'updated_at', 'last_login'
@@ -35,7 +42,11 @@ class UserSerializer(serializers.ModelSerializer):
 
 class RegisterSerializer(serializers.ModelSerializer):
     """Serializer for user registration."""
-    
+    factory = serializers.PrimaryKeyRelatedField(
+        queryset=Factory.objects.all(),
+        required=False,
+        allow_null=True
+    )
     password = serializers.CharField(
         write_only=True, 
         min_length=8,
@@ -51,7 +62,7 @@ class RegisterSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = [
-            'username', 'email', 'address', 'password', 'password_confirm',
+            'username', 'email', 'address',  'factory', 'password', 'password_confirm',
             'first_name', 'last_name', 'phone_number', 'profile_image'
         ]
         extra_kwargs = {
@@ -147,7 +158,11 @@ class EmailVerificationSerializer(serializers.Serializer):
 
 class UpdateUserSerializer(serializers.ModelSerializer):
     """Serializer for updating user profile."""
-    
+    factory = serializers.PrimaryKeyRelatedField(
+        queryset=Factory.objects.all(),
+        required=False,
+        allow_null=True
+    )
     password = serializers.CharField(
         write_only=True, 
         required=False,
@@ -165,7 +180,7 @@ class UpdateUserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = [
-            'username', 'email', 'address', 'first_name', 'last_name',
+            'username', 'email', 'address', 'factory','first_name', 'last_name',
             'phone_number', 'profile_image', 'password', 'password_confirm'
         ]
         extra_kwargs = {

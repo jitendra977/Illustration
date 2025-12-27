@@ -3,50 +3,50 @@
 // Individual validation functions
 export const validateUsername = (username) => {
   if (!username || !username.trim()) {
-    return 'Username is required';
+    return 'ユーザー名を入力してください';
   }
   if (username.length < 3) {
-    return 'Username must be at least 3 characters';
+    return 'ユーザー名は3文字以上である必要があります';
   }
   if (username.length > 20) {
-    return 'Username must be less than 20 characters';
+    return 'ユーザー名は20文字以下である必要があります';
   }
   if (!/^[a-zA-Z0-9_]+$/.test(username)) {
-    return 'Username can only contain letters, numbers, and underscores';
+    return 'ユーザー名には英数字とアンダースコアのみ使用できます';
   }
   return null;
 };
 
 export const validateEmail = (email) => {
   if (!email || !email.trim()) {
-    return 'Email is required';
+    return 'メールアドレスを入力してください';
   }
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   if (!emailRegex.test(email)) {
-    return 'Please enter a valid email address';
+    return '有効なメールアドレスを入力してください';
   }
   return null;
 };
 
 export const validatePassword = (password) => {
   if (!password || !password.trim()) {
-    return 'Password is required';
+    return 'パスワードを入力してください';
   }
   if (password.length < 6) {
-    return 'Password must be at least 6 characters';
+    return 'パスワードは6文字以上である必要があります';
   }
   if (password.length > 128) {
-    return 'Password must be less than 128 characters';
+    return 'パスワードは128文字以下である必要があります';
   }
   return null;
 };
 
 export const validateConfirmPassword = (password, confirmPassword) => {
   if (!confirmPassword || !confirmPassword.trim()) {
-    return 'Please confirm your password';
+    return 'パスワードを確認してください';
   }
   if (password !== confirmPassword) {
-    return 'Passwords do not match';
+    return 'パスワードが一致しません';
   }
   return null;
 };
@@ -57,38 +57,47 @@ export const validateStrongPassword = (password) => {
   if (basicError) return basicError;
 
   if (!/(?=.*[a-z])/.test(password)) {
-    return 'Password must contain at least one lowercase letter';
+    return 'パスワードには少なくとも1つの小文字が必要です';
   }
   if (!/(?=.*[A-Z])/.test(password)) {
-    return 'Password must contain at least one uppercase letter';
+    return 'パスワードには少なくとも1つの大文字が必要です';
   }
   if (!/(?=.*\d)/.test(password)) {
-    return 'Password must contain at least one number';
+    return 'パスワードには少なくとも1つの数字が必要です';
   }
   if (!/(?=.*[@$!%*?&])/.test(password)) {
-    return 'Password must contain at least one special character (@$!%*?&)';
+    return 'パスワードには少なくとも1つの特殊文字(@$!%*?&)が必要です';
   }
   return null;
 };
 
 // Form validation functions
-export const validateLoginForm = (form) => {
+export const validateLoginForm = (form, loginType = 'email') => {
   const errors = {};
 
-  // Check if using email or username for login
-  if (form.email !== undefined) {
+  // Validate based on login type
+  if (loginType === 'email') {
     // Email-based login
     const emailError = validateEmail(form.email);
     if (emailError) errors.email = emailError;
-  } else if (form.username !== undefined) {
+  } else if (loginType === 'username') {
     // Username-based login
     const usernameError = validateUsername(form.username);
     if (usernameError) errors.username = usernameError;
   } else {
-    // Neither email nor username provided
-    errors.general = 'Email or username is required';
+    // Fallback: Check which field is provided
+    if (form.email !== undefined && form.email !== '') {
+      const emailError = validateEmail(form.email);
+      if (emailError) errors.email = emailError;
+    } else if (form.username !== undefined && form.username !== '') {
+      const usernameError = validateUsername(form.username);
+      if (usernameError) errors.username = usernameError;
+    } else {
+      errors.general = 'メールアドレスまたはユーザー名を入力してください';
+    }
   }
 
+  // Always validate password
   const passwordError = validatePassword(form.password);
   if (passwordError) errors.password = passwordError;
 
@@ -113,6 +122,19 @@ export const validateRegisterForm = (form) => {
     if (confirmPasswordError) errors.confirmPassword = confirmPasswordError;
   }
 
+  // Additional fields validation
+  if (form.firstName !== undefined && form.firstName && form.firstName.length > 50) {
+    errors.firstName = '名は50文字以下である必要があります';
+  }
+
+  if (form.lastName !== undefined && form.lastName && form.lastName.length > 50) {
+    errors.lastName = '姓は50文字以下である必要があります';
+  }
+
+  if (form.phoneNumber !== undefined && form.phoneNumber && !/^\+?[\d\s\-()]+$/.test(form.phoneNumber)) {
+    errors.phoneNumber = '有効な電話番号を入力してください';
+  }
+
   return errors;
 };
 
@@ -127,7 +149,12 @@ export const validateForm = (form, rules) => {
   
   Object.keys(rules).forEach(field => {
     const validator = rules[field];
-    const error = validator(form[field]);
+    const value = form[field];
+    
+    // Skip validation if field is not in form
+    if (value === undefined) return;
+    
+    const error = validator(value);
     if (error) {
       errors[field] = error;
     }
@@ -148,8 +175,66 @@ export const emailLoginValidationRules = {
   password: validatePassword,
 };
 
+// Combined login validation rules (either email or username)
+export const flexibleLoginValidationRules = (loginType) => {
+  if (loginType === 'email') {
+    return {
+      email: validateEmail,
+      password: validatePassword,
+    };
+  } else {
+    return {
+      username: validateUsername,
+      password: validatePassword,
+    };
+  }
+};
+
 export const registerValidationRules = {
   username: validateUsername,
   email: validateEmail,
   password: validatePassword,
+};
+
+// Profile update validation rules
+export const profileUpdateValidationRules = {
+  username: (value) => value ? validateUsername(value) : null,
+  email: (value) => value ? validateEmail(value) : null,
+  firstName: (value) => value && value.length > 50 ? '名は50文字以下である必要があります' : null,
+  lastName: (value) => value && value.length > 50 ? '姓は50文字以下である必要があります' : null,
+  phoneNumber: (value) => value && !/^\+?[\d\s\-()]+$/.test(value) ? '有効な電話番号を入力してください' : null,
+};
+
+// Password change validation
+export const validatePasswordChange = (form) => {
+  const errors = {};
+
+  if (!form.oldPassword || !form.oldPassword.trim()) {
+    errors.oldPassword = '現在のパスワードを入力してください';
+  }
+
+  const newPasswordError = validatePassword(form.newPassword);
+  if (newPasswordError) errors.newPassword = newPasswordError;
+
+  const confirmPasswordError = validateConfirmPassword(form.newPassword, form.confirmPassword);
+  if (confirmPasswordError) errors.confirmPassword = confirmPasswordError;
+
+  if (form.oldPassword && form.newPassword && form.oldPassword === form.newPassword) {
+    errors.newPassword = '新しいパスワードは現在のパスワードと異なる必要があります';
+  }
+
+  return errors;
+};
+
+// Email verification token validation
+export const validateVerificationToken = (token) => {
+  if (!token || !token.trim()) {
+    return '認証トークンが必要です';
+  }
+  // UUID format validation
+  const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+  if (!uuidRegex.test(token)) {
+    return '無効な認証トークン形式です';
+  }
+  return null;
 };

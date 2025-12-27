@@ -19,13 +19,16 @@ import {
   FormControlLabel,
   Divider,
   Fade,
-  Slide
+  Slide,
+  ToggleButtonGroup,
+  ToggleButton
 } from '@mui/material';
 import {
   Visibility,
   VisibilityOff,
   LockOutlined,
   EmailOutlined,
+  PersonOutlined,
   Shield,
   Google,
   GitHub,
@@ -36,8 +39,10 @@ const Login = () => {
   const location = useLocation();
   const [successMessage, setSuccessMessage] = useState('');
   const { login } = useAuth();
+  const [loginType, setLoginType] = useState('email'); // 'email' or 'username'
   const [form, setForm] = useState({ 
     email: '', 
+    username: '',
     password: '' 
   });
   const [errors, setErrors] = useState({});
@@ -53,6 +58,19 @@ const Login = () => {
       window.history.replaceState({}, document.title);
     }
   }, [location.state]);
+
+  const handleLoginTypeChange = (event, newLoginType) => {
+    if (newLoginType !== null) {
+      setLoginType(newLoginType);
+      // Clear the other field when switching
+      if (newLoginType === 'email') {
+        setForm({ ...form, username: '' });
+      } else {
+        setForm({ ...form, email: '' });
+      }
+      setErrors({});
+    }
+  };
 
   const getErrorMessage = (error) => {
     if (typeof error === 'string') {
@@ -74,7 +92,7 @@ const Login = () => {
         case 'SERVER_ERROR':
           return '🚨 サーバーエラーが発生しました。後ほど再度お試しいただくか、サポートにお問い合わせください。';
         case 'UNAUTHORIZED':
-          return '❌ メールアドレスまたはパスワードが正しくありません。';
+          return '❌ メールアドレス/ユーザー名またはパスワードが正しくありません。';
         case 'REQUEST_CONFIG_ERROR':
           return '⚙️ リクエスト設定エラーが発生しました。再度お試しください。';
         default:
@@ -84,11 +102,11 @@ const Login = () => {
 
     if (error.response) {
       if (error.response.status === 401) {
-        return '❌ メールアドレスまたはパスワードが正しくありません。';
+        return '❌ メールアドレス/ユーザー名またはパスワードが正しくありません。';
       } else if (error.response.status >= 500) {
         return `🚨 サーバーエラー（${error.response.status}）が発生しました。後ほど再度お試しください。`;
       } else {
-        return error.response.data?.message || `エラー: ${error.response.status}`;
+        return error.response.data?.message || error.response.data?.detail || `エラー: ${error.response.status}`;
       }
     }
 
@@ -107,7 +125,8 @@ const Login = () => {
     e.preventDefault();
     setErrors({});
 
-    const validationErrors = validateLoginForm(form);
+    // Validate using the validator utility
+    const validationErrors = validateLoginForm(form, loginType);
 
     if (hasFormErrors(validationErrors)) {
       setErrors(validationErrors);
@@ -117,7 +136,18 @@ const Login = () => {
     setIsLoading(true);
 
     try {
-      const result = await login(form);
+      // Send only the relevant credential (email OR username)
+      const credentials = {
+        password: form.password
+      };
+
+      if (loginType === 'email') {
+        credentials.email = form.email;
+      } else {
+        credentials.username = form.username;
+      }
+
+      const result = await login(credentials);
 
       if (result.success) {
         navigate('/');
@@ -297,54 +327,144 @@ const Login = () => {
                   </Fade>
                 )}
 
-                <TextField
-                  type="email"
-                  label="メールアドレス"
-                  placeholder="メールアドレスを入力"
-                  value={form.email || ''}
-                  onChange={(e) => setForm({ ...form, email: e.target.value })}
-                  error={!!errors.email}
-                  helperText={errors.email}
-                  required
-                  disabled={isLoading}
-                  fullWidth
-                  autoComplete="email"
-                  InputProps={{
-                    startAdornment: (
-                      <InputAdornment position="start">
-                        <EmailOutlined sx={{ color: 'rgba(255, 255, 255, 0.5)' }} />
-                      </InputAdornment>
-                    ),
-                  }}
-                  sx={{
-                    '& .MuiOutlinedInput-root': {
-                      color: 'white',
+                {/* Login Type Toggle */}
+                <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+                  <ToggleButtonGroup
+                    value={loginType}
+                    exclusive
+                    onChange={handleLoginTypeChange}
+                    sx={{
                       background: 'rgba(255, 255, 255, 0.05)',
                       borderRadius: 2,
-                      '& fieldset': {
-                        borderColor: 'rgba(255, 255, 255, 0.15)',
-                        borderWidth: 2,
+                      '& .MuiToggleButton-root': {
+                        color: 'rgba(255, 255, 255, 0.7)',
+                        border: 'none',
+                        px: 3,
+                        py: 1,
+                        '&.Mui-selected': {
+                          background: 'linear-gradient(135deg, #a855f7 0%, #ec4899 100%)',
+                          color: 'white',
+                          '&:hover': {
+                            background: 'linear-gradient(135deg, #9333ea 0%, #db2777 100%)',
+                          },
+                        },
+                        '&:hover': {
+                          background: 'rgba(168, 85, 247, 0.1)',
+                        },
                       },
-                      '&:hover fieldset': {
-                        borderColor: 'rgba(168, 85, 247, 0.5)',
-                      },
-                      '&.Mui-focused fieldset': {
-                        borderColor: '#a855f7',
-                        boxShadow: '0 0 0 3px rgba(168, 85, 247, 0.2)',
-                      },
-                    },
-                    '& .MuiInputLabel-root': {
-                      color: 'rgba(255, 255, 255, 0.7)',
-                      '&.Mui-focused': {
-                        color: '#a855f7',
-                      },
-                    },
-                    '& .MuiFormHelperText-root': {
-                      color: '#fca5a5',
-                    },
-                  }}
-                />
+                    }}
+                  >
+                    <ToggleButton value="email">
+                      <EmailOutlined sx={{ mr: 1, fontSize: 20 }} />
+                      メール
+                    </ToggleButton>
+                    <ToggleButton value="username">
+                      <PersonOutlined sx={{ mr: 1, fontSize: 20 }} />
+                      ユーザー名
+                    </ToggleButton>
+                  </ToggleButtonGroup>
+                </Box>
 
+                {/* Email or Username Input */}
+                {loginType === 'email' ? (
+                  <TextField
+                    type="email"
+                    label="メールアドレス"
+                    placeholder="メールアドレスを入力"
+                    value={form.email || ''}
+                    onChange={(e) => setForm({ ...form, email: e.target.value })}
+                    error={!!errors.email}
+                    helperText={errors.email}
+                    required
+                    disabled={isLoading}
+                    fullWidth
+                    autoComplete="email"
+                    InputProps={{
+                      startAdornment: (
+                        <InputAdornment position="start">
+                          <EmailOutlined sx={{ color: 'rgba(255, 255, 255, 0.5)' }} />
+                        </InputAdornment>
+                      ),
+                    }}
+                    sx={{
+                      '& .MuiOutlinedInput-root': {
+                        color: 'white',
+                        background: 'rgba(255, 255, 255, 0.05)',
+                        borderRadius: 2,
+                        '& fieldset': {
+                          borderColor: 'rgba(255, 255, 255, 0.15)',
+                          borderWidth: 2,
+                        },
+                        '&:hover fieldset': {
+                          borderColor: 'rgba(168, 85, 247, 0.5)',
+                        },
+                        '&.Mui-focused fieldset': {
+                          borderColor: '#a855f7',
+                          boxShadow: '0 0 0 3px rgba(168, 85, 247, 0.2)',
+                        },
+                      },
+                      '& .MuiInputLabel-root': {
+                        color: 'rgba(255, 255, 255, 0.7)',
+                        '&.Mui-focused': {
+                          color: '#a855f7',
+                        },
+                      },
+                      '& .MuiFormHelperText-root': {
+                        color: '#fca5a5',
+                      },
+                    }}
+                  />
+                ) : (
+                  <TextField
+                    type="text"
+                    label="ユーザー名"
+                    placeholder="ユーザー名を入力"
+                    value={form.username || ''}
+                    onChange={(e) => setForm({ ...form, username: e.target.value })}
+                    error={!!errors.username}
+                    helperText={errors.username}
+                    required
+                    disabled={isLoading}
+                    fullWidth
+                    autoComplete="username"
+                    InputProps={{
+                      startAdornment: (
+                        <InputAdornment position="start">
+                          <PersonOutlined sx={{ color: 'rgba(255, 255, 255, 0.5)' }} />
+                        </InputAdornment>
+                      ),
+                    }}
+                    sx={{
+                      '& .MuiOutlinedInput-root': {
+                        color: 'white',
+                        background: 'rgba(255, 255, 255, 0.05)',
+                        borderRadius: 2,
+                        '& fieldset': {
+                          borderColor: 'rgba(255, 255, 255, 0.15)',
+                          borderWidth: 2,
+                        },
+                        '&:hover fieldset': {
+                          borderColor: 'rgba(168, 85, 247, 0.5)',
+                        },
+                        '&.Mui-focused fieldset': {
+                          borderColor: '#a855f7',
+                          boxShadow: '0 0 0 3px rgba(168, 85, 247, 0.2)',
+                        },
+                      },
+                      '& .MuiInputLabel-root': {
+                        color: 'rgba(255, 255, 255, 0.7)',
+                        '&.Mui-focused': {
+                          color: '#a855f7',
+                        },
+                      },
+                      '& .MuiFormHelperText-root': {
+                        color: '#fca5a5',
+                      },
+                    }}
+                  />
+                )}
+
+                {/* Password Input */}
                 <TextField
                   type={showPassword ? 'text' : 'password'}
                   label="パスワード"
