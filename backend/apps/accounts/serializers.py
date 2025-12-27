@@ -5,7 +5,7 @@ from django.contrib.auth import authenticate
 from django.contrib.auth.password_validation import validate_password
 from django.core.exceptions import ValidationError as DjangoValidationError
 from rest_framework import serializers
-from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
+from rest_framework_simplejwt.tokens import RefreshToken
 from django.utils import timezone
 from .models import User
 
@@ -294,100 +294,117 @@ class ChangePasswordSerializer(serializers.Serializer):
         return data
 
 
-class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
+class CustomTokenObtainPairSerializer(serializers.Serializer):
     """
     Enhanced JWT token serializer supporting email/username login.
     Accepts both {"email": "...", "password": "..."} and {"username": "...", "password": "..."}
     """
     
-    username_field = 'username'
-    
-    # Add email field to support both username and email
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        # Make username not required since we accept email too
-        self.fields['username'].required = False
-        # Add email field
-        self.fields['email'] = serializers.CharField(required=False)
+    username = serializers.CharField(
+        required=False, 
+        allow_blank=True,
+        help_text="Login with username"
+    )
+    email = serializers.CharField(
+        required=False, 
+        allow_blank=True,
+        help_text="Login with email"
+    )
+    password = serializers.CharField(
+        required=True,
+        write_only=True,
+        style={'input_type': 'password'},
+        trim_whitespace=False
+    )
     
     def validate(self, attrs):
         """Authenticate user via username or email."""
-        # Get either username or email from request
-        username = attrs.get("username")
-        email = attrs.get("email")
-        password = attrs.get("password")
-
-        # Determine the credential to use
-        credential = username or email
+        print(f"=== LOGIN DEBUG ===")
+        print(f"Received attrs: {attrs}")
         
-        if not credential or not password:
-            raise serializers.ValidationError({
-                "detail": "Username/email and password are required"
-            })
+        # Get credentials from request
+        username = attrs.get("username", "").strip()
+        email = attrs.get("email", "").strip()
+        password = attrs.get("password")
+        
+        print(f"Username: '{username}'")
+        print(f"Email: '{email}'")
+        print(f"Password provided: {bool(password)}")
+
+        # Validate that at least one credential is provided
+        if not username and not email:
+            raise serializers.ValidationError(
+                "Either username or email is required"
+            )
+        
+        if not password:
+            raise serializers.ValidationError(
+                "Password is required"
+            )
 
         user = None
         
-        # Try to find user by email first (whether it came from 'email' or 'username' field)
-        try:
-            user_obj = User.objects.get(email=credential.lower())
-            # Verify password manually
-            if user_obj.check_password(password):
-                user = user_obj
-        except User.DoesNotExist:
-            pass
-        
-        # If not found by email, try username
-        if not user:
+        # Try to authenticate with email if provided
+        if email:
             try:
-                user_obj = User.objects.get(username=credential)
-                # Verify password manually
+                user_obj = User.objects.get(email=email.lower())
                 if user_obj.check_password(password):
                     user = user_obj
+                    print(f"User authenticated with email: {user.username}")
             except User.DoesNotExist:
+                print(f"No user found with email: {email}")
+                pass
+        
+        # Try to authenticate with username if provided and user not found yet
+        if not user and username:
+            try:
+                user_obj = User.objects.get(username=username)
+                if user_obj.check_password(password):
+                    user = user_obj
+                    print(f"User authenticated with username: {user.username}")
+            except User.DoesNotExist:
+                print(f"No user found with username: {username}")
                 pass
 
+        # If still no user found, raise error
         if not user:
-            raise serializers.ValidationError({
-                "detail": "Invalid credentials provided"
-            })
+            raise serializers.ValidationError(
+                "Invalid credentials provided"
+            )
 
+        # Check if account is active
         if not user.is_active:
-            raise serializers.ValidationError({
-                "detail": "Account is disabled. Please contact support."
-            })
+            raise serializers.ValidationError(
+                "Account is disabled. Please contact support."
+            )
 
         # Optional: Check if email is verified
         # Uncomment the following lines to require email verification before login
         # if not user.is_verified:
-        #     raise serializers.ValidationError({
-        #         "detail": "Please verify your email address before logging in",
-        #         "verification_required": True
-        #     })
+        #     raise serializers.ValidationError(
+        #         "Please verify your email address before logging in"
+        #     )
 
         # Update last login timestamp
         user.last_login = timezone.now()
         user.save(update_fields=['last_login', 'updated_at'])
         
-        # Generate tokens using parent class method
-        refresh = self.get_token(user)
+        # Generate tokens
+        refresh = RefreshToken.for_user(user)
+        
+        # Add custom claims
+        refresh['username'] = user.username
+        refresh['email'] = user.email
+        refresh['is_verified'] = user.is_verified
         
         # Serialize user data
         user_data = UserSerializer(user).data
+        
+        print(f"Login successful for user: {user.username}")
+        print(f"=== END LOGIN DEBUG ===")
         
         return {
             "refresh": str(refresh),
             "access": str(refresh.access_token),
             "user": user_data,
         }
-    
-    @classmethod
-    def get_token(cls, user):
-        """Add custom claims to token."""
-        token = super().get_token(user)
-        
-        # Add custom claims
-        token['username'] = user.username
-        token['email'] = user.email
-        token['is_verified'] = user.is_verified
-        
-        return token

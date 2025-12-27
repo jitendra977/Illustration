@@ -239,7 +239,6 @@ class IllustrationViewSet(viewsets.ModelViewSet):
             {'message': f'{len(created)} file(s) uploaded', 'files': created},
             status=status.HTTP_201_CREATED
         )
-
 # ========================================
 # Illustration Files
 # ========================================
@@ -253,10 +252,10 @@ class IllustrationFileViewSet(viewsets.ModelViewSet):
 
     def get_permissions(self):
         """
-        List and retrieve are public for viewing files
+        List, retrieve, download, and preview are public
         Create, update, delete require ownership or admin
         """
-        if self.action in ['list', 'retrieve', 'download']:
+        if self.action in ['list', 'retrieve', 'download', 'preview']:
             return [AllowAny()]
         return [IsAdminOrOwner()]
 
@@ -269,20 +268,23 @@ class IllustrationFileViewSet(viewsets.ModelViewSet):
             'illustration__engine_model__manufacturer'
         )
 
-        # For list and retrieve actions, show all files
-        # For modifications, filter by user
-        if self.action in ['list', 'retrieve', 'download']:
+        # For public actions (list, retrieve, download, preview), show all files
+        if self.action in ['list', 'retrieve', 'download', 'preview']:
             return qs
         
-        # For create/update/delete, check permissions
+        # For create/update/delete actions, filter based on user permissions
+        if not self.request.user.is_authenticated:
+            return qs.none()
+        
+        # Verified staff can access all files for modification
         if (
-            self.request.user.is_authenticated and
             self.request.user.is_staff and
             self.request.user.is_verified
         ):
             return qs
 
-        if self.request.user.is_authenticated:
+        # Regular verified users can only modify their own illustration files
+        if self.request.user.is_verified:
             return qs.filter(illustration__user=self.request.user)
 
         return qs.none()
@@ -312,7 +314,7 @@ class IllustrationFileViewSet(viewsets.ModelViewSet):
             # Check if file exists
             if not os.path.exists(file_path):
                 return Response(
-                    {'error': f'ファイルが見つかりません'},
+                    {'error': 'ファイルが見つかりません'},
                     status=status.HTTP_404_NOT_FOUND
                 )
             
@@ -337,6 +339,8 @@ class IllustrationFileViewSet(viewsets.ModelViewSet):
                 )
             
             # Create response for inline viewing
+            from django.http import StreamingHttpResponse
+            
             if file_size > 10 * 1024 * 1024:  # 10MB
                 response = StreamingHttpResponse(
                     file_handle,
@@ -441,6 +445,8 @@ class IllustrationFileViewSet(viewsets.ModelViewSet):
                 )
             
             # Use StreamingHttpResponse for large files
+            from django.http import StreamingHttpResponse
+            
             if file_size > 10 * 1024 * 1024:  # 10MB
                 response = StreamingHttpResponse(
                     file_handle,

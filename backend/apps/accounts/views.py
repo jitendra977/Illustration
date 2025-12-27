@@ -5,7 +5,7 @@ from django.shortcuts import get_object_or_404
 from rest_framework import viewsets, permissions, status, serializers
 from rest_framework.response import Response
 from rest_framework.decorators import action
-from rest_framework_simplejwt.views import TokenObtainPairView
+from rest_framework.views import APIView
 import uuid
 
 from .models import User
@@ -71,8 +71,28 @@ def user_permission_required(action_type=None):
     return decorator
 
 
-class CustomTokenObtainPairView(TokenObtainPairView):
-    """Custom JWT token obtain view with enhanced authentication."""
+class CustomTokenObtainPairView(APIView):
+    """
+    Custom JWT token obtain view with enhanced authentication.
+    Supports login with either username or email.
+    """
+    permission_classes = [permissions.AllowAny]
+    
+    def post(self, request, *args, **kwargs):
+        """Handle POST request for token generation"""
+        serializer = CustomTokenObtainPairSerializer(data=request.data)
+        
+        try:
+            serializer.is_valid(raise_exception=True)
+            return Response(serializer.validated_data, status=status.HTTP_200_OK)
+        except serializers.ValidationError as e:
+            return Response(e.detail, status=status.HTTP_400_BAD_REQUEST)
+        except Exception as e:
+            return Response(
+                {'detail': str(e)}, 
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
+
 
 class UserViewSet(viewsets.ModelViewSet):
     """
@@ -298,7 +318,7 @@ class UserViewSet(viewsets.ModelViewSet):
             }, status=status.HTTP_400_BAD_REQUEST)
             
     @action(detail=False, methods=['post'], permission_classes=[permissions.IsAuthenticated])
-    def resend_verification(self, request):  # NOTE: underscore, not hyphen
+    def resend_verification(self, request):
         """Resend verification email to authenticated user"""
         user = request.user
         
