@@ -1,5 +1,5 @@
-// src/pages/mobile/MobileIllustrations.jsx
-import React, { useState } from 'react';
+// src/pages/mobile/MobileIllustrations.jsx - Optimized
+import React, { useState, useEffect, useCallback } from 'react';
 import {
   Box,
   Container,
@@ -8,12 +8,10 @@ import {
   TextField,
   Paper,
   Card,
-  CardContent,
   Chip,
   Stack,
   CircularProgress,
   Alert,
-  Fab,
   MenuItem,
   Fade,
   useTheme,
@@ -21,7 +19,6 @@ import {
   Button,
   Badge,
   Avatar,
-  Divider,
 } from '@mui/material';
 import {
   Add as PlusIcon,
@@ -31,8 +28,8 @@ import {
   Close as CloseIcon,
 } from '@mui/icons-material';
 
-import { useIllustrations, useManufacturers, useEngineModels, usePartCategories, usePartSubCategories, useCarModels } from '../../hooks/useIllustrations';
-import { illustrationAPI } from '../../api/illustrations';
+import { illustrationAPI, clearCache } from '../../api/illustrations';
+import { useManufacturers, useEngineModels, usePartCategories, usePartSubCategories, useCarModels } from '../../hooks/useIllustrations';
 import IllustrationDetailModal from '../../components/common/IllustrationDetailModal';
 import IllustrationListCard from '../../components/mobile/IllustrationListCard';
 import MobileIllustrationFormModal from '../../components/forms/MobileIllustrationFormModal';
@@ -51,22 +48,65 @@ const MobileIllustrations = () => {
   const [sortBy, setSortBy] = useState('newest');
   const [editMode, setEditMode] = useState('create');
   const [favorites, setFavorites] = useState([]);
+  
+  // State for illustrations
+  const [illustrations, setIllustrations] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
 
-  const { illustrations, loading, error, fetchIllustrations } = useIllustrations(filters);
   const { manufacturers } = useManufacturers();
   const { engineModels } = useEngineModels();
   const { categories } = usePartCategories();
   const { subCategories } = usePartSubCategories();
   const { carModels } = useCarModels();
 
+  // Fetch illustrations - OPTIMIZED (no files by default)
+  const fetchIllustrations = useCallback(async (customFilters = {}) => {
+    setLoading(true);
+    setError(null);
+    
+    try {
+      const params = {
+        ...filters,
+        ...customFilters,
+        include_files: false, // IMPORTANT: Don't load files for list view
+      };
+      
+      if (searchTerm) {
+        params.search = searchTerm;
+      }
+      
+      // Apply sorting
+      if (sortBy === 'oldest') {
+        params.ordering = 'created_at';
+      } else if (sortBy === 'title') {
+        params.ordering = 'title';
+      } else {
+        params.ordering = '-created_at';
+      }
+      
+      const data = await illustrationAPI.getAll(params);
+      setIllustrations(data.results || data);
+    } catch (err) {
+      console.error('Failed to fetch illustrations:', err);
+      setError('イラストの読み込みに失敗しました');
+    } finally {
+      setLoading(false);
+    }
+  }, [filters, searchTerm, sortBy]);
+
+  // Initial fetch
+  useEffect(() => {
+    fetchIllustrations();
+  }, [fetchIllustrations]);
+
   const handleSearch = (e) => {
     e.preventDefault();
-    fetchIllustrations({ ...filters, search: searchTerm });
+    fetchIllustrations();
   };
 
   const handleFilterChange = (newFilters) => {
     setFilters(newFilters);
-    fetchIllustrations(newFilters);
     setShowFilters(false);
   };
 
@@ -79,10 +119,12 @@ const MobileIllustrations = () => {
 
   const handleCardClick = async (illustration) => {
     try {
+      // Now fetch with full details including files
       const detailData = await illustrationAPI.getById(illustration.id);
       setSelectedIllustrationDetail(detailData);
       setDetailModalOpen(true);
-    } catch {
+    } catch (err) {
+      console.error('Failed to fetch illustration details:', err);
       setSelectedIllustrationDetail(illustration);
       setDetailModalOpen(true);
     }
@@ -112,40 +154,28 @@ const MobileIllustrations = () => {
       setSelectedIllustration(detailData);
       setFormModalOpen(true);
       setDetailModalOpen(false);
-    } catch { }
+    } catch (err) {
+      console.error('Failed to fetch illustration for editing:', err);
+    }
   };
 
   const handleFormModalSuccess = async () => {
+    clearCache(); // Clear cache to get fresh data
     await fetchIllustrations();
   };
 
   const handleDetailModalUpdate = () => {
+    clearCache();
     fetchIllustrations();
   };
 
   const handleDetailModalDelete = (deletedId) => {
+    clearCache();
     fetchIllustrations();
     if (selectedIllustrationDetail?.id === deletedId) setDetailModalOpen(false);
   };
 
-  const filtered = illustrations.filter((ill) =>
-    (
-      ill.title +
-      ill.description +
-      ill.engine_model_name +
-      ill.part_category_name
-    )
-      .toLowerCase()
-      .includes(searchTerm.toLowerCase())
-  );
-
-  const sortedIllustrations = [...filtered].sort((a, b) => {
-    if (sortBy === 'oldest') return new Date(a.created_at) - new Date(b.created_at);
-    if (sortBy === 'title') return (a.title || '').localeCompare(b.title || '');
-    return new Date(b.created_at) - new Date(a.created_at);
-  });
-
-  const activeFilterCount = Object.keys(filters).length;
+  const activeFilterCount = Object.keys(filters).filter(k => filters[k]).length;
 
   return (
     <Box
@@ -246,17 +276,19 @@ const MobileIllustrations = () => {
                 <Typography variant="caption" fontWeight="bold" color="primary">
                   適用中:
                 </Typography>
-                {Object.entries(filters).map(([k, v]) => (
-                  <Chip
-                    key={k}
-                    label={`${k}:${v}`}
-                    size="small"
-                    onDelete={() =>
-                      handleFilterChange({ ...filters, [k]: undefined })
-                    }
-                    sx={{ borderRadius: 1.5 }}
-                  />
-                ))}
+                {Object.entries(filters).map(([k, v]) => 
+                  v ? (
+                    <Chip
+                      key={k}
+                      label={`${k}:${v}`}
+                      size="small"
+                      onDelete={() =>
+                        handleFilterChange({ ...filters, [k]: undefined })
+                      }
+                      sx={{ borderRadius: 1.5 }}
+                    />
+                  ) : null
+                )}
                 <Button
                   size="small"
                   onClick={() => handleFilterChange({})}
@@ -294,7 +326,7 @@ const MobileIllustrations = () => {
         )}
 
         {/* No Results */}
-        {!loading && !error && sortedIllustrations.length === 0 && (
+        {!loading && !error && illustrations.length === 0 && (
           <Fade in>
             <Card
               sx={{
@@ -338,10 +370,10 @@ const MobileIllustrations = () => {
         )}
 
         {/* Results - List View */}
-        {!loading && !error && sortedIllustrations.length > 0 && (
+        {!loading && !error && illustrations.length > 0 && (
           <Stack spacing={2}>
-            {sortedIllustrations.map((ill, i) => (
-              <Fade key={ill.id} in timeout={200 + i * 30}>
+            {illustrations.map((ill, i) => (
+              <Fade key={ill.id} in timeout={150 + i * 25}>
                 <Box>
                   <IllustrationListCard
                     illustration={ill}

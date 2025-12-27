@@ -1,3 +1,4 @@
+// src/api/illustrations.js - Unified and Optimized
 import axios from 'axios';
 
 // Use environment variable or default to localhost with /api prefix
@@ -45,12 +46,52 @@ api.interceptors.response.use(
 );
 
 // ============================================================================
+// CACHING UTILITY
+// ============================================================================
+const cache = new Map();
+const CACHE_TTL = 30000; // 30 seconds
+
+const getCacheKey = (endpoint, params) => {
+  return `${endpoint}:${JSON.stringify(params || {})}`;
+};
+
+const getFromCache = (key) => {
+  const cached = cache.get(key);
+  if (!cached) return null;
+  
+  const isExpired = Date.now() - cached.timestamp > CACHE_TTL;
+  if (isExpired) {
+    cache.delete(key);
+    return null;
+  }
+  
+  return cached.data;
+};
+
+const setCache = (key, data) => {
+  cache.set(key, {
+    data,
+    timestamp: Date.now()
+  });
+};
+
+// Clear cache manually
+export const clearCache = () => {
+  cache.clear();
+};
+
+// ============================================================================
 // MANUFACTURERS
 // ============================================================================
 export const manufacturerAPI = {
   getAll: async (params = {}) => {
+    const cacheKey = getCacheKey('manufacturers', params);
+    const cached = getFromCache(cacheKey);
+    if (cached) return cached;
+
     try {
       const response = await api.get('/manufacturers/', { params });
+      setCache(cacheKey, response.data);
       return response.data;
     } catch (error) {
       console.error('Manufacturer API error:', error);
@@ -62,18 +103,22 @@ export const manufacturerAPI = {
     return response.data;
   },
   create: async (data) => {
+    clearCache();
     const response = await api.post('/manufacturers/', data);
     return response.data;
   },
   update: async (slug, data) => {
+    clearCache();
     const response = await api.put(`/manufacturers/${slug}/`, data);
     return response.data;
   },
   partialUpdate: async (slug, data) => {
+    clearCache();
     const response = await api.patch(`/manufacturers/${slug}/`, data);
     return response.data;
   },
   delete: async (slug) => {
+    clearCache();
     const response = await api.delete(`/manufacturers/${slug}/`);
     return response.data;
   },
@@ -84,8 +129,13 @@ export const manufacturerAPI = {
 // ============================================================================
 export const engineModelAPI = {
   getAll: async (params = {}) => {
+    const cacheKey = getCacheKey('engine-models', params);
+    const cached = getFromCache(cacheKey);
+    if (cached) return cached;
+
     try {
       const response = await api.get('/engine-models/', { params });
+      setCache(cacheKey, response.data);
       return response.data;
     } catch (error) {
       console.error('Engine Model API error:', error);
@@ -97,26 +147,42 @@ export const engineModelAPI = {
     return response.data;
   },
   getByManufacturer: async (manufacturerId) => {
-    const response = await api.get('/engine-models/', { params: { manufacturer: manufacturerId } });
+    const cacheKey = `engine-models-by-manufacturer:${manufacturerId}`;
+    const cached = getFromCache(cacheKey);
+    if (cached) return cached;
+
+    const response = await api.get('/engine-models/', { 
+      params: { manufacturer: manufacturerId } 
+    });
+    setCache(cacheKey, response.data);
     return response.data;
   },
   getFuelTypes: async () => {
+    const cacheKey = 'fuel-types';
+    const cached = getFromCache(cacheKey);
+    if (cached) return cached;
+
     const response = await api.get('/engine-models/fuel-types/');
+    setCache(cacheKey, response.data);
     return response.data;
   },
   create: async (data) => {
+    clearCache();
     const response = await api.post('/engine-models/', data);
     return response.data;
   },
   update: async (slug, data) => {
+    clearCache();
     const response = await api.put(`/engine-models/${slug}/`, data);
     return response.data;
   },
   partialUpdate: async (slug, data) => {
+    clearCache();
     const response = await api.patch(`/engine-models/${slug}/`, data);
     return response.data;
   },
   delete: async (slug) => {
+    clearCache();
     const response = await api.delete(`/engine-models/${slug}/`);
     return response.data;
   },
@@ -127,8 +193,13 @@ export const engineModelAPI = {
 // ============================================================================
 export const carModelAPI = {
   getAll: async (params = {}) => {
+    const cacheKey = getCacheKey('car-models', params);
+    const cached = getFromCache(cacheKey);
+    if (cached) return cached;
+
     try {
       const response = await api.get('/car-models/', { params });
+      setCache(cacheKey, response.data);
       return response.data;
     } catch (error) {
       console.error('Car Model API error:', error);
@@ -140,27 +211,43 @@ export const carModelAPI = {
     return response.data;
   },
   getByManufacturer: async (manufacturerId) => {
-    const response = await api.get('/car-models/', { params: { manufacturer: manufacturerId } });
+    const cacheKey = `car-models-by-manufacturer:${manufacturerId}`;
+    const cached = getFromCache(cacheKey);
+    if (cached) return cached;
+
+    const response = await api.get('/car-models/', { 
+      params: { manufacturer: manufacturerId } 
+    });
+    setCache(cacheKey, response.data);
     return response.data;
   },
   create: async (data) => {
+    clearCache();
     const response = await api.post('/car-models/', data);
     return response.data;
   },
   update: async (slug, data) => {
+    clearCache();
     const response = await api.put(`/car-models/${slug}/`, data);
     return response.data;
   },
   partialUpdate: async (slug, data) => {
+    clearCache();
     const response = await api.patch(`/car-models/${slug}/`, data);
     return response.data;
   },
   delete: async (slug) => {
+    clearCache();
     const response = await api.delete(`/car-models/${slug}/`);
     return response.data;
   },
   getVehicleTypes: async () => {
+    const cacheKey = 'vehicle-types';
+    const cached = getFromCache(cacheKey);
+    if (cached) return cached;
+
     const response = await api.get('/car-models/vehicle-types/');
+    setCache(cacheKey, response.data);
     return response.data;
   },
 };
@@ -170,8 +257,13 @@ export const carModelAPI = {
 // ============================================================================
 export const partCategoryAPI = {
   getAll: async (params = {}) => {
+    const cacheKey = getCacheKey('part-categories', params);
+    const cached = getFromCache(cacheKey);
+    if (cached) return cached;
+
     try {
       const response = await api.get('/part-categories/', { params });
+      setCache(cacheKey, response.data);
       return response.data;
     } catch (error) {
       console.error('Part Category API error:', error);
@@ -183,18 +275,22 @@ export const partCategoryAPI = {
     return response.data;
   },
   create: async (data) => {
+    clearCache();
     const response = await api.post('/part-categories/', data);
     return response.data;
   },
   update: async (id, data) => {
+    clearCache();
     const response = await api.put(`/part-categories/${id}/`, data);
     return response.data;
   },
   partialUpdate: async (id, data) => {
+    clearCache();
     const response = await api.patch(`/part-categories/${id}/`, data);
     return response.data;
   },
   delete: async (id) => {
+    clearCache();
     const response = await api.delete(`/part-categories/${id}/`);
     return response.data;
   },
@@ -205,7 +301,12 @@ export const partCategoryAPI = {
 // ============================================================================
 export const partSubCategoryAPI = {
   getAll: async (params = {}) => {
+    const cacheKey = getCacheKey('part-subcategories', params);
+    const cached = getFromCache(cacheKey);
+    if (cached) return cached;
+
     const response = await api.get('/part-subcategories/', { params });
+    setCache(cacheKey, response.data);
     return response.data;
   },
   getById: async (id) => {
@@ -213,36 +314,67 @@ export const partSubCategoryAPI = {
     return response.data;
   },
   getByCategory: async (categoryId) => {
+    const cacheKey = `part-subcategories-by-category:${categoryId}`;
+    const cached = getFromCache(cacheKey);
+    if (cached) return cached;
+
     const response = await api.get('/part-subcategories/', {
       params: { part_category: categoryId }
     });
+    setCache(cacheKey, response.data);
     return response.data;
   },
   create: async (data) => {
+    clearCache();
     const response = await api.post('/part-subcategories/', data);
     return response.data;
   },
   update: async (id, data) => {
+    clearCache();
     const response = await api.put(`/part-subcategories/${id}/`, data);
     return response.data;
   },
   partialUpdate: async (id, data) => {
+    clearCache();
     const response = await api.patch(`/part-subcategories/${id}/`, data);
     return response.data;
   },
   delete: async (id) => {
+    clearCache();
     const response = await api.delete(`/part-subcategories/${id}/`);
     return response.data;
   },
 };
 
 // ============================================================================
-// ILLUSTRATIONS API
+// ILLUSTRATIONS API - OPTIMIZED
 // ============================================================================
 export const illustrationAPI = {
+  /**
+   * Get all illustrations - OPTIMIZED
+   * By default, doesn't include file data for speed
+   * Use include_files=true to get file data
+   */
   getAll: async (params = {}) => {
+    const cacheKey = getCacheKey('illustrations', params);
+    const cached = getFromCache(cacheKey);
+    if (cached && !params.include_files) {
+      console.log('Cache hit for illustrations list');
+      return cached;
+    }
+
     try {
-      const response = await api.get('/illustrations/', { params });
+      const response = await api.get('/illustrations/', { 
+        params: {
+          ...params,
+          // DON'T include files by default for speed
+          include_files: params.include_files || false,
+        }
+      });
+      
+      if (!params.include_files) {
+        setCache(cacheKey, response.data);
+      }
       return response.data;
     } catch (error) {
       console.error('Illustration API error:', error);
@@ -250,12 +382,41 @@ export const illustrationAPI = {
     }
   },
 
+  /**
+   * Get single illustration - includes all files
+   */
   getById: async (id) => {
+    const cacheKey = `illustration:${id}`;
+    const cached = getFromCache(cacheKey);
+    if (cached) {
+      console.log('Cache hit for illustration detail');
+      return cached;
+    }
+
     try {
       const response = await api.get(`/illustrations/${id}/`);
+      setCache(cacheKey, response.data);
       return response.data;
     } catch (error) {
       console.error('Illustration API error:', error);
+      throw error;
+    }
+  },
+
+  /**
+   * Get quick stats - just counts
+   */
+  getStats: async () => {
+    const cacheKey = 'illustration-stats';
+    const cached = getFromCache(cacheKey);
+    if (cached) return cached;
+
+    try {
+      const response = await api.get('/illustrations/stats/');
+      setCache(cacheKey, response.data);
+      return response.data;
+    } catch (error) {
+      console.error('Illustration stats error:', error);
       throw error;
     }
   },
@@ -285,6 +446,7 @@ export const illustrationAPI = {
     }
 
     try {
+      clearCache();
       const response = await api.post('/illustrations/', formData, {
         headers: { 'Content-Type': 'multipart/form-data' }
       });
@@ -320,6 +482,7 @@ export const illustrationAPI = {
     }
 
     try {
+      clearCache();
       const response = await api.put(`/illustrations/${id}/`, formData, {
         headers: { 'Content-Type': 'multipart/form-data' }
       });
@@ -332,6 +495,7 @@ export const illustrationAPI = {
 
   partialUpdate: async (id, data) => {
     try {
+      clearCache();
       const response = await api.patch(`/illustrations/${id}/`, data);
       return response.data;
     } catch (error) {
@@ -342,6 +506,7 @@ export const illustrationAPI = {
 
   delete: async (id) => {
     try {
+      clearCache();
       const response = await api.delete(`/illustrations/${id}/`);
       return response.data;
     } catch (error) {
@@ -351,37 +516,33 @@ export const illustrationAPI = {
   },
 
   // File management methods
-  uploadFiles: async (id, files) => {
+  addFiles: async (id, files) => {
     const formData = new FormData();
     files.forEach(file => {
       formData.append('files', file);
     });
 
     try {
-      const response = await api.post(`/illustrations/${id}/upload-files/`, formData, {
+      clearCache();
+      const response = await api.post(`/illustrations/${id}/add_files/`, formData, {
         headers: { 'Content-Type': 'multipart/form-data' }
       });
       return response.data;
     } catch (error) {
-      console.error('Illustration API error:', error);
+      console.error('Failed to add files:', error);
       throw error;
     }
+  },
+
+  uploadFiles: async (id, files) => {
+    // Alias for addFiles to maintain compatibility
+    return illustrationAPI.addFiles(id, files);
   },
 
   deleteFile: async (illustrationId, fileId) => {
     try {
+      clearCache();
       const response = await api.delete(`/illustrations/${illustrationId}/files/${fileId}/`);
-      return response.data;
-    } catch (error) {
-      console.error('Illustration API error:', error);
-      throw error;
-    }
-  },
-
-  // Statistics
-  getStats: async () => {
-    try {
-      const response = await api.get('/illustrations/stats/');
       return response.data;
     } catch (error) {
       console.error('Illustration API error:', error);
@@ -392,6 +553,7 @@ export const illustrationAPI = {
   // Batch operations
   bulkDelete: async (ids) => {
     try {
+      clearCache();
       const response = await api.post('/illustrations/bulk-delete/', { ids });
       return response.data;
     } catch (error) {
@@ -405,9 +567,14 @@ export const illustrationAPI = {
 // ILLUSTRATION FILES API
 // ============================================================================
 export const illustrationFileAPI = {
-  getByIllustration: async (illustrationId) => {
+  getAll: async (params = {}) => {
+    const cacheKey = getCacheKey('illustration-files', params);
+    const cached = getFromCache(cacheKey);
+    if (cached) return cached;
+
     try {
-      const response = await api.get(`/illustration-files/?illustration=${illustrationId}`);
+      const response = await api.get('/illustration-files/', { params });
+      setCache(cacheKey, response.data);
       return response.data;
     } catch (error) {
       console.error('Failed to fetch illustration files:', error);
@@ -415,6 +582,20 @@ export const illustrationFileAPI = {
     }
   },
 
+  getByIllustration: async (illustrationId) => {
+    const cacheKey = `illustration-files:${illustrationId}`;
+    const cached = getFromCache(cacheKey);
+    if (cached) return cached;
+
+    try {
+      const response = await api.get(`/illustration-files/?illustration=${illustrationId}`);
+      setCache(cacheKey, response.data);
+      return response.data;
+    } catch (error) {
+      console.error('Failed to fetch illustration files:', error);
+      throw error;
+    }
+  },
 
   getById: async (id) => {
     try {
@@ -442,6 +623,7 @@ export const illustrationFileAPI = {
     });
 
     try {
+      clearCache();
       const response = await api.post('/illustration-files/', formData, {
         headers: { 'Content-Type': 'multipart/form-data' }
       });
@@ -454,6 +636,7 @@ export const illustrationFileAPI = {
 
   update: async (id, data) => {
     try {
+      clearCache();
       const response = await api.put(`/illustration-files/${id}/`, data);
       return response.data;
     } catch (error) {
@@ -464,6 +647,7 @@ export const illustrationFileAPI = {
 
   partialUpdate: async (id, data) => {
     try {
+      clearCache();
       const response = await api.patch(`/illustration-files/${id}/`, data);
       return response.data;
     } catch (error) {
@@ -474,6 +658,7 @@ export const illustrationFileAPI = {
 
   delete: async (id) => {
     try {
+      clearCache();
       const response = await api.delete(`/illustration-files/${id}/`);
       return response.data;
     } catch (error) {
@@ -482,24 +667,16 @@ export const illustrationFileAPI = {
     }
   },
 
-  // Additional helper methods
-  getByIllustration: async (illustrationId) => {
-    try {
-      const response = await api.get('/illustration-files/', {
-        params: { illustration: illustrationId }
-      });
-      return response.data;
-    } catch (error) {
-      console.error('Illustration File API error:', error);
-      throw error;
-    }
-  },
-
   getByFileType: async (fileType) => {
+    const cacheKey = `illustration-files-by-type:${fileType}`;
+    const cached = getFromCache(cacheKey);
+    if (cached) return cached;
+
     try {
       const response = await api.get('/illustration-files/', {
         params: { file_type: fileType }
       });
+      setCache(cacheKey, response.data);
       return response.data;
     } catch (error) {
       console.error('Illustration File API error:', error);
@@ -514,6 +691,7 @@ export const illustrationFileAPI = {
       file: file,
     });
   },
+
   download: async (fileId) => {
     try {
       const response = await api.get(`/illustration-files/${fileId}/download/`, {
@@ -525,8 +703,6 @@ export const illustrationFileAPI = {
       throw error;
     }
   },
-
-
 };
 
 export default api;

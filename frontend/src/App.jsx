@@ -37,7 +37,7 @@ function App() {
     <ThemeProvider theme={theme}>
       <CssBaseline />
       <AuthProvider>
-        {isMobile ? <MobileRoutes /> : <AppRoutes />}
+        {isMobile ? <MobileRoutes /> : <MobileRoutes />}
       </AuthProvider>
     </ThemeProvider>
   );

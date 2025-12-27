@@ -190,6 +190,10 @@ class IllustrationViewSet(viewsets.ModelViewSet):
         if getattr(self, 'swagger_fake_view', False):
             return Illustration.objects.none()
 
+        # ⭐ NEW: Check if we should include files from query params
+        include_files = self.request.query_params.get('include_files', 'false').lower() == 'true'
+
+        # Base queryset
         qs = Illustration.objects.select_related(
             'user',
             'factory',
@@ -197,22 +201,25 @@ class IllustrationViewSet(viewsets.ModelViewSet):
             'part_category',
             'part_subcategory__part_category'
         ).prefetch_related(
-            Prefetch(
-                'files',
-                queryset=IllustrationFile.objects.only('id', 'file', 'file_type')
-            ),
             'applicable_car_models__manufacturer'
         ).annotate(file_count=Count('files', distinct=True))
+
+        # ⭐ NEW: Only prefetch files if explicitly requested or on detail view
+        if self.action == 'retrieve' or include_files:
+            qs = qs.prefetch_related(
+                Prefetch(
+                    'files',
+                    queryset=IllustrationFile.objects.only('id', 'file', 'file_type', 'uploaded_at')
+                )
+            )
 
         user = self.request.user
 
         # Debug logging
         print(f"=== ILLUSTRATION QUERYSET DEBUG ===")
         print(f"User: {user.username} (ID: {user.id})")
-        print(f"Is authenticated: {user.is_authenticated}")
-        print(f"Is staff: {user.is_staff}")
-        print(f"User factory: {user.factory}")
-        print(f"User factory ID: {user.factory.id if user.factory else None}")
+        print(f"Include files: {include_files}")
+        print(f"Action: {self.action}")
 
         # Not authenticated - no access
         if not user.is_authenticated:
@@ -241,6 +248,14 @@ class IllustrationViewSet(viewsets.ModelViewSet):
 
     def get_serializer_class(self):
         return IllustrationDetailSerializer if self.action == 'retrieve' else IllustrationSerializer
+
+    # ⭐ NEW: Add this method to pass include_files to serializer
+    def get_serializer_context(self):
+        context = super().get_serializer_context()
+        # Pass the include_files parameter to serializer
+        include_files = self.request.query_params.get('include_files', 'false').lower() == 'true'
+        context['include_files'] = include_files or self.action == 'retrieve'
+        return context
 
     def perform_create(self, serializer):
         """Auto-set user and factory when creating"""

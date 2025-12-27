@@ -171,7 +171,7 @@ class IllustrationSerializer(serializers.ModelSerializer):
     # File count
     file_count = serializers.IntegerField(read_only=True)
     
-    # First file for list view image display
+    # ⭐ CHANGED: Make first_file conditional based on context
     first_file = serializers.SerializerMethodField(read_only=True)
     
     class Meta:
@@ -227,15 +227,21 @@ class IllustrationSerializer(serializers.ModelSerializer):
         
         return instance
     
+    # ⭐ CHANGED: Only return first_file if include_files is True
     def get_first_file(self, obj):
         """Return the first file's data for displaying thumbnail in list views"""
+        # Check if we should include files from context
+        include_files = self.context.get('include_files', False)
+        
+        if not include_files:
+            # Return None if files not requested (for speed)
+            return None
+        
         first_file = obj.files.first()
         if first_file:
             data = IllustrationFileSerializer(first_file, context=self.context).data
             return data
         return None
-
-
 # ------------------------------
 # Illustration Detail Serializer (with full nested data)
 # ------------------------------
