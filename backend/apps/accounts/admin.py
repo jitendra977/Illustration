@@ -25,7 +25,7 @@ class CustomUserAdmin(UserAdmin):
         'profile_image_display',
         'email',
         'username',
-        'factory',
+        'factory_display',
         'phone_number',
         'is_verified',
         'is_active',
@@ -56,6 +56,7 @@ class CustomUserAdmin(UserAdmin):
 
     readonly_fields = (
         'profile_image_preview',
+        'factory_display_readonly',
         'created_at',
         'updated_at',
         'last_login',
@@ -77,7 +78,8 @@ class CustomUserAdmin(UserAdmin):
             )
         }),
         ('Factory', {
-            'fields': ('factory',)
+            'fields': ('factory_display_readonly',),
+            'description': 'Factory cannot be changed after user creation. Contact superadmin if needed.'
         }),
         ('Contact', {
             'fields': ('phone_number', 'address')
@@ -151,6 +153,31 @@ class CustomUserAdmin(UserAdmin):
             obj.email[0].upper()
         )
     profile_image_preview.short_description = "Profile Preview"
+
+    def factory_display(self, obj):
+        """For list view"""
+        if obj.factory:
+            return obj.factory.name
+        return "-"
+    factory_display.short_description = "Factory"
+    factory_display.admin_order_field = "factory__name"
+
+    def factory_display_readonly(self, obj):
+        """For detail view - shows factory as readonly with link"""
+        if obj.factory:
+            from django.urls import reverse
+            url = reverse('admin:accounts_factory_change', args=[obj.factory.id])
+            return format_html(
+                '<a href="{}" style="font-size:14px;padding:8px 12px;background:#f0f0f0;'
+                'border:1px solid #ccc;border-radius:4px;display:inline-block;'
+                'text-decoration:none;color:#333;">'
+                '🏭 {}</a>',
+                url, obj.factory.name
+            )
+        return format_html(
+            '<span style="color:#999;font-style:italic;">No factory assigned</span>'
+        )
+    factory_display_readonly.short_description = "Factory"
 
     # ================= ACTIONS =================
     actions = ['mark_verified']

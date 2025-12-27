@@ -1,4 +1,4 @@
-# serializers.py - FIXED FOR INDEPENDENT CATEGORIES
+# serializers.py - FIXED
 
 from rest_framework import serializers
 from .models import (
@@ -17,7 +17,7 @@ class ManufacturerSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = Manufacturer
-        fields = ['id', 'name',  'slug', 'engine_count', 'car_model_count']
+        fields = ['id', 'name', 'slug', 'engine_count', 'car_model_count']
         read_only_fields = ['id', 'engine_count', 'car_model_count']
 
 
@@ -74,14 +74,15 @@ class CarModelSerializer(serializers.ModelSerializer):
             for engine in obj.engines.all()
         ]
 
+
 # ------------------------------
-# Part Category Serializer (FIXED)
+# Part Category Serializer
 # ------------------------------
 class PartCategorySerializer(serializers.ModelSerializer):
     subcategory_count = serializers.IntegerField(read_only=True)
     illustration_count = serializers.IntegerField(read_only=True)
     
-    class Meta:  # ✅ Fixed indentation
+    class Meta:
         model = PartCategory
         fields = [
             'id', 'name', 'description', 
@@ -89,14 +90,15 @@ class PartCategorySerializer(serializers.ModelSerializer):
         ]
         read_only_fields = ['id', 'subcategory_count', 'illustration_count']
 
+
 # ------------------------------
-# Part Subcategory Serializer (FIXED)
+# Part Subcategory Serializer
 # ------------------------------
 class PartSubCategorySerializer(serializers.ModelSerializer):
     part_category_name = serializers.CharField(source='part_category.name', read_only=True)
     illustration_count = serializers.IntegerField(read_only=True)
     
-    class Meta:  # ✅ Fixed indentation
+    class Meta:
         model = PartSubCategory
         fields = [
             'id', 'part_category', 'part_category_name',
@@ -106,17 +108,46 @@ class PartSubCategorySerializer(serializers.ModelSerializer):
             'id', 'part_category_name', 'illustration_count'
         ]
 
+
 # ------------------------------
-# Illustration File Serializer
+# Illustration File Serializer (SINGLE DEFINITION)
 # ------------------------------
 class IllustrationFileSerializer(serializers.ModelSerializer):
     file_type_display = serializers.CharField(source='get_file_type_display', read_only=True)
+    file_name = serializers.SerializerMethodField(read_only=True)
+    download_url = serializers.SerializerMethodField(read_only=True)
+    preview_url = serializers.SerializerMethodField(read_only=True)
     
     class Meta:
         model = IllustrationFile
-        fields = ['id', 'illustration', 'file', 'file_type', 'file_type_display', 'uploaded_at'
+        fields = [
+            'id', 'illustration', 'file', 'file_name', 'file_type', 
+            'file_type_display', 'uploaded_at', 'download_url', 'preview_url'
         ]
-        read_only_fields = ['id', 'file_type', 'file_type_display', 'uploaded_at']
+        read_only_fields = [
+            'id', 'file_type', 'file_type_display', 'uploaded_at', 
+            'file_name', 'download_url', 'preview_url'
+        ]
+    
+    def get_file_name(self, obj):
+        """Extract readable filename from stored path"""
+        if obj.file:
+            return obj.file.name.split('/')[-1]
+        return 'file'
+    
+    def get_download_url(self, obj):
+        """Build download URL"""
+        request = self.context.get('request')
+        if request:
+            return request.build_absolute_uri(f'/api/illustration-files/{obj.id}/download/')
+        return None
+    
+    def get_preview_url(self, obj):
+        """Build preview URL"""
+        request = self.context.get('request')
+        if request:
+            return request.build_absolute_uri(f'/api/illustration-files/{obj.id}/preview/')
+        return None
 
 
 # ------------------------------
@@ -132,6 +163,7 @@ class IllustrationSerializer(serializers.ModelSerializer):
     
     # Read-only related names
     user_name = serializers.CharField(source='user.username', read_only=True)
+    factory_name = serializers.CharField(source='factory.name', read_only=True, allow_null=True)
     engine_model_name = serializers.CharField(source='engine_model.name', read_only=True)
     part_category_name = serializers.CharField(source='part_category.name', read_only=True)
     part_subcategory_name = serializers.CharField(source='part_subcategory.name', read_only=True, allow_null=True)
@@ -139,26 +171,25 @@ class IllustrationSerializer(serializers.ModelSerializer):
     # File count
     file_count = serializers.IntegerField(read_only=True)
     
-    # NEW: Add first file for list view image display
+    # First file for list view image display
     first_file = serializers.SerializerMethodField(read_only=True)
     
     class Meta:
         model = Illustration
         fields = [
-            'id', 'user', 'user_name',
+            'id', 'user', 'user_name', 'factory', 'factory_name',
             'engine_model', 'engine_model_name',
             'part_category', 'part_category_name', 
             'part_subcategory', 'part_subcategory_name',
             'title', 'description',
             'applicable_car_models',
             'created_at', 'updated_at',
-            'uploaded_files', 'file_count', 'first_file'  # Added 'first_file'
+            'uploaded_files', 'file_count', 'first_file'
         ]
         read_only_fields = [
-            'id', 'user', 'user_name', 'engine_model_name',
-            'part_category_name', 
-            'part_subcategory_name', 
-            'created_at', 'updated_at', 'file_count'
+            'id', 'user', 'user_name', 'factory', 'factory_name',
+            'engine_model_name', 'part_category_name', 
+            'part_subcategory_name', 'created_at', 'updated_at', 'file_count'
         ]
     
     def create(self, validated_data):
@@ -201,10 +232,6 @@ class IllustrationSerializer(serializers.ModelSerializer):
         first_file = obj.files.first()
         if first_file:
             data = IllustrationFileSerializer(first_file, context=self.context).data
-            # Build absolute URL for cross-origin access
-            request = self.context.get('request')
-            if request:
-                data['file'] = request.build_absolute_uri(first_file.file.url)
             return data
         return None
 
@@ -217,11 +244,12 @@ class IllustrationDetailSerializer(serializers.ModelSerializer):
     files = IllustrationFileSerializer(many=True, read_only=True)
     user_name = serializers.CharField(source='user.username', read_only=True)
     user_email = serializers.CharField(source='user.email', read_only=True)
+    factory_name = serializers.CharField(source='factory.name', read_only=True, allow_null=True)
     
     # Engine details
     engine_model_detail = serializers.SerializerMethodField()
     
-    # Part details (FIXED - no engine_model reference)
+    # Part details
     part_category_detail = serializers.SerializerMethodField()
     part_subcategory_detail = serializers.SerializerMethodField()
     
@@ -231,7 +259,7 @@ class IllustrationDetailSerializer(serializers.ModelSerializer):
     class Meta:
         model = Illustration
         fields = [
-            'id', 'user', 'user_name', 'user_email',
+            'id', 'user', 'user_name', 'user_email', 'factory', 'factory_name',
             'engine_model', 'engine_model_detail',
             'part_category', 'part_category_detail',
             'part_subcategory', 'part_subcategory_detail',
@@ -291,7 +319,7 @@ class ManufacturerDetailSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = Manufacturer
-        fields = ['id', 'name', 'slug',  'car_models']
+        fields = ['id', 'name', 'slug', 'car_models']
 
 
 class EngineModelDetailSerializer(serializers.ModelSerializer):
@@ -303,7 +331,7 @@ class EngineModelDetailSerializer(serializers.ModelSerializer):
     class Meta:
         model = EngineModel
         fields = [
-            'id', 'manufacturer', 'name', 'engine_code','fuel_type',
+            'id', 'manufacturer', 'name', 'engine_code', 'fuel_type',
             'slug', 'car_models', 'illustration_count'
         ]
 
@@ -320,29 +348,3 @@ class CarModelDetailSerializer(serializers.ModelSerializer):
             'vehicle_type', 'year_from', 'year_to',
             'model_code', 'chassis_code', 'engines'
         ]
-
-class IllustrationFileSerializer(serializers.ModelSerializer):
-    file_type_display = serializers.CharField(source='get_file_type_display', read_only=True)
-    file_name = serializers.SerializerMethodField(read_only=True)
-    download_url = serializers.SerializerMethodField(read_only=True)
-    
-    class Meta:
-        model = IllustrationFile
-        fields = [
-            'id', 'illustration', 'file', 'file_name', 'file_type', 
-            'file_type_display', 'uploaded_at', 'download_url'
-        ]
-        read_only_fields = ['id', 'file_type', 'file_type_display', 'uploaded_at', 'file_name', 'download_url']
-    
-    def get_file_name(self, obj):
-        """Extract readable filename from stored path"""
-        if obj.file:
-            return obj.file.name.split('/')[-1]
-        return 'file'
-    
-    def get_download_url(self, obj):
-        """Build download URL"""
-        request = self.context.get('request')
-        if request:
-            return request.build_absolute_uri(f'/api/illustration-files/{obj.id}/download/')
-        return None

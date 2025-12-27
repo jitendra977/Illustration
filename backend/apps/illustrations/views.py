@@ -1,18 +1,13 @@
 from django.db.models import Count, Prefetch
-from django.http import FileResponse
+from django.http import FileResponse, StreamingHttpResponse, Http404
 
 from rest_framework import viewsets, filters, status
 from rest_framework.decorators import action
-from rest_framework.permissions import AllowAny
+from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from django_filters.rest_framework import DjangoFilterBackend
 import os
 import mimetypes
-from django.http import FileResponse, Http404
-from rest_framework import viewsets, filters, status
-from rest_framework.decorators import action
-from rest_framework.response import Response
-
 
 from .models import (
     Manufacturer, CarModel, EngineModel,
@@ -32,6 +27,8 @@ from .serializers import (
 from .permissions import (
     IsAdminOrReadOnly,
     IsAdminOrOwner,
+    IsAuthenticatedAndActive,
+    IsVerifiedUser,
 )
 
 from .pagination import DefaultPagination
@@ -162,12 +159,14 @@ class PartSubCategoryViewSet(viewsets.ModelViewSet):
 
 
 # ========================================
-# Illustrations
+# Illustrations - FACTORY BASED ACCESS
 # ========================================
 class IllustrationViewSet(viewsets.ModelViewSet):
+    permission_classes = [IsAuthenticatedAndActive]
     pagination_class = DefaultPagination
     filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
     filterset_fields = [
+        'factory',
         'engine_model',
         'engine_model__manufacturer',
         'part_category',
@@ -180,12 +179,12 @@ class IllustrationViewSet(viewsets.ModelViewSet):
 
     def get_permissions(self):
         """
-        List and retrieve are public
-        Create, update, delete require authentication
+        Read: Authenticated and active
+        Write: Verified users
         """
-        if self.action in ['list', 'retrieve']:
-            return [AllowAny()]
-        return [IsAdminOrReadOnly()]
+        if self.action in ['create', 'update', 'partial_update', 'destroy', 'add_files']:
+            return [IsVerifiedUser()]
+        return [IsAuthenticatedAndActive()]
 
     def get_queryset(self):
         if getattr(self, 'swagger_fake_view', False):
@@ -193,6 +192,7 @@ class IllustrationViewSet(viewsets.ModelViewSet):
 
         qs = Illustration.objects.select_related(
             'user',
+            'factory',
             'engine_model__manufacturer',
             'part_category',
             'part_subcategory__part_category'
@@ -204,28 +204,77 @@ class IllustrationViewSet(viewsets.ModelViewSet):
             'applicable_car_models__manufacturer'
         ).annotate(file_count=Count('files', distinct=True))
 
-        # Public access to all illustrations
-        return qs
+        user = self.request.user
+
+        # Debug logging
+        print(f"=== ILLUSTRATION QUERYSET DEBUG ===")
+        print(f"User: {user.username} (ID: {user.id})")
+        print(f"Is authenticated: {user.is_authenticated}")
+        print(f"Is staff: {user.is_staff}")
+        print(f"User factory: {user.factory}")
+        print(f"User factory ID: {user.factory.id if user.factory else None}")
+
+        # Not authenticated - no access
+        if not user.is_authenticated:
+            print("User not authenticated - returning empty queryset")
+            return qs.none()
+
+        # Staff users can see everything
+        if user.is_staff:
+            print("User is staff - returning all illustrations")
+            factory_id = self.request.query_params.get('factory', None)
+            if factory_id:
+                print(f"Filtering by factory_id: {factory_id}")
+                qs = qs.filter(factory_id=factory_id)
+            return qs
+        
+        # Regular users: Only see their factory's illustrations
+        if user.factory:
+            print(f"Regular user - filtering by factory: {user.factory.name} (ID: {user.factory.id})")
+            filtered_qs = qs.filter(factory=user.factory)
+            print(f"Filtered queryset count: {filtered_qs.count()}")
+            return filtered_qs
+        
+        # User has no factory assigned - return empty
+        print("User has no factory - returning empty queryset")
+        return qs.none()
 
     def get_serializer_class(self):
         return IllustrationDetailSerializer if self.action == 'retrieve' else IllustrationSerializer
 
     def perform_create(self, serializer):
-        serializer.save(user=self.request.user)
+        """Auto-set user and factory when creating"""
+        user = self.request.user
+        
+        # Ensure user has a factory
+        if not user.factory and not user.is_staff:
+            from rest_framework.exceptions import ValidationError
+            raise ValidationError({'factory': 'あなたは工場に割り当てられていません'})
+        
+        factory = user.factory if user.factory else None
+        serializer.save(user=user, factory=factory)
 
-    @action(detail=True, methods=['post'])
+    @action(detail=True, methods=['post'], permission_classes=[IsVerifiedUser])
     def add_files(self, request, pk=None):
         illustration = self.get_object()
+        
+        # Check permission: user must own the illustration or be staff
+        if not request.user.is_staff and illustration.user != request.user:
+            return Response(
+                {'error': 'このイラストレーションへのアクセス権がありません'},
+                status=status.HTTP_403_FORBIDDEN
+            )
+        
         files = request.FILES.getlist('files')
 
         if not files:
-            return Response({'error': 'No files provided'}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({'error': 'ファイルが提供されていません'}, status=status.HTTP_400_BAD_REQUEST)
 
         created = []
         for file in files:
             if not file.name.lower().endswith('.pdf'):
                 return Response(
-                    {'error': 'Only PDF files allowed'},
+                    {'error': 'PDFファイルのみ許可されています'},
                     status=status.HTTP_400_BAD_REQUEST
                 )
 
@@ -236,14 +285,15 @@ class IllustrationViewSet(viewsets.ModelViewSet):
             created.append(IllustrationFileSerializer(obj).data)
 
         return Response(
-            {'message': f'{len(created)} file(s) uploaded', 'files': created},
+            {'message': f'{len(created)}個のファイルがアップロードされました', 'files': created},
             status=status.HTTP_201_CREATED
         )
 # ========================================
-# Illustration Files
+# Illustration Files - FACTORY BASED ACCESS
 # ========================================
 class IllustrationFileViewSet(viewsets.ModelViewSet):
     serializer_class = IllustrationFileSerializer
+    permission_classes = [IsAuthenticatedAndActive]  # Always require auth
     pagination_class = DefaultPagination
     filter_backends = [DjangoFilterBackend, filters.OrderingFilter]
     filterset_fields = ['illustration', 'file_type']
@@ -252,12 +302,12 @@ class IllustrationFileViewSet(viewsets.ModelViewSet):
 
     def get_permissions(self):
         """
-        List, retrieve, download, and preview are public
-        Create, update, delete require ownership or admin
+        All actions require authentication
+        But write operations also require verification
         """
-        if self.action in ['list', 'retrieve', 'download', 'preview']:
-            return [AllowAny()]
-        return [IsAdminOrOwner()]
+        if self.action in ['create', 'update', 'partial_update', 'destroy']:
+            return [IsVerifiedUser()]
+        return [IsAuthenticatedAndActive()]
 
     def get_queryset(self):
         if getattr(self, 'swagger_fake_view', False):
@@ -265,34 +315,32 @@ class IllustrationFileViewSet(viewsets.ModelViewSet):
 
         qs = IllustrationFile.objects.select_related(
             'illustration__user',
+            'illustration__factory',
             'illustration__engine_model__manufacturer'
         )
 
-        # For public actions (list, retrieve, download, preview), show all files
-        if self.action in ['list', 'retrieve', 'download', 'preview']:
-            return qs
-        
-        # For create/update/delete actions, filter based on user permissions
-        if not self.request.user.is_authenticated:
+        user = self.request.user
+
+        # Not authenticated - no access
+        if not user.is_authenticated:
             return qs.none()
         
-        # Verified staff can access all files for modification
-        if (
-            self.request.user.is_staff and
-            self.request.user.is_verified
-        ):
+        # Staff can see all files
+        if user.is_staff:
             return qs
 
-        # Regular verified users can only modify their own illustration files
-        if self.request.user.is_verified:
-            return qs.filter(illustration__user=self.request.user)
-
+        # Regular users: only their factory's files
+        if user.factory:
+            return qs.filter(illustration__factory=user.factory)
+        
+        # No factory assigned - no access
         return qs.none()
 
-    @action(detail=True, methods=['get'], permission_classes=[AllowAny])
+    @action(detail=True, methods=['get'], permission_classes=[IsAuthenticatedAndActive])
     def preview(self, request, pk=None):
         """Preview file inline in browser"""
         try:
+            # get_object() will automatically apply queryset filtering
             file_obj = self.get_object()
             
             if not file_obj.file:
@@ -305,7 +353,6 @@ class IllustrationFileViewSet(viewsets.ModelViewSet):
             try:
                 file_path = file_obj.file.path
             except NotImplementedError:
-                # Cloud storage - return URL for preview
                 return Response(
                     {'preview_url': file_obj.file.url},
                     status=status.HTTP_200_OK
@@ -339,8 +386,6 @@ class IllustrationFileViewSet(viewsets.ModelViewSet):
                 )
             
             # Create response for inline viewing
-            from django.http import StreamingHttpResponse
-            
             if file_size > 10 * 1024 * 1024:  # 10MB
                 response = StreamingHttpResponse(
                     file_handle,
@@ -352,7 +397,7 @@ class IllustrationFileViewSet(viewsets.ModelViewSet):
                     content_type=content_type
                 )
             
-            # Set inline disposition (key difference from download)
+            # Set inline disposition
             response['Content-Disposition'] = f'inline; filename="{original_name}"'
             response['Content-Length'] = file_size
             response['X-Content-Type-Options'] = 'nosniff'
@@ -370,7 +415,7 @@ class IllustrationFileViewSet(viewsets.ModelViewSet):
             
         except IllustrationFile.DoesNotExist:
             return Response(
-                {'error': 'ファイルが見つかりません'},
+                {'error': 'ファイルが見つかりません（アクセス権がないか存在しません）'},
                 status=status.HTTP_404_NOT_FOUND
             )
         except Exception as e:
@@ -384,10 +429,11 @@ class IllustrationFileViewSet(viewsets.ModelViewSet):
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR
             )
 
-    @action(detail=True, methods=['get'], permission_classes=[AllowAny])
+    @action(detail=True, methods=['get'], permission_classes=[IsAuthenticatedAndActive])
     def download(self, request, pk=None):
-        """Download file with proper headers for production"""
+        """Download file"""
         try:
+            # get_object() will automatically apply queryset filtering
             file_obj = self.get_object()
             
             if not file_obj.file:
@@ -400,7 +446,6 @@ class IllustrationFileViewSet(viewsets.ModelViewSet):
             try:
                 file_path = file_obj.file.path
             except NotImplementedError:
-                # Cloud storage - return redirect URL
                 return Response(
                     {'download_url': file_obj.file.url},
                     status=status.HTTP_200_OK
@@ -409,7 +454,7 @@ class IllustrationFileViewSet(viewsets.ModelViewSet):
             # Check if file exists
             if not os.path.exists(file_path):
                 return Response(
-                    {'error': f'ファイルが見つかりません: {os.path.basename(file_obj.file.name)}'},
+                    {'error': f'ファイルが見つかりません'},
                     status=status.HTTP_404_NOT_FOUND
                 )
             
@@ -435,7 +480,7 @@ class IllustrationFileViewSet(viewsets.ModelViewSet):
             # Get file size
             file_size = os.path.getsize(file_path)
             
-            # Open file and create response
+            # Open file
             try:
                 file_handle = open(file_path, 'rb')
             except PermissionError:
@@ -445,8 +490,6 @@ class IllustrationFileViewSet(viewsets.ModelViewSet):
                 )
             
             # Use StreamingHttpResponse for large files
-            from django.http import StreamingHttpResponse
-            
             if file_size > 10 * 1024 * 1024:  # 10MB
                 response = StreamingHttpResponse(
                     file_handle,
@@ -458,7 +501,7 @@ class IllustrationFileViewSet(viewsets.ModelViewSet):
                     content_type=content_type
                 )
             
-            # Set download headers (attachment = force download)
+            # Set download headers
             response['Content-Disposition'] = f'attachment; filename="{download_filename}"'
             response['Content-Length'] = file_size
             response['X-Content-Type-Options'] = 'nosniff'
@@ -466,7 +509,7 @@ class IllustrationFileViewSet(viewsets.ModelViewSet):
             response['Pragma'] = 'no-cache'
             response['Expires'] = '0'
             
-            # CORS headers for production
+            # CORS headers
             origin = request.META.get('HTTP_ORIGIN', '')
             allowed_origins = ['https://yaw.nishanaweb.cloud', 'https://api.yaw.nishanaweb.cloud']
             
@@ -479,7 +522,7 @@ class IllustrationFileViewSet(viewsets.ModelViewSet):
             
         except IllustrationFile.DoesNotExist:
             return Response(
-                {'error': 'ファイルが見つかりません'},
+                {'error': 'ファイルが見つかりません（アクセス権がないか存在しません）'},
                 status=status.HTTP_404_NOT_FOUND
             )
         except Exception as e:

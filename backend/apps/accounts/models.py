@@ -72,6 +72,7 @@ class User(AbstractUser):
         on_delete=models.SET_NULL,
         null=True,
         blank=True,
+        editable=False, 
         related_name="members"
     )
     

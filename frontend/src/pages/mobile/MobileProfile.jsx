@@ -257,70 +257,81 @@ const MobileProfile = () => {
     <Container maxWidth="sm" sx={{ px: 2, py: 3 }}>
       <Stack spacing={3}>
         {/* Profile Header */}
-        <Card sx={{ borderRadius: 3, textAlign: 'center', py: 3 }}>
-          <Box sx={{ position: 'relative', display: 'inline-block' }}>
-            <Avatar 
-              src={imagePreview || user?.profile_image}
-              sx={{ 
-                width: 80, 
-                height: 80,
-                margin: '0 auto',
-                mb: 2,
-                fontSize: '2rem',
-                bgcolor: 'primary.main'
-              }}
-            >
-              {getUserInitial()}
-            </Avatar>
-            <IconButton
-              sx={{
-                position: 'absolute',
-                bottom: 16,
-                right: -8,
-                bgcolor: 'primary.main',
-                color: 'white',
-                width: 32,
-                height: 32,
-                '&:hover': { bgcolor: 'primary.dark' }
-              }}
-              onClick={openEditDialog}
-            >
-              <EditIcon sx={{ fontSize: 18 }} />
-            </IconButton>
-          </Box>
-          
-          <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 1 }}>
-            <Typography variant="h5" fontWeight="bold">
-              {user?.first_name || user?.username || 'ゲスト'}
-            </Typography>
-            {user?.is_verified && (
-              <VerifiedIcon color="primary" sx={{ fontSize: 20 }} />
-            )}
-          </Box>
-          
-          <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
-            {user?.email || ''}
-          </Typography>
-          
-          {!user?.is_verified && (
-            <Alert severity="warning" sx={{ mt: 2, mx: 2 }}>
-              メールアドレスが未確認です
-              <Button 
-                size="small" 
-                onClick={() => setEmailDialogOpen(true)}
-                sx={{ ml: 1 }}
-              >
-                確認メール送信
-              </Button>
-            </Alert>
-          )}
-          
-          {user?.bio && (
-            <Typography variant="body2" sx={{ mt: 2, px: 2, color: 'text.secondary' }}>
-              {user.bio}
-            </Typography>
-          )}
-        </Card>
+        <Card sx={{ borderRadius: 3, py: 3 }}>
+  <Stack spacing={1.5} alignItems="center">
+
+    {/* Avatar */}
+    <Box sx={{ position: 'relative' }}>
+      <Avatar
+        src={imagePreview || user?.profile_image}
+        sx={{
+          width: 88,
+          height: 88,
+          fontSize: '2rem',
+          bgcolor: 'primary.main'
+        }}
+      >
+        {getUserInitial()}
+      </Avatar>
+
+      <IconButton
+        onClick={openEditDialog}
+        sx={{
+          position: 'absolute',
+          bottom: 0,
+          right: 0,
+          bgcolor: 'primary.main',
+          color: 'white',
+          width: 30,
+          height: 30,
+          '&:hover': { bgcolor: 'primary.dark' }
+        }}
+      >
+        <EditIcon sx={{ fontSize: 16 }} />
+      </IconButton>
+    </Box>
+
+    {/* Name */}
+    <Stack direction="row" spacing={0.5} alignItems="center">
+      <Typography variant="h6" fontWeight="bold">
+        {user?.first_name || user?.username || 'ゲスト'}
+      </Typography>
+      {user?.is_verified && (
+        <VerifiedIcon color="primary" sx={{ fontSize: 18 }} />
+      )}
+    </Stack>
+
+    {/* Email */}
+    <Typography variant="body2" color="text.secondary">
+      {user?.email}
+    </Typography>
+
+    {/* Factory (IMPORTANT PART) */}
+    <Box
+      sx={{
+        mt: 0.5,
+        px: 1.5,
+        py: 0.5,
+        borderRadius: 2,
+        bgcolor: 'grey.100',
+        fontSize: '0.75rem',
+        color: 'text.secondary'
+      }}
+    >
+      🏭 {user?.factory || 'No Factory'}
+    </Box>
+
+    {/* Bio */}
+    {user?.bio && (
+      <Typography
+        variant="body2"
+        sx={{ mt: 1, px: 3, textAlign: 'center', color: 'text.secondary' }}
+      >
+        {user.bio}
+      </Typography>
+    )}
+  </Stack>
+</Card>
 
         {/* Settings List */}
         <Card sx={{ borderRadius: 3 }}>

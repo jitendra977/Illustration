@@ -3,28 +3,9 @@ from django.db import models
 from django.contrib.auth import get_user_model
 import os
 from django.utils.text import slugify
+from apps.accounts.models import Factory
 
 User = get_user_model()
-
-# ------------------------------
-# File Upload Path
-# ------------------------------
-def illustration_file_path(instance, filename):
-    """
-    Generate upload path: illustrations/Manufacturer/EngineModel/PartCategory/PartSubCategory/IllustrationID/filename
-    """
-    ext = filename.split('.')[-1]
-    filename = f"{uuid.uuid4()}.{ext}"
-
-    return os.path.join(
-        "illustrations",
-        instance.illustration.engine_model.manufacturer.slug,
-        instance.illustration.engine_model.slug,
-        instance.illustration.part_category.slug,
-        instance.illustration.part_subcategory.slug if instance.illustration.part_subcategory else "general",
-        str(instance.illustration.id),
-        filename
-    )
 
 
 # ------------------------------
@@ -41,7 +22,6 @@ class Manufacturer(models.Model):
         verbose_name = "Manufacturer"
         verbose_name_plural = "Manufacturers"
         ordering = ['name']
-
 
     def __str__(self):
         return self.name
@@ -208,8 +188,9 @@ class CarModel(models.Model):
     def __str__(self):
         return f"{self.manufacturer.name} {self.name}"
 
+
 # ------------------------------
-# Part Category Model (FIXED)
+# Part Category Model
 # ------------------------------
 class PartCategory(models.Model):
     """
@@ -218,18 +199,19 @@ class PartCategory(models.Model):
     name = models.CharField(max_length=255, unique=True, help_text="Category name (e.g., Engine Components)")
     description = models.TextField(blank=True)
     slug = models.SlugField(unique=True)
-    order = models.IntegerField(default=0, help_text="Display order (lower = first)")  # ✅ Fixed indentation
+    order = models.IntegerField(default=0, help_text="Display order (lower = first)")
     
-    class Meta:  # ✅ Fixed indentation
+    class Meta:
         verbose_name = "Part Category"
         verbose_name_plural = "Part Categories"
         ordering = ['order', 'name']
     
-    def __str__(self):  # ✅ Fixed indentation
+    def __str__(self):
         return f"{self.name}"
 
+
 # ------------------------------
-# Part Subcategory Model (FIXED)
+# Part Subcategory Model
 # ------------------------------
 class PartSubCategory(models.Model):
     """
@@ -243,19 +225,20 @@ class PartSubCategory(models.Model):
     name = models.CharField(max_length=255, help_text="Subcategory name (e.g., Pistons)")
     description = models.TextField(blank=True)
     slug = models.SlugField()
-    order = models.IntegerField(default=0, help_text="Display order (lower = first)")  # ✅ Fixed indentation
+    order = models.IntegerField(default=0, help_text="Display order (lower = first)")
     
-    class Meta:  # ✅ Fixed indentation
+    class Meta:
         verbose_name = "Part Subcategory"
         verbose_name_plural = "Part Subcategories"
         ordering = ['part_category', 'order', 'name']
         unique_together = ['part_category', 'name']
     
-    def __str__(self):  # ✅ Fixed indentation
+    def __str__(self):
         return f"{self.part_category.name} > {self.name}"
 
+
 # ------------------------------
-# Illustration (FIXED - Links category to specific engine)
+# Illustration
 # ------------------------------
 class Illustration(models.Model):
     """
@@ -266,9 +249,26 @@ class Illustration(models.Model):
     - Which CATEGORY (e.g., Engine Components) 
     - Which SUBCATEGORY (e.g., Pistons)
     
-    This way, the same category can be used for multiple engines!
+    User and Factory are automatically set and cannot be changed.
     """
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='illustrations')
+    user = models.ForeignKey(
+        User, 
+        on_delete=models.CASCADE, 
+        related_name='illustrations',
+        editable=False,
+        help_text="Automatically set to the creating user"
+    )
+    
+    # Factory is auto-populated from user.factory
+    factory = models.ForeignKey(
+        Factory,
+        on_delete=models.PROTECT,
+        related_name="illustrations",
+        null=True,
+        blank=True,
+        editable=False,  # Cannot be edited manually in forms
+        help_text="Automatically set from user's factory"
+    )
     
     # CRITICAL: Engine + Category combination happens HERE, not in PartCategory
     engine_model = models.ForeignKey(
@@ -314,16 +314,23 @@ class Illustration(models.Model):
         indexes = [
             models.Index(fields=['engine_model', 'part_category']),
             models.Index(fields=['user', 'created_at']),
+            models.Index(fields=['factory']),
         ]
         # Ensure no duplicate illustrations for same engine+category+subcategory+title
         unique_together = ['engine_model', 'part_category', 'part_subcategory', 'title']
 
     def __str__(self):
         return f"{self.engine_model.name} - {self.title}"
+    
+    def save(self, *args, **kwargs):
+        # Auto-populate factory from user if not already set
+        if not self.factory and self.user and self.user.factory:
+            self.factory = self.user.factory
+        super().save(*args, **kwargs)
 
 
 # ------------------------------
-# File Upload Path (UPDATED)
+# File Upload Path
 # ------------------------------
 def illustration_file_path(instance, filename):
     """
