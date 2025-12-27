@@ -164,7 +164,6 @@ class PartSubCategoryViewSet(viewsets.ModelViewSet):
 # ========================================
 # Illustrations
 # ========================================
-
 class IllustrationViewSet(viewsets.ModelViewSet):
     pagination_class = DefaultPagination
     filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
@@ -178,6 +177,15 @@ class IllustrationViewSet(viewsets.ModelViewSet):
     search_fields = ['title', 'description']
     ordering_fields = ['created_at', 'updated_at', 'title']
     ordering = ['-created_at']
+
+    def get_permissions(self):
+        """
+        List and retrieve are public
+        Create, update, delete require authentication
+        """
+        if self.action in ['list', 'retrieve']:
+            return [AllowAny()]
+        return [IsAdminOrReadOnly()]
 
     def get_queryset(self):
         if getattr(self, 'swagger_fake_view', False):
@@ -196,17 +204,8 @@ class IllustrationViewSet(viewsets.ModelViewSet):
             'applicable_car_models__manufacturer'
         ).annotate(file_count=Count('files', distinct=True))
 
-        if (
-            self.request.user.is_authenticated and
-            self.request.user.is_staff and
-            self.request.user.is_verified
-        ):
-            return qs
-
-        if self.request.user.is_authenticated:
-            return qs.filter(user=self.request.user)
-
-        return qs.none()
+        # Public access to all illustrations
+        return qs
 
     def get_serializer_class(self):
         return IllustrationDetailSerializer if self.action == 'retrieve' else IllustrationSerializer
@@ -241,18 +240,25 @@ class IllustrationViewSet(viewsets.ModelViewSet):
             status=status.HTTP_201_CREATED
         )
 
-
 # ========================================
 # Illustration Files
 # ========================================
 class IllustrationFileViewSet(viewsets.ModelViewSet):
     serializer_class = IllustrationFileSerializer
-    permission_classes = [IsAdminOrOwner]
     pagination_class = DefaultPagination
     filter_backends = [DjangoFilterBackend, filters.OrderingFilter]
     filterset_fields = ['illustration', 'file_type']
     ordering_fields = ['uploaded_at']
     ordering = ['uploaded_at']
+
+    def get_permissions(self):
+        """
+        List and retrieve are public for viewing files
+        Create, update, delete require ownership or admin
+        """
+        if self.action in ['list', 'retrieve', 'download']:
+            return [AllowAny()]
+        return [IsAdminOrOwner()]
 
     def get_queryset(self):
         if getattr(self, 'swagger_fake_view', False):
@@ -263,6 +269,12 @@ class IllustrationFileViewSet(viewsets.ModelViewSet):
             'illustration__engine_model__manufacturer'
         )
 
+        # For list and retrieve actions, show all files
+        # For modifications, filter by user
+        if self.action in ['list', 'retrieve', 'download']:
+            return qs
+        
+        # For create/update/delete, check permissions
         if (
             self.request.user.is_authenticated and
             self.request.user.is_staff and
@@ -275,68 +287,47 @@ class IllustrationFileViewSet(viewsets.ModelViewSet):
 
         return qs.none()
 
-    @action(detail=True, methods=['get'])
-    def download(self, request, pk=None):
+    @action(detail=True, methods=['get'], permission_classes=[AllowAny])
+    def preview(self, request, pk=None):
+        """Preview file inline in browser"""
         try:
             file_obj = self.get_object()
             
-            # Debug logging
-            print(f"File object: {file_obj}")
-            print(f"File field: {file_obj.file}")
-            print(f"File name: {file_obj.file.name}")
-            
-            # Check if file exists
             if not file_obj.file:
                 return Response(
                     {'error': 'ファイルが関連付けられていません'},
                     status=status.HTTP_404_NOT_FOUND
                 )
             
-            # Get file path - handle both local and cloud storage
+            # Get file path
             try:
                 file_path = file_obj.file.path
-                print(f"File path: {file_path}")
-                print(f"File exists: {os.path.exists(file_path)}")
             except NotImplementedError:
-                # If using cloud storage (S3, etc.), path won't work
-                # Just use the file URL directly
-                print("Using cloud storage, redirecting to file URL")
+                # Cloud storage - return URL for preview
                 return Response(
-                    {'download_url': file_obj.file.url},
+                    {'preview_url': file_obj.file.url},
                     status=status.HTTP_200_OK
                 )
             
-            # Check if file exists on disk
+            # Check if file exists
             if not os.path.exists(file_path):
                 return Response(
-                    {'error': f'ファイルが見つかりません: {file_obj.file.name}'},
+                    {'error': f'ファイルが見つかりません'},
                     status=status.HTTP_404_NOT_FOUND
                 )
             
-            # Extract filename
+            # Get original filename
             original_name = os.path.basename(file_obj.file.name)
             
-            # Create readable filename
-            safe_title = "".join(
-                c for c in file_obj.illustration.title 
-                if c.isalnum() or c in (' ', '-', '_', '.')
-            ).strip()
-            safe_title = safe_title.replace(' ', '_')[:50]  # Limit length
-            
-            # Get extension
-            _, ext = os.path.splitext(original_name)
-            download_filename = f"{safe_title}{ext}"
-            
-            print(f"Download filename: {download_filename}")
-            
             # Detect MIME type
-            content_type, _ = mimetypes.guess_type(download_filename)
+            content_type, _ = mimetypes.guess_type(original_name)
             if not content_type:
-                content_type = 'application/octet-stream'
+                content_type = 'application/pdf'
             
-            print(f"Content type: {content_type}")
+            # Get file size
+            file_size = os.path.getsize(file_path)
             
-            # Open and serve the file
+            # Open file
             try:
                 file_handle = open(file_path, 'rb')
             except PermissionError:
@@ -345,21 +336,32 @@ class IllustrationFileViewSet(viewsets.ModelViewSet):
                     status=status.HTTP_403_FORBIDDEN
                 )
             
-            response = FileResponse(
-                file_handle,
-                as_attachment=True,
-                filename=download_filename,
-                content_type=content_type
-            )
+            # Create response for inline viewing
+            if file_size > 10 * 1024 * 1024:  # 10MB
+                response = StreamingHttpResponse(
+                    file_handle,
+                    content_type=content_type
+                )
+            else:
+                response = FileResponse(
+                    file_handle,
+                    content_type=content_type
+                )
             
-            response['Content-Disposition'] = f'attachment; filename="{download_filename}"'
+            # Set inline disposition (key difference from download)
+            response['Content-Disposition'] = f'inline; filename="{original_name}"'
+            response['Content-Length'] = file_size
+            response['X-Content-Type-Options'] = 'nosniff'
             
-            try:
-                response['Content-Length'] = os.path.getsize(file_path)
-            except OSError:
-                pass  # Skip if can't get file size
+            # CORS headers
+            origin = request.META.get('HTTP_ORIGIN', '')
+            allowed_origins = ['https://yaw.nishanaweb.cloud', 'https://api.yaw.nishanaweb.cloud']
             
-            print("Download response created successfully")
+            if origin in allowed_origins:
+                response['Access-Control-Allow-Origin'] = origin
+                response['Access-Control-Allow-Credentials'] = 'true'
+                response['Access-Control-Expose-Headers'] = 'Content-Disposition, Content-Length'
+            
             return response
             
         except IllustrationFile.DoesNotExist:
@@ -368,7 +370,113 @@ class IllustrationFileViewSet(viewsets.ModelViewSet):
                 status=status.HTTP_404_NOT_FOUND
             )
         except Exception as e:
-            # Log the full error
+            import traceback
+            error_trace = traceback.format_exc()
+            print(f"Preview error: {str(e)}")
+            print(f"Full traceback:\n{error_trace}")
+            
+            return Response(
+                {'error': 'プレビュー失敗', 'detail': str(e)},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
+
+    @action(detail=True, methods=['get'], permission_classes=[AllowAny])
+    def download(self, request, pk=None):
+        """Download file with proper headers for production"""
+        try:
+            file_obj = self.get_object()
+            
+            if not file_obj.file:
+                return Response(
+                    {'error': 'ファイルが関連付けられていません'},
+                    status=status.HTTP_404_NOT_FOUND
+                )
+            
+            # Get file path
+            try:
+                file_path = file_obj.file.path
+            except NotImplementedError:
+                # Cloud storage - return redirect URL
+                return Response(
+                    {'download_url': file_obj.file.url},
+                    status=status.HTTP_200_OK
+                )
+            
+            # Check if file exists
+            if not os.path.exists(file_path):
+                return Response(
+                    {'error': f'ファイルが見つかりません: {os.path.basename(file_obj.file.name)}'},
+                    status=status.HTTP_404_NOT_FOUND
+                )
+            
+            # Create safe filename
+            safe_title = "".join(
+                c for c in file_obj.illustration.title 
+                if c.isalnum() or c in (' ', '-', '_', '.')
+            ).strip()
+            safe_title = safe_title.replace(' ', '_')[:50]
+            
+            # Get extension
+            _, ext = os.path.splitext(file_obj.file.name)
+            if not ext:
+                ext = '.pdf'
+            
+            download_filename = f"{safe_title}{ext}"
+            
+            # Detect MIME type
+            content_type, _ = mimetypes.guess_type(download_filename)
+            if not content_type:
+                content_type = 'application/pdf'
+            
+            # Get file size
+            file_size = os.path.getsize(file_path)
+            
+            # Open file and create response
+            try:
+                file_handle = open(file_path, 'rb')
+            except PermissionError:
+                return Response(
+                    {'error': 'ファイルの読み取り権限がありません'},
+                    status=status.HTTP_403_FORBIDDEN
+                )
+            
+            # Use StreamingHttpResponse for large files
+            if file_size > 10 * 1024 * 1024:  # 10MB
+                response = StreamingHttpResponse(
+                    file_handle,
+                    content_type=content_type
+                )
+            else:
+                response = FileResponse(
+                    file_handle,
+                    content_type=content_type
+                )
+            
+            # Set download headers (attachment = force download)
+            response['Content-Disposition'] = f'attachment; filename="{download_filename}"'
+            response['Content-Length'] = file_size
+            response['X-Content-Type-Options'] = 'nosniff'
+            response['Cache-Control'] = 'no-cache, no-store, must-revalidate'
+            response['Pragma'] = 'no-cache'
+            response['Expires'] = '0'
+            
+            # CORS headers for production
+            origin = request.META.get('HTTP_ORIGIN', '')
+            allowed_origins = ['https://yaw.nishanaweb.cloud', 'https://api.yaw.nishanaweb.cloud']
+            
+            if origin in allowed_origins:
+                response['Access-Control-Allow-Origin'] = origin
+                response['Access-Control-Allow-Credentials'] = 'true'
+                response['Access-Control-Expose-Headers'] = 'Content-Disposition, Content-Length'
+            
+            return response
+            
+        except IllustrationFile.DoesNotExist:
+            return Response(
+                {'error': 'ファイルが見つかりません'},
+                status=status.HTTP_404_NOT_FOUND
+            )
+        except Exception as e:
             import traceback
             error_trace = traceback.format_exc()
             print(f"Download error: {str(e)}")

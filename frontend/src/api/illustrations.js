@@ -405,15 +405,16 @@ export const illustrationAPI = {
 // ILLUSTRATION FILES API
 // ============================================================================
 export const illustrationFileAPI = {
-  getAll: async (params = {}) => {
+  getByIllustration: async (illustrationId) => {
     try {
-      const response = await api.get('/illustration-files/', { params });
+      const response = await api.get(`/illustration-files/?illustration=${illustrationId}`);
       return response.data;
     } catch (error) {
-      console.error('Illustration File API error:', error);
+      console.error('Failed to fetch illustration files:', error);
       throw error;
     }
   },
+
 
   getById: async (id) => {
     try {
@@ -513,12 +514,18 @@ export const illustrationFileAPI = {
       file: file,
     });
   },
-  // Download single file (direct browser download)
-  download: (fileId) => {
-    return `${API_BASE_URL}/illustration-files/${fileId}/download/`;
+  download: async (fileId) => {
+    try {
+      const response = await api.get(`/illustration-files/${fileId}/download/`, {
+        responseType: 'blob',
+      });
+      return response.data;
+    } catch (error) {
+      console.error('Download failed:', error);
+      throw error;
+    }
   },
 
-  
 
 };
 

@@ -25,8 +25,10 @@ import {
   Person as PersonIcon,
   CalendarToday as CalendarIcon,
   GetApp as GetAppIcon,
+  Visibility as VisibilityIcon,
 } from '@mui/icons-material';
 import { illustrationFileAPI, illustrationAPI } from '../../api/illustrations';
+import PDFPreviewModal from './PDFPreviewModal';
 
 const IllustrationDetailModal = ({
   open,
@@ -44,6 +46,10 @@ const IllustrationDetailModal = ({
   const [files, setFiles] = useState([]);
   const [isFavorite, setIsFavorite] = useState(false);
   const [menuAnchor, setMenuAnchor] = useState(null);
+  
+  // PDF Preview state
+  const [previewOpen, setPreviewOpen] = useState(false);
+  const [previewFile, setPreviewFile] = useState(null);
 
   const currentUser = JSON.parse(localStorage.getItem('user') || '{}');
   const userId = currentUserId || currentUser?.id;
@@ -78,55 +84,112 @@ const IllustrationDetailModal = ({
     }
   };
 
-  // ============================================================================
-// FRONTEND - Fixed Download with Proper Authentication
-// ============================================================================
+  const handlePreview = (file) => {
+    setPreviewFile(file);
+    setPreviewOpen(true);
+  };
 
-const handleDownload = async (file) => {
-  try {
-    // Use the download endpoint instead of direct file URL
-    const downloadUrl = file.download_url || `/api/illustration-files/${file.id}/download/`;
-    
-    const response = await fetch(downloadUrl, {
-      headers: {
-        'Authorization': `Bearer ${localStorage.getItem('access_token')}` // Add if using auth
+  const handleClosePreview = () => {
+    setPreviewOpen(false);
+    setPreviewFile(null);
+  };
+
+  const handleDownload = async (file) => {
+    try {
+      setSuccess('ダウンロード中...');
+
+      const baseUrl = import.meta.env.VITE_API_URL || '/api';
+      const downloadUrl = `${baseUrl}/illustration-files/${file.id}/download/`;
+
+      const token = localStorage.getItem('access_token');
+
+      const response = await fetch(downloadUrl, {
+        method: 'GET',
+        headers: {
+          'Authorization': token ? `Bearer ${token}` : '',
+        },
+        credentials: 'include',
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.error || `HTTP ${response.status}: ${response.statusText}`);
       }
-    });
-    
-    if (!response.ok) throw new Error('Download failed');
-    
-    const blob = await response.blob();
-    const url = window.URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = file.file_name || `${illustration.title}_${file.id}`;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    window.URL.revokeObjectURL(url);
-    
-    setSuccess('ダウンロード中');
-  } catch (err) {
-    setError('ダウンロード失敗');
-  }
-};
+
+      const contentDisposition = response.headers.get('Content-Disposition');
+      let filename = `${illustration.title || 'download'}.pdf`;
+
+      if (contentDisposition) {
+        const filenameMatch = contentDisposition.match(/filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/);
+        if (filenameMatch && filenameMatch[1]) {
+          filename = filenameMatch[1].replace(/['"]/g, '');
+        }
+      }
+
+      const blob = await response.blob();
+
+      if (blob.size === 0) {
+        throw new Error('ファイルが空です');
+      }
+
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = filename;
+      link.style.display = 'none';
+
+      document.body.appendChild(link);
+      link.click();
+
+      setTimeout(() => {
+        document.body.removeChild(link);
+        window.URL.revokeObjectURL(url);
+      }, 100);
+
+      setSuccess('ダウンロード完了');
+
+    } catch (err) {
+      console.error('Download failed:', err);
+      setError(`ダウンロード失敗: ${err.message}`);
+    }
+  };
 
   const handleShare = async () => {
-    if (files[0]) {
-      navigator.clipboard.writeText(files[0].file);
-      setSuccess('リンクをコピー');
+    try {
+      const shareUrl = `${window.location.origin}/illustration/${illustration.id}`;
+      
+      if (navigator.share) {
+        await navigator.share({
+          title: illustration.title,
+          text: illustration.description || '',
+          url: shareUrl,
+        });
+        setSuccess('共有しました');
+      } else {
+        await navigator.clipboard.writeText(shareUrl);
+        setSuccess('リンクをコピーしました');
+      }
+    } catch (err) {
+      if (err.name !== 'AbortError') {
+        console.error('Share failed:', err);
+        setError('共有に失敗しました');
+      }
     }
   };
 
   const handleFavorite = () => {
     const favorites = JSON.parse(localStorage.getItem('favorites') || '[]');
+    
     if (isFavorite) {
-      localStorage.setItem('favorites', JSON.stringify(favorites.filter(id => id !== illustration.id)));
+      const updated = favorites.filter(id => id !== illustration.id);
+      localStorage.setItem('favorites', JSON.stringify(updated));
       setIsFavorite(false);
+      setSuccess('お気に入りから削除しました');
     } else {
       favorites.push(illustration.id);
       localStorage.setItem('favorites', JSON.stringify(favorites));
       setIsFavorite(true);
+      setSuccess('お気に入りに追加しました');
     }
   };
 
@@ -161,15 +224,57 @@ const handleDownload = async (file) => {
               <Typography variant="subtitle2" fontWeight={700} sx={{ mb: 1.5 }}>ファイル ({files.length})</Typography>
               <Stack spacing={1}>
                 {files.map((file, i) => (
-                  <Box key={file.id} sx={{ p: 2, borderRadius: 2, border: 1, borderColor: 'divider', bgcolor: alpha(theme.palette.primary.main, 0.02), '&:hover': { bgcolor: alpha(theme.palette.primary.main, 0.05) } }}>
+                  <Box 
+                    key={file.id} 
+                    sx={{ 
+                      p: 2, 
+                      borderRadius: 2, 
+                      border: 1, 
+                      borderColor: 'divider', 
+                      bgcolor: alpha(theme.palette.primary.main, 0.02), 
+                      '&:hover': { bgcolor: alpha(theme.palette.primary.main, 0.05) },
+                      transition: 'all 0.2s'
+                    }}
+                  >
                     <Stack direction="row" alignItems="center" spacing={2}>
                       <Box sx={{ flex: 1 }}>
-                        <Typography variant="body2" fontWeight={600}>{file.file_type_display || 'ファイル'} #{i + 1}</Typography>
-                        <Typography variant="caption" color="text.secondary">{file.file_name || file.file?.split('/').pop()}</Typography>
+                        <Typography variant="body2" fontWeight={600}>
+                          {file.file_type_display || 'ファイル'} #{i + 1}
+                        </Typography>
+                        <Typography variant="caption" color="text.secondary">
+                          {file.file_name || file.file?.split('/').pop()}
+                        </Typography>
                       </Box>
-                      <IconButton onClick={() => handleDownload(file)} color="primary" sx={{ bgcolor: alpha(theme.palette.primary.main, 0.1) }}>
-                        <GetAppIcon />
-                      </IconButton>
+                      
+                      <Stack direction="row" spacing={1}>
+                        {/* Preview Button */}
+                        <IconButton 
+                          onClick={() => handlePreview(file)} 
+                          color="secondary" 
+                          size="small"
+                          sx={{ 
+                            bgcolor: alpha(theme.palette.secondary.main, 0.1),
+                            '&:hover': { bgcolor: alpha(theme.palette.secondary.main, 0.2) }
+                          }}
+                          title="プレビュー"
+                        >
+                          <VisibilityIcon fontSize="small" />
+                        </IconButton>
+
+                        {/* Download Button */}
+                        <IconButton 
+                          onClick={() => handleDownload(file)} 
+                          color="primary" 
+                          size="small"
+                          sx={{ 
+                            bgcolor: alpha(theme.palette.primary.main, 0.1),
+                            '&:hover': { bgcolor: alpha(theme.palette.primary.main, 0.2) }
+                          }}
+                          title="ダウンロード"
+                        >
+                          <GetAppIcon fontSize="small" />
+                        </IconButton>
+                      </Stack>
                     </Stack>
                   </Box>
                 ))}
@@ -198,8 +303,29 @@ const handleDownload = async (file) => {
       </Dialog>
 
       <Menu anchorEl={menuAnchor} open={Boolean(menuAnchor)} onClose={() => setMenuAnchor(null)}>
-        <MenuItem onClick={() => { navigator.clipboard.writeText(illustration?.title); setSuccess('コピー'); setMenuAnchor(null); }}>タイトルをコピー</MenuItem>
+        <MenuItem onClick={() => { navigator.clipboard.writeText(illustration?.title); setSuccess('タイトルをコピーしました'); setMenuAnchor(null); }}>
+          タイトルをコピー
+        </MenuItem>
+        <MenuItem onClick={() => { navigator.clipboard.writeText(illustration?.description || ''); setSuccess('説明をコピーしました'); setMenuAnchor(null); }}>
+          説明をコピー
+        </MenuItem>
+        <MenuItem onClick={() => { 
+          const url = `${window.location.origin}/illustrations/${illustration?.id}`; 
+          navigator.clipboard.writeText(url); 
+          setSuccess('URLをコピーしました'); 
+          setMenuAnchor(null); 
+        }}>
+          URLをコピー
+        </MenuItem>
       </Menu>
+
+      {/* PDF Preview Modal */}
+      <PDFPreviewModal
+        open={previewOpen}
+        onClose={handleClosePreview}
+        fileId={previewFile?.id}
+        fileName={previewFile?.file_name || previewFile?.file?.split('/').pop()}
+      />
     </>
   );
 };

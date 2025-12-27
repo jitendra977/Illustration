@@ -9,19 +9,30 @@ from dotenv import load_dotenv
 BASE_DIR = Path(__file__).resolve().parent.parent
 load_dotenv(BASE_DIR / ".env")
 
-# Add after load_dotenv()
-print("DEBUG INFO:")
-print(f"DB_HOST from env: {os.getenv('DB_HOST')}")
-print(f"DB_NAME from env: {os.getenv('DB_NAME')}")
-print(f"DB_ENGINE from env: {os.getenv('DB_ENGINE')}")
-print("=" * 50)
-
 SECRET_KEY = os.getenv("SECRET_KEY", "unsafe-secret-for-dev")
 DEBUG = os.getenv("DEBUG", "False") == "True"
 
-ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS", "").split(",")
+# ============================================
+# ALLOWED HOSTS - Complete list
+# ============================================
+ALLOWED_HOSTS = [
+    'api.yaw.nishanaweb.cloud',
+    'yaw.nishanaweb.cloud',
+    'yaw-backend',
+    'localhost',
+    '127.0.0.1',
+]
 
+# ============================================
+# PROXY CONFIGURATION (for Nginx Proxy Manager)
+# ============================================
+USE_X_FORWARDED_HOST = True
+USE_X_FORWARDED_PORT = True
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
+# ============================================
+# INSTALLED APPS
+# ============================================
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -30,11 +41,11 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     
-    # Third party apps
+    # Third party apps - CORS MUST BE FIRST
+    'corsheaders',  # IMPORTANT: Must be before other apps
     'rest_framework',
     'rest_framework_simplejwt',
     'rest_framework_simplejwt.token_blacklist', 
-    'corsheaders',
     'django_filters',
     'drf_yasg',
 
@@ -43,8 +54,11 @@ INSTALLED_APPS = [
     'apps.illustrations',
 ]
 
+# ============================================
+# MIDDLEWARE
+# ============================================
 MIDDLEWARE = [
-    'corsheaders.middleware.CorsMiddleware',
+    'corsheaders.middleware.CorsMiddleware',  # IMPORTANT: Must be first
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -56,10 +70,13 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = 'config.urls'
 
+# ============================================
+# TEMPLATES
+# ============================================
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [os.path.join(BASE_DIR, 'templates')],  # Add templates directory
+        'DIRS': [os.path.join(BASE_DIR, 'templates')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -74,20 +91,23 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'config.wsgi.application'
 
-
+# ============================================
+# DATABASE
+# ============================================
 DATABASES = {
     "default": {
         "ENGINE": os.getenv("DB_ENGINE", "django.db.backends.sqlite3"),
         "NAME": os.getenv("DB_NAME", "db.sqlite3"),
         "USER": os.getenv("DB_USER", ""),
         "PASSWORD": os.getenv("DB_PASSWORD", ""),
-        "HOST": os.getenv("DB_HOST", "127.0.0.1"),  # Fallback to 127.0.0.1
+        "HOST": os.getenv("DB_HOST", "127.0.0.1"),
         "PORT": os.getenv("DB_PORT", "3306"),
     }
 }
-# Password validation
-# https://docs.djangoproject.com/en/5.2/ref/settings/#auth-password-validators
 
+# ============================================
+# PASSWORD VALIDATION
+# ============================================
 AUTH_PASSWORD_VALIDATORS = [
     {
         'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
@@ -105,44 +125,31 @@ AUTH_PASSWORD_VALIDATORS = [
         'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
     },
 ]
-# Internationalization
-# https://docs.djangoproject.com/en/5.2/topics/i18n/
 
+# ============================================
+# INTERNATIONALIZATION
+# ============================================
 LANGUAGE_CODE = 'en-us'
-
 TIME_ZONE = 'UTC'
-
 USE_I18N = True
-
 USE_TZ = True
-
 
 # ============================================
 # CUSTOM USER MODEL
 # ============================================
 AUTH_USER_MODEL = 'accounts.User'
 
-
 # ============================================
-# STATIC FILES CONFIGURATION
+# STATIC & MEDIA FILES
 # ============================================
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
-# Only add STATICFILES_DIRS if you have a 'static' folder in BASE_DIR
-# Comment this out if the folder doesn't exist
-# STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
-
-
-# ============================================
-# MEDIA FILES CONFIGURATION
-# ============================================
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
-
 # ============================================
-# REST FRAMEWORK CONFIGURATION
+# REST FRAMEWORK
 # ============================================
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
@@ -150,7 +157,7 @@ REST_FRAMEWORK = {
         'rest_framework.authentication.SessionAuthentication',
     ],
     'DEFAULT_PERMISSION_CLASSES': [
-        'rest_framework.permissions.AllowAny',  # Changed to AllowAny for registration
+        'rest_framework.permissions.AllowAny',
     ],
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
     'PAGE_SIZE': 10,
@@ -171,13 +178,12 @@ REST_FRAMEWORK = {
     ],
 }
 
-
 # ============================================
 # JWT CONFIGURATION
 # ============================================
 SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=60),
-    'REFRESH_TOKEN_LIFETIME': timedelta(days=7),
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=int(os.getenv("JWT_ACCESS_TOKEN_LIFETIME", 60))),
+    'REFRESH_TOKEN_LIFETIME': timedelta(minutes=int(os.getenv("JWT_REFRESH_TOKEN_LIFETIME", 10080))),
     'ROTATE_REFRESH_TOKENS': True,
     'BLACKLIST_AFTER_ROTATION': True,
     'UPDATE_LAST_LOGIN': True,
@@ -203,21 +209,18 @@ SIMPLE_JWT = {
     'JTI_CLAIM': 'jti',
 }
 
+# ============================================
+# CORS CONFIGURATION - PRODUCTION
+# ============================================
+CORS_ALLOW_ALL_ORIGINS = False
 
-# =========================
-# CORS / CSRF
-# =========================
-def get_env_list(key):
-    """Return list of non-empty values starting with http:// or https://"""
-    return [
-        v.strip()
-        for v in os.getenv(key, "").split(",")
-        if v.strip() and v.startswith(("http://", "https://"))
-    ]
+CORS_ALLOWED_ORIGINS = [
+    'https://yaw.nishanaweb.cloud',
+    'https://api.yaw.nishanaweb.cloud',
+]
 
-CORS_ALLOW_ALL_ORIGINS = os.getenv("CORS_ALLOW_ALL_ORIGINS", "False") == "True"
-CORS_ALLOWED_ORIGINS = get_env_list("CORS_ALLOWED_ORIGINS")
-CSRF_TRUSTED_ORIGINS = get_env_list("CSRF_TRUSTED_ORIGINS")
+CORS_ALLOW_CREDENTIALS = True
+
 CORS_ALLOW_METHODS = [
     'DELETE',
     'GET',
@@ -226,6 +229,7 @@ CORS_ALLOW_METHODS = [
     'POST',
     'PUT',
 ]
+
 CORS_ALLOW_HEADERS = [
     'accept',
     'accept-encoding',
@@ -237,15 +241,23 @@ CORS_ALLOW_HEADERS = [
     'x-csrftoken',
     'x-requested-with',
 ]
-# =========================
-# JWT Settings
-# =========================
-JWT_ACCESS_TOKEN_LIFETIME = int(os.getenv("JWT_ACCESS_TOKEN_LIFETIME", 60))
-JWT_REFRESH_TOKEN_LIFETIME = int(os.getenv("JWT_REFRESH_TOKEN_LIFETIME", 10080))
 
-# =========================
-# Email Settings
-# =========================
+CORS_EXPOSE_HEADERS = [
+    'content-disposition',
+    'content-length',
+]
+
+# ============================================
+# CSRF CONFIGURATION
+# ============================================
+CSRF_TRUSTED_ORIGINS = [
+    'https://api.yaw.nishanaweb.cloud',
+    'https://yaw.nishanaweb.cloud',
+]
+
+# ============================================
+# EMAIL SETTINGS
+# ============================================
 EMAIL_BACKEND = os.getenv(
     "EMAIL_BACKEND", "django.core.mail.backends.smtp.EmailBackend"
 )
@@ -257,19 +269,17 @@ EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD", "")
 DEFAULT_FROM_EMAIL = os.getenv("DEFAULT_FROM_EMAIL", "")
 SUPPORT_EMAIL = os.getenv("SUPPORT_EMAIL", "")
 
-# =========================
-# File Uploads
-# =========================
-FILE_UPLOAD_MAX_MEMORY_SIZE = int(os.getenv("FILE_UPLOAD_MAX_MEMORY_SIZE", 5242880))
-DATA_UPLOAD_MAX_MEMORY_SIZE = int(os.getenv("DATA_UPLOAD_MAX_MEMORY_SIZE", 5242880))
+# ============================================
+# FILE UPLOADS
+# ============================================
+FILE_UPLOAD_MAX_MEMORY_SIZE = int(os.getenv("FILE_UPLOAD_MAX_MEMORY_SIZE", 52428800))
+DATA_UPLOAD_MAX_MEMORY_SIZE = int(os.getenv("DATA_UPLOAD_MAX_MEMORY_SIZE", 52428800))
 
-# Allowed file extensions for profile images
+# Allowed file extensions
 ALLOWED_IMAGE_EXTENSIONS = ['jpg', 'jpeg', 'png', 'gif']
 
-
-
 # ============================================
-# LOGGING CONFIGURATION (Optional but recommended)
+# LOGGING
 # ============================================
 LOGGING = {
     'version': 1,
@@ -309,16 +319,15 @@ LOGGING = {
     },
 }
 
-
-# Default primary key field type
-# https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
+# ============================================
+# DEFAULT AUTO FIELD
+# ============================================
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-
-
-# =========================
-# CI / Local Defaults (Optional)
-# =========================
+# ============================================
+# DEVELOPMENT OVERRIDES
+# ============================================
 if DEBUG:
     CSRF_TRUSTED_ORIGINS += ["http://localhost", "http://127.0.0.1"]
     CORS_ALLOWED_ORIGINS += ["http://localhost:3000", "http://127.0.0.1:3000"]
+    ALLOWED_HOSTS += ["*"]  # Allow all in debug mode
