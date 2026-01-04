@@ -1,4 +1,3 @@
-
 # ========================================
 # docker-compose.yml (ROOT - Application Layer)
 # ========================================
@@ -18,8 +17,10 @@ services:
       - media_volume:/app/media
     env_file:
       - ./backend/.env
+    environment:
+      - DB_HOST=host.docker.internal
     healthcheck:
-      test: ["CMD-SHELL", "curl -f http://localhost:8000/ || exit 1"]
+      test: [ "CMD-SHELL", "nc -z localhost 8000 || exit 1" ]
       interval: 30s
       timeout: 10s
       retries: 5
@@ -32,16 +33,17 @@ services:
       context: ./frontend
       dockerfile: Dockerfile
       args:
-        - VITE_API_URL=${VITE_API_URL:-http://localhost:8000/api}
+        - VITE_API_URL=/api
     container_name: yaw-frontend
     restart: unless-stopped
     ports:
-      - "3000:3000"
+      - "3000:80"
     depends_on:
       - yaw-backend
-        
+
     networks:
       - yaw-network
+      - app-network
 
 volumes:
   static_volume:

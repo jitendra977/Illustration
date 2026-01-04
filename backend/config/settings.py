@@ -11,6 +11,7 @@ load_dotenv(BASE_DIR / ".env")
 
 SECRET_KEY = os.getenv("SECRET_KEY", "unsafe-secret-for-dev")
 DEBUG = os.getenv("DEBUG", "False") == "True"
+FRONTEND_URL = os.getenv("FRONTEND_URL", "http://localhost:3000")
 
 # ============================================
 # ALLOWED HOSTS - Complete list
@@ -21,6 +22,10 @@ ALLOWED_HOSTS = [
     'yaw-backend',
     'localhost',
     '127.0.0.1',
+    '192.168.0.105',
+    '192.168.0.92',
+    '0.0.0.0',
+    '*',
 ]
 
 # ============================================
@@ -212,12 +217,15 @@ SIMPLE_JWT = {
 # ============================================
 # CORS CONFIGURATION - PRODUCTION
 # ============================================
-CORS_ALLOW_ALL_ORIGINS = False
+CORS_ALLOW_ALL_ORIGINS = os.getenv("CORS_ALLOW_ALL_ORIGINS", "False") == "True"
 
 CORS_ALLOWED_ORIGINS = [
     'https://yaw.nishanaweb.cloud',
     'https://api.yaw.nishanaweb.cloud',
 ]
+# Append origins from env
+if os.getenv("CORS_ALLOWED_ORIGINS_EXTRA"):
+    CORS_ALLOWED_ORIGINS += os.getenv("CORS_ALLOWED_ORIGINS_EXTRA").split(",")
 
 CORS_ALLOW_CREDENTIALS = True
 
@@ -228,6 +236,7 @@ CORS_ALLOW_METHODS = [
     'PATCH',
     'POST',
     'PUT',
+    'DELETE',
 ]
 
 CORS_ALLOW_HEADERS = [
@@ -254,6 +263,25 @@ CSRF_TRUSTED_ORIGINS = [
     'https://api.yaw.nishanaweb.cloud',
     'https://yaw.nishanaweb.cloud',
 ]
+
+# Append origins from env
+if os.getenv("CSRF_TRUSTED_ORIGINS_EXTRA"):
+    CSRF_TRUSTED_ORIGINS += os.getenv("CSRF_TRUSTED_ORIGINS_EXTRA").split(",")
+
+# Fallback: Always include common local IPs for ease of use
+CSRF_TRUSTED_ORIGINS += [
+    'http://localhost', 
+    'http://127.0.0.1',
+    'http://0.0.0.0',
+    'http://192.168.0.92',
+    'http://192.168.0.105',
+]
+
+# Allow any local IP if flag is set
+if os.getenv("allow_all_local_networks", "False") == "True":
+    # Logic to dynamically allow valid local IPs could go here, 
+    # but for now we rely on the specific list above.
+    pass
 
 # ============================================
 # EMAIL SETTINGS
@@ -331,3 +359,13 @@ if DEBUG:
     CSRF_TRUSTED_ORIGINS += ["http://localhost", "http://127.0.0.1"]
     CORS_ALLOWED_ORIGINS += ["http://localhost:3000", "http://127.0.0.1:3000"]
     ALLOWED_HOSTS += ["*"]  # Allow all in debug mode
+else:
+    # Production Security Settings
+    SECURE_SSL_REDIRECT = os.getenv("SECURE_SSL_REDIRECT", "True") == "True"
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True
+    SECURE_BROWSER_XSS_FILTER = True
+    SECURE_CONTENT_TYPE_NOSNIFF = True
+    SECURE_HSTS_SECONDS = 31536000  # 1 year
+    SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+    SECURE_HSTS_PRELOAD = True

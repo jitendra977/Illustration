@@ -1,7 +1,7 @@
 // src/api/index.js
 import axios from 'axios';
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000/api';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '/api';
 
 // Create a custom axios instance with better error handling
 const api = axios.create({
@@ -16,13 +16,13 @@ api.interceptors.request.use(
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
-    
+
     if (config.data instanceof FormData) {
       delete config.headers['Content-Type'];
     } else {
       config.headers['Content-Type'] = 'application/json';
     }
-    
+
     return config;
   },
   (error) => {
@@ -53,7 +53,7 @@ api.interceptors.response.use(
     if (!error.response) {
       enhancedError.type = 'CONNECTION_ERROR';
       enhancedError.isConnectionError = true;
-      
+
       if (error.code === 'ECONNABORTED' || error.message.includes('timeout')) {
         enhancedError.type = 'TIMEOUT_ERROR';
         enhancedError.details = 'Server took too long to respond';
@@ -70,11 +70,11 @@ api.interceptors.response.use(
           enhancedError.isServerDown = true;
         }
       }
-    } 
+    }
     // Response received with error status
     else {
       const status = error.response.status;
-      
+
       if (status === 0) {
         enhancedError.type = 'CORS_ERROR';
         enhancedError.details = 'CORS policy blocked the request. Check server configuration';
@@ -94,13 +94,13 @@ api.interceptors.response.use(
     if (error.response?.status === 401 && !error.config._retry) {
       enhancedError.config._retry = true;
       const refreshToken = localStorage.getItem('refresh_token');
-      
+
       if (refreshToken) {
         try {
           const response = await axios.post(`${API_BASE_URL}/token/refresh/`, {
             refresh: refreshToken
           }, { timeout: 10000 });
-          
+
           localStorage.setItem('access_token', response.data.access);
           error.config.headers.Authorization = `Bearer ${response.data.access}`;
           return api(error.config);

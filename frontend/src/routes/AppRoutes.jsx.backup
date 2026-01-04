@@ -12,6 +12,8 @@ import ManufacturerManagement from '../pages/Illustrations/ManufacturerManagemen
 import CarModelManagement from '../pages/Illustrations/CarModelManagement';
 import EngineModelManagement from '../pages/Illustrations/EngineModelManagement';
 import PartCategoryManagement from '../pages/Illustrations/PartCategoryManagement';
+import AdminRoute from '../components/common/AdminRoute';
+import UserManagement from '../pages/admin/UserManagement';
 
 const AppRoutes = () => {
   const router = createBrowserRouter([
@@ -26,7 +28,7 @@ const AppRoutes = () => {
         </ProtectedRoute>
       ),
     },
-    
+
     // ==================== EMAIL VERIFICATION ====================
     {
       path: "/verify-email/:token",
@@ -48,7 +50,7 @@ const AppRoutes = () => {
         </ProtectedRoute>
       ),
     },
-    
+
     // ==================== ILLUSTRATION ROUTES ====================
     {
       path: "/illustrations",
@@ -80,7 +82,7 @@ const AppRoutes = () => {
         </ProtectedRoute>
       ),
     },
-    
+
     // ==================== MANAGEMENT ROUTES ====================
     {
       path: "/manufacturers",
@@ -162,15 +164,15 @@ const AppRoutes = () => {
         </ProtectedRoute>
       ),
     },
-    
+
     // ==================== AUTH ROUTES ====================
-    { 
-      path: "/login", 
-      element: <Login /> 
+    {
+      path: "/login",
+      element: <Login />
     },
-    { 
-      path: "/register", 
-      element: <Register /> 
+    {
+      path: "/register",
+      element: <Register />
     },
   ]);
 

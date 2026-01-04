@@ -1,5 +1,6 @@
-// src/pages/mobile/MobileManufacturers.jsx - CORRECTED VERSION
+// src/pages/mobile/MobileManufacturers.jsx - FIXED WITH PROPER ID NAVIGATION
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
   Box,
   Container,
@@ -33,11 +34,14 @@ import {
   MoreVert as MoreIcon,
   Language as LanguageIcon,
   DirectionsCar as CarIcon,
-  Build as EngineIcon
+  Build as EngineIcon,
+  ChevronRight as ChevronRightIcon
 } from '@mui/icons-material';
 import { useManufacturers } from '../../hooks/useIllustrations';
 import ConfirmDialog from "../../components/dialog/ConfirmDialog";
+
 const MobileManufacturers = () => {
+  const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState('');
   const [showModal, setShowModal] = useState(false);
   const [editingManufacturer, setEditingManufacturer] = useState(null);
@@ -51,18 +55,16 @@ const MobileManufacturers = () => {
     manufacturers,
     loading,
     error,
-    fetchManufacturers,  // ✅ Make sure this is available
+    fetchManufacturers,
     createManufacturer,
     updateManufacturer,
     deleteManufacturer,
   } = useManufacturers();
 
-  // ✅ Fetch on mount
   useEffect(() => {
     fetchManufacturers();
   }, [fetchManufacturers]);
 
-  // ✅ Listen for modal trigger
   useEffect(() => {
     const handleOpenModal = () => setShowModal(true);
     window.addEventListener('openManufacturerModal', handleOpenModal);
@@ -73,6 +75,14 @@ const MobileManufacturers = () => {
     m.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
     m.slug?.toLowerCase().includes(searchTerm.toLowerCase())
   );
+
+  // ✅ Navigate using ID, not slug
+  const handleViewEngines = (manufacturer) => {
+    console.log('🚀 Navigating to engines for:', manufacturer.name, 'ID:', manufacturer.id);
+    navigate(`/manufacturers/${manufacturer.id}/engines`, {
+      state: { manufacturer }
+    });
+  };
 
   const handleOpenModal = (manufacturer = null) => {
     if (manufacturer) {
@@ -98,7 +108,6 @@ const MobileManufacturers = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     
-    // ✅ Validation
     const newErrors = {};
     if (!formData.name?.trim()) {
       newErrors.name = '名前は必須です';
@@ -110,13 +119,10 @@ const MobileManufacturers = () => {
     }
 
     try {
-      // ✅ Prepare payload
       const payload = {
         name: formData.name.trim(),
         slug: formData.slug?.trim()
-           };
-
-      console.log('Submitting:', payload); // ✅ Debug log
+      };
 
       if (editingManufacturer) {
         await updateManufacturer(editingManufacturer.id, payload);
@@ -124,21 +130,16 @@ const MobileManufacturers = () => {
         await createManufacturer(payload);
       }
       
-      // ✅ Refresh list after successful create/update
       await fetchManufacturers();
-      
-      // ✅ Close modal and reset
       setShowModal(false);
       setFormData({ name: '', slug: '' });
       setEditingManufacturer(null);
       
     } catch (err) {
-      console.error('Submit error:', err); // ✅ Debug log
+      console.error('Submit error:', err);
       
-      // ✅ Better error handling
       const apiError = err.response?.data;
       if (apiError) {
-        // Handle field-specific errors
         const fieldErrors = {};
         Object.keys(apiError).forEach(key => {
           if (['name', 'slug'].includes(key)) {
@@ -158,38 +159,46 @@ const MobileManufacturers = () => {
     }
   };
 
-  const handleOpenActions = (manufacturer) => {
+  const handleOpenActions = (manufacturer, e) => {
+    e.stopPropagation();
     setSelectedManufacturer(manufacturer);
     setShowActions(true);
   };
 
-const handleEdit = () => {
-  setShowActions(false);
-  handleOpenModal(selectedManufacturer);
-};
-
-const handleDelete = () => {
-  setShowConfirmDelete(true);
-};
-
-const performDelete = async () => {
-  try {
-    await deleteManufacturer(selectedManufacturer.id);
-    await fetchManufacturers();
+  const handleEdit = () => {
     setShowActions(false);
-    setShowConfirmDelete(false);
-  } catch (err) {
-    console.error('Delete error:', err);
-    alert(`削除に失敗しました: ${err.response?.data?.message || err.message}`);
-  }
-};
+    handleOpenModal(selectedManufacturer);
+  };
+
+  const handleDelete = () => {
+    setShowConfirmDelete(true);
+  };
+
+  const performDelete = async () => {
+    try {
+      await deleteManufacturer(selectedManufacturer.id);
+      await fetchManufacturers();
+      setShowActions(false);
+      setShowConfirmDelete(false);
+    } catch (err) {
+      console.error('Delete error:', err);
+      alert(`削除に失敗しました: ${err.response?.data?.message || err.message}`);
+    }
+  };
+
   const ManufacturerCard = ({ manufacturer }) => (
     <Card 
+      onClick={() => handleViewEngines(manufacturer)}
       sx={{ 
         borderRadius: 3,
         transition: 'all 0.2s',
         border: 1,
         borderColor: 'divider',
+        cursor: 'pointer',
+        '&:hover': {
+          boxShadow: 3,
+          borderColor: 'primary.main',
+        },
         '&:active': {
           transform: 'scale(0.98)',
           boxShadow: 1
@@ -199,9 +208,12 @@ const performDelete = async () => {
       <CardContent sx={{ p: 2 }}>
         <Stack direction="row" justifyContent="space-between" alignItems="start" mb={1.5}>
           <Box sx={{ flex: 1, minWidth: 0 }}>
-            <Typography variant="body1" fontWeight="bold" noWrap>
-              {manufacturer.name}
-            </Typography>
+            <Stack direction="row" alignItems="center" spacing={1}>
+              <Typography variant="body1" fontWeight="bold" noWrap>
+                {manufacturer.name}
+              </Typography>
+              <ChevronRightIcon sx={{ color: 'text.secondary', fontSize: 20 }} />
+            </Stack>
             {manufacturer.slug && (
               <Stack direction="row" alignItems="center" spacing={0.5} mt={0.5}>
                 <LanguageIcon sx={{ fontSize: 14, color: 'text.secondary' }} />
@@ -210,10 +222,13 @@ const performDelete = async () => {
                 </Typography>
               </Stack>
             )}
+            <Typography variant="caption" color="text.disabled" sx={{ fontSize: '0.65rem' }}>
+              ID: {manufacturer.id}
+            </Typography>
           </Box>
           <IconButton 
             size="small" 
-            onClick={() => handleOpenActions(manufacturer)}
+            onClick={(e) => handleOpenActions(manufacturer, e)}
             sx={{ ml: 1 }}
           >
             <MoreIcon fontSize="small" />
@@ -251,7 +266,7 @@ const performDelete = async () => {
           />
         </Stack>
 
-        {/* Slug */}
+        {/* Slug Badge */}
         <Box sx={{ 
           bgcolor: alpha('#1976d2', 0.08), 
           px: 1.5, 
@@ -440,6 +455,10 @@ const performDelete = async () => {
               </Typography>
               <Stack direction="row" spacing={1} mt={1}>
                 <Typography variant="caption" color="text.secondary">
+                  ID: {selectedManufacturer.id}
+                </Typography>
+                <Typography variant="caption" color="text.secondary">•</Typography>
+                <Typography variant="caption" color="text.secondary">
                   {selectedManufacturer.engine_count || 0} エンジン
                 </Typography>
                 <Typography variant="caption" color="text.secondary">•</Typography>
@@ -451,6 +470,25 @@ const performDelete = async () => {
           )}
 
           <Stack spacing={1}>
+            <Button
+              fullWidth
+              startIcon={<EngineIcon />}
+              onClick={() => {
+                setShowActions(false);
+                handleViewEngines(selectedManufacturer);
+              }}
+              sx={{
+                py: 1.5,
+                justifyContent: 'flex-start',
+                textTransform: 'none',
+                fontWeight: 600,
+                borderRadius: 2,
+                color: 'primary.main'
+              }}
+            >
+              エンジンを表示
+            </Button>
+            <Divider />
             <Button
               fullWidth
               startIcon={<EditIcon />}

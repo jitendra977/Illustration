@@ -30,15 +30,8 @@ services:
       MYSQL_PASSWORD: M3IF00UrzSZEEnZkp5lk
     ports:
       - "3306:3306"
-    command:
-      - --default-authentication-plugin=mysql_native_password
-      - --character-set-server=utf8mb4
-      - --collation-server=utf8mb4_unicode_ci
     volumes:
       - mysql_data:/var/lib/mysql
-      - ./init:/docker-entrypoint-initdb.d
-    networks:
-      - app-network
     healthcheck:
       test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-pM3IF00UrzSZEEnZkp5lk"]
       interval: 10s
@@ -50,18 +43,15 @@ services:
     image: phpmyadmin/phpmyadmin
     container_name: phpmyadmin
     restart: unless-stopped
-    environment:
-      PMA_HOST: mysql_db
-      PMA_PORT: 3306
-      PMA_ARBITRARY: 1
-      UPLOAD_LIMIT: 100M
     ports:
       - "8086:80"
+    environment:
+      PMA_HOST: mysql_db
+      PMA_USER: root
+      PMA_PASSWORD: M3IF00UrzSZEEnZkp5lk
     depends_on:
       mysql_db:
         condition: service_healthy
-    networks:
-      - app-network
 
 volumes:
   mysql_data:

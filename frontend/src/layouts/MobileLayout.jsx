@@ -29,6 +29,7 @@ import {
   Person as PersonIcon,
   Close as CloseIcon,
   Refresh as RefreshIcon,
+  ManageAccounts as ManageAccountsIcon
 } from '@mui/icons-material';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate, useLocation } from 'react-router-dom';
@@ -55,6 +56,12 @@ const MobileLayout = ({ children, showHeader = true, onRefresh, refreshing = fal
     return user?.username?.[0]?.toUpperCase() || 'U';
   };
 
+  const getUserRole = () => {
+    if (user?.is_superuser) return 'スーパー管理者';
+    if (user?.is_staff) return '管理者';
+    return 'ユーザー';
+  };
+
   return (
     <Box sx={{
       position: 'fixed',
@@ -77,59 +84,59 @@ const MobileLayout = ({ children, showHeader = true, onRefresh, refreshing = fal
           px: 2,
           flexShrink: 0
         }}>
-         <Stack direction="row" justifyContent="space-between" alignItems="center">
-  <Stack direction="row" spacing={1.5} alignItems="center">
-    <IconButton
-      onClick={() => setMenuOpen(true)}
-      sx={{
-        color: 'white',
-        bgcolor: 'rgba(255,255,255,0.2)'
-      }}
-    >
-      <MenuIcon />
-    </IconButton>
+          <Stack direction="row" justifyContent="space-between" alignItems="center">
+            <Stack direction="row" spacing={1.5} alignItems="center">
+              <IconButton
+                onClick={() => setMenuOpen(true)}
+                sx={{
+                  color: 'white',
+                  bgcolor: 'rgba(255,255,255,0.2)'
+                }}
+              >
+                <MenuIcon />
+              </IconButton>
 
-    {/* TITLE + FACTORY */}
-    <Stack spacing={0}>
-      <Typography
-        variant="h6"
-        fontWeight="bold"
-        lineHeight={1.2}
-      >
-        YAW 楽天検索丸
-      </Typography>
+              {/* TITLE + FACTORY */}
+              <Stack spacing={0}>
+                <Typography
+                  variant="h6"
+                  fontWeight="bold"
+                  lineHeight={1.2}
+                >
+                  YAW 楽天検索丸
+                </Typography>
 
-      {user?.factory && (
-        <Typography
-          variant="caption"
-          sx={{
-            color: 'rgba(255,255,255,0.75)',
-            letterSpacing: '0.08em'
-          }}
-        >
-          {user.factory}
-        </Typography>
-      )}
-    </Stack>
-  </Stack>
+                {user?.factory && (
+                  <Typography
+                    variant="caption"
+                    sx={{
+                      color: 'rgba(255,255,255,0.75)',
+                      letterSpacing: '0.08em'
+                    }}
+                  >
+                    {user.factory}
+                  </Typography>
+                )}
+              </Stack>
+            </Stack>
 
-  {onRefresh && (
-    <IconButton
-      onClick={onRefresh}
-      disabled={refreshing}
-      sx={{
-        color: 'white',
-        bgcolor: 'rgba(255,255,255,0.2)'
-      }}
-    >
-      <RefreshIcon
-        sx={{
-          animation: refreshing ? 'spin 1s linear infinite' : 'none'
-        }}
-      />
-    </IconButton>
-  )}
-</Stack>
+            {onRefresh && (
+              <IconButton
+                onClick={onRefresh}
+                disabled={refreshing}
+                sx={{
+                  color: 'white',
+                  bgcolor: 'rgba(255,255,255,0.2)'
+                }}
+              >
+                <RefreshIcon
+                  sx={{
+                    animation: refreshing ? 'spin 1s linear infinite' : 'none'
+                  }}
+                />
+              </IconButton>
+            )}
+          </Stack>
         </Box>
       )}
 
@@ -162,7 +169,8 @@ const MobileLayout = ({ children, showHeader = true, onRefresh, refreshing = fal
             </Avatar>
             <Box sx={{ flex: 1, minWidth: 0 }}>
               <Typography variant="body1" fontWeight={600} noWrap>{user?.first_name || user?.username}</Typography>
-              <Typography variant="caption" sx={{ opacity: 0.9 }} noWrap>{user?.email}</Typography>
+              <Typography variant="caption" sx={{ opacity: 0.9, display: 'block' }} noWrap>{user?.email}</Typography>
+              <Typography variant="caption" sx={{ color: '#90caf9', fontWeight: 'bold' }}>{getUserRole()}</Typography>
             </Box>
           </Stack>
         </Box>
@@ -174,6 +182,20 @@ const MobileLayout = ({ children, showHeader = true, onRefresh, refreshing = fal
           <ListItem disablePadding><ListItemButton onClick={() => { setMenuOpen(false); navigate('/engine-models'); }}><ListItemIcon><BuildIcon /></ListItemIcon><ListItemText primary="エンジン" /></ListItemButton></ListItem>
           <ListItem disablePadding><ListItemButton onClick={() => { setMenuOpen(false); navigate('/part-categories'); }}><ListItemIcon><SettingsIcon /></ListItemIcon><ListItemText primary="部品カテゴリー" /></ListItemButton></ListItem>
           <ListItem disablePadding><ListItemButton onClick={() => { setMenuOpen(false); navigate('/part-subcategories'); }}><ListItemIcon><SettingsIcon /></ListItemIcon><ListItemText primary="サブカテゴリー" /></ListItemButton></ListItem>
+
+          {/* Admin Section */}
+          {(user?.is_staff || user?.is_superuser) && (
+            <>
+              <Divider sx={{ my: 1 }} />
+              <ListItem disablePadding>
+                <ListItemButton onClick={() => { setMenuOpen(false); navigate('/mobile/admin/users'); }}>
+                  <ListItemIcon><ManageAccountsIcon /></ListItemIcon>
+                  <ListItemText primary="ユーザー管理" />
+                </ListItemButton>
+              </ListItem>
+            </>
+          )}
+
           <Divider sx={{ my: 1 }} />
           <ListItem disablePadding><ListItemButton onClick={() => { setMenuOpen(false); navigate('/profile'); }}><ListItemIcon><PersonIcon /></ListItemIcon><ListItemText primary="プロフィール" /></ListItemButton></ListItem>
           <ListItem disablePadding><ListItemButton onClick={() => { setMenuOpen(false); logout(); }}><ListItemIcon><LogoutIcon color="error" /></ListItemIcon><ListItemText primary="ログアウト" primaryTypographyProps={{ color: 'error' }} /></ListItemButton></ListItem>

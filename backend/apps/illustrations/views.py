@@ -64,6 +64,7 @@ class ManufacturerViewSet(viewsets.ModelViewSet):
 
 class EngineModelViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAdminOrReadOnly]
+    pagination_class = DefaultPagination
     filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
     filterset_fields = ['manufacturer', 'fuel_type']
     search_fields = ['name', 'engine_code', 'manufacturer__name']
@@ -214,12 +215,6 @@ class IllustrationViewSet(viewsets.ModelViewSet):
             )
 
         user = self.request.user
-
-        # Debug logging
-        print(f"=== ILLUSTRATION QUERYSET DEBUG ===")
-        print(f"User: {user.username} (ID: {user.id})")
-        print(f"Include files: {include_files}")
-        print(f"Action: {self.action}")
 
         # Not authenticated - no access
         if not user.is_authenticated:

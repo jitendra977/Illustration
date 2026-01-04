@@ -8,7 +8,7 @@ const handleApiError = (error, operation) => {
 
 // Get base URL from environment
 const getBaseUrl = () => {
-  const apiUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000/api';
+  const apiUrl = import.meta.env.VITE_API_BASE_URL || '/api';
   // Remove /api from the end if present to get the base URL
   return apiUrl.replace('/api', '');
 };

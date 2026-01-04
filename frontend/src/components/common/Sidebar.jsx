@@ -17,7 +17,8 @@ import {
   ChevronLeft as ChevronLeftIcon,
   Settings as SettingsIcon,
   Analytics as AnalyticsIcon,
-  Add as AddIcon
+  Add as AddIcon,
+  ManageAccounts as ManageAccountsIcon
 } from '@mui/icons-material';
 import { useAuth } from '../../context/AuthContext';
 
@@ -34,6 +35,15 @@ const Sidebar = ({ open, onClose }) => {
     { label: 'エンジン型式', icon: <BuildIcon />, path: '/engine-models' },
     { label: '部品カテゴリー', icon: <CategoryIcon />, path: '/part-categories' },
   ];
+
+  // Add Admin Management link if user is staff or superuser
+  if (user?.is_staff || user?.is_superuser) {
+    menuItems.push({
+      label: 'ユーザー管理',
+      icon: <ManageAccountsIcon />,
+      path: '/admin/users'
+    });
+  }
 
   const secondaryMenuItems = [
     { label: '設定', icon: <SettingsIcon />, path: '/settings' },
@@ -73,9 +83,9 @@ const Sidebar = ({ open, onClose }) => {
   };
 
   return (
-    <Drawer 
-      anchor="left" 
-      open={open} 
+    <Drawer
+      anchor="left"
+      open={open}
       onClose={onClose}
       sx={{
         '& .MuiDrawer-paper': {
@@ -95,16 +105,16 @@ const Sidebar = ({ open, onClose }) => {
             <ChevronLeftIcon />
           </IconButton>
         </Box>
-        
+
         <Divider />
 
         {/* User Info - ユーザー情報 */}
         <Box sx={{ p: 2 }}>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2 }}>
-            <Avatar 
+            <Avatar
               src={user?.profile_image}
-              sx={{ 
-                width: 60, 
+              sx={{
+                width: 60,
                 height: 60,
                 bgcolor: user?.profile_image ? 'transparent' : 'primary.main'
               }}
@@ -123,7 +133,7 @@ const Sidebar = ({ open, onClose }) => {
               </Typography>
             </Box>
           </Box>
-          
+
           {/* Quick Stats - クイック統計 */}
           <Box sx={{ display: 'flex', gap: 2, textAlign: 'center' }}>
             <Box>
@@ -158,8 +168,8 @@ const Sidebar = ({ open, onClose }) => {
                 <ListItemButton
                   onClick={() => handleNavigation(item.path)}
                   selected={location.pathname === item.path}
-                  sx={{ 
-                    borderRadius: 1, 
+                  sx={{
+                    borderRadius: 1,
                     mb: 0.5,
                     backgroundColor: location.pathname === item.path ? 'action.selected' : 'transparent'
                   }}
@@ -167,7 +177,7 @@ const Sidebar = ({ open, onClose }) => {
                   <ListItemIcon sx={{ minWidth: 40 }}>
                     {item.icon}
                   </ListItemIcon>
-                  <ListItemText 
+                  <ListItemText
                     primary={item.label}
                     primaryTypographyProps={{
                       fontWeight: location.pathname === item.path ? 'bold' : 'normal'
@@ -187,8 +197,8 @@ const Sidebar = ({ open, onClose }) => {
                 <ListItemButton
                   onClick={() => handleNavigation(item.path)}
                   selected={location.pathname === item.path}
-                  sx={{ 
-                    borderRadius: 1, 
+                  sx={{
+                    borderRadius: 1,
                     mb: 0.5,
                     backgroundColor: location.pathname === item.path ? 'action.selected' : 'transparent'
                   }}
@@ -196,7 +206,7 @@ const Sidebar = ({ open, onClose }) => {
                   <ListItemIcon sx={{ minWidth: 40 }}>
                     {item.icon}
                   </ListItemIcon>
-                  <ListItemText 
+                  <ListItemText
                     primary={item.label}
                     primaryTypographyProps={{
                       fontWeight: location.pathname === item.path ? 'bold' : 'normal'
@@ -212,10 +222,10 @@ const Sidebar = ({ open, onClose }) => {
 
         {/* Logout - ログアウト */}
         <Box sx={{ p: 2 }}>
-          <ListItemButton 
-            onClick={handleLogout} 
-            sx={{ 
-              color: 'error.main', 
+          <ListItemButton
+            onClick={handleLogout}
+            sx={{
+              color: 'error.main',
               borderRadius: 1,
               border: '1px solid',
               borderColor: 'error.main',

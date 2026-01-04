@@ -18,7 +18,6 @@ import {
   useMediaQuery,
   useTheme,
   alpha,
-  Chip,
   Paper
 } from '@mui/material';
 import {
@@ -29,22 +28,22 @@ import {
   PictureAsPdf as PdfIcon,
   CheckCircle as CheckCircleIcon
 } from '@mui/icons-material';
-import { 
-  illustrationAPI, 
-  manufacturerAPI, 
-  carModelAPI, 
-  engineModelAPI, 
-  partCategoryAPI 
+import {
+  illustrationAPI,
+  manufacturerAPI,
+  carModelAPI,
+  engineModelAPI,
+  partCategoryAPI
 } from '../../api/illustrations';
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
 });
 
-const CreateIllustrationModal = ({ open, onClose, onSuccess }) => {
+const CreateIllustrationModal = ({ open, onClose, onSuccess, mode = 'create', illustration = null }) => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
-  
+
   const [formData, setFormData] = useState({
     title: '',
     description: '',
@@ -54,34 +53,100 @@ const CreateIllustrationModal = ({ open, onClose, onSuccess }) => {
     part_category: '',
     uploaded_files: []
   });
+
+  const [existingFiles, setExistingFiles] = useState([]);
+  const [filesToDelete, setFilesToDelete] = useState([]);
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
-  
+
   // Data states
   const [manufacturers, setManufacturers] = useState([]);
   const [carModels, setCarModels] = useState([]);
   const [engineModels, setEngineModels] = useState([]);
   const [categories, setCategories] = useState([]);
-  
+
   // Loading states
   const [loadingManufacturers, setLoadingManufacturers] = useState(false);
   const [loadingCarModels, setLoadingCarModels] = useState(false);
   const [loadingEngineModels, setLoadingEngineModels] = useState(false);
   const [loadingCategories, setLoadingCategories] = useState(false);
 
-  // Fetch manufacturers on mount
+  // Fetch initial data on mount/open
   useEffect(() => {
     if (open) {
-      fetchManufacturers();
-      fetchCategories();  // Fetch categories independently
+      initializeData();
     }
-  }, [open]);
+  }, [open, mode, illustration]);
+
+  const initializeData = async () => {
+    // 1. Load manufacturers and categories (always needed)
+    await Promise.all([
+      fetchManufacturers(),
+      fetchCategories()
+    ]);
+
+    // 2. If in Edit mode, populate form and load dependent data
+    if (mode === 'edit' && illustration) {
+      console.log('Initializing Edit Mode with:', illustration);
+
+      // Populate basic fields
+      setFormData({
+        title: illustration.title || '',
+        description: illustration.description || '',
+        manufacturer: '', // Will be set after finding the correct car model -> manufacturer map
+        car_model: '',
+        engine_model: illustration.engine_model || '', // ID
+        part_category: illustration.part_category || '', // ID
+        uploaded_files: []
+      });
+
+      setExistingFiles(illustration.files || []);
+      setFilesToDelete([]);
+
+      // 3. Resolve dependencies: Engine -> Car -> Manufacturer
+      if (illustration.engine_model) {
+        try {
+          const engineData = await engineModelAPI.getById(illustration.engine_model);
+          const carData = await carModelAPI.getById(engineData.car_model);
+
+          await fetchCarModels(carData.manufacturer);
+          await fetchEngineModels(carData.id);
+
+          setFormData(prev => ({
+            ...prev,
+            manufacturer: carData.manufacturer,
+            car_model: carData.id,
+            engine_model: engineData.id
+          }));
+
+        } catch (err) {
+          console.error('Failed to resolve dependencies for edit:', err);
+          setErrors(prev => ({ ...prev, general: 'データの読み込みに失敗しました' }));
+        }
+      }
+    } else {
+      // Create mode: reset
+      setFormData({
+        title: '',
+        description: '',
+        manufacturer: '',
+        car_model: '',
+        engine_model: '',
+        part_category: '',
+        uploaded_files: []
+      });
+      setExistingFiles([]);
+      setFilesToDelete([]);
+      setCarModels([]);
+      setEngineModels([]);
+    }
+  };
 
   const fetchManufacturers = async () => {
     setLoadingManufacturers(true);
     try {
       const response = await manufacturerAPI.getAll();
-      setManufacturers(response.data.results || response.data || []);
+      setManufacturers(response.results || response || []);
     } catch (error) {
       console.error('Failed to fetch manufacturers:', error);
       setErrors(prev => ({ ...prev, manufacturers: 'メーカーの読み込みに失敗しました' }));
@@ -95,11 +160,10 @@ const CreateIllustrationModal = ({ open, onClose, onSuccess }) => {
       setCarModels([]);
       return;
     }
-    
     setLoadingCarModels(true);
     try {
       const response = await carModelAPI.getAll({ manufacturer: manufacturerId });
-      setCarModels(response.data.results || response.data || []);
+      setCarModels(response.results || response || []);
     } catch (error) {
       console.error('Failed to fetch car models:', error);
       setErrors(prev => ({ ...prev, car_models: '車種の読み込みに失敗しました' }));
@@ -113,11 +177,10 @@ const CreateIllustrationModal = ({ open, onClose, onSuccess }) => {
       setEngineModels([]);
       return;
     }
-    
     setLoadingEngineModels(true);
     try {
       const response = await engineModelAPI.getAll({ car_model: carModelId });
-      setEngineModels(response.data.results || response.data || []);
+      setEngineModels(response.results || response || []);
     } catch (error) {
       console.error('Failed to fetch engine models:', error);
       setErrors(prev => ({ ...prev, engine_models: 'エンジンモデルの読み込みに失敗しました' }));
@@ -130,7 +193,7 @@ const CreateIllustrationModal = ({ open, onClose, onSuccess }) => {
     setLoadingCategories(true);
     try {
       const response = await partCategoryAPI.getAll();
-      setCategories(response.data.results || response.data || []);
+      setCategories(response.results || response || []);
     } catch (error) {
       console.error('Failed to fetch part categories:', error);
       setErrors(prev => ({ ...prev, categories: 'パーツカテゴリの読み込みに失敗しました' }));
@@ -139,52 +202,26 @@ const CreateIllustrationModal = ({ open, onClose, onSuccess }) => {
     }
   };
 
-  // Reset form when modal opens/closes
-  useEffect(() => {
-    if (open) {
-      setFormData({
-        title: '',
-        description: '',
-        manufacturer: '',
-        car_model: '',
-        engine_model: '',
-        part_category: '',
-        uploaded_files: []
-      });
-      setErrors({});
-      setCarModels([]);
-      setEngineModels([]);
-      // Categories are independent, so don't reset them
-    }
-  }, [open]);
-
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
-    
+
     if (name === 'manufacturer') {
-      setFormData(prev => ({ 
-        ...prev, 
-        car_model: '', 
-        engine_model: '', 
-        part_category: '' 
+      setFormData(prev => ({
+        ...prev,
+        car_model: '',
+        engine_model: '',
       }));
       setEngineModels([]);
-      setCategories([]);  // No need to reset categories since they're independent
       fetchCarModels(value);
     } else if (name === 'car_model') {
-      setFormData(prev => ({ 
-        ...prev, 
-        engine_model: '', 
-        part_category: '' 
+      setFormData(prev => ({
+        ...prev,
+        engine_model: '',
       }));
-      setCategories([]);  // No need to reset categories
       fetchEngineModels(value);
-    } else if (name === 'engine_model') {
-      setFormData(prev => ({ ...prev, part_category: '' }));
-      // No need to fetch categories again since they're independent
     }
-    
+
     // Clear error for this field
     if (errors[name]) {
       setErrors(prev => ({ ...prev, [name]: '' }));
@@ -193,37 +230,36 @@ const CreateIllustrationModal = ({ open, onClose, onSuccess }) => {
 
   const handleFileChange = (e) => {
     const files = Array.from(e.target.files);
-    
+
     // Validate file types
     const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'application/pdf'];
     const invalidFiles = files.filter(file => !validTypes.includes(file.type));
-    
+
     if (invalidFiles.length > 0) {
-      setErrors(prev => ({ 
-        ...prev, 
-        files: `無効なファイル形式: ${invalidFiles.map(f => f.name).join(', ')}` 
+      setErrors(prev => ({
+        ...prev,
+        files: `無効なファイル形式: ${invalidFiles.map(f => f.name).join(', ')}`
       }));
       return;
     }
-    
+
     // Validate file sizes (max 10MB per file)
     const maxSize = 10 * 1024 * 1024; // 10MB
     const oversizedFiles = files.filter(file => file.size > maxSize);
-    
+
     if (oversizedFiles.length > 0) {
-      setErrors(prev => ({ 
-        ...prev, 
-        files: `ファイルサイズが大きすぎます（最大10MB）: ${oversizedFiles.map(f => f.name).join(', ')}` 
+      setErrors(prev => ({
+        ...prev,
+        files: `ファイルサイズが大きすぎます（最大10MB）: ${oversizedFiles.map(f => f.name).join(', ')}`
       }));
       return;
     }
-    
-    setFormData(prev => ({ 
-      ...prev, 
-      uploaded_files: [...prev.uploaded_files, ...files] 
+
+    setFormData(prev => ({
+      ...prev,
+      uploaded_files: [...prev.uploaded_files, ...files]
     }));
-    
-    // Clear file error
+
     if (errors.files) {
       setErrors(prev => ({ ...prev, files: '' }));
     }
@@ -236,16 +272,27 @@ const CreateIllustrationModal = ({ open, onClose, onSuccess }) => {
     }));
   };
 
+  const removeExistingFile = (fileId) => {
+    setFilesToDelete(prev => [...prev, fileId]);
+    setExistingFiles(prev => prev.filter(f => f.id !== fileId));
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     // Validation
     const newErrors = {};
     if (!formData.title.trim()) newErrors.title = 'タイトルは必須です';
     if (!formData.engine_model) newErrors.engine_model = 'エンジンモデルは必須です';
     if (!formData.part_category) newErrors.part_category = 'パーツカテゴリは必須です';
-    if (formData.uploaded_files.length === 0) newErrors.files = '少なくとも1つのファイルが必要です';
-    
+
+    if (mode === 'create' && formData.uploaded_files.length === 0) {
+      newErrors.files = '少なくとも1つのファイルが必要です';
+    }
+    if (mode === 'edit' && formData.uploaded_files.length === 0 && existingFiles.length === 0) {
+      newErrors.files = '少なくとも1つのファイルが必要です（既存または新規）';
+    }
+
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors);
       return;
@@ -257,53 +304,53 @@ const CreateIllustrationModal = ({ open, onClose, onSuccess }) => {
         title: formData.title.trim(),
         engine_model: formData.engine_model,
         part_category: formData.part_category,
-        uploaded_files: formData.uploaded_files
       };
-      
+
       if (formData.description && formData.description.trim()) {
         dataToSend.description = formData.description.trim();
       }
-      
-      await illustrationAPI.create(dataToSend);
-      
+
+      if (mode === 'create') {
+        dataToSend.uploaded_files = formData.uploaded_files;
+        await illustrationAPI.create(dataToSend);
+      } else {
+        // Edit Logic
+        await illustrationAPI.update(illustration.id, dataToSend);
+
+        // Delete removed files
+        if (filesToDelete.length > 0) {
+          for (const fileId of filesToDelete) {
+            await illustrationAPI.deleteFile(illustration.id, fileId).catch(console.error);
+          }
+        }
+
+        // Upload new files
+        if (formData.uploaded_files.length > 0) {
+          await illustrationAPI.addFiles(illustration.id, formData.uploaded_files);
+        }
+      }
+
       if (onSuccess) {
         onSuccess();
       }
-      
+
       handleClose();
     } catch (err) {
-      console.error('Create illustration error:', err);
-      
-      const apiError = err.response?.data;
-      if (apiError) {
+      console.error('Illustration submit error:', err);
+
+      const apiError = err.response?.data || err;
+      if (apiError && typeof apiError === 'object') {
         const fieldErrors = {};
-        Object.keys(apiError).forEach(key => {
-          if (['title', 'description', 'engine_model', 'part_category'].includes(key)) {
-            fieldErrors[key] = Array.isArray(apiError[key]) 
-              ? apiError[key].join(', ') 
-              : apiError[key];
-          } else if (key === 'non_field_errors' || key === 'detail') {
-            fieldErrors.submit = Array.isArray(apiError[key])
-              ? apiError[key].join(', ')
-              : apiError[key];
-          } else if (key === 'uploaded_files' || key === 'files') {
-            fieldErrors.files = Array.isArray(apiError[key]) 
-              ? apiError[key].join(', ') 
-              : apiError[key];
-          } else {
-            fieldErrors[key] = Array.isArray(apiError[key]) 
-              ? apiError[key].join(', ') 
-              : apiError[key];
-          }
-        });
-        
-        if (Object.keys(fieldErrors).length === 0) {
-          fieldErrors.submit = JSON.stringify(apiError);
+        if (apiError.title) fieldErrors.title = String(apiError.title);
+        if (apiError.description) fieldErrors.description = String(apiError.description);
+        if (apiError.engine_model) fieldErrors.engine_model = String(apiError.engine_model);
+        if (apiError.part_category) fieldErrors.part_category = String(apiError.part_category);
+        if (!Object.keys(fieldErrors).length) {
+          fieldErrors.submit = apiError.detail || apiError.message || JSON.stringify(apiError);
         }
-        
         setErrors(fieldErrors);
       } else {
-        setErrors({ submit: err.message || 'イラストの作成に失敗しました' });
+        setErrors({ submit: '処理に失敗しました' });
       }
     } finally {
       setLoading(false);
@@ -312,7 +359,7 @@ const CreateIllustrationModal = ({ open, onClose, onSuccess }) => {
 
   const handleClose = () => {
     if (loading) return;
-    
+
     setFormData({
       title: '',
       description: '',
@@ -322,32 +369,35 @@ const CreateIllustrationModal = ({ open, onClose, onSuccess }) => {
       part_category: '',
       uploaded_files: []
     });
+    setExistingFiles([]);
+    setFilesToDelete([]);
     setErrors({});
     setLoading(false);
     setCarModels([]);
     setEngineModels([]);
-    // Categories are independent, so don't reset them
     onClose();
   };
 
   const getFileIcon = (file) => {
-    if (file.type === 'application/pdf') {
+    const isPdf = file.type === 'application/pdf' || (file.url && file.url.endsWith('.pdf')) || (file.file_type === 'pdf') || (file.file && file.file.endsWith('.pdf'));
+    if (isPdf) {
       return <PdfIcon color="error" />;
     }
     return <ImageIcon color="primary" />;
   };
 
   const formatFileSize = (bytes) => {
+    if (!bytes) return '';
     if (bytes < 1024) return bytes + ' B';
     if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
     return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
   };
 
   return (
-    <Dialog 
-      open={open} 
-      onClose={handleClose} 
-      maxWidth="sm" 
+    <Dialog
+      open={open}
+      onClose={handleClose}
+      maxWidth="sm"
       fullWidth
       fullScreen={isMobile}
       TransitionComponent={isMobile ? Transition : undefined}
@@ -359,9 +409,9 @@ const CreateIllustrationModal = ({ open, onClose, onSuccess }) => {
         }
       }}
     >
-      <DialogTitle sx={{ 
+      <DialogTitle sx={{
         p: isMobile ? 2 : 3,
-        background: isMobile 
+        background: isMobile
           ? `linear-gradient(135deg, ${theme.palette.primary.main} 0%, ${theme.palette.primary.dark} 100%)`
           : 'transparent',
         color: isMobile ? 'white' : 'inherit',
@@ -370,7 +420,7 @@ const CreateIllustrationModal = ({ open, onClose, onSuccess }) => {
         <Stack direction="row" justifyContent="space-between" alignItems="center">
           <Box>
             <Typography variant={isMobile ? 'h6' : 'h6'} fontWeight="bold">
-              新規イラスト作成
+              {mode === 'edit' ? 'イラスト編集' : '新規イラスト作成'}
             </Typography>
             {isMobile && (
               <Typography variant="caption" sx={{ opacity: 0.9, fontSize: '0.75rem' }}>
@@ -378,8 +428,8 @@ const CreateIllustrationModal = ({ open, onClose, onSuccess }) => {
               </Typography>
             )}
           </Box>
-          <IconButton 
-            onClick={handleClose} 
+          <IconButton
+            onClick={handleClose}
             disabled={loading}
             sx={{
               color: isMobile ? 'white' : 'inherit',
@@ -393,14 +443,14 @@ const CreateIllustrationModal = ({ open, onClose, onSuccess }) => {
           </IconButton>
         </Stack>
       </DialogTitle>
-      
+
       <form onSubmit={handleSubmit}>
-        <DialogContent sx={{ 
+        <DialogContent sx={{
           p: isMobile ? 2 : 3,
           bgcolor: isMobile ? 'background.default' : 'transparent'
         }}>
           <Stack spacing={isMobile ? 2.5 : 2} sx={{ pt: isMobile ? 0 : 1 }}>
-            {/* タイトル */}
+            {/* Title */}
             <TextField
               label="タイトル"
               name="title"
@@ -414,17 +464,11 @@ const CreateIllustrationModal = ({ open, onClose, onSuccess }) => {
               autoFocus={!isMobile}
               required
               InputProps={{
-                sx: {
-                  borderRadius: isMobile ? 2 : 1,
-                  fontSize: isMobile ? '1rem' : '0.875rem'
-                }
-              }}
-              InputLabelProps={{
-                sx: { fontSize: isMobile ? '1rem' : '0.875rem' }
+                sx: { borderRadius: isMobile ? 2 : 1 }
               }}
             />
 
-            {/* 説明 */}
+            {/* Description */}
             <TextField
               label="説明（任意）"
               name="description"
@@ -438,20 +482,14 @@ const CreateIllustrationModal = ({ open, onClose, onSuccess }) => {
               fullWidth
               disabled={loading}
               InputProps={{
-                sx: {
-                  borderRadius: isMobile ? 2 : 1,
-                  fontSize: isMobile ? '1rem' : '0.875rem'
-                }
-              }}
-              InputLabelProps={{
-                sx: { fontSize: isMobile ? '1rem' : '0.875rem' }
+                sx: { borderRadius: isMobile ? 2 : 1 }
               }}
             />
 
-            {/* メーカー選択 */}
+            {/* Manufacturer Selection */}
             <TextField
               select
-              label="メーカー（任意）"
+              label="メーカー"
               name="manufacturer"
               value={formData.manufacturer}
               onChange={handleChange}
@@ -460,27 +498,18 @@ const CreateIllustrationModal = ({ open, onClose, onSuccess }) => {
               size={isMobile ? 'medium' : 'small'}
               fullWidth
               disabled={loading || loadingManufacturers || manufacturers.length === 0}
-              InputProps={{
-                sx: {
-                  borderRadius: isMobile ? 2 : 1,
-                  fontSize: isMobile ? '1rem' : '0.875rem'
-                }
-              }}
-              InputLabelProps={{
-                sx: { fontSize: isMobile ? '1rem' : '0.875rem' }
-              }}
             >
               <MenuItem value="">
                 {loadingManufacturers ? '読み込み中...' : 'メーカーを選択'}
               </MenuItem>
               {manufacturers.map(m => (
-                <MenuItem key={m.id} value={m.id} sx={{ fontSize: isMobile ? '1rem' : '0.875rem' }}>
+                <MenuItem key={m.id} value={m.id}>
                   {m.name}
                 </MenuItem>
               ))}
             </TextField>
 
-            {/* 車種選択 */}
+            {/* Car Model Selection */}
             <TextField
               select
               label="車種"
@@ -492,27 +521,18 @@ const CreateIllustrationModal = ({ open, onClose, onSuccess }) => {
               disabled={loading || loadingCarModels || !formData.manufacturer}
               size={isMobile ? 'medium' : 'small'}
               fullWidth
-              InputProps={{
-                sx: {
-                  borderRadius: isMobile ? 2 : 1,
-                  fontSize: isMobile ? '1rem' : '0.875rem'
-                }
-              }}
-              InputLabelProps={{
-                sx: { fontSize: isMobile ? '1rem' : '0.875rem' }
-              }}
             >
               <MenuItem value="">
                 {loadingCarModels ? '読み込み中...' : '車種を選択'}
               </MenuItem>
               {carModels.map(c => (
-                <MenuItem key={c.id} value={c.id} sx={{ fontSize: isMobile ? '1rem' : '0.875rem' }}>
+                <MenuItem key={c.id} value={c.id}>
                   {c.name}
                 </MenuItem>
               ))}
             </TextField>
 
-            {/* エンジンモデル選択 */}
+            {/* Engine Model Selection */}
             <TextField
               select
               label="エンジンモデル"
@@ -525,27 +545,18 @@ const CreateIllustrationModal = ({ open, onClose, onSuccess }) => {
               size={isMobile ? 'medium' : 'small'}
               fullWidth
               required
-              InputProps={{
-                sx: {
-                  borderRadius: isMobile ? 2 : 1,
-                  fontSize: isMobile ? '1rem' : '0.875rem'
-                }
-              }}
-              InputLabelProps={{
-                sx: { fontSize: isMobile ? '1rem' : '0.875rem' }
-              }}
             >
               <MenuItem value="">
                 {loadingEngineModels ? '読み込み中...' : 'エンジンモデルを選択'}
               </MenuItem>
               {engineModels.map(e => (
-                <MenuItem key={e.id} value={e.id} sx={{ fontSize: isMobile ? '1rem' : '0.875rem' }}>
+                <MenuItem key={e.id} value={e.id}>
                   {e.name}
                 </MenuItem>
               ))}
             </TextField>
 
-            {/* パーツカテゴリ選択 */}
+            {/* Part Category Selection */}
             <TextField
               select
               label="パーツカテゴリ"
@@ -553,32 +564,23 @@ const CreateIllustrationModal = ({ open, onClose, onSuccess }) => {
               value={formData.part_category}
               onChange={handleChange}
               error={!!errors.part_category}
-              helperText={errors.part_category || 'まずエンジンモデルを選択してください'}
-              disabled={loading || loadingCategories || !formData.engine_model}
+              helperText={errors.part_category}
+              disabled={loading || loadingCategories}
               size={isMobile ? 'medium' : 'small'}
               fullWidth
               required
-              InputProps={{
-                sx: {
-                  borderRadius: isMobile ? 2 : 1,
-                  fontSize: isMobile ? '1rem' : '0.875rem'
-                }
-              }}
-              InputLabelProps={{
-                sx: { fontSize: isMobile ? '1rem' : '0.875rem' }
-              }}
             >
               <MenuItem value="">
                 {loadingCategories ? '読み込み中...' : 'パーツカテゴリを選択'}
               </MenuItem>
               {categories.map(c => (
-                <MenuItem key={c.id} value={c.id} sx={{ fontSize: isMobile ? '1rem' : '0.875rem' }}>
+                <MenuItem key={c.id} value={c.id}>
                   {c.name}
                 </MenuItem>
               ))}
             </TextField>
 
-            {/* ファイルアップロードセクション */}
+            {/* File Upload Section */}
             <Box>
               <input
                 accept="image/*,.pdf,.png,.jpg,.jpeg"
@@ -600,109 +602,83 @@ const CreateIllustrationModal = ({ open, onClose, onSuccess }) => {
                   sx={{
                     py: isMobile ? 1.5 : 1,
                     borderRadius: isMobile ? 2 : 1,
-                    fontSize: isMobile ? '1rem' : '0.875rem',
-                    fontWeight: 600,
                     textTransform: 'none',
                     ...(isMobile && {
                       background: `linear-gradient(135deg, ${theme.palette.secondary.main}, ${theme.palette.secondary.dark})`
                     })
                   }}
                 >
-                  ファイルを選択
+                  ファイルを選択（追加）
                 </Button>
               </label>
               {errors.files && (
-                <FormHelperText error sx={{ fontSize: isMobile ? '0.8rem' : '0.75rem', mt: 1 }}>
-                  {errors.files}
-                </FormHelperText>
+                <FormHelperText error sx={{ mt: 1 }}>{errors.files}</FormHelperText>
               )}
-              <Typography 
-                variant="caption" 
-                color="text.secondary" 
-                display="block" 
-                sx={{ 
-                  mt: 1,
-                  fontSize: isMobile ? '0.8rem' : '0.75rem',
-                  px: isMobile ? 0.5 : 0
-                }}
-              >
-                対応形式: 画像（PNG、JPG、JPEG）、PDF（最大10MB/ファイル）
-              </Typography>
             </Box>
 
-            {/* ファイルリスト */}
+            {/* Existing Files List (Edit Mode) */}
+            {existingFiles.length > 0 && (
+              <Box>
+                <Typography variant="caption" color="text.secondary" sx={{ mb: 1, display: 'block' }}>
+                  既存のファイル
+                </Typography>
+                <Stack spacing={1}>
+                  {existingFiles.map((file) => (
+                    <Paper
+                      key={file.id}
+                      elevation={0}
+                      sx={{
+                        p: 1,
+                        bgcolor: 'background.default',
+                        border: `1px solid ${theme.palette.divider}`
+                      }}
+                    >
+                      <Stack direction="row" alignItems="center" spacing={2}>
+                        <Box sx={{ width: 40, height: 40, display: 'flex', alignItems: 'center', justifyContent: 'center', bgcolor: 'grey.100', borderRadius: 1 }}>
+                          {getFileIcon(file)}
+                        </Box>
+                        <Box sx={{ flex: 1, overflow: 'hidden' }}>
+                          <Typography variant="body2" noWrap>{file.file_name || 'File'}</Typography>
+                        </Box>
+                        <IconButton size="small" color="error" onClick={() => removeExistingFile(file.id)}>
+                          <DeleteIcon />
+                        </IconButton>
+                      </Stack>
+                    </Paper>
+                  ))}
+                </Stack>
+              </Box>
+            )}
+
+            {/* New Files List */}
             {formData.uploaded_files.length > 0 && (
               <Box>
-                <Stack direction="row" alignItems="center" spacing={1} sx={{ mb: 1.5 }}>
-                  <CheckCircleIcon color="success" sx={{ fontSize: isMobile ? 20 : 18 }} />
-                  <Typography 
-                    variant="body2" 
-                    fontWeight="bold"
-                    sx={{ fontSize: isMobile ? '0.95rem' : '0.875rem' }}
-                  >
-                    選択済み ({formData.uploaded_files.length}ファイル)
+                <Stack direction="row" alignItems="center" spacing={1} sx={{ mb: 1 }}>
+                  <CheckCircleIcon color="success" fontSize="small" />
+                  <Typography variant="caption" fontWeight="bold">
+                    追加するファイル ({formData.uploaded_files.length})
                   </Typography>
                 </Stack>
-                <Stack spacing={isMobile ? 1.5 : 1}>
+                <Stack spacing={1}>
                   {formData.uploaded_files.map((file, index) => (
                     <Paper
                       key={index}
                       elevation={0}
-                      sx={{ 
-                        p: isMobile ? 1.5 : 1,
+                      sx={{
+                        p: 1,
                         bgcolor: alpha(theme.palette.primary.main, 0.04),
-                        borderRadius: isMobile ? 2 : 1,
                         border: `1px solid ${theme.palette.divider}`
                       }}
                     >
-                      <Stack 
-                        direction="row" 
-                        alignItems="center" 
-                        spacing={isMobile ? 1.5 : 1}
-                      >
-                        <Box sx={{
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                          width: isMobile ? 40 : 36,
-                          height: isMobile ? 40 : 36,
-                          borderRadius: isMobile ? 1.5 : 1,
-                          bgcolor: 'background.paper',
-                          flexShrink: 0
-                        }}>
+                      <Stack direction="row" alignItems="center" spacing={2}>
+                        <Box sx={{ width: 40, height: 40, display: 'flex', alignItems: 'center', justifyContent: 'center', bgcolor: 'white', borderRadius: 1 }}>
                           {getFileIcon(file)}
                         </Box>
                         <Box sx={{ flex: 1, minWidth: 0 }}>
-                          <Typography 
-                            variant="body2" 
-                            noWrap
-                            sx={{ 
-                              fontWeight: 500,
-                              fontSize: isMobile ? '0.9rem' : '0.875rem'
-                            }}
-                          >
-                            {file.name}
-                          </Typography>
-                          <Typography 
-                            variant="caption" 
-                            color="text.secondary"
-                            sx={{ fontSize: isMobile ? '0.75rem' : '0.7rem' }}
-                          >
-                            {formatFileSize(file.size)}
-                          </Typography>
+                          <Typography variant="body2" noWrap>{file.name}</Typography>
+                          <Typography variant="caption" color="text.secondary">{formatFileSize(file.size)}</Typography>
                         </Box>
-                        <IconButton 
-                          size="small" 
-                          onClick={() => removeFile(index)}
-                          disabled={loading}
-                          color="error"
-                          sx={{
-                            bgcolor: alpha(theme.palette.error.main, 0.1),
-                            '&:hover': {
-                              bgcolor: alpha(theme.palette.error.main, 0.2)
-                            }
-                          }}
-                        >
+                        <IconButton size="small" color="error" onClick={() => removeFile(index)}>
                           <DeleteIcon fontSize="small" />
                         </IconButton>
                       </Stack>
@@ -712,62 +688,25 @@ const CreateIllustrationModal = ({ open, onClose, onSuccess }) => {
               </Box>
             )}
 
-            {/* エラーアラート */}
+            {/* Error Alert */}
             {errors.submit && (
-              <Alert 
-                severity="error" 
-                sx={{ 
-                  borderRadius: isMobile ? 2 : 1,
-                  fontSize: isMobile ? '0.9rem' : '0.875rem'
-                }}
-              >
-                {errors.submit}
-              </Alert>
+              <Alert severity="error">{errors.submit}</Alert>
             )}
           </Stack>
         </DialogContent>
 
-        <DialogActions sx={{ 
-          p: isMobile ? 2 : 2,
-          pt: 0,
-          gap: isMobile ? 1 : 0.5,
-          flexDirection: isMobile ? 'column' : 'row'
-        }}>
-          <Button 
-            onClick={handleClose} 
-            disabled={loading}
-            fullWidth={isMobile}
-            size={isMobile ? 'large' : 'medium'}
-            sx={{
-              py: isMobile ? 1.5 : 1,
-              borderRadius: isMobile ? 2 : 1,
-              fontSize: isMobile ? '1rem' : '0.875rem',
-              fontWeight: 600,
-              textTransform: 'none',
-              order: isMobile ? 2 : 1
-            }}
-          >
+        <DialogActions sx={{ p: isMobile ? 2 : 2, pt: 0 }}>
+          <Button onClick={handleClose} disabled={loading} fullWidth={isMobile}>
             キャンセル
           </Button>
-          <Button 
-            type="submit" 
+          <Button
+            type="submit"
             variant="contained"
-            disabled={loading || formData.uploaded_files.length === 0}
+            disabled={loading}
             startIcon={loading ? <CircularProgress size={16} color="inherit" /> : null}
             fullWidth={isMobile}
-            size={isMobile ? 'large' : 'medium'}
-            sx={{
-              py: isMobile ? 1.5 : 1,
-              borderRadius: isMobile ? 2 : 1,
-              fontSize: isMobile ? '1rem' : '0.875rem',
-              fontWeight: 600,
-              textTransform: 'none',
-              background: `linear-gradient(135deg, ${theme.palette.primary.main}, ${theme.palette.primary.dark})`,
-              boxShadow: isMobile ? 2 : 1,
-              order: isMobile ? 1 : 2
-            }}
           >
-            {loading ? '作成中...' : 'イラストを作成'}
+            {loading ? '処理中...' : mode === 'edit' ? '更新する' : '作成する'}
           </Button>
         </DialogActions>
       </form>

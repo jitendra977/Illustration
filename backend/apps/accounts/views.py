@@ -15,7 +15,8 @@ from .serializers import (
     UpdateUserSerializer,
     ChangePasswordSerializer,
     CustomTokenObtainPairSerializer,
-    EmailVerificationSerializer
+    EmailVerificationSerializer,
+    AdminUserSerializer
 )
 
 
@@ -120,6 +121,11 @@ class UserViewSet(viewsets.ModelViewSet):
             'verify_email': EmailVerificationSerializer,
             'resend_verification': serializers.Serializer,  # No data needed for resend
         }
+        
+        # Use AdminUserSerializer for staff members creating/updating users
+        if self.request.user.is_staff and self.action in ['create', 'update', 'partial_update']:
+            return AdminUserSerializer
+            
         return serializer_map.get(self.action, UserSerializer)
 
     @user_permission_required(action_type='list')

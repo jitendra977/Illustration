@@ -13,7 +13,7 @@ WORKDIR /app
 COPY package.json bun.lockb* ./
 
 # Install dependencies
-RUN bun install --frozen-lockfile
+RUN bun install
 
 # Copy source code
 COPY . .
@@ -38,3 +38,15 @@ ENV VITE_STATIC_URL=$VITE_STATIC_URL
 
 # Build the app
 RUN bun run build
+
+# ===========================
+# Production Stage
+# ===========================
+FROM nginx:alpine
+
+COPY --from=builder /app/dist /usr/share/nginx/html
+COPY nginx.conf /etc/nginx/conf.d/default.conf
+
+EXPOSE 80
+
+CMD ["nginx", "-g", "daemon off;"]

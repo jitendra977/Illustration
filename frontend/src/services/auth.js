@@ -3,7 +3,7 @@ import api from './index.js';
 import axios from 'axios';
 
 // Get API base URL from environment or use default
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000/api';
+const API_BASE_URL = import.meta.env.VITE_API_URL || '/api';
 
 export const authAPI = {
   login: async (credentials) => {
@@ -24,20 +24,20 @@ export const authAPI = {
       throw error;
     }
   },
-  
+
   register: async (userData) => {
     const isFormData = userData instanceof FormData;
     const config = {
       timeout: 10000,
       timeoutErrorMessage: 'Connection timeout. Please try again.'
     };
-    
+
     if (isFormData) {
       config.headers = {
         'Content-Type': 'multipart/form-data',
       };
     }
-    
+
     try {
       const response = await api.post('auth/users/register/', userData, config);
       return response.data;
@@ -51,7 +51,7 @@ export const authAPI = {
       throw error;
     }
   },
-  
+
   refreshToken: async (refreshToken) => {
     try {
       // Fixed: Added backticks for template literal
@@ -69,12 +69,12 @@ export const authAPI = {
       throw error;
     }
   },
-  
+
   logout: () => {
     localStorage.removeItem('access_token');
     localStorage.removeItem('refresh_token');
   },
-  
+
   // Additional auth methods
   verifyEmail: async (token) => {
     try {
@@ -90,7 +90,7 @@ export const authAPI = {
       throw error;
     }
   },
-  
+
   resendVerification: async (email) => {
     try {
       const response = await api.post('auth/users/resend_verification/', { email }, { timeout: 10000 });
@@ -105,7 +105,7 @@ export const authAPI = {
       throw error;
     }
   },
-  
+
   changePassword: async (data) => {
     try {
       const response = await api.post('auth/users/change_password/', data, { timeout: 10000 });
@@ -120,7 +120,7 @@ export const authAPI = {
       throw error;
     }
   },
-  
+
   getProfile: async () => {
     try {
       const response = await api.get('auth/users/profile/', { timeout: 10000 });
@@ -135,7 +135,7 @@ export const authAPI = {
       throw error;
     }
   },
-  
+
   updateProfile: async (data) => {
     try {
       const response = await api.patch('auth/users/profile/', data, { timeout: 10000 });

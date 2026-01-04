@@ -42,8 +42,9 @@ import {
 } from '@mui/icons-material';
 import { useIllustrations } from '../../hooks/useIllustrations';
 import CreateIllustrationModal from '../../components/forms/CreateIllustrationModal';
-import IllustrationDetailModal from '../../components/common/IllustrationDetailModal'; // Import the detail modal
+import IllustrationDetailModal from '../../components/common/IllustrationDetailModal';
 import FilterPanel from '../../components/common/FilterPanel';
+import Breadcrumbs from '../../components/common/Breadcrumbs';
 
 const IllustrationDashboard = () => {
   const [viewMode, setViewMode] = useState('grid');
@@ -54,6 +55,8 @@ const IllustrationDashboard = () => {
   const [selectedIllustration, setSelectedIllustration] = useState(null);
   const [filters, setFilters] = useState({});
   const [sortBy, setSortBy] = useState('newest');
+  const [editMode, setEditMode] = useState('create');
+  const [quickFilter, setQuickFilter] = useState(null);
 
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
@@ -71,6 +74,46 @@ const IllustrationDashboard = () => {
     fetchIllustrations(newFilters);
   };
 
+  const handleQuickFilter = (filterType) => {
+    setQuickFilter(filterType === quickFilter ? null : filterType);
+
+    let newFilters = { ...filters };
+
+    switch (filterType) {
+      case 'recent':
+        newFilters = { ...newFilters, sortBy: 'newest' };
+        setSortBy('newest');
+        break;
+      case 'popular':
+        newFilters = { ...newFilters, sortBy: 'popular' };
+        setSortBy('popular');
+        break;
+      case 'my-uploads':
+        // Assuming we have user context
+        newFilters = { ...newFilters, uploaded_by: 'me' };
+        break;
+      default:
+        break;
+    }
+
+    if (filterType === quickFilter) {
+      // Clear the quick filter
+      delete newFilters.uploaded_by;
+      setQuickFilter(null);
+    }
+
+    setFilters(newFilters);
+    fetchIllustrations(newFilters);
+  };
+
+  const clearAllFilters = () => {
+    setFilters({});
+    setQuickFilter(null);
+    setSearchTerm('');
+    setSortBy('newest');
+    fetchIllustrations({});
+  };
+
   const handleCardClick = (illustration) => {
     setSelectedIllustration(illustration);
     setShowDetailModal(true);
@@ -81,6 +124,33 @@ const IllustrationDashboard = () => {
     setSelectedIllustration(null);
   };
 
+  const handleCreate = () => {
+    setEditMode('create');
+    setSelectedIllustration(null);
+    setShowCreateModal(true);
+  };
+
+  const handleEdit = async (illustration) => {
+    try {
+      // Close detail modal if open
+      setShowDetailModal(false);
+
+      // Fetch full details if needed, or use what we have (but safer to fetch to get files etc)
+      // Note: illustration might be the list view object which is incomplete
+      // But if we are calling from DetailModal, it might be more complete, 
+      // EXCEPT dependent fetching in CreateIllustrationModal expects the object.
+      // Let's pass what we have, and let CreateIllustrationModal resolve dependencies.
+      // HOWEVER, for `CreateIllustrationModal` logic, it works best if we pass the object 
+      // that resembles what we get from `illustrationAPI.getById`.
+
+      setSelectedIllustration(illustration);
+      setEditMode('edit');
+      setShowCreateModal(true);
+
+    } catch (err) {
+      console.error('Failed to prepare edit:', err);
+    }
+  };
   const handleDownload = (e, illustration) => {
     e.stopPropagation();
     const imageUrl = illustration.files?.[0]?.file;
@@ -116,10 +186,10 @@ const IllustrationDashboard = () => {
     <Grid container spacing={2}>
       {illustrations.map((illustration) => (
         <Grid item xs={12} sm={6} md={4} key={illustration.id}>
-          <Card 
-            sx={{ 
-              height: '100%', 
-              display: 'flex', 
+          <Card
+            sx={{
+              height: '100%',
+              display: 'flex',
               flexDirection: 'column',
               cursor: 'pointer',
               transition: 'all 0.3s ease',
@@ -142,11 +212,11 @@ const IllustrationDashboard = () => {
                 <Chip
                   size="small"
                   label={`${illustration.files.length} files`}
-                  sx={{ 
-                    position: 'absolute', 
-                    top: 8, 
-                    right: 8, 
-                    bgcolor: 'rgba(0,0,0,0.7)', 
+                  sx={{
+                    position: 'absolute',
+                    top: 8,
+                    right: 8,
+                    bgcolor: 'rgba(0,0,0,0.7)',
                     color: 'white',
                     fontWeight: 'bold'
                   }}
@@ -179,7 +249,7 @@ const IllustrationDashboard = () => {
               <Typography variant="subtitle2" fontWeight="bold" gutterBottom noWrap>
                 {illustration.title}
               </Typography>
-              
+
               {illustration.description && (
                 <Typography variant="caption" color="text.secondary" sx={{ mb: 2, display: 'block' }}>
                   {illustration.description}
@@ -221,10 +291,10 @@ const IllustrationDashboard = () => {
   const IllustrationList = ({ illustrations }) => (
     <Stack spacing={1}>
       {illustrations.map((illustration) => (
-        <Paper 
-          key={illustration.id} 
-          sx={{ 
-            p: 2, 
+        <Paper
+          key={illustration.id}
+          sx={{
+            p: 2,
             cursor: 'pointer',
             transition: 'all 0.2s ease',
             '&:hover': {
@@ -256,11 +326,11 @@ const IllustrationDashboard = () => {
                   <Chip
                     size="small"
                     label={`+${illustration.files.length - 1}`}
-                    sx={{ 
-                      position: 'absolute', 
-                      bottom: 4, 
-                      right: 4, 
-                      bgcolor: 'rgba(0,0,0,0.7)', 
+                    sx={{
+                      position: 'absolute',
+                      bottom: 4,
+                      right: 4,
+                      bgcolor: 'rgba(0,0,0,0.7)',
                       color: 'white',
                       fontSize: '0.6rem',
                       height: 18
@@ -314,6 +384,13 @@ const IllustrationDashboard = () => {
         }}
       >
         <Container maxWidth="lg" sx={{ py: 2 }}>
+          {/* Breadcrumbs */}
+          <Breadcrumbs
+            items={[
+              { label: 'イラスト' }
+            ]}
+          />
+
           <Stack spacing={2}>
             <Stack direction="row" justifyContent="space-between" alignItems="center">
               <Box>
@@ -327,7 +404,7 @@ const IllustrationDashboard = () => {
               <Button
                 variant="contained"
                 startIcon={<PlusIcon />}
-                onClick={() => setShowCreateModal(true)}
+                onClick={handleCreate}
                 size="small"
               >
                 New Illustration
@@ -395,6 +472,44 @@ const IllustrationDashboard = () => {
                 </ToggleButtonGroup>
               </Stack>
             </Stack>
+
+            {/* Quick Filter Chips */}
+            <Stack direction="row" spacing={1} flexWrap="wrap" sx={{ gap: 1 }}>
+              <Chip
+                label="最近追加"
+                icon={<TrendingIcon />}
+                onClick={() => handleQuickFilter('recent')}
+                color={quickFilter === 'recent' ? 'primary' : 'default'}
+                variant={quickFilter === 'recent' ? 'filled' : 'outlined'}
+                size="small"
+              />
+              <Chip
+                label="人気"
+                icon={<StarIcon />}
+                onClick={() => handleQuickFilter('popular')}
+                color={quickFilter === 'popular' ? 'primary' : 'default'}
+                variant={quickFilter === 'popular' ? 'filled' : 'outlined'}
+                size="small"
+              />
+              <Chip
+                label="マイアップロード"
+                icon={<UploadIcon />}
+                onClick={() => handleQuickFilter('my-uploads')}
+                color={quickFilter === 'my-uploads' ? 'primary' : 'default'}
+                variant={quickFilter === 'my-uploads' ? 'filled' : 'outlined'}
+                size="small"
+              />
+              {(Object.keys(filters).length > 0 || searchTerm || quickFilter) && (
+                <Chip
+                  label="フィルタをクリア"
+                  icon={<CloseIcon />}
+                  onClick={clearAllFilters}
+                  color="error"
+                  variant="outlined"
+                  size="small"
+                />
+              )}
+            </Stack>
           </Stack>
         </Container>
       </Paper>
@@ -432,7 +547,7 @@ const IllustrationDashboard = () => {
                   <Button
                     variant="outlined"
                     startIcon={<PlusIcon />}
-                    onClick={() => setShowCreateModal(true)}
+                    onClick={handleCreate}
                   >
                     Create Illustration
                   </Button>
@@ -481,6 +596,8 @@ const IllustrationDashboard = () => {
           setShowCreateModal(false);
           fetchIllustrations();
         }}
+        mode={editMode}
+        illustration={selectedIllustration}
       />
 
       {/* Detail Modal */}
@@ -488,6 +605,7 @@ const IllustrationDashboard = () => {
         open={showDetailModal}
         onClose={handleCloseDetailModal}
         illustration={selectedIllustration}
+        onEdit={() => handleEdit(selectedIllustration)}
       />
 
       {/* Floating Action Button for Mobile */}
@@ -495,7 +613,7 @@ const IllustrationDashboard = () => {
         <Fab
           color="primary"
           aria-label="add"
-          onClick={() => setShowCreateModal(true)}
+          onClick={handleCreate}
           sx={{
             position: 'fixed',
             bottom: 16,

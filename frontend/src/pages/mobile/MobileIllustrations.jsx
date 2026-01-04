@@ -35,6 +35,7 @@ import IllustrationListCard from '../../components/mobile/IllustrationListCard';
 import MobileIllustrationFormModal from '../../components/forms/MobileIllustrationFormModal';
 import MobileFilterPanel from '../../components/mobile/MobileFilterPanel';
 import FloatingAddButton from '../../components/mobile/FloatingAddButton';
+import Breadcrumbs from '../../components/common/Breadcrumbs';
 
 const MobileIllustrations = () => {
   const theme = useTheme();
@@ -48,7 +49,7 @@ const MobileIllustrations = () => {
   const [sortBy, setSortBy] = useState('newest');
   const [editMode, setEditMode] = useState('create');
   const [favorites, setFavorites] = useState([]);
-  
+
   // State for illustrations
   const [illustrations, setIllustrations] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -64,18 +65,18 @@ const MobileIllustrations = () => {
   const fetchIllustrations = useCallback(async (customFilters = {}) => {
     setLoading(true);
     setError(null);
-    
+
     try {
       const params = {
         ...filters,
         ...customFilters,
         include_files: false, // IMPORTANT: Don't load files for list view
       };
-      
+
       if (searchTerm) {
         params.search = searchTerm;
       }
-      
+
       // Apply sorting
       if (sortBy === 'oldest') {
         params.ordering = 'created_at';
@@ -84,7 +85,7 @@ const MobileIllustrations = () => {
       } else {
         params.ordering = '-created_at';
       }
-      
+
       const data = await illustrationAPI.getAll(params);
       setIllustrations(data.results || data);
     } catch (err) {
@@ -196,6 +197,13 @@ const MobileIllustrations = () => {
           </Typography>
         </Box>
 
+        {/* Breadcrumbs */}
+        <Breadcrumbs
+          items={[
+            { label: 'イラスト' }
+          ]}
+        />
+
         {/* Search Bar */}
         <Paper
           component="form"
@@ -276,7 +284,7 @@ const MobileIllustrations = () => {
                 <Typography variant="caption" fontWeight="bold" color="primary">
                   適用中:
                 </Typography>
-                {Object.entries(filters).map(([k, v]) => 
+                {Object.entries(filters).map(([k, v]) =>
                   v ? (
                     <Chip
                       key={k}
@@ -388,7 +396,7 @@ const MobileIllustrations = () => {
           </Stack>
         )}
       </Container>
-      
+
       {/* create illustration button */}
       <FloatingAddButton onClick={handleCreateClick} />
 
