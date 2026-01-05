@@ -29,6 +29,7 @@ from .permissions import (
     IsAdminOrOwner,
     IsAuthenticatedAndActive,
     IsVerifiedUser,
+    IsVerifiedStaff,
 )
 
 from .pagination import DefaultPagination
@@ -50,7 +51,8 @@ class ManufacturerViewSet(viewsets.ModelViewSet):
         if self.action == 'list':
             qs = qs.annotate(
                 engine_count=Count('engines', distinct=True),
-                car_model_count=Count('car_models', distinct=True)
+                car_model_count=Count('car_models', distinct=True),
+                illustration_count=Count('engines__illustrations', distinct=True)
             )
         return qs
 
@@ -113,7 +115,30 @@ class CarModelViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         qs = CarModel.objects.select_related('manufacturer').prefetch_related('engines')
         if self.action == 'list':
-            qs = qs.annotate(engine_count=Count('engines', distinct=True))
+            # Illustration count - Correctly recursive
+            from django.db.models import Q, F
+            
+            # Context-aware filtering
+            engine_model_id = self.request.query_params.get('engine_model')
+            
+            # Base filter for illustrations
+            illustration_filter = Q(engines__illustrations__applicable_car_models__isnull=True) | \
+                                  Q(engines__illustrations__applicable_car_models=F('id'))
+            
+            # If engine context provided, only count illustrations from that engine
+            if engine_model_id:
+                illustration_filter &= Q(engines__illustrations__engine_model_id=engine_model_id)
+                # Also filter the cars themselves to only those having this engine (optional but clean)
+                qs = qs.filter(engines__id=engine_model_id)
+            
+            qs = qs.annotate(
+                engine_count=Count('engines', distinct=True),
+                illustration_count=Count(
+                    'engines__illustrations',
+                    filter=illustration_filter,
+                    distinct=True
+                )
+            )
         return qs
 
     def get_serializer_class(self):
@@ -142,9 +167,33 @@ class PartCategoryViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         qs = PartCategory.objects.all()
         if self.action == 'list':
+            # Subcategory count
+            qs = qs.annotate(subcategory_count=Count('subcategories', distinct=True))
+            
+            # Illustration count - Context Aware
+            from django.db.models import Q
+            
+            engine_id = self.request.query_params.get('engine_model')
+            car_id = self.request.query_params.get('car_model')
+            
+            filter_query = Q()
+            
+            if engine_id:
+                filter_query &= Q(illustrations__engine_model_id=engine_id)
+                
+            if car_id:
+                # Logic: Illustration applies if it has NO specific cars OR includes this car
+                filter_query &= (
+                    Q(illustrations__applicable_car_models__id=car_id) | 
+                    Q(illustrations__applicable_car_models__isnull=True)
+                )
+
             qs = qs.annotate(
-                subcategory_count=Count('subcategories', distinct=True),
-                illustration_count=Count('illustrations', distinct=True)
+                 illustration_count=Count(
+                     'illustrations', 
+                     filter=filter_query, 
+                     distinct=True
+                 )
             )
         return qs
 
@@ -161,7 +210,31 @@ class PartSubCategoryViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         qs = PartSubCategory.objects.select_related('part_category')
         if self.action == 'list':
-            qs = qs.annotate(illustration_count=Count('illustrations', distinct=True))
+            # Illustration count - Context Aware
+            from django.db.models import Q
+            
+            engine_id = self.request.query_params.get('engine_model')
+            car_id = self.request.query_params.get('car_model')
+            
+            filter_query = Q()
+            
+            if engine_id:
+                filter_query &= Q(illustrations__engine_model_id=engine_id)
+                
+            if car_id:
+                # Logic: Illustration applies if it has NO specific cars OR includes this car
+                filter_query &= (
+                    Q(illustrations__applicable_car_models__id=car_id) | 
+                    Q(illustrations__applicable_car_models__isnull=True)
+                )
+
+            qs = qs.annotate(
+                 illustration_count=Count(
+                     'illustrations', 
+                     filter=filter_query, 
+                     distinct=True
+                 )
+            )
         return qs
 
 
@@ -186,11 +259,15 @@ class IllustrationViewSet(viewsets.ModelViewSet):
 
     def get_permissions(self):
         """
-        Read: Authenticated and active
-        Write: Verified users
+        Read (list, retrieve): All authenticated users (read-only for normal users)
+        Write (create, update, delete): Staff or superuser only
         """
-        if self.action in ['create', 'update', 'partial_update', 'destroy', 'add_files']:
-            return [IsVerifiedUser()]
+        if self.action in ['list', 'retrieve']:
+            # All authenticated users can view illustrations
+            return [IsAuthenticatedAndActive()]
+        # Create, update, delete require staff status
+        if self.action in ['create', 'update', 'partial_update', 'destroy', 'upload_file', 'delete_file']:
+            return [IsVerifiedStaff()]  # Changed from IsVerifiedUser to IsVerifiedStaff
         return [IsAuthenticatedAndActive()]
 
     def get_queryset(self):
@@ -200,14 +277,16 @@ class IllustrationViewSet(viewsets.ModelViewSet):
         # ⭐ NEW: Check if we should include files from query params
         include_files = self.request.query_params.get('include_files', 'false').lower() == 'true'
 
-        # Base queryset
+        # Base queryset with optimized joins
         qs = Illustration.objects.select_related(
             'user',
             'factory',
+            'engine_model',
             'engine_model__manufacturer',
             'part_category',
-            'part_subcategory__part_category'
+            'part_subcategory'
         ).prefetch_related(
+            'applicable_car_models',
             'applicable_car_models__manufacturer'
         ).annotate(file_count=Count('files', distinct=True))
 
@@ -216,7 +295,7 @@ class IllustrationViewSet(viewsets.ModelViewSet):
             qs = qs.prefetch_related(
                 Prefetch(
                     'files',
-                    queryset=IllustrationFile.objects.only('id', 'file', 'file_type', 'uploaded_at')
+                    queryset=IllustrationFile.objects.order_by('uploaded_at')
                 )
             )
 
@@ -224,27 +303,39 @@ class IllustrationViewSet(viewsets.ModelViewSet):
 
         # Not authenticated - no access
         if not user.is_authenticated:
-            print("User not authenticated - returning empty queryset")
             return qs.none()
 
-        # Staff users can see everything
-        if user.is_staff:
-            print("User is staff - returning all illustrations")
-            factory_id = self.request.query_params.get('factory', None)
-            if factory_id:
-                print(f"Filtering by factory_id: {factory_id}")
-                qs = qs.filter(factory_id=factory_id)
-            return qs
-        
-        # Regular users: Only see their factories' illustrations
-        user_factories = user.get_factories()
-        if user_factories.exists():
-            print(f"Regular user - filtering by factories: {[f.name for f in user_factories]}")
-            return qs.filter(factory__in=user_factories)
-        
-        # User has no factory assigned - return empty
-        print("User has no factory - returning empty queryset")
-        return qs.none()
+        # ⭐ NEW: All authenticated users can VIEW all illustrations
+        # No factory filtering - everyone sees everything (read-only for normal users)
+        # Write permissions are controlled by get_permissions()
+
+        # Apply filtering from query params for navigation hierarchy
+        manufacturer_id = self.request.query_params.get('manufacturer')
+        engine_id = self.request.query_params.get('engine_model')
+        car_model_id = self.request.query_params.get('car_model')
+        category_id = self.request.query_params.get('part_category')
+        subcategory_id = self.request.query_params.get('part_subcategory')
+        factory_id = self.request.query_params.get('factory')
+
+        if manufacturer_id:
+            qs = qs.filter(engine_model__manufacturer_id=manufacturer_id)
+        if engine_id:
+            qs = qs.filter(engine_model_id=engine_id)
+        if car_model_id:
+            from django.db.models import Q
+            qs = qs.filter(
+                Q(applicable_car_models__id=car_model_id) |
+                Q(applicable_car_models__isnull=True)
+            )
+        if category_id:
+            qs = qs.filter(part_category_id=category_id)
+        if subcategory_id:
+            qs = qs.filter(part_subcategory_id=subcategory_id)
+        if factory_id:
+            qs = qs.filter(factory_id=factory_id)
+
+        return qs.distinct()  # Use distinct() when filtering by many-to-many fields
+
 
     def get_serializer_class(self):
         return IllustrationDetailSerializer if self.action == 'retrieve' else IllustrationSerializer
@@ -392,7 +483,7 @@ class IllustrationFileViewSet(viewsets.ModelViewSet):
         # No factory assigned - no access
         return qs.none()
 
-    @action(detail=True, methods=['get'], permission_classes=[IsAuthenticatedAndActive])
+    @action(detail=True, methods=['get'], permission_classes=[AllowAny])
     def preview(self, request, pk=None):
         """Preview file inline in browser"""
         try:

@@ -14,11 +14,12 @@ from .models import (
 class ManufacturerSerializer(serializers.ModelSerializer):
     engine_count = serializers.IntegerField(read_only=True)
     car_model_count = serializers.IntegerField(read_only=True)
+    illustration_count = serializers.IntegerField(read_only=True)
     
     class Meta:
         model = Manufacturer
-        fields = ['id', 'name', 'slug', 'engine_count', 'car_model_count']
-        read_only_fields = ['id', 'engine_count', 'car_model_count']
+        fields = ['id', 'name', 'slug', 'engine_count', 'car_model_count', 'illustration_count']
+        read_only_fields = ['id', 'engine_count', 'car_model_count', 'illustration_count']
 
 
 # ------------------------------
@@ -28,15 +29,16 @@ class EngineModelSerializer(serializers.ModelSerializer):
     manufacturer_name = serializers.CharField(source='manufacturer.name', read_only=True)
     fuel_type_display = serializers.CharField(source='get_fuel_type_display', read_only=True)
     car_model_count = serializers.IntegerField(read_only=True)
+    illustration_count = serializers.IntegerField(read_only=True)
     
     class Meta:
         model = EngineModel
         fields = [
             'id', 'manufacturer', 'manufacturer_name', 'name', 'engine_code',
             'fuel_type', 'fuel_type_display',
-            'slug', 'car_model_count'
+            'slug', 'car_model_count', 'illustration_count'
         ]
-        read_only_fields = ['id', 'slug', 'manufacturer_name', 'fuel_type_display', 'car_model_count']
+        read_only_fields = ['id', 'slug', 'manufacturer_name', 'fuel_type_display', 'car_model_count', 'illustration_count']
 
 
 # ------------------------------
@@ -46,6 +48,7 @@ class CarModelSerializer(serializers.ModelSerializer):
     manufacturer_name = serializers.CharField(source='manufacturer.name', read_only=True)
     vehicle_type_display = serializers.CharField(source='get_vehicle_type_display', read_only=True)
     engine_count = serializers.IntegerField(read_only=True)
+    illustration_count = serializers.IntegerField(read_only=True)
     engines_detail = serializers.SerializerMethodField(read_only=True)
     
     class Meta:
@@ -54,11 +57,11 @@ class CarModelSerializer(serializers.ModelSerializer):
             'id', 'manufacturer', 'manufacturer_name', 'name', 'slug',
             'vehicle_type', 'vehicle_type_display',
             'year_from', 'year_to', 'model_code', 'chassis_code',
-            'engines', 'engines_detail', 'engine_count'
+            'engines', 'engines_detail', 'engine_count', 'illustration_count'
         ]
         read_only_fields = [
             'id', 'slug', 'manufacturer_name', 'vehicle_type_display', 
-            'engines_detail', 'engine_count'
+            'engines_detail', 'engine_count', 'illustration_count'
         ]
     
     def get_engines_detail(self, obj):

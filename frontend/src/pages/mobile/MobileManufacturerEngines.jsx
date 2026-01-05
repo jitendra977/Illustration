@@ -71,6 +71,7 @@ const MobileManufacturerEngines = () => {
   const [showConfirmDelete, setShowConfirmDelete] = useState(false);
   const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: 'info' });
 
+  // Pass manufacturer ID to hook for automatic fetching
   const {
     engineModels,
     loading,
@@ -79,7 +80,7 @@ const MobileManufacturerEngines = () => {
     createEngineModel,
     updateEngineModel,
     deleteEngineModel,
-  } = useEngineModels();
+  } = useEngineModels(id);
 
   const { fuelTypes } = useFuelTypes();
 
@@ -127,25 +128,6 @@ const MobileManufacturerEngines = () => {
     }
   }, [manufacturer, id]);
 
-  // Fetch engines with error handling
-  const loadEngines = async () => {
-    if (!manufacturer?.id) return;
-
-    try {
-      console.log('🔍 Fetching engines for manufacturer ID:', manufacturer.id);
-      await fetchEngineModels({ manufacturer: manufacturer.id });
-    } catch (err) {
-      console.error('❌ Failed to fetch engines:', err);
-      showSnackbar(err.error || 'エンジン一覧の取得に失敗しました', 'error');
-    }
-  };
-
-  useEffect(() => {
-    if (manufacturer?.id) {
-      loadEngines();
-    }
-  }, [manufacturer]);
-
   const filteredEngines = engineModels.filter(e =>
     e.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
     e.slug?.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -167,7 +149,7 @@ const MobileManufacturerEngines = () => {
         slug: engine.slug || '',
         displacement: engine.displacement || '',
         fuel_type: engine.fuel_type || '',
-        manufacturer: engine.manufacturer
+        manufacturer: manufacturer?.id || id // Use text ID if obj not ready
       });
     } else {
       setEditingEngine(null);
@@ -176,7 +158,7 @@ const MobileManufacturerEngines = () => {
         slug: '',
         displacement: '',
         fuel_type: '',
-        manufacturer: manufacturer?.id || ''
+        manufacturer: manufacturer?.id || id
       });
     }
     setErrors({});
@@ -209,7 +191,7 @@ const MobileManufacturerEngines = () => {
         slug: formData.slug?.trim() || undefined,
         displacement: formData.displacement || null,
         fuel_type: formData.fuel_type || null,
-        manufacturer: manufacturer.id
+        manufacturer: manufacturer?.id || id
       };
 
       if (editingEngine) {
@@ -220,9 +202,9 @@ const MobileManufacturerEngines = () => {
         showSnackbar('エンジンを作成しました', 'success');
       }
 
-      await loadEngines();
+      // No need to manually reload, hook state updates
       setShowModal(false);
-      setFormData({ name: '', slug: '', displacement: '', fuel_type: '', manufacturer: manufacturer.id });
+      setFormData({ name: '', slug: '', displacement: '', fuel_type: '', manufacturer: manufacturer?.id || id });
       setEditingEngine(null);
 
     } catch (err) {
@@ -272,7 +254,7 @@ const MobileManufacturerEngines = () => {
     try {
       await deleteEngineModel(selectedEngine.slug);
       showSnackbar('エンジンを削除しました', 'success');
-      await loadEngines();
+      // No need to manually reload
       setShowActions(false);
       setShowConfirmDelete(false);
     } catch (err) {
@@ -293,6 +275,7 @@ const MobileManufacturerEngines = () => {
         '&:hover': {
           boxShadow: 3,
           borderColor: 'primary.main',
+          transform: 'translateY(-2px)'
         },
         '&:active': {
           transform: 'scale(0.98)',
@@ -301,76 +284,78 @@ const MobileManufacturerEngines = () => {
       }}
     >
       <CardContent sx={{ p: 2 }}>
-        <Stack direction="row" justifyContent="space-between" alignItems="start" mb={1.5}>
-          <Box sx={{ flex: 1, minWidth: 0 }}>
-            <Stack direction="row" alignItems="center" spacing={1}>
-              <Typography variant="body1" fontWeight="bold" noWrap>
-                {engine.name}
-              </Typography>
-              <ChevronRightIcon sx={{ color: 'text.secondary', fontSize: 20 }} />
-            </Stack>
-            {engine.slug && (
-              <Typography variant="caption" color="text.secondary" display="block" mt={0.5}>
-                {engine.slug}
-              </Typography>
-            )}
-          </Box>
-          <IconButton
-            size="small"
-            onClick={(e) => handleOpenActions(engine, e)}
-            sx={{ ml: 1 }}
-          >
-            <MoreIcon fontSize="small" />
-          </IconButton>
-        </Stack>
-
-        <Stack direction="row" spacing={1} flexWrap="wrap" mb={1}>
-          {engine.displacement && (
-            <Chip
-              icon={<DisplacementIcon sx={{ fontSize: 16 }} />}
-              label={`${engine.displacement}L`}
-              size="small"
-              sx={{
-                bgcolor: alpha('#ff9800', 0.1),
-                color: '#ff9800',
-                fontWeight: 600,
-                fontSize: '0.75rem',
-                height: 24,
-                '& .MuiChip-icon': { color: '#ff9800' }
-              }}
-            />
-          )}
-
-          {engine.fuel_type && (
-            <Chip
-              icon={<FuelIcon sx={{ fontSize: 16 }} />}
-              label={engine.fuel_type}
-              size="small"
-              sx={{
-                bgcolor: alpha('#4caf50', 0.1),
-                color: '#4caf50',
-                fontWeight: 600,
-                fontSize: '0.75rem',
-                height: 24,
-                '& .MuiChip-icon': { color: '#4caf50' }
-              }}
-            />
-          )}
-        </Stack>
-
-        {engine.slug && (
+        <Stack direction="row" spacing={2} alignItems="center">
+          {/* Avatar Icon */}
           <Box sx={{
-            bgcolor: alpha('#1976d2', 0.08),
-            px: 1.5,
-            py: 0.5,
-            borderRadius: 1.5,
-            display: 'inline-block'
+            width: 48,
+            height: 48,
+            borderRadius: 2,
+            bgcolor: alpha('#1976d2', 0.1),
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            color: 'primary.main',
+            flexShrink: 0
           }}>
-            <Typography variant="caption" sx={{ fontFamily: 'monospace', fontWeight: 600, fontSize: '0.7rem' }}>
-              {engine.slug}
-            </Typography>
+            <EngineIcon sx={{ fontSize: 24 }} />
           </Box>
-        )}
+
+          <Box sx={{ flex: 1, minWidth: 0 }}>
+            <Stack direction="row" justifyContent="space-between" alignItems="start">
+              <Box>
+                <Typography variant="body1" fontWeight="bold" noWrap>
+                  {engine.name}
+                </Typography>
+                {engine.slug && (
+                  <Typography variant="caption" color="text.secondary" display="block">
+                    {engine.slug.toUpperCase()}
+                  </Typography>
+                )}
+              </Box>
+              <IconButton
+                size="small"
+                onClick={(e) => handleOpenActions(engine, e)}
+                sx={{ ml: 1, mt: -0.5, mr: -0.5 }}
+              >
+                <MoreIcon fontSize="small" />
+              </IconButton>
+            </Stack>
+
+            <Stack direction="row" spacing={1} flexWrap="wrap" mt={1}>
+              {engine.displacement && (
+                <Chip
+                  icon={<DisplacementIcon sx={{ fontSize: 14 }} />}
+                  label={`${engine.displacement}L`}
+                  size="small"
+                  sx={{
+                    bgcolor: alpha('#ff9800', 0.1),
+                    color: '#ff9800',
+                    fontWeight: 600,
+                    fontSize: '0.7rem',
+                    height: 22,
+                    '& .MuiChip-icon': { color: '#ff9800', fontSize: 14 }
+                  }}
+                />
+              )}
+
+              {engine.fuel_type && (
+                <Chip
+                  icon={<FuelIcon sx={{ fontSize: 14 }} />}
+                  label={engine.fuel_type}
+                  size="small"
+                  sx={{
+                    bgcolor: alpha('#4caf50', 0.1),
+                    color: '#4caf50',
+                    fontWeight: 600,
+                    fontSize: '0.7rem',
+                    height: 22,
+                    '& .MuiChip-icon': { color: '#4caf50', fontSize: 14 }
+                  }}
+                />
+              )}
+            </Stack>
+          </Box>
+        </Stack>
       </CardContent>
     </Card>
   );

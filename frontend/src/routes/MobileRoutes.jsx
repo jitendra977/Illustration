@@ -22,6 +22,12 @@ import MobileManufacturerEngines from '../pages/mobile/MobileManufacturerEngines
 import MobileEngineIllustrations from '../pages/mobile/MobileEngineIllustrations';
 import AdminRoute from '../components/common/AdminRoute';
 import MobileUserManagement from '../pages/mobile/admin/MobileUserManagement';
+import ManufacturerList from '../pages/navigation/ManufacturerList';
+import ManufacturerEngines from '../pages/navigation/ManufacturerEngines';
+import EngineCars from '../pages/navigation/EngineCars';
+import CarCategories from '../pages/navigation/CarCategories';
+import CategorySubcategories from '../pages/navigation/CategorySubcategories';
+import HierarchicalIllustrationList from '../pages/navigation/HierarchicalIllustrationList';
 
 const MobileRoutes = () => {
   const router = createBrowserRouter([
@@ -56,7 +62,7 @@ const MobileRoutes = () => {
     // Step 1: Manufacturers List
     {
       path: "/manufacturers",
-      element: <ProtectedRoute><MobileLayout><MobileManufacturers /></MobileLayout></ProtectedRoute>
+      element: <ProtectedRoute><MobileLayout><ManufacturerList /></MobileLayout></ProtectedRoute>
     },
     {
       path: "/manufacturers/create",
@@ -65,11 +71,35 @@ const MobileRoutes = () => {
 
     // Step 2: Engines for a Manufacturer (Filtered by manufacturer ID)
     {
-      path: "/manufacturers/:id/engines",
-      element: <ProtectedRoute><MobileLayout><MobileManufacturerEngines /></MobileLayout></ProtectedRoute>
+      path: "/manufacturers/:manufacturerId/engines",
+      element: <ProtectedRoute><MobileLayout><ManufacturerEngines /></MobileLayout></ProtectedRoute>
     },
 
-    // Step 3: Illustrations for an Engine (Filtered by engine ID, Grouped by category)
+    // Step 3: Cars for an Engine
+    {
+      path: "/engines/:engineId/cars",
+      element: <ProtectedRoute><MobileLayout><EngineCars /></MobileLayout></ProtectedRoute>
+    },
+
+    // Step 4: Categories for a Car
+    {
+      path: "/cars/:carSlug/categories",
+      element: <ProtectedRoute><MobileLayout><CarCategories /></MobileLayout></ProtectedRoute>
+    },
+
+    // Step 5: Subcategories for a Category (in context of Car)
+    {
+      path: "/cars/:carSlug/categories/:categoryId/subcategories",
+      element: <ProtectedRoute><MobileLayout><CategorySubcategories /></MobileLayout></ProtectedRoute>
+    },
+
+    // Step 6: Illustrations List (Hierarchical End)
+    {
+      path: "/cars/:carSlug/categories/:categoryId/subcategories/:subcategoryId/illustrations",
+      element: <ProtectedRoute><MobileLayout><HierarchicalIllustrationList /></MobileLayout></ProtectedRoute>
+    },
+
+    // Legacy/Shortcut: Illustrations for an Engine (Filtered by engine ID, Grouped by category)
     {
       path: "/manufacturers/:id/engines/:engineId/illustrations",
       element: <ProtectedRoute><MobileLayout><MobileEngineIllustrations /></MobileLayout></ProtectedRoute>

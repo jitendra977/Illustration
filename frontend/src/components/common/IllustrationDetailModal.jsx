@@ -16,6 +16,7 @@ import {
     useTheme,
     alpha,
     Grid,
+    Paper,
 } from '@mui/material';
 import {
     Close as CloseIcon,
@@ -29,6 +30,8 @@ import {
 import { illustrationAPI } from '../../api/illustrations';
 import PDFPreviewModal from './PDFPreviewModal';
 
+import { useAuth } from '../../context/AuthContext';
+
 const IllustrationDetailModal = ({
     open,
     onClose,
@@ -37,6 +40,8 @@ const IllustrationDetailModal = ({
     onDelete,
     onEdit
 }) => {
+    const { user } = useAuth();
+    const canEdit = user?.is_staff || user?.is_superuser;
     const theme = useTheme();
     const [deleting, setDeleting] = useState(false);
     const [error, setError] = useState(null);
@@ -63,15 +68,16 @@ const IllustrationDetailModal = ({
     };
 
     const handleFilePreview = (file) => {
-        if (file.file_type === 'pdf' || file.file.toLowerCase().endsWith('.pdf')) {
+        if (file.file_type === 'pdf' || (file.file && file.file.toLowerCase().endsWith('.pdf'))) {
             setSelectedFile(file);
             setPdfPreviewOpen(true);
-        } else {
+        } else if (file.file) {
             window.open(file.file, '_blank');
         }
     };
 
     const handleDownload = (file) => {
+        if (!file.file) return;
         const link = document.createElement('a');
         link.href = file.file;
         link.download = file.file_name || 'download';
@@ -170,7 +176,9 @@ const IllustrationDetailModal = ({
                                         </Box>
                                         <Box display="flex" justifyContent="space-between">
                                             <Typography variant="caption" color="text.secondary">作成日:</Typography>
-                                            <Typography variant="caption" fontWeight="bold">{new Date(illustration.created_at).toLocaleDateString('ja-JP')}</Typography>
+                                            <Typography variant="caption" fontWeight="bold">
+                                                {illustration.created_at ? new Date(illustration.created_at).toLocaleDateString('ja-JP') : '-'}
+                                            </Typography>
                                         </Box>
                                     </Stack>
                                 </Box>
@@ -261,23 +269,27 @@ const IllustrationDetailModal = ({
 
                 <DialogActions sx={{ p: 2, justifyContent: 'space-between' }}>
                     <Stack direction="row" spacing={1}>
-                        <Button
-                            startIcon={<DeleteIcon />}
-                            color="error"
-                            onClick={handleDelete}
-                            disabled={deleting}
-                            size="small"
-                        >
-                            削除
-                        </Button>
-                        <Button
-                            startIcon={<EditIcon />}
-                            onClick={onEdit}
-                            disabled={deleting}
-                            size="small"
-                        >
-                            編集
-                        </Button>
+                        {canEdit && (
+                            <>
+                                <Button
+                                    startIcon={<DeleteIcon />}
+                                    color="error"
+                                    onClick={handleDelete}
+                                    disabled={deleting}
+                                    size="small"
+                                >
+                                    削除
+                                </Button>
+                                <Button
+                                    startIcon={<EditIcon />}
+                                    onClick={onEdit}
+                                    disabled={deleting}
+                                    size="small"
+                                >
+                                    編集
+                                </Button>
+                            </>
+                        )}
                     </Stack>
                     <Button variant="contained" onClick={onClose} sx={{ borderRadius: 2 }}>
                         閉じる
@@ -289,8 +301,8 @@ const IllustrationDetailModal = ({
                 <PDFPreviewModal
                     open={pdfPreviewOpen}
                     onClose={() => setPdfPreviewOpen(false)}
-                    fileUrl={selectedFile.file}
-                    title={selectedFile.file_name || illustration.title}
+                    fileId={selectedFile.id}
+                    fileName={selectedFile.file_name || illustration.title}
                 />
             )}
         </>

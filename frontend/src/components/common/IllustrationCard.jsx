@@ -25,8 +25,11 @@ import {
 } from '@mui/icons-material';
 import { illustrationAPI } from '../../api/illustrations';
 import IllustrationDetailModal from './IllustrationDetailModal';
+import { useAuth } from '../../context/AuthContext';
 
 const IllustrationCard = ({ illustration, onDelete }) => {
+  const { user } = useAuth();
+  const canEdit = user?.is_staff || user?.is_superuser;
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [showDetailModal, setShowDetailModal] = useState(false);
   const [deleting, setDeleting] = useState(false);
@@ -57,10 +60,10 @@ const IllustrationCard = ({ illustration, onDelete }) => {
 
   return (
     <>
-      <Card 
-        sx={{ 
-          height: '100%', 
-          display: 'flex', 
+      <Card
+        sx={{
+          height: '100%',
+          display: 'flex',
           flexDirection: 'column',
           cursor: 'pointer',
           transition: 'all 0.3s ease',
@@ -99,7 +102,7 @@ const IllustrationCard = ({ illustration, onDelete }) => {
           <Typography variant="subtitle2" fontWeight="bold" gutterBottom noWrap>
             {illustration.title}
           </Typography>
-          
+
           {illustration.description && (
             <Typography variant="caption" color="text.secondary" sx={{ mb: 2, display: 'block' }}>
               {illustration.description}
@@ -138,7 +141,7 @@ const IllustrationCard = ({ illustration, onDelete }) => {
         </CardContent>
 
         <CardActions sx={{ p: 1, justifyContent: 'space-between' }}>
-          <IconButton 
+          <IconButton
             size="small"
             onClick={(e) => {
               e.stopPropagation();
@@ -147,7 +150,7 @@ const IllustrationCard = ({ illustration, onDelete }) => {
           >
             <EyeIcon fontSize="small" />
           </IconButton>
-          <IconButton 
+          <IconButton
             size="small"
             onClick={(e) => {
               e.stopPropagation();
@@ -165,15 +168,17 @@ const IllustrationCard = ({ illustration, onDelete }) => {
           >
             <DownloadIcon fontSize="small" />
           </IconButton>
-          <IconButton 
-            size="small" 
-            onClick={(e) => {
-              e.stopPropagation();
-              setShowDeleteConfirm(true);
-            }}
-          >
-            <DeleteIcon fontSize="small" />
-          </IconButton>
+          {canEdit && (
+            <IconButton
+              size="small"
+              onClick={(e) => {
+                e.stopPropagation();
+                setShowDeleteConfirm(true);
+              }}
+            >
+              <DeleteIcon fontSize="small" />
+            </IconButton>
+          )}
         </CardActions>
       </Card>
 
@@ -185,8 +190,8 @@ const IllustrationCard = ({ illustration, onDelete }) => {
       />
 
       {/* Delete Confirmation Dialog */}
-      <Dialog 
-        open={showDeleteConfirm} 
+      <Dialog
+        open={showDeleteConfirm}
         onClose={() => !deleting && setShowDeleteConfirm(false)}
       >
         <DialogTitle>Delete Illustration?</DialogTitle>
@@ -199,9 +204,9 @@ const IllustrationCard = ({ illustration, onDelete }) => {
           <Button onClick={() => setShowDeleteConfirm(false)} disabled={deleting}>
             Cancel
           </Button>
-          <Button 
-            onClick={handleDelete} 
-            color="error" 
+          <Button
+            onClick={handleDelete}
+            color="error"
             variant="contained"
             disabled={deleting}
           >

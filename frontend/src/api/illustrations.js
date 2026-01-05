@@ -737,14 +737,17 @@ export const partSubCategoryAPI = {
     }
   },
 
-  getByCategory: async (categoryId) => {
-    const cacheKey = `part-subcategories-by-category:${categoryId}`;
+  getByCategory: async (categoryId, params = {}) => {
+    const cacheKey = `part-subcategories-by-category:${categoryId}:${JSON.stringify(params)}`;
     const cached = getFromCache(cacheKey);
     if (cached) return cached;
 
     try {
       const response = await api.get('/part-subcategories/', {
-        params: { part_category: categoryId }
+        params: {
+          part_category: categoryId,
+          ...params
+        }
       });
       setCache(cacheKey, response.data);
       return response.data;
