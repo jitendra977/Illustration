@@ -259,7 +259,7 @@ class Illustration(models.Model):
         help_text="Automatically set to the creating user"
     )
     
-    # Factory is auto-populated from user.factory
+    # Factory is set on creation
     factory = models.ForeignKey(
         Factory,
         on_delete=models.PROTECT,
@@ -267,7 +267,7 @@ class Illustration(models.Model):
         null=True,
         blank=True,
         editable=False,  # Cannot be edited manually in forms
-        help_text="Automatically set from user's factory"
+        help_text="The factory this illustration belongs to"
     )
     
     # CRITICAL: Engine + Category combination happens HERE, not in PartCategory
@@ -324,8 +324,12 @@ class Illustration(models.Model):
     
     def save(self, *args, **kwargs):
         # Auto-populate factory from user if not already set
-        if not self.factory and self.user and self.user.factory:
-            self.factory = self.user.factory
+        if not self.factory and self.user:
+            # Try to get the user's first active factory
+            active_membership = self.user.get_active_memberships().first()
+            if active_membership:
+                self.factory = active_membership.factory
+            
         super().save(*args, **kwargs)
 
 

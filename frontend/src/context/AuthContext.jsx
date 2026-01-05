@@ -15,20 +15,20 @@ export const AuthProvider = ({ children }) => {
     try {
       const profile = await usersAPI.getProfile();
       console.log('Fetched user profile:', profile);
-      
+
       // Update user state with complete profile data
       setUser(prevUser => ({
         ...prevUser,
         ...profile,
         token: prevUser?.token || localStorage.getItem('access_token')
       }));
-      
+
       // Update localStorage with complete profile
       localStorage.setItem('user_data', JSON.stringify({
         ...profile,
         token: user?.token || localStorage.getItem('access_token')
       }));
-      
+
       return profile;
     } catch (error) {
       console.error('Error fetching user profile:', error);
@@ -49,7 +49,7 @@ export const AuthProvider = ({ children }) => {
             const userData = JSON.parse(storedUser);
             setUser({ ...userData, token });
             console.log('Restored user from localStorage:', userData);
-            
+
             // Fetch fresh profile data
             await fetchUserProfile();
           } catch (parseError) {
@@ -70,7 +70,7 @@ export const AuthProvider = ({ children }) => {
             if (!profile) {
               throw new Error('Failed to fetch user profile');
             }
-            
+
             console.log('Token refreshed and profile fetched successfully');
           } catch (refreshError) {
             console.error('Token refresh failed:', refreshError);
@@ -158,13 +158,13 @@ export const AuthProvider = ({ children }) => {
   const updateUser = (newUserData) => {
     const updatedUser = { ...user, ...newUserData };
     console.log('Updating user data:', updatedUser);
-    
+
     // Ensure profile_image includes timestamp to prevent caching issues
     if (newUserData.profile_image) {
       const timestamp = new Date().getTime();
       updatedUser.profile_image = `${newUserData.profile_image}${newUserData.profile_image.includes('?') ? '&' : '?'}_t=${timestamp}`;
     }
-    
+
     setUser(updatedUser);
     localStorage.setItem('user_data', JSON.stringify(updatedUser));
   };
@@ -238,8 +238,31 @@ export const AuthProvider = ({ children }) => {
   };
 
   // Function to get user permissions
-  const hasPermission = (permission) => {
+  const hasPermission = (permission, factoryId = null) => {
     if (!user) return false;
+
+    // Staff/Superuser always have broad permissions
+    if (user.is_superuser) return true;
+    if (user.is_staff && (permission === 'admin' || permission === 'active')) return true;
+
+    // Factory-specific permissions
+    if (factoryId && user.factory_memberships) {
+      const membership = user.factory_memberships.find(m => m.factory.id === factoryId && m.is_active);
+      if (membership && membership.role) {
+        const role = membership.role;
+        switch (permission) {
+          case 'manage_users': return role.can_manage_users;
+          case 'manage_jobs': return role.can_manage_jobs;
+          case 'view_finance': return role.can_view_finance;
+          case 'edit_finance': return role.can_edit_finance;
+          case 'create_illustrations': return role.can_create_illustrations;
+          case 'edit_illustrations': return role.can_edit_illustrations;
+          case 'delete_illustrations': return role.can_delete_illustrations;
+          case 'view_all_illustrations': return role.can_view_all_factory_illustrations;
+          default: break;
+        }
+      }
+    }
 
     switch (permission) {
       case 'admin':
@@ -253,6 +276,20 @@ export const AuthProvider = ({ children }) => {
       default:
         return false;
     }
+  };
+
+  // Helper methods
+  const getFactories = () => {
+    if (!user || !user.factory_memberships) return [];
+    return user.factory_memberships
+      .filter(m => m.is_active)
+      .map(m => m.factory);
+  };
+
+  const getRoleInFactory = (factoryId) => {
+    if (!user || !user.factory_memberships) return null;
+    const membership = user.factory_memberships.find(m => m.factory.id === factoryId && m.is_active);
+    return membership ? membership.role : null;
   };
 
   // Function to update user profile
@@ -307,6 +344,8 @@ export const AuthProvider = ({ children }) => {
     refreshProfile,
     validateAuth,
     hasPermission,
+    getFactories,
+    getRoleInFactory,
     isAuthenticated: isAuthenticated(),
     isTokenExpired,
     getAuthHeaders,

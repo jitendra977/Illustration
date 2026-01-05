@@ -8,7 +8,6 @@ import unicodedata
 import uuid
 import os
 from django.db.models.signals import pre_save, post_delete
-from django.db.models.signals import pre_save, post_delete
 from django.dispatch import receiver
 from .utils.email_service import AdvancedEmailService
 
@@ -22,35 +21,28 @@ def safe_folder_name(value):
     value = value.replace(" ", "_")
     return value
 
+
 # ================= PROFILE IMAGE PATH =================
 def user_profile_image_path(instance, filename):
     """
-    media/factories/<factory_name>/<username>/profile/profile_<uuid>.ext
+    media/Users/<username>/profile/profile_<uuid>.ext
     """
-
     ext = filename.split('.')[-1].lower()
     unique_id = uuid.uuid4().hex
-
-    factory_name = (
-        safe_folder_name(instance.factory.name)
-        if instance.factory else
-        "no_factory"
-    )
-
     username = safe_folder_name(instance.username or "user")
 
     return (
         f"Users/"
-        f"{factory_name}/"
         f"{username}/"
         f"profile/"
         f"profile_{unique_id}.{ext}"
     )
 
+
+# ================= FACTORY MODEL =================
 class Factory(models.Model):
     name = models.CharField(max_length=100)
     address = models.CharField(max_length=150)
-
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
@@ -60,6 +52,51 @@ class Factory(models.Model):
         verbose_name = "Factory"
         verbose_name_plural = "Factories"
 
+
+# ================= ROLE MODEL =================
+class Role(models.Model):
+    """
+    Defines permission levels for factory members
+    """
+    OWNER = 'OWNER'
+    MANAGER = 'MANAGER'
+    SUPERVISOR = 'SUPERVISOR'
+    WORKER = 'WORKER'
+    VIEWER = 'VIEWER'
+
+    ROLE_CODES = [
+        (OWNER, 'Owner'),
+        (MANAGER, 'Manager'),
+        (SUPERVISOR, 'Supervisor'),
+        (WORKER, 'Worker'),
+        (VIEWER, 'Viewer'),
+    ]
+
+    code = models.CharField(
+        max_length=20,
+        choices=ROLE_CODES,
+        unique=True
+    )
+    name = models.CharField(max_length=50)
+    
+    # Permissions
+    can_manage_users = models.BooleanField(default=False)
+    can_manage_jobs = models.BooleanField(default=False)
+    can_view_finance = models.BooleanField(default=False)
+    can_edit_finance = models.BooleanField(default=False)
+    can_create_illustrations = models.BooleanField(default=False)
+    can_edit_illustrations = models.BooleanField(default=False)
+    can_delete_illustrations = models.BooleanField(default=False)
+    can_view_all_factory_illustrations = models.BooleanField(default=False)
+
+    def __str__(self):
+        return f"{self.name} ({self.code})"
+
+    class Meta:
+        verbose_name = "Role"
+        verbose_name_plural = "Roles"
+
+
 # ================= USER MODEL =================
 class User(AbstractUser):
     # ----- AUTH -----
@@ -68,20 +105,8 @@ class User(AbstractUser):
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['username']
 
-     # ----- FACTORY RELATION -----
-    factory = models.ForeignKey(
-        Factory,
-        on_delete=models.SET_NULL,
-        null=True,
-        blank=True,
-        editable=False, 
-        related_name="members"
-    )
-    
     # ----- EXTRA INFO -----
     phone_number = models.CharField(max_length=20, blank=True, null=True)
-    address = models.CharField(max_length=150, blank=True, null=True)
-
     profile_image = models.ImageField(
         upload_to=user_profile_image_path,
         blank=True,
@@ -118,11 +143,7 @@ class User(AbstractUser):
 
     def send_welcome_email(self):
         """Send welcome email after successful verification."""
-        # Assuming AdvancedEmailService has a method for this, or we might need to add it.
-        # Based on previous analysis, we only saw get_welcome_email_template in templates.
-        # Let's check email_service.py again or implement basic welcome logic here if needed.
-        # For now, let's assume valid implementation or stub it to prevent crash.
-        pass # Placeholder until email_service is confirmed to have send_welcome_email
+        pass
 
     def mark_verified(self):
         self.is_verified = True
@@ -138,6 +159,64 @@ class User(AbstractUser):
             return self.profile_image.url
         return f"https://ui-avatars.com/api/?name={self.username}&background=random&color=fff"
 
+    def get_factories(self):
+        """Get all factories this user belongs to"""
+        return Factory.objects.filter(members__user=self, members__is_active=True)
+
+    def get_active_memberships(self):
+        """Get all active factory memberships"""
+        return self.factory_memberships.filter(is_active=True).select_related('factory', 'role')
+
+    def get_role_in_factory(self, factory):
+        """Get user's role in a specific factory"""
+        try:
+            membership = self.factory_memberships.get(factory=factory, is_active=True)
+            return membership.role
+        except FactoryMember.DoesNotExist:
+            return None
+
+    def has_permission_in_factory(self, factory, permission):
+        """
+        Check if user has a specific permission in a factory
+        permission: 'can_manage_users', 'can_create_illustrations', etc.
+        """
+        role = self.get_role_in_factory(factory)
+        if role:
+            return getattr(role, permission, False)
+        return False
+
+    def can_edit_illustration(self, illustration):
+        """
+        Check if user can edit a specific illustration
+        - User can edit their own illustrations
+        - User with can_edit_illustrations permission can edit any illustration in their factory
+        """
+        # Check if user is the creator
+        if illustration.user_id == self.id:
+            return True
+        
+        # Check if user has factory-wide edit permission
+        if illustration.factory:
+            return self.has_permission_in_factory(illustration.factory, 'can_edit_illustrations')
+        
+        return False
+
+    def can_delete_illustration(self, illustration):
+        """
+        Check if user can delete a specific illustration
+        - User can delete their own illustrations
+        - User with can_delete_illustrations permission can delete any illustration in their factory
+        """
+        # Check if user is the creator
+        if illustration.user_id == self.id:
+            return True
+        
+        # Check if user has factory-wide delete permission
+        if illustration.factory:
+            return self.has_permission_in_factory(illustration.factory, 'can_delete_illustrations')
+        
+        return False
+
     def __str__(self):
         return self.email
 
@@ -145,6 +224,43 @@ class User(AbstractUser):
         ordering = ['-created_at']
         verbose_name = "User"
         verbose_name_plural = "Users"
+
+
+# ================= FACTORY MEMBER MODEL =================
+class FactoryMember(models.Model):
+    """
+    Junction table linking users to factories with roles
+    """
+    user = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name='factory_memberships'
+    )
+    factory = models.ForeignKey(
+        Factory,
+        on_delete=models.CASCADE,
+        related_name='members'
+    )
+    role = models.ForeignKey(
+        Role,
+        on_delete=models.PROTECT,
+        related_name='memberships'
+    )
+    is_active = models.BooleanField(default=True)
+    joined_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.user.email} - {self.factory.name} ({self.role.code})"
+
+    class Meta:
+        verbose_name = "Factory Member"
+        verbose_name_plural = "Factory Members"
+        unique_together = ['user', 'factory']
+        ordering = ['-joined_at']
+        indexes = [
+            models.Index(fields=['user', 'factory', 'is_active']),
+            models.Index(fields=['factory', 'is_active']),
+        ]
 
 
 # ================= SIGNALS =================

@@ -128,9 +128,7 @@ const Sidebar = ({ open, onClose }) => {
               <Typography variant="body2" color="text.secondary">
                 {user?.email}
               </Typography>
-              <Typography variant="caption" color="primary" sx={{ mt: 0.5, display: 'block' }}>
-                {getUserRole()}
-              </Typography>
+        
             </Box>
           </Box>
 

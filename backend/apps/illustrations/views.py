@@ -73,6 +73,12 @@ class EngineModelViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         qs = EngineModel.objects.select_related('manufacturer')
+        
+        # Filter by car_model if provided
+        car_model_id = self.request.query_params.get('car_model')
+        if car_model_id:
+            qs = qs.filter(car_models__id=car_model_id)
+        
         if self.action == 'list':
             qs = qs.annotate(
                 car_model_count=Count('car_models', distinct=True),
@@ -230,12 +236,11 @@ class IllustrationViewSet(viewsets.ModelViewSet):
                 qs = qs.filter(factory_id=factory_id)
             return qs
         
-        # Regular users: Only see their factory's illustrations
-        if user.factory:
-            print(f"Regular user - filtering by factory: {user.factory.name} (ID: {user.factory.id})")
-            filtered_qs = qs.filter(factory=user.factory)
-            print(f"Filtered queryset count: {filtered_qs.count()}")
-            return filtered_qs
+        # Regular users: Only see their factories' illustrations
+        user_factories = user.get_factories()
+        if user_factories.exists():
+            print(f"Regular user - filtering by factories: {[f.name for f in user_factories]}")
+            return qs.filter(factory__in=user_factories)
         
         # User has no factory assigned - return empty
         print("User has no factory - returning empty queryset")
@@ -256,20 +261,35 @@ class IllustrationViewSet(viewsets.ModelViewSet):
         """Auto-set user and factory when creating"""
         user = self.request.user
         
-        # Ensure user has a factory
-        if not user.factory and not user.is_staff:
+        # Ensure user has at least one active factory
+        active_memberships = user.get_active_memberships()
+        if not active_memberships.exists() and not user.is_staff:
             from rest_framework.exceptions import ValidationError
-            raise ValidationError({'factory': 'あなたは工場に割り当てられていません'})
+            raise ValidationError({'factory': 'あなたはどの工場にも割り当てられていません'})
         
-        factory = user.factory if user.factory else None
+        # Default to first active factory if not provided in data
+        factory = None
+        if 'factory' in self.request.data:
+            factory_id = self.request.data['factory']
+            # Security check: Does user belong to this factory?
+            if not active_memberships.filter(factory_id=factory_id).exists() and not user.is_staff:
+                from rest_framework.exceptions import ValidationError
+                raise ValidationError({'factory': '指定された工場へのアクセス権がありません'})
+            from apps.accounts.models import Factory
+            factory = Factory.objects.get(id=factory_id)
+        else:
+            first_membership = active_memberships.first()
+            if first_membership:
+                factory = first_membership.factory
+        
         serializer.save(user=user, factory=factory)
 
     @action(detail=True, methods=['post'], permission_classes=[IsVerifiedUser])
     def add_files(self, request, pk=None):
         illustration = self.get_object()
         
-        # Check permission: user must own the illustration or be staff
-        if not request.user.is_staff and illustration.user != request.user:
+        # Check permission: use the helper method on User model
+        if not request.user.can_edit_illustration(illustration) and not request.user.is_staff:
             return Response(
                 {'error': 'このイラストレーションへのアクセス権がありません'},
                 status=status.HTTP_403_FORBIDDEN
@@ -298,6 +318,31 @@ class IllustrationViewSet(viewsets.ModelViewSet):
             {'message': f'{len(created)}個のファイルがアップロードされました', 'files': created},
             status=status.HTTP_201_CREATED
         )
+    
+    @action(detail=True, methods=['delete'], url_path='files/(?P<file_id>[^/.]+)', permission_classes=[IsVerifiedUser])
+    def delete_file(self, request, pk=None, file_id=None):
+        """Delete a specific file from an illustration"""
+        illustration = self.get_object()
+        
+        # Check permission: use the helper method on User model
+        if not request.user.can_edit_illustration(illustration) and not request.user.is_staff:
+            return Response(
+                {'error': 'このイラストレーションへのアクセス権がありません'},
+                status=status.HTTP_403_FORBIDDEN
+            )
+        
+        try:
+            file = IllustrationFile.objects.get(id=file_id, illustration=illustration)
+            file.delete()
+            return Response(
+                {'message': 'ファイルが削除されました'},
+                status=status.HTTP_204_NO_CONTENT
+            )
+        except IllustrationFile.DoesNotExist:
+            return Response(
+                {'error': 'ファイルが見つかりません'},
+                status=status.HTTP_404_NOT_FOUND
+            )
 # ========================================
 # Illustration Files - FACTORY BASED ACCESS
 # ========================================
@@ -339,9 +384,10 @@ class IllustrationFileViewSet(viewsets.ModelViewSet):
         if user.is_staff:
             return qs
 
-        # Regular users: only their factory's files
-        if user.factory:
-            return qs.filter(illustration__factory=user.factory)
+        # Regular users: only their factories' files
+        user_factories = user.get_factories()
+        if user_factories.exists():
+            return qs.filter(illustration__factory__in=user_factories)
         
         # No factory assigned - no access
         return qs.none()

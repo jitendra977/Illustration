@@ -50,11 +50,11 @@ const MobileManufacturerEngines = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const location = useLocation();
-  
+
   const [manufacturer, setManufacturer] = useState(location.state?.manufacturer || null);
   const [manufacturerError, setManufacturerError] = useState(null);
   const [manufacturerLoading, setManufacturerLoading] = useState(false);
-  
+
   const [searchTerm, setSearchTerm] = useState('');
   const [showModal, setShowModal] = useState(false);
   const [editingEngine, setEditingEngine] = useState(null);
@@ -107,7 +107,7 @@ const MobileManufacturerEngines = () => {
       console.error('❌ Failed to fetch manufacturer:', err);
       const errorMessage = err.error || 'メーカー情報の取得に失敗しました';
       setManufacturerError(errorMessage);
-      
+
       // Show user-friendly error
       if (err.code === 'NOT_FOUND') {
         showSnackbar('メーカーが見つかりません', 'error');
@@ -191,13 +191,13 @@ const MobileManufacturerEngines = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     // Client-side validation
     const newErrors = {};
     if (!formData.name?.trim()) {
       newErrors.name = '名前は必須です';
     }
-    
+
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors);
       return;
@@ -219,22 +219,22 @@ const MobileManufacturerEngines = () => {
         await createEngineModel(payload);
         showSnackbar('エンジンを作成しました', 'success');
       }
-      
+
       await loadEngines();
       setShowModal(false);
       setFormData({ name: '', slug: '', displacement: '', fuel_type: '', manufacturer: manufacturer.id });
       setEditingEngine(null);
-      
+
     } catch (err) {
       console.error('❌ Submit error:', err);
-      
+
       // Handle API errors
       if (err.details) {
         const fieldErrors = {};
         Object.keys(err.details).forEach(key => {
           if (['name', 'slug', 'displacement', 'fuel_type'].includes(key)) {
-            fieldErrors[key] = Array.isArray(err.details[key]) 
-              ? err.details[key].join(', ') 
+            fieldErrors[key] = Array.isArray(err.details[key])
+              ? err.details[key].join(', ')
               : err.details[key];
           } else if (key === 'non_field_errors' || key === 'detail') {
             fieldErrors.submit = Array.isArray(err.details[key])
@@ -246,7 +246,7 @@ const MobileManufacturerEngines = () => {
       } else {
         setErrors({ submit: err.error || '操作に失敗しました' });
       }
-      
+
       showSnackbar(err.error || '操作に失敗しました', 'error');
     }
   };
@@ -282,9 +282,9 @@ const MobileManufacturerEngines = () => {
   };
 
   const EngineCard = ({ engine }) => (
-    <Card 
+    <Card
       onClick={() => handleViewParts(engine)}
-      sx={{ 
+      sx={{
         borderRadius: 3,
         transition: 'all 0.2s',
         border: 1,
@@ -315,8 +315,8 @@ const MobileManufacturerEngines = () => {
               </Typography>
             )}
           </Box>
-          <IconButton 
-            size="small" 
+          <IconButton
+            size="small"
             onClick={(e) => handleOpenActions(engine, e)}
             sx={{ ml: 1 }}
           >
@@ -340,7 +340,7 @@ const MobileManufacturerEngines = () => {
               }}
             />
           )}
-          
+
           {engine.fuel_type && (
             <Chip
               icon={<FuelIcon sx={{ fontSize: 16 }} />}
@@ -359,10 +359,10 @@ const MobileManufacturerEngines = () => {
         </Stack>
 
         {engine.slug && (
-          <Box sx={{ 
-            bgcolor: alpha('#1976d2', 0.08), 
-            px: 1.5, 
-            py: 0.5, 
+          <Box sx={{
+            bgcolor: alpha('#1976d2', 0.08),
+            px: 1.5,
+            py: 0.5,
             borderRadius: 1.5,
             display: 'inline-block'
           }}>
@@ -389,7 +389,7 @@ const MobileManufacturerEngines = () => {
             </Typography>
           </Toolbar>
         </AppBar>
-        
+
         <Container maxWidth="sm" sx={{ px: 2, py: 4 }}>
           <Card sx={{ borderRadius: 3, p: 4, textAlign: 'center', border: 2, borderColor: 'error.main' }}>
             <ErrorIcon sx={{ fontSize: 64, color: 'error.main', mb: 2 }} />
@@ -493,8 +493,8 @@ const MobileManufacturerEngines = () => {
             </Typography>
           </Box>
         ) : error ? (
-          <Alert 
-            severity="error" 
+          <Alert
+            severity="error"
             sx={{ mb: 2, borderRadius: 2 }}
             action={
               <Button color="inherit" size="small" onClick={loadEngines}>
@@ -530,10 +530,10 @@ const MobileManufacturerEngines = () => {
       </Container>
 
       {/* Create/Edit Modal */}
-      <Dialog 
-        open={showModal} 
-        onClose={() => setShowModal(false)} 
-        maxWidth="sm" 
+      <Dialog
+        open={showModal}
+        onClose={() => setShowModal(false)}
+        maxWidth="sm"
         fullWidth
         slotProps={{ paper: { sx: { borderRadius: 3, m: 2 } } }}
       >
@@ -618,16 +618,16 @@ const MobileManufacturerEngines = () => {
             </Stack>
           </DialogContent>
           <DialogActions sx={{ px: 3, pb: 3 }}>
-            <Button 
+            <Button
               onClick={() => setShowModal(false)}
               sx={{ borderRadius: 2, textTransform: 'none', fontWeight: 600, px: 3 }}
             >
               キャンセル
             </Button>
-            <Button 
-              type="submit" 
+            <Button
+              type="submit"
               variant="contained"
-              sx={{ 
+              sx={{
                 borderRadius: 2,
                 textTransform: 'none',
                 fontWeight: 600,
@@ -646,7 +646,7 @@ const MobileManufacturerEngines = () => {
         anchor="bottom"
         open={showActions}
         onClose={() => setShowActions(false)}
-        onOpen={() => {}}
+        onOpen={() => { }}
         disableSwipeToOpen
         slotProps={{
           paper: {

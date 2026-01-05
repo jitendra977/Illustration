@@ -1,9 +1,9 @@
 // src/pages/mobile/MobileProfile.jsx
 import React, { useState } from 'react';
-import { 
-  Container, 
-  Typography, 
-  Box, 
+import {
+  Container,
+  Typography,
+  Box,
   Stack,
   Avatar,
   Card,
@@ -25,7 +25,7 @@ import {
   CircularProgress,
   Snackbar
 } from '@mui/material';
-import { 
+import {
   Person as PersonIcon,
   Email as EmailIcon,
   Notifications as NotificationsIcon,
@@ -44,12 +44,12 @@ import { usersAPI } from '../../services/users';
 
 const MobileProfile = () => {
   const { user, logout, updateUser, changePassword, refreshProfile } = useAuth();
-  
+
   // Dialog states
   const [editDialogOpen, setEditDialogOpen] = useState(false);
   const [passwordDialogOpen, setPasswordDialogOpen] = useState(false);
   const [emailDialogOpen, setEmailDialogOpen] = useState(false);
-  
+
   // Form states
   const [profileForm, setProfileForm] = useState({
     first_name: user?.first_name || '',
@@ -58,16 +58,16 @@ const MobileProfile = () => {
     bio: user?.bio || '',
     phone: user?.phone || ''
   });
-  
+
   const [passwordForm, setPasswordForm] = useState({
     old_password: '',
     new_password: '',
     confirm_password: ''
   });
-  
+
   const [profileImage, setProfileImage] = useState(null);
   const [imagePreview, setImagePreview] = useState(null);
-  
+
   // UI states
   const [loading, setLoading] = useState(false);
   const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: 'success' });
@@ -85,24 +85,24 @@ const MobileProfile = () => {
     if (file) {
       // Validate file size (5MB max)
       if (file.size > 5 * 1024 * 1024) {
-        setSnackbar({ 
-          open: true, 
-          message: 'ファイルサイズは5MB以下にしてください', 
-          severity: 'error' 
+        setSnackbar({
+          open: true,
+          message: 'ファイルサイズは5MB以下にしてください',
+          severity: 'error'
         });
         return;
       }
-      
+
       // Validate file type
       if (!file.type.startsWith('image/')) {
-        setSnackbar({ 
-          open: true, 
-          message: '画像ファイルを選択してください', 
-          severity: 'error' 
+        setSnackbar({
+          open: true,
+          message: '画像ファイルを選択してください',
+          severity: 'error'
         });
         return;
       }
-      
+
       setProfileImage(file);
       setImagePreview(URL.createObjectURL(file));
     }
@@ -111,55 +111,55 @@ const MobileProfile = () => {
   const handleProfileEdit = async () => {
     setLoading(true);
     setErrors({});
-    
+
     try {
       const formData = new FormData();
-      
+
       // Add text fields
       Object.keys(profileForm).forEach(key => {
         if (profileForm[key]) {
           formData.append(key, profileForm[key]);
         }
       });
-      
+
       // Add image if selected
       if (profileImage) {
         formData.append('profile_image', profileImage);
       }
-      
+
       const response = await usersAPI.updateProfile(formData);
-      
+
       // Update user context with new data
       updateUser(response);
-      
-      setSnackbar({ 
-        open: true, 
-        message: 'プロフィールを更新しました', 
-        severity: 'success' 
+
+      setSnackbar({
+        open: true,
+        message: 'プロフィールを更新しました',
+        severity: 'success'
       });
-      
+
       setEditDialogOpen(false);
       setProfileImage(null);
       setImagePreview(null);
-      
+
       // Refresh profile to get latest data
       await refreshProfile();
-      
+
     } catch (error) {
       console.error('Profile update error:', error);
-      
+
       if (error.response?.data) {
         setErrors(error.response.data);
-        setSnackbar({ 
-          open: true, 
-          message: 'プロフィールの更新に失敗しました', 
-          severity: 'error' 
+        setSnackbar({
+          open: true,
+          message: 'プロフィールの更新に失敗しました',
+          severity: 'error'
         });
       } else {
-        setSnackbar({ 
-          open: true, 
-          message: error.details || '接続エラーが発生しました', 
-          severity: 'error' 
+        setSnackbar({
+          open: true,
+          message: error.details || '接続エラーが発生しました',
+          severity: 'error'
         });
       }
     } finally {
@@ -170,31 +170,31 @@ const MobileProfile = () => {
   const handlePasswordChange = async () => {
     setLoading(true);
     setErrors({});
-    
+
     // Validation
     if (passwordForm.new_password !== passwordForm.confirm_password) {
       setErrors({ confirm_password: ['パスワードが一致しません'] });
       setLoading(false);
       return;
     }
-    
+
     if (passwordForm.new_password.length < 8) {
       setErrors({ new_password: ['パスワードは8文字以上である必要があります'] });
       setLoading(false);
       return;
     }
-    
+
     try {
       const result = await changePassword({
         old_password: passwordForm.old_password,
         new_password: passwordForm.new_password
       });
-      
+
       if (result.success) {
-        setSnackbar({ 
-          open: true, 
-          message: 'パスワードを変更しました', 
-          severity: 'success' 
+        setSnackbar({
+          open: true,
+          message: 'パスワードを変更しました',
+          severity: 'success'
         });
         setPasswordDialogOpen(false);
         setPasswordForm({ old_password: '', new_password: '', confirm_password: '' });
@@ -203,15 +203,15 @@ const MobileProfile = () => {
       }
     } catch (error) {
       console.error('Password change error:', error);
-      
+
       if (error.response?.data) {
         setErrors(error.response.data);
       }
-      
-      setSnackbar({ 
-        open: true, 
-        message: error.message || 'パスワード変更に失敗しました', 
-        severity: 'error' 
+
+      setSnackbar({
+        open: true,
+        message: error.message || 'パスワード変更に失敗しました',
+        severity: 'error'
       });
     } finally {
       setLoading(false);
@@ -220,21 +220,21 @@ const MobileProfile = () => {
 
   const handleResendVerification = async () => {
     setLoading(true);
-    
+
     try {
       const response = await usersAPI.resendVerification();
-      setSnackbar({ 
-        open: true, 
-        message: '確認メールを送信しました', 
-        severity: 'success' 
+      setSnackbar({
+        open: true,
+        message: '確認メールを送信しました',
+        severity: 'success'
       });
       setEmailDialogOpen(false);
     } catch (error) {
       console.error('Resend verification error:', error);
-      setSnackbar({ 
-        open: true, 
-        message: error.response?.data?.detail || 'メール送信に失敗しました', 
-        severity: 'error' 
+      setSnackbar({
+        open: true,
+        message: error.response?.data?.detail || 'メール送信に失敗しました',
+        severity: 'error'
       });
     } finally {
       setLoading(false);
@@ -258,80 +258,91 @@ const MobileProfile = () => {
       <Stack spacing={3}>
         {/* Profile Header */}
         <Card sx={{ borderRadius: 3, py: 3 }}>
-  <Stack spacing={1.5} alignItems="center">
+          <Stack spacing={1.5} alignItems="center">
 
-    {/* Avatar */}
-    <Box sx={{ position: 'relative' }}>
-      <Avatar
-        src={imagePreview || user?.profile_image}
-        sx={{
-          width: 88,
-          height: 88,
-          fontSize: '2rem',
-          bgcolor: 'primary.main'
-        }}
-      >
-        {getUserInitial()}
-      </Avatar>
+            {/* Avatar */}
+            <Box sx={{ position: 'relative' }}>
+              <Avatar
+                src={imagePreview || user?.profile_image}
+                sx={{
+                  width: 88,
+                  height: 88,
+                  fontSize: '2rem',
+                  bgcolor: 'primary.main'
+                }}
+              >
+                {getUserInitial()}
+              </Avatar>
 
-      <IconButton
-        onClick={openEditDialog}
-        sx={{
-          position: 'absolute',
-          bottom: 0,
-          right: 0,
-          bgcolor: 'primary.main',
-          color: 'white',
-          width: 30,
-          height: 30,
-          '&:hover': { bgcolor: 'primary.dark' }
-        }}
-      >
-        <EditIcon sx={{ fontSize: 16 }} />
-      </IconButton>
-    </Box>
+              <IconButton
+                onClick={openEditDialog}
+                sx={{
+                  position: 'absolute',
+                  bottom: 0,
+                  right: 0,
+                  bgcolor: 'primary.main',
+                  color: 'white',
+                  width: 30,
+                  height: 30,
+                  '&:hover': { bgcolor: 'primary.dark' }
+                }}
+              >
+                <EditIcon sx={{ fontSize: 16 }} />
+              </IconButton>
+            </Box>
 
-    {/* Name */}
-    <Stack direction="row" spacing={0.5} alignItems="center">
-      <Typography variant="h6" fontWeight="bold">
-        {user?.first_name || user?.username || 'ゲスト'}
-      </Typography>
-      {user?.is_verified && (
-        <VerifiedIcon color="primary" sx={{ fontSize: 18 }} />
-      )}
-    </Stack>
+            {/* Name */}
+            <Stack direction="row" spacing={0.5} alignItems="center">
+              <Typography variant="h6" fontWeight="bold">
+                {user?.first_name || user?.username || 'ゲスト'}
+              </Typography>
+              {user?.is_verified && (
+                <VerifiedIcon color="primary" sx={{ fontSize: 18 }} />
+              )}
+            </Stack>
 
-    {/* Email */}
-    <Typography variant="body2" color="text.secondary">
-      {user?.email}
-    </Typography>
+            {/* Email */}
+            <Typography variant="body2" color="text.secondary">
+              {user?.email}
+            </Typography>
 
-    {/* Factory (IMPORTANT PART) */}
-    <Box
-      sx={{
-        mt: 0.5,
-        px: 1.5,
-        py: 0.5,
-        borderRadius: 2,
-        bgcolor: 'grey.100',
-        fontSize: '0.75rem',
-        color: 'text.secondary'
-      }}
-    >
-      🏭 {user?.factory || 'No Factory'}
-    </Box>
+            {/* Factory (IMPORTANT PART) */}
+            <Box
+              sx={{
+                mt: 0.5,
+                px: 1.5,
+                py: 0.5,
+                borderRadius: 2,
+                bgcolor: 'grey.100',
+                fontSize: '0.75rem',
+                color: 'text.secondary'
+              }}
+            >
+              {user?.factory_memberships?.length > 0 ? (
+                user.factory_memberships.map((m, idx) => (
+                  <Box key={idx} sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 0.5, mb: idx < user.factory_memberships.length - 1 ? 0.5 : 0 }}>
+                    <span>🏭 {m.factory.name}</span>
+                    <Typography variant="caption" sx={{ color: 'primary.main', fontWeight: 'bold', fontSize: '0.7rem' }}>
+                      ({m.role.name})
+                    </Typography>
+                  </Box>
+                ))
+              ) : (
+                '🏭 No Factory'
+              )}
+            </Box>
 
-    {/* Bio */}
-    {user?.bio && (
-      <Typography
-        variant="body2"
-        sx={{ mt: 1, px: 3, textAlign: 'center', color: 'text.secondary' }}
-      >
-        {user.bio}
-      </Typography>
-    )}
-  </Stack>
-</Card>
+            {/* Bio */}
+            {user?.bio && (
+              <Typography
+                variant="body2"
+                sx={{ mt: 1, px: 3, textAlign: 'center', color: 'text.secondary' }}
+              >
+                {user.bio}
+              </Typography>
+            )}
+          </Stack>
+        </Card>
 
         {/* Settings List */}
         <Card sx={{ borderRadius: 3 }}>
@@ -346,8 +357,8 @@ const MobileProfile = () => {
             <ListItem disablePadding>
               <ListItemButton onClick={() => setEmailDialogOpen(true)}>
                 <ListItemIcon><EmailIcon /></ListItemIcon>
-                <ListItemText 
-                  primary="メール設定" 
+                <ListItemText
+                  primary="メール設定"
                   secondary={user?.is_verified ? '確認済み' : '未確認'}
                 />
               </ListItemButton>
@@ -403,7 +414,7 @@ const MobileProfile = () => {
           size="large"
           startIcon={<LogoutIcon />}
           onClick={logout}
-          sx={{ 
+          sx={{
             py: 1.75,
             fontSize: '0.95rem',
             fontWeight: 600,
@@ -417,8 +428,8 @@ const MobileProfile = () => {
       </Stack>
 
       {/* Edit Profile Dialog */}
-      <Dialog 
-        open={editDialogOpen} 
+      <Dialog
+        open={editDialogOpen}
         onClose={() => setEditDialogOpen(false)}
         maxWidth="sm"
         fullWidth
@@ -446,9 +457,9 @@ const MobileProfile = () => {
               <label htmlFor="profile-image-upload">
                 <Avatar
                   src={imagePreview || user?.profile_image}
-                  sx={{ 
-                    width: 100, 
-                    height: 100, 
+                  sx={{
+                    width: 100,
+                    height: 100,
                     margin: '0 auto',
                     cursor: 'pointer',
                     '&:hover': { opacity: 0.8 }
@@ -475,7 +486,7 @@ const MobileProfile = () => {
               helperText={errors.username?.[0]}
               fullWidth
             />
-            
+
             <TextField
               label="名"
               value={profileForm.first_name}
@@ -484,7 +495,7 @@ const MobileProfile = () => {
               helperText={errors.first_name?.[0]}
               fullWidth
             />
-            
+
             <TextField
               label="姓"
               value={profileForm.last_name}
@@ -493,7 +504,7 @@ const MobileProfile = () => {
               helperText={errors.last_name?.[0]}
               fullWidth
             />
-            
+
             <TextField
               label="電話番号"
               value={profileForm.phone}
@@ -502,7 +513,7 @@ const MobileProfile = () => {
               helperText={errors.phone?.[0]}
               fullWidth
             />
-            
+
             <TextField
               label="自己紹介"
               value={profileForm.bio}
@@ -519,8 +530,8 @@ const MobileProfile = () => {
           <Button onClick={() => setEditDialogOpen(false)}>
             キャンセル
           </Button>
-          <Button 
-            variant="contained" 
+          <Button
+            variant="contained"
             onClick={handleProfileEdit}
             disabled={loading}
           >
@@ -530,8 +541,8 @@ const MobileProfile = () => {
       </Dialog>
 
       {/* Password Change Dialog */}
-      <Dialog 
-        open={passwordDialogOpen} 
+      <Dialog
+        open={passwordDialogOpen}
         onClose={() => setPasswordDialogOpen(false)}
         maxWidth="sm"
         fullWidth
@@ -556,7 +567,7 @@ const MobileProfile = () => {
               helperText={errors.old_password?.[0]}
               fullWidth
             />
-            
+
             <TextField
               label="新しいパスワード"
               type="password"
@@ -566,7 +577,7 @@ const MobileProfile = () => {
               helperText={errors.new_password?.[0] || '8文字以上で入力してください'}
               fullWidth
             />
-            
+
             <TextField
               label="新しいパスワード（確認）"
               type="password"
@@ -582,8 +593,8 @@ const MobileProfile = () => {
           <Button onClick={() => setPasswordDialogOpen(false)}>
             キャンセル
           </Button>
-          <Button 
-            variant="contained" 
+          <Button
+            variant="contained"
             onClick={handlePasswordChange}
             disabled={loading}
           >
@@ -593,8 +604,8 @@ const MobileProfile = () => {
       </Dialog>
 
       {/* Email Verification Dialog */}
-      <Dialog 
-        open={emailDialogOpen} 
+      <Dialog
+        open={emailDialogOpen}
         onClose={() => setEmailDialogOpen(false)}
         maxWidth="sm"
         fullWidth
@@ -631,8 +642,8 @@ const MobileProfile = () => {
             閉じる
           </Button>
           {!user?.is_verified && (
-            <Button 
-              variant="contained" 
+            <Button
+              variant="contained"
               onClick={handleResendVerification}
               disabled={loading}
             >
@@ -649,8 +660,8 @@ const MobileProfile = () => {
         onClose={() => setSnackbar({ ...snackbar, open: false })}
         anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
       >
-        <Alert 
-          onClose={() => setSnackbar({ ...snackbar, open: false })} 
+        <Alert
+          onClose={() => setSnackbar({ ...snackbar, open: false })}
           severity={snackbar.severity}
           sx={{ width: '100%' }}
         >

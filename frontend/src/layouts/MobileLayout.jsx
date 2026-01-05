@@ -106,7 +106,7 @@ const MobileLayout = ({ children, showHeader = true, onRefresh, refreshing = fal
                   YAW 楽天検索丸
                 </Typography>
 
-                {user?.factory && (
+                {user?.factory_memberships?.length > 0 && (
                   <Typography
                     variant="caption"
                     sx={{
@@ -114,7 +114,7 @@ const MobileLayout = ({ children, showHeader = true, onRefresh, refreshing = fal
                       letterSpacing: '0.08em'
                     }}
                   >
-                    {user.factory}
+                    {user.factory_memberships.map(m => m.factory.name).join(', ')}
                   </Typography>
                 )}
               </Stack>

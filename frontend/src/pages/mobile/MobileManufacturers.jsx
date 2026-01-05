@@ -107,12 +107,12 @@ const MobileManufacturers = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     const newErrors = {};
     if (!formData.name?.trim()) {
       newErrors.name = '名前は必須です';
     }
-    
+
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors);
       return;
@@ -129,22 +129,22 @@ const MobileManufacturers = () => {
       } else {
         await createManufacturer(payload);
       }
-      
+
       await fetchManufacturers();
       setShowModal(false);
       setFormData({ name: '', slug: '' });
       setEditingManufacturer(null);
-      
+
     } catch (err) {
       console.error('Submit error:', err);
-      
+
       const apiError = err.response?.data;
       if (apiError) {
         const fieldErrors = {};
         Object.keys(apiError).forEach(key => {
           if (['name', 'slug'].includes(key)) {
-            fieldErrors[key] = Array.isArray(apiError[key]) 
-              ? apiError[key].join(', ') 
+            fieldErrors[key] = Array.isArray(apiError[key])
+              ? apiError[key].join(', ')
               : apiError[key];
           } else if (key === 'non_field_errors' || key === 'detail') {
             fieldErrors.submit = Array.isArray(apiError[key])
@@ -187,9 +187,9 @@ const MobileManufacturers = () => {
   };
 
   const ManufacturerCard = ({ manufacturer }) => (
-    <Card 
+    <Card
       onClick={() => handleViewEngines(manufacturer)}
-      sx={{ 
+      sx={{
         borderRadius: 3,
         transition: 'all 0.2s',
         border: 1,
@@ -226,8 +226,8 @@ const MobileManufacturers = () => {
               ID: {manufacturer.id}
             </Typography>
           </Box>
-          <IconButton 
-            size="small" 
+          <IconButton
+            size="small"
             onClick={(e) => handleOpenActions(manufacturer, e)}
             sx={{ ml: 1 }}
           >
@@ -250,7 +250,7 @@ const MobileManufacturers = () => {
               '& .MuiChip-icon': { color: '#2196f3' }
             }}
           />
-          
+
           <Chip
             icon={<CarIcon sx={{ fontSize: 16 }} />}
             label={`${manufacturer.car_model_count || 0} 車両`}
@@ -267,10 +267,10 @@ const MobileManufacturers = () => {
         </Stack>
 
         {/* Slug Badge */}
-        <Box sx={{ 
-          bgcolor: alpha('#1976d2', 0.08), 
-          px: 1.5, 
-          py: 0.5, 
+        <Box sx={{
+          bgcolor: alpha('#1976d2', 0.08),
+          px: 1.5,
+          py: 0.5,
           borderRadius: 1.5,
           display: 'inline-block',
           mt: 1.5
@@ -350,10 +350,10 @@ const MobileManufacturers = () => {
       </Container>
 
       {/* Create/Edit Modal */}
-      <Dialog 
-        open={showModal} 
-        onClose={() => setShowModal(false)} 
-        maxWidth="sm" 
+      <Dialog
+        open={showModal}
+        onClose={() => setShowModal(false)}
+        maxWidth="sm"
         fullWidth
         slotProps={{ paper: { sx: { borderRadius: 3, m: 2 } } }}
       >
@@ -396,7 +396,7 @@ const MobileManufacturers = () => {
                 sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2 } }}
               />
               {editingManufacturer && (
-                <Alert severity="info" sx={{ borderRadius: 2 }}>  
+                <Alert severity="info" sx={{ borderRadius: 2 }}>
                   Slugは一度設定すると変更できません。新しいSlugが必要な場合は、メーカーを削除して再作成してください。
                 </Alert>
               )}
@@ -409,16 +409,16 @@ const MobileManufacturers = () => {
             </Stack>
           </DialogContent>
           <DialogActions sx={{ px: 3, pb: 3 }}>
-            <Button 
+            <Button
               onClick={() => setShowModal(false)}
               sx={{ borderRadius: 2, textTransform: 'none', fontWeight: 600, px: 3 }}
             >
               キャンセル
             </Button>
-            <Button 
-              type="submit" 
+            <Button
+              type="submit"
               variant="contained"
-              sx={{ 
+              sx={{
                 borderRadius: 2,
                 textTransform: 'none',
                 fontWeight: 600,
@@ -437,7 +437,7 @@ const MobileManufacturers = () => {
         anchor="bottom"
         open={showActions}
         onClose={() => setShowActions(false)}
-        onOpen={() => {}}
+        onOpen={() => { }}
         disableSwipeToOpen
         slotProps={{
           paper: {

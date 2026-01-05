@@ -32,15 +32,15 @@ import {
   Home
 } from '@mui/icons-material';
 
-const UserForm = ({ 
-  open, 
-  onClose, 
-  onSubmit, 
-  user = null, 
-  loading = false, 
+const UserForm = ({
+  open,
+  onClose,
+  onSubmit,
+  user = null,
+  loading = false,
   errors = {},
   embedded = false,
-  isRegistration = false 
+  isRegistration = false
 }) => {
   const [formData, setFormData] = useState({
     username: '',
@@ -79,7 +79,7 @@ const UserForm = ({
         is_staff: user.is_staff ?? false,
         is_superuser: user.is_superuser ?? false
       });
-      
+
       if (user.profile_image) {
         setImagePreview(user.profile_image);
       }
@@ -287,8 +287,8 @@ const UserForm = ({
 
                 {errors.profile_image && (
                   <FormHelperText error>
-                    {Array.isArray(errors.profile_image) 
-                      ? errors.profile_image[0] 
+                    {Array.isArray(errors.profile_image)
+                      ? errors.profile_image[0]
                       : errors.profile_image}
                   </FormHelperText>
                 )}
@@ -311,8 +311,8 @@ const UserForm = ({
             onChange={handleChange}
             required
             error={!!errors.username}
-            helperText={Array.isArray(errors.username) 
-              ? errors.username[0] 
+            helperText={Array.isArray(errors.username)
+              ? errors.username[0]
               : errors.username}
             InputProps={{
               startAdornment: (
@@ -334,8 +334,8 @@ const UserForm = ({
             onChange={handleChange}
             required
             error={!!errors.email}
-            helperText={Array.isArray(errors.email) 
-              ? errors.email[0] 
+            helperText={Array.isArray(errors.email)
+              ? errors.email[0]
               : errors.email}
             InputProps={{
               startAdornment: (
@@ -355,8 +355,8 @@ const UserForm = ({
             value={formData.first_name}
             onChange={handleChange}
             error={!!errors.first_name}
-            helperText={Array.isArray(errors.first_name) 
-              ? errors.first_name[0] 
+            helperText={Array.isArray(errors.first_name)
+              ? errors.first_name[0]
               : errors.first_name}
           />
         </Grid>
@@ -369,8 +369,8 @@ const UserForm = ({
             value={formData.last_name}
             onChange={handleChange}
             error={!!errors.last_name}
-            helperText={Array.isArray(errors.last_name) 
-              ? errors.last_name[0] 
+            helperText={Array.isArray(errors.last_name)
+              ? errors.last_name[0]
               : errors.last_name}
           />
         </Grid>
@@ -383,8 +383,8 @@ const UserForm = ({
             value={formData.phone_number}
             onChange={handleChange}
             error={!!errors.phone_number}
-            helperText={Array.isArray(errors.phone_number) 
-              ? errors.phone_number[0] 
+            helperText={Array.isArray(errors.phone_number)
+              ? errors.phone_number[0]
               : errors.phone_number}
             InputProps={{
               startAdornment: (
@@ -404,8 +404,8 @@ const UserForm = ({
             value={formData.address}
             onChange={handleChange}
             error={!!errors.address}
-            helperText={Array.isArray(errors.address) 
-              ? errors.address[0] 
+            helperText={Array.isArray(errors.address)
+              ? errors.address[0]
               : errors.address}
             InputProps={{
               startAdornment: (
@@ -451,8 +451,8 @@ const UserForm = ({
                 onChange={handleChange}
                 required={!user}
                 error={!!errors.password}
-                helperText={Array.isArray(errors.password) 
-                  ? errors.password[0] 
+                helperText={Array.isArray(errors.password)
+                  ? errors.password[0]
                   : errors.password || (isRegistration ? 'Minimum 8 characters' : '')}
                 InputProps={{
                   startAdornment: (
@@ -483,17 +483,17 @@ const UserForm = ({
                 value={formData.password_confirm}
                 onChange={handleChange}
                 required={!user}
-                error={!!errors.password_confirm || 
-                  (formData.password !== formData.password_confirm && 
-                   formData.password_confirm !== '')}
+                error={!!errors.password_confirm ||
+                  (formData.password !== formData.password_confirm &&
+                    formData.password_confirm !== '')}
                 helperText={
-                  Array.isArray(errors.password_confirm) 
+                  Array.isArray(errors.password_confirm)
                     ? errors.password_confirm[0]
                     : errors.password_confirm ||
-                      (formData.password !== formData.password_confirm && 
-                       formData.password_confirm !== '' 
-                        ? 'Passwords do not match' 
-                        : '')
+                    (formData.password !== formData.password_confirm &&
+                      formData.password_confirm !== ''
+                      ? 'Passwords do not match'
+                      : '')
                 }
                 InputProps={{
                   startAdornment: (
@@ -588,9 +588,9 @@ const UserForm = ({
             type="submit"
             fullWidth
             variant="contained"
-            disabled={loading || 
-              (formData.password !== formData.password_confirm && 
-               (showPasswordFields || !user))}
+            disabled={loading ||
+              (formData.password !== formData.password_confirm &&
+                (showPasswordFields || !user))}
             startIcon={loading ? <CircularProgress size={20} /> : null}
             sx={{ py: 1.5 }}
           >
@@ -627,9 +627,9 @@ const UserForm = ({
           <Button
             type="submit"
             variant="contained"
-            disabled={loading || 
-              (formData.password !== formData.password_confirm && 
-               (showPasswordFields || !user))}
+            disabled={loading ||
+              (formData.password !== formData.password_confirm &&
+                (showPasswordFields || !user))}
             startIcon={loading ? <CircularProgress size={20} /> : null}
           >
             {loading ? 'Saving...' : user ? 'Update User' : 'Create User'}

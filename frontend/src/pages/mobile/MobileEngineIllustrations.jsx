@@ -42,7 +42,7 @@ const MobileEngineIllustrations = () => {
   const { id: manufacturerId, engineId } = useParams();
   const navigate = useNavigate();
   const location = useLocation();
-  
+
   const [manufacturer, setManufacturer] = useState(location.state?.manufacturer || null);
   const [engine, setEngine] = useState(location.state?.engine || null);
   const [searchTerm, setSearchTerm] = useState('');
@@ -50,7 +50,7 @@ const MobileEngineIllustrations = () => {
   const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: 'info' });
   const [manufacturerError, setManufacturerError] = useState(null);
   const [engineError, setEngineError] = useState(null);
-  
+
   const [selectedIllustration, setSelectedIllustration] = useState(null);
   const [detailModalOpen, setDetailModalOpen] = useState(false);
 
@@ -114,7 +114,7 @@ const MobileEngineIllustrations = () => {
 
     try {
       console.log('🔍 Fetching illustrations for engine ID:', engineId);
-      await fetchIllustrations({ 
+      await fetchIllustrations({
         engine_model: engineId,  // ✅ Use engineId directly from params
         include_files: false
       });
@@ -143,9 +143,9 @@ const MobileEngineIllustrations = () => {
     if (!acc[categoryName][subcategoryName]) {
       acc[categoryName][subcategoryName] = [];
     }
-    
+
     acc[categoryName][subcategoryName].push(illustration);
-    
+
     return acc;
   }, {});
 
@@ -158,7 +158,7 @@ const MobileEngineIllustrations = () => {
         category.toLowerCase().includes(searchTerm.toLowerCase()) ||
         subcat.toLowerCase().includes(searchTerm.toLowerCase())
       );
-      
+
       if (filtered.length > 0) {
         subAcc[subcat] = filtered;
       }
@@ -212,9 +212,9 @@ const MobileEngineIllustrations = () => {
   };
 
   const IllustrationCard = ({ illustration }) => (
-    <Card 
+    <Card
       onClick={() => handleViewIllustration(illustration)}
-      sx={{ 
+      sx={{
         borderRadius: 2,
         transition: 'all 0.2s',
         border: 1,
@@ -253,10 +253,10 @@ const MobileEngineIllustrations = () => {
             </Stack>
 
             {illustration.description && (
-              <Typography 
-                variant="caption" 
+              <Typography
+                variant="caption"
                 color="text.secondary"
-                sx={{ 
+                sx={{
                   display: '-webkit-box',
                   WebkitLineClamp: 1,
                   WebkitBoxOrient: 'vertical',
@@ -299,7 +299,7 @@ const MobileEngineIllustrations = () => {
             <Typography variant="h6" fontWeight="bold">エラー</Typography>
           </Toolbar>
         </AppBar>
-        
+
         <Container maxWidth="sm" sx={{ px: 2, py: 4 }}>
           <Card sx={{ borderRadius: 3, p: 4, textAlign: 'center', border: 2, borderColor: 'error.main' }}>
             <ErrorIcon sx={{ fontSize: 64, color: 'error.main', mb: 2 }} />
@@ -403,8 +403,8 @@ const MobileEngineIllustrations = () => {
             </Typography>
           </Box>
         ) : error ? (
-          <Alert 
-            severity="error" 
+          <Alert
+            severity="error"
             sx={{ mb: 2, borderRadius: 2 }}
             action={
               <Button color="inherit" size="small" onClick={loadIllustrations}>
@@ -455,16 +455,16 @@ const MobileEngineIllustrations = () => {
                           <Typography variant="subtitle2" fontWeight="bold" color="primary">
                             {category}
                           </Typography>
-                          <Chip 
-                            label={totalCount} 
-                            size="small" 
-                            sx={{ 
-                              height: 20, 
+                          <Chip
+                            label={totalCount}
+                            size="small"
+                            sx={{
+                              height: 20,
                               fontSize: '0.7rem',
                               bgcolor: 'primary.main',
                               color: 'white',
                               fontWeight: 600
-                            }} 
+                            }}
                           />
                         </Stack>
                         {isExpanded ? <ExpandLessIcon /> : <ExpandMoreIcon />}
@@ -490,16 +490,16 @@ const MobileEngineIllustrations = () => {
                                 <Typography variant="caption" fontWeight="bold" color="text.secondary">
                                   {subcategory}
                                 </Typography>
-                                <Chip 
-                                  label={items.length} 
-                                  size="small" 
-                                  sx={{ 
-                                    height: 18, 
+                                <Chip
+                                  label={items.length}
+                                  size="small"
+                                  sx={{
+                                    height: 18,
                                     fontSize: '0.65rem',
                                     bgcolor: alpha('#1976d2', 0.1),
                                     color: '#1976d2',
                                     fontWeight: 600
-                                  }} 
+                                  }}
                                 />
                               </Stack>
 

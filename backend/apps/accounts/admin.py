@@ -1,7 +1,22 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 from django.utils.html import format_html
-from .models import User, Factory
+from django.urls import reverse
+from .models import User, Factory, Role, FactoryMember
+
+
+# ================= INLINES =================
+class FactoryMemberInline(admin.TabularInline):
+    model = FactoryMember
+    extra = 1
+    autocomplete_fields = ['factory', 'user']
+
+
+# ================= ROLE ADMIN =================
+@admin.register(Role)
+class RoleAdmin(admin.ModelAdmin):
+    list_display = ('name', 'code', 'can_manage_users', 'can_manage_jobs', 'can_create_illustrations')
+    search_fields = ('name', 'code')
 
 
 # ================= FACTORY ADMIN =================
@@ -10,6 +25,7 @@ class FactoryAdmin(admin.ModelAdmin):
     list_display = ('name', 'address', 'member_count', 'created_at')
     search_fields = ('name', 'address')
     ordering = ('name',)
+    inlines = [FactoryMemberInline]
 
     def member_count(self, obj):
         return obj.members.count()
@@ -25,7 +41,7 @@ class CustomUserAdmin(UserAdmin):
         'profile_image_display',
         'email',
         'username',
-        'factory_display',
+        'factories_display',
         'phone_number',
         'is_verified',
         'is_active',
@@ -36,7 +52,6 @@ class CustomUserAdmin(UserAdmin):
     list_display_links = ('profile_image_display', 'email')
 
     list_filter = (
-        'factory',
         'is_verified',
         'is_active',
         'is_staff',
@@ -48,21 +63,20 @@ class CustomUserAdmin(UserAdmin):
         'email',
         'username',
         'phone_number',
-        'address',
-        'factory__name',
     )
 
     ordering = ('-created_at',)
 
     readonly_fields = (
         'profile_image_preview',
-        'factory_display_readonly',
         'created_at',
         'updated_at',
         'last_login',
         'frontend_last_login',
         'verification_token',
     )
+
+    inlines = [FactoryMemberInline]
 
     # ================= DETAIL VIEW =================
     fieldsets = (
@@ -77,12 +91,8 @@ class CustomUserAdmin(UserAdmin):
                 'last_name',
             )
         }),
-        ('Factory', {
-            'fields': ('factory_display_readonly',),
-            'description': 'Factory cannot be changed after user creation. Contact superadmin if needed.'
-        }),
         ('Contact', {
-            'fields': ('phone_number', 'address')
+            'fields': ('phone_number',)
         }),
         ('Verification', {
             'fields': (
@@ -117,7 +127,6 @@ class CustomUserAdmin(UserAdmin):
             'fields': (
                 'email',
                 'username',
-                'factory',
                 'password1',
                 'password2',
             ),
@@ -154,30 +163,13 @@ class CustomUserAdmin(UserAdmin):
         )
     profile_image_preview.short_description = "Profile Preview"
 
-    def factory_display(self, obj):
+    def factories_display(self, obj):
         """For list view"""
-        if obj.factory:
-            return obj.factory.name
+        memberships = obj.factory_memberships.all()
+        if memberships:
+            return ", ".join([m.factory.name for m in memberships])
         return "-"
-    factory_display.short_description = "Factory"
-    factory_display.admin_order_field = "factory__name"
-
-    def factory_display_readonly(self, obj):
-        """For detail view - shows factory as readonly with link"""
-        if obj.factory:
-            from django.urls import reverse
-            url = reverse('admin:accounts_factory_change', args=[obj.factory.id])
-            return format_html(
-                '<a href="{}" style="font-size:14px;padding:8px 12px;background:#f0f0f0;'
-                'border:1px solid #ccc;border-radius:4px;display:inline-block;'
-                'text-decoration:none;color:#333;">'
-                '🏭 {}</a>',
-                url, obj.factory.name
-            )
-        return format_html(
-            '<span style="color:#999;font-style:italic;">No factory assigned</span>'
-        )
-    factory_display_readonly.short_description = "Factory"
+    factories_display.short_description = "Factories"
 
     # ================= ACTIONS =================
     actions = ['mark_verified']

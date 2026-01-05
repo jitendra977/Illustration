@@ -1,333 +1,300 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import {
-  Dialog,
-  DialogContent,
-  Button,
-  Box,
-  Typography,
-  IconButton,
-  Chip,
-  Stack,
-  Alert,
-  Menu,
-  MenuItem,
-  alpha,
-  useTheme,
+    Dialog,
+    DialogTitle,
+    DialogContent,
+    DialogActions,
+    Button,
+    Typography,
+    Box,
+    Stack,
+    Chip,
+    IconButton,
+    Divider,
+    CircularProgress,
+    Alert,
+    useTheme,
+    alpha,
+    Grid,
 } from '@mui/material';
 import {
-  Close as CloseIcon,
-  Edit as EditIcon,
-  Delete as DeleteIcon,
-  Share as ShareIcon,
-  MoreVert as MoreIcon,
-  Favorite as FavoriteIcon,
-  FavoriteBorder as FavoriteBorderIcon,
-  Person as PersonIcon,
-  CalendarToday as CalendarIcon,
-  GetApp as GetAppIcon,
-  Visibility as VisibilityIcon,
+    Close as CloseIcon,
+    Download as DownloadIcon,
+    Edit as EditIcon,
+    Delete as DeleteIcon,
+    InsertDriveFile as FileIcon,
+    CloudDownload as CloudDownloadIcon,
+    Share as ShareIcon,
 } from '@mui/icons-material';
-import { illustrationFileAPI, illustrationAPI } from '../../api/illustrations';
+import { illustrationAPI } from '../../api/illustrations';
 import PDFPreviewModal from './PDFPreviewModal';
 
 const IllustrationDetailModal = ({
-  open,
-  onClose,
-  illustration,
-  onUpdate,
-  onDelete,
-  onEdit,
-  userRole = 'user',
-  currentUserId,
+    open,
+    onClose,
+    illustration,
+    onUpdate,
+    onDelete,
+    onEdit
 }) => {
-  const theme = useTheme();
-  const [error, setError] = useState(null);
-  const [success, setSuccess] = useState(null);
-  const [files, setFiles] = useState([]);
-  const [isFavorite, setIsFavorite] = useState(false);
-  const [menuAnchor, setMenuAnchor] = useState(null);
-  
-  // PDF Preview state
-  const [previewOpen, setPreviewOpen] = useState(false);
-  const [previewFile, setPreviewFile] = useState(null);
+    const theme = useTheme();
+    const [deleting, setDeleting] = useState(false);
+    const [error, setError] = useState(null);
+    const [pdfPreviewOpen, setPdfPreviewOpen] = useState(false);
+    const [selectedFile, setSelectedFile] = useState(null);
 
-  const currentUser = JSON.parse(localStorage.getItem('user') || '{}');
-  const userId = currentUserId || currentUser?.id;
-  const canEdit = userRole === 'admin' || userRole === 'staff' || (userRole === 'user' && illustration?.user_id === userId);
+    if (!illustration) return null;
 
-  useEffect(() => {
-    if (open && illustration?.id) {
-      fetchFiles();
-      const favorites = JSON.parse(localStorage.getItem('favorites') || '[]');
-      setIsFavorite(favorites.includes(illustration.id));
-    }
-  }, [open, illustration?.id]);
+    const handleDelete = async () => {
+        if (!window.confirm('このイラストレーションを削除してもよろしいですか？')) return;
 
-  const fetchFiles = async () => {
-    try {
-      const data = await illustrationFileAPI.getByIllustration(illustration.id);
-      setFiles(data.results || data);
-    } catch (err) {
-      console.error('Failed to fetch files:', err);
-    }
-  };
-
-  const handleDelete = async () => {
-    if (!window.confirm('本当に削除しますか？')) return;
-    try {
-      await illustrationAPI.delete(illustration.id);
-      onDelete(illustration.id);
-      setSuccess('削除しました');
-      setTimeout(() => onClose(), 1000);
-    } catch (err) {
-      setError('削除失敗');
-    }
-  };
-
-  const handlePreview = (file) => {
-    setPreviewFile(file);
-    setPreviewOpen(true);
-  };
-
-  const handleClosePreview = () => {
-    setPreviewOpen(false);
-    setPreviewFile(null);
-  };
-
-  const handleDownload = async (file) => {
-    try {
-      setSuccess('ダウンロード中...');
-
-      const baseUrl = import.meta.env.VITE_API_URL || '/api';
-      const downloadUrl = `${baseUrl}/illustration-files/${file.id}/download/`;
-
-      const token = localStorage.getItem('access_token');
-
-      const response = await fetch(downloadUrl, {
-        method: 'GET',
-        headers: {
-          'Authorization': token ? `Bearer ${token}` : '',
-        },
-        credentials: 'include',
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
-        throw new Error(errorData.error || `HTTP ${response.status}: ${response.statusText}`);
-      }
-
-      const contentDisposition = response.headers.get('Content-Disposition');
-      let filename = `${illustration.title || 'download'}.pdf`;
-
-      if (contentDisposition) {
-        const filenameMatch = contentDisposition.match(/filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/);
-        if (filenameMatch && filenameMatch[1]) {
-          filename = filenameMatch[1].replace(/['"]/g, '');
+        setDeleting(true);
+        setError(null);
+        try {
+            await illustrationAPI.delete(illustration.id);
+            onDelete?.(illustration.id);
+            onClose();
+        } catch (err) {
+            console.error('Failed to delete illustration:', err);
+            setError('削除に失敗しました');
+        } finally {
+            setDeleting(false);
         }
-      }
+    };
 
-      const blob = await response.blob();
+    const handleFilePreview = (file) => {
+        if (file.file_type === 'pdf' || file.file.toLowerCase().endsWith('.pdf')) {
+            setSelectedFile(file);
+            setPdfPreviewOpen(true);
+        } else {
+            window.open(file.file, '_blank');
+        }
+    };
 
-      if (blob.size === 0) {
-        throw new Error('ファイルが空です');
-      }
-
-      const url = window.URL.createObjectURL(blob);
-      const link = document.createElement('a');
-      link.href = url;
-      link.download = filename;
-      link.style.display = 'none';
-
-      document.body.appendChild(link);
-      link.click();
-
-      setTimeout(() => {
+    const handleDownload = (file) => {
+        const link = document.createElement('a');
+        link.href = file.file;
+        link.download = file.file_name || 'download';
+        link.target = '_blank';
+        document.body.appendChild(link);
+        link.click();
         document.body.removeChild(link);
-        window.URL.revokeObjectURL(url);
-      }, 100);
+    };
 
-      setSuccess('ダウンロード完了');
+    return (
+        <>
+            <Dialog
+                open={open}
+                onClose={onClose}
+                maxWidth="md"
+                fullWidth
+                scroll="paper"
+                PaperProps={{
+                    sx: { borderRadius: 3 }
+                }}
+            >
+                <DialogTitle sx={{ m: 0, p: 2, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <Typography variant="h6" fontWeight="bold">
+                        イラストレーション詳細
+                    </Typography>
+                    <IconButton onClick={onClose} size="small">
+                        <CloseIcon />
+                    </IconButton>
+                </DialogTitle>
 
-    } catch (err) {
-      console.error('Download failed:', err);
-      setError(`ダウンロード失敗: ${err.message}`);
-    }
-  };
+                <DialogContent dividers sx={{ p: 2 }}>
+                    {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
 
-  const handleShare = async () => {
-    try {
-      const shareUrl = `${window.location.origin}/illustration/${illustration.id}`;
-      
-      if (navigator.share) {
-        await navigator.share({
-          title: illustration.title,
-          text: illustration.description || '',
-          url: shareUrl,
-        });
-        setSuccess('共有しました');
-      } else {
-        await navigator.clipboard.writeText(shareUrl);
-        setSuccess('リンクをコピーしました');
-      }
-    } catch (err) {
-      if (err.name !== 'AbortError') {
-        console.error('Share failed:', err);
-        setError('共有に失敗しました');
-      }
-    }
-  };
+                    <Grid container spacing={3}>
+                        {/* Metadata Section */}
+                        <Grid item xs={12} md={5}>
+                            <Stack spacing={2}>
+                                <Box>
+                                    <Typography variant="overline" color="text.secondary" fontWeight="bold">
+                                        タイトル
+                                    </Typography>
+                                    <Typography variant="h5" fontWeight="bold" color="primary.main">
+                                        {illustration.title}
+                                    </Typography>
+                                </Box>
 
-  const handleFavorite = () => {
-    const favorites = JSON.parse(localStorage.getItem('favorites') || '[]');
-    
-    if (isFavorite) {
-      const updated = favorites.filter(id => id !== illustration.id);
-      localStorage.setItem('favorites', JSON.stringify(updated));
-      setIsFavorite(false);
-      setSuccess('お気に入りから削除しました');
-    } else {
-      favorites.push(illustration.id);
-      localStorage.setItem('favorites', JSON.stringify(favorites));
-      setIsFavorite(true);
-      setSuccess('お気に入りに追加しました');
-    }
-  };
+                                <Box>
+                                    <Typography variant="overline" color="text.secondary" fontWeight="bold">
+                                        説明
+                                    </Typography>
+                                    <Typography variant="body2" color="text.primary">
+                                        {illustration.description || '説明なし'}
+                                    </Typography>
+                                </Box>
 
-  return (
-    <>
-      <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth>
-        <Box sx={{ p: 2, borderBottom: 1, borderColor: 'divider', bgcolor: alpha(theme.palette.primary.main, 0.02) }}>
-          <Stack direction="row" alignItems="center" spacing={1}>
-            <IconButton onClick={onClose} size="small"><CloseIcon /></IconButton>
-            <Typography variant="h6" fontWeight={700} sx={{ flex: 1 }} noWrap>{illustration?.title}</Typography>
-            <IconButton onClick={handleFavorite} size="small" color={isFavorite ? 'error' : 'default'}>
-              {isFavorite ? <FavoriteIcon /> : <FavoriteBorderIcon />}
-            </IconButton>
-            <IconButton onClick={handleShare} size="small"><ShareIcon /></IconButton>
-            <IconButton onClick={(e) => setMenuAnchor(e.currentTarget)} size="small"><MoreIcon /></IconButton>
-          </Stack>
-        </Box>
+                                <Divider />
 
-        <DialogContent sx={{ p: 0 }}>
-          {error && <Alert severity="error" onClose={() => setError(null)} sx={{ m: 2 }}>{error}</Alert>}
-          {success && <Alert severity="success" onClose={() => setSuccess(null)} sx={{ m: 2 }}>{success}</Alert>}
+                                <Box>
+                                    <Typography variant="overline" color="text.secondary" fontWeight="bold">
+                                        基本情報
+                                    </Typography>
+                                    <Stack spacing={1} mt={1}>
+                                        <Box display="flex" justifyContent="space-between">
+                                            <Typography variant="caption" color="text.secondary">メーカー:</Typography>
+                                            <Typography variant="caption" fontWeight="bold">{illustration.engine_model_detail?.manufacturer?.name || illustration.manufacturer_name || '-'}</Typography>
+                                        </Box>
+                                        <Box display="flex" justifyContent="space-between">
+                                            <Typography variant="caption" color="text.secondary">エンジン型式:</Typography>
+                                            <Typography variant="caption" fontWeight="bold">{illustration.engine_model_name || illustration.engine_model_detail?.name || '-'}</Typography>
+                                        </Box>
+                                        <Box display="flex" justifyContent="space-between">
+                                            <Typography variant="caption" color="text.secondary">パーツカテゴリー:</Typography>
+                                            <Typography variant="caption" fontWeight="bold">{illustration.part_category_name || illustration.part_category_detail?.name || '-'}</Typography>
+                                        </Box>
+                                        {illustration.part_subcategory_name && (
+                                            <Box display="flex" justifyContent="space-between">
+                                                <Typography variant="caption" color="text.secondary">パーツサブカテゴリー:</Typography>
+                                                <Typography variant="caption" fontWeight="bold">{illustration.part_subcategory_name}</Typography>
+                                            </Box>
+                                        )}
+                                    </Stack>
+                                </Box>
 
-          <Stack spacing={3} sx={{ p: 3 }}>
-            <Typography variant="body2" color="text.secondary">{illustration?.description || '説明なし'}</Typography>
+                                <Box>
+                                    <Typography variant="overline" color="text.secondary" fontWeight="bold">
+                                        作成情報
+                                    </Typography>
+                                    <Stack spacing={1} mt={1}>
+                                        <Box display="flex" justifyContent="space-between">
+                                            <Typography variant="caption" color="text.secondary">作成者:</Typography>
+                                            <Typography variant="caption" fontWeight="bold">{illustration.user_name || '-'}</Typography>
+                                        </Box>
+                                        <Box display="flex" justifyContent="space-between">
+                                            <Typography variant="caption" color="text.secondary">工場:</Typography>
+                                            <Typography variant="caption" fontWeight="bold">{illustration.factory_name || '-'}</Typography>
+                                        </Box>
+                                        <Box display="flex" justifyContent="space-between">
+                                            <Typography variant="caption" color="text.secondary">作成日:</Typography>
+                                            <Typography variant="caption" fontWeight="bold">{new Date(illustration.created_at).toLocaleDateString('ja-JP')}</Typography>
+                                        </Box>
+                                    </Stack>
+                                </Box>
+                            </Stack>
+                        </Grid>
 
-            <Stack direction="row" spacing={1} flexWrap="wrap">
-              {illustration?.engine_model_name && <Chip label={illustration.engine_model_name} size="small" color="primary" />}
-              {illustration?.part_category_name && <Chip label={illustration.part_category_name} size="small" color="secondary" />}
-            </Stack>
+                        {/* Files Section */}
+                        <Grid item xs={12} md={7}>
+                            <Typography variant="overline" color="text.secondary" fontWeight="bold" gutterBottom display="block">
+                                添付ファイル ({illustration.files?.length || 0})
+                            </Typography>
 
-            <Box>
-              <Typography variant="subtitle2" fontWeight={700} sx={{ mb: 1.5 }}>ファイル ({files.length})</Typography>
-              <Stack spacing={1}>
-                {files.map((file, i) => (
-                  <Box 
-                    key={file.id} 
-                    sx={{ 
-                      p: 2, 
-                      borderRadius: 2, 
-                      border: 1, 
-                      borderColor: 'divider', 
-                      bgcolor: alpha(theme.palette.primary.main, 0.02), 
-                      '&:hover': { bgcolor: alpha(theme.palette.primary.main, 0.05) },
-                      transition: 'all 0.2s'
-                    }}
-                  >
-                    <Stack direction="row" alignItems="center" spacing={2}>
-                      <Box sx={{ flex: 1 }}>
-                        <Typography variant="body2" fontWeight={600}>
-                          {file.file_type_display || 'ファイル'} #{i + 1}
-                        </Typography>
-                        <Typography variant="caption" color="text.secondary">
-                          {file.file_name || file.file?.split('/').pop()}
-                        </Typography>
-                      </Box>
-                      
-                      <Stack direction="row" spacing={1}>
-                        {/* Preview Button */}
-                        <IconButton 
-                          onClick={() => handlePreview(file)} 
-                          color="secondary" 
-                          size="small"
-                          sx={{ 
-                            bgcolor: alpha(theme.palette.secondary.main, 0.1),
-                            '&:hover': { bgcolor: alpha(theme.palette.secondary.main, 0.2) }
-                          }}
-                          title="プレビュー"
+                            <Stack spacing={1.5}>
+                                {illustration.files && illustration.files.length > 0 ? (
+                                    illustration.files.map((file, idx) => (
+                                        <Paper
+                                            key={file.id || idx}
+                                            variant="outlined"
+                                            sx={{
+                                                p: 1.5,
+                                                borderRadius: 2,
+                                                display: 'flex',
+                                                alignItems: 'center',
+                                                justifyContent: 'space-between',
+                                                cursor: 'pointer',
+                                                transition: 'all 0.2s',
+                                                '&:hover': {
+                                                    bgcolor: alpha(theme.palette.primary.main, 0.05),
+                                                    borderColor: theme.palette.primary.main,
+                                                }
+                                            }}
+                                            onClick={() => handleFilePreview(file)}
+                                        >
+                                            <Stack direction="row" spacing={1.5} alignItems="center" sx={{ overflow: 'hidden' }}>
+                                                <Box
+                                                    sx={{
+                                                        width: 40,
+                                                        height: 40,
+                                                        borderRadius: 1,
+                                                        bgcolor: file.file_type === 'pdf' ? alpha(theme.palette.error.main, 0.1) : alpha(theme.palette.primary.main, 0.1),
+                                                        display: 'flex',
+                                                        alignItems: 'center',
+                                                        justifyContent: 'center',
+                                                        flexShrink: 0
+                                                    }}
+                                                >
+                                                    {file.file_type === 'pdf' ? (
+                                                        <FileIcon sx={{ color: theme.palette.error.main }} />
+                                                    ) : (
+                                                        <Box sx={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                                            <Typography variant="caption" fontWeight="bold" color="primary.main">
+                                                                IMG
+                                                            </Typography>
+                                                        </Box>
+                                                    )}
+                                                </Box>
+                                                <Box sx={{ overflow: 'hidden' }}>
+                                                    <Typography variant="body2" fontWeight="bold" noWrap>
+                                                        {file.file_name || `ファイル ${idx + 1}`}
+                                                    </Typography>
+                                                    <Typography variant="caption" color="text.secondary">
+                                                        {file.file_type === 'image' ? '画像' : 'PDF'}
+                                                    </Typography>
+                                                </Box>
+                                            </Stack>
+                                            <Stack direction="row" spacing={0.5}>
+                                                <IconButton
+                                                    size="small"
+                                                    onClick={(e) => { e.stopPropagation(); handleDownload(file); }}
+                                                    color="primary"
+                                                >
+                                                    <CloudDownloadIcon fontSize="small" />
+                                                </IconButton>
+                                            </Stack>
+                                        </Paper>
+                                    ))
+                                ) : (
+                                    <Box sx={{ py: 4, textAlign: 'center', bgcolor: alpha(theme.palette.action.disabled, 0.05), borderRadius: 2 }}>
+                                        <Typography variant="body2" color="text.secondary">
+                                            添付ファイルはありません
+                                        </Typography>
+                                    </Box>
+                                )}
+                            </Stack>
+                        </Grid>
+                    </Grid>
+                </DialogContent>
+
+                <DialogActions sx={{ p: 2, justifyContent: 'space-between' }}>
+                    <Stack direction="row" spacing={1}>
+                        <Button
+                            startIcon={<DeleteIcon />}
+                            color="error"
+                            onClick={handleDelete}
+                            disabled={deleting}
+                            size="small"
                         >
-                          <VisibilityIcon fontSize="small" />
-                        </IconButton>
-
-                        {/* Download Button */}
-                        <IconButton 
-                          onClick={() => handleDownload(file)} 
-                          color="primary" 
-                          size="small"
-                          sx={{ 
-                            bgcolor: alpha(theme.palette.primary.main, 0.1),
-                            '&:hover': { bgcolor: alpha(theme.palette.primary.main, 0.2) }
-                          }}
-                          title="ダウンロード"
+                            削除
+                        </Button>
+                        <Button
+                            startIcon={<EditIcon />}
+                            onClick={onEdit}
+                            disabled={deleting}
+                            size="small"
                         >
-                          <GetAppIcon fontSize="small" />
-                        </IconButton>
-                      </Stack>
+                            編集
+                        </Button>
                     </Stack>
-                  </Box>
-                ))}
-              </Stack>
-            </Box>
+                    <Button variant="contained" onClick={onClose} sx={{ borderRadius: 2 }}>
+                        閉じる
+                    </Button>
+                </DialogActions>
+            </Dialog>
 
-            <Stack spacing={1.5}>
-              <Stack direction="row" spacing={1} alignItems="center">
-                <PersonIcon fontSize="small" color="action" />
-                <Typography variant="body2">{illustration?.user_name || '不明'}</Typography>
-              </Stack>
-              <Stack direction="row" spacing={1} alignItems="center">
-                <CalendarIcon fontSize="small" color="action" />
-                <Typography variant="body2">{new Date(illustration?.created_at).toLocaleDateString('ja-JP')}</Typography>
-              </Stack>
-            </Stack>
-
-            {canEdit && (
-              <Stack direction="row" spacing={2}>
-                <Button fullWidth variant="outlined" startIcon={<EditIcon />} onClick={onEdit}>編集</Button>
-                <Button fullWidth variant="outlined" color="error" startIcon={<DeleteIcon />} onClick={handleDelete}>削除</Button>
-              </Stack>
+            {selectedFile && (
+                <PDFPreviewModal
+                    open={pdfPreviewOpen}
+                    onClose={() => setPdfPreviewOpen(false)}
+                    fileUrl={selectedFile.file}
+                    title={selectedFile.file_name || illustration.title}
+                />
             )}
-          </Stack>
-        </DialogContent>
-      </Dialog>
-
-      <Menu anchorEl={menuAnchor} open={Boolean(menuAnchor)} onClose={() => setMenuAnchor(null)}>
-        <MenuItem onClick={() => { navigator.clipboard.writeText(illustration?.title); setSuccess('タイトルをコピーしました'); setMenuAnchor(null); }}>
-          タイトルをコピー
-        </MenuItem>
-        <MenuItem onClick={() => { navigator.clipboard.writeText(illustration?.description || ''); setSuccess('説明をコピーしました'); setMenuAnchor(null); }}>
-          説明をコピー
-        </MenuItem>
-        <MenuItem onClick={() => { 
-          const url = `${window.location.origin}/illustrations/${illustration?.id}`; 
-          navigator.clipboard.writeText(url); 
-          setSuccess('URLをコピーしました'); 
-          setMenuAnchor(null); 
-        }}>
-          URLをコピー
-        </MenuItem>
-      </Menu>
-
-      {/* PDF Preview Modal */}
-      <PDFPreviewModal
-        open={previewOpen}
-        onClose={handleClosePreview}
-        fileId={previewFile?.id}
-        fileName={previewFile?.file_name || previewFile?.file?.split('/').pop()}
-      />
-    </>
-  );
+        </>
+    );
 };
 
 export default IllustrationDetailModal;

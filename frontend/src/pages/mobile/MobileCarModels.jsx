@@ -76,8 +76,8 @@ const MobileCarModels = () => {
       setFormData({
         manufacturer: carModel.manufacturer || '',
         name: carModel.name || '',
-        vehicle_type: vehicleTypes.some(t => t.value === carModel.vehicle_type) 
-          ? carModel.vehicle_type 
+        vehicle_type: vehicleTypes.some(t => t.value === carModel.vehicle_type)
+          ? carModel.vehicle_type
           : '',
         year_from: carModel.year_from || '',
         year_to: carModel.year_to || '',
@@ -110,9 +110,9 @@ const MobileCarModels = () => {
 
   const handleEnginesChange = (event) => {
     const { value } = event.target;
-    setFormData(prev => ({ 
-      ...prev, 
-      engines: typeof value === 'string' ? value.split(',') : value 
+    setFormData(prev => ({
+      ...prev,
+      engines: typeof value === 'string' ? value.split(',') : value
     }));
   };
 
@@ -142,8 +142,8 @@ const MobileCarModels = () => {
 
       // Remove undefined values
       Object.keys(payload).forEach(key => {
-        if (payload[key] === undefined || payload[key] === '' || 
-            (Array.isArray(payload[key]) && payload[key].length === 0)) {
+        if (payload[key] === undefined || payload[key] === '' ||
+          (Array.isArray(payload[key]) && payload[key].length === 0)) {
           delete payload[key];
         }
       });
@@ -155,7 +155,7 @@ const MobileCarModels = () => {
         console.log('Creating car model:', payload);
         await createCarModel(payload);
       }
-      
+
       setShowModal(false);
       setFormData({
         manufacturer: '',
@@ -263,13 +263,13 @@ const MobileCarModels = () => {
               }}
             />
           )}
-          
+
           {(carModel.year_from || carModel.year_to) && (
             <Chip
               icon={<CalendarIcon sx={{ fontSize: 16 }} />}
               label={
-                carModel.year_to 
-                  ? `${carModel.year_from}-${carModel.year_to}` 
+                carModel.year_to
+                  ? `${carModel.year_from}-${carModel.year_to}`
                   : `${carModel.year_from}-現在`
               }
               size="small"
@@ -301,10 +301,10 @@ const MobileCarModels = () => {
 
         {/* Details */}
         <Stack spacing={0.5}>
-          <Box sx={{ 
-            bgcolor: alpha('#1976d2', 0.08), 
-            px: 1.5, 
-            py: 0.5, 
+          <Box sx={{
+            bgcolor: alpha('#1976d2', 0.08),
+            px: 1.5,
+            py: 0.5,
             borderRadius: 1.5,
             display: 'inline-block'
           }}>
@@ -525,10 +525,10 @@ const MobileCarModels = () => {
                       {selected.map((value) => {
                         const engine = engineModels.find(e => e.id === parseInt(value));
                         return (
-                          <Chip 
-                            key={value} 
-                            label={engine?.name || value} 
-                            size="small" 
+                          <Chip
+                            key={value}
+                            label={engine?.name || value}
+                            size="small"
                           />
                         );
                       })}
@@ -570,10 +570,10 @@ const MobileCarModels = () => {
               type="submit"
               variant="contained"
               disabled={vehicleTypesLoading}
-              sx={{ 
-                borderRadius: 2, 
-                textTransform: 'none', 
-                fontWeight: 600, 
+              sx={{
+                borderRadius: 2,
+                textTransform: 'none',
+                fontWeight: 600,
                 px: 3,
                 boxShadow: '0 4px 12px rgba(25, 118, 210, 0.4)'
               }}
@@ -589,7 +589,7 @@ const MobileCarModels = () => {
         anchor="bottom"
         open={showActions}
         onClose={() => setShowActions(false)}
-        onOpen={() => {}}
+        onOpen={() => { }}
         disableSwipeToOpen
         PaperProps={{ sx: { borderTopLeftRadius: 24, borderTopRightRadius: 24, pb: 2 } }}
       >

@@ -7,19 +7,35 @@ from django.core.exceptions import ValidationError as DjangoValidationError
 from rest_framework import serializers
 from rest_framework_simplejwt.tokens import RefreshToken
 from django.utils import timezone
-from .models import User,Factory
+from .models import User, Factory, Role, FactoryMember
 
 class FactorySerializer(serializers.ModelSerializer):
     class Meta:
         model = Factory
         fields = ['id', 'name', 'address']
-        
+
+class RoleSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Role
+        fields = [
+            'id', 'name', 'code', 
+            'can_manage_users', 'can_manage_jobs', 
+            'can_view_finance', 'can_edit_finance',
+            'can_create_illustrations', 'can_edit_illustrations', 
+            'can_delete_illustrations', 'can_view_all_factory_illustrations'
+        ]
+
+class FactoryMemberSerializer(serializers.ModelSerializer):
+    factory = FactorySerializer(read_only=True)
+    role = RoleSerializer(read_only=True)
+    
+    class Meta:
+        model = FactoryMember
+        fields = ['factory', 'role', 'is_active', 'joined_at']
+
 class UserSerializer(serializers.ModelSerializer):
     """Serializer for user model (read operations)."""
-    factory = serializers.CharField(
-        source='factory.name',
-        read_only=True
-    )
+    factory_memberships = FactoryMemberSerializer(many=True, read_only=True)
     last_login = serializers.DateTimeField(format="%Y-%m-%d %H:%M:%S", read_only=True)
     created_at = serializers.DateTimeField(format="%Y-%m-%d %H:%M:%S", read_only=True)
     updated_at = serializers.DateTimeField(format="%Y-%m-%d %H:%M:%S", read_only=True)
@@ -28,7 +44,7 @@ class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = [
-            'id', 'username', 'email','factory', 'address', 'first_name', 'last_name',
+            'id', 'username', 'email', 'factory_memberships', 'first_name', 'last_name',
             'is_active', 'is_staff', 'is_superuser', 'date_joined',
             'phone_number', 'profile_image', 'groups', 'user_permissions',
             'is_verified', 'created_at', 'updated_at', 'last_login'
@@ -41,11 +57,6 @@ class UserSerializer(serializers.ModelSerializer):
 
 class AdminUserSerializer(serializers.ModelSerializer):
     """Serializer for admin user management (full control)."""
-    factory = serializers.PrimaryKeyRelatedField(
-        queryset=Factory.objects.all(),
-        required=False,
-        allow_null=True
-    )
     password = serializers.CharField(
         write_only=True, 
         required=False,
@@ -57,7 +68,7 @@ class AdminUserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = [
-            'id', 'username', 'email', 'factory', 'address', 'first_name', 'last_name',
+            'id', 'username', 'email', 'first_name', 'last_name',
             'is_active', 'is_staff', 'is_superuser', 'is_verified', 
             'phone_number', 'profile_image', 'password',
             'date_joined', 'last_login'
@@ -91,11 +102,6 @@ class AdminUserSerializer(serializers.ModelSerializer):
 
 class RegisterSerializer(serializers.ModelSerializer):
     """Serializer for user registration."""
-    factory = serializers.PrimaryKeyRelatedField(
-        queryset=Factory.objects.all(),
-        required=False,
-        allow_null=True
-    )
     password = serializers.CharField(
         write_only=True, 
         min_length=8,
@@ -111,7 +117,7 @@ class RegisterSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = [
-            'username', 'email', 'address',  'factory', 'password', 'password_confirm',
+            'username', 'email', 'password', 'password_confirm',
             'first_name', 'last_name', 'phone_number', 'profile_image'
         ]
         extra_kwargs = {
@@ -127,7 +133,6 @@ class RegisterSerializer(serializers.ModelSerializer):
             'last_name': {'required': False},
             'phone_number': {'required': False},
             'profile_image': {'required': False},
-            'address': {'required': False},
         }
 
     def validate_email(self, value):
@@ -207,11 +212,6 @@ class EmailVerificationSerializer(serializers.Serializer):
 
 class UpdateUserSerializer(serializers.ModelSerializer):
     """Serializer for updating user profile."""
-    factory = serializers.PrimaryKeyRelatedField(
-        queryset=Factory.objects.all(),
-        required=False,
-        allow_null=True
-    )
     password = serializers.CharField(
         write_only=True, 
         required=False,
@@ -229,7 +229,7 @@ class UpdateUserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = [
-            'username', 'email', 'address', 'factory','first_name', 'last_name',
+            'username', 'email', 'first_name', 'last_name',
             'phone_number', 'profile_image', 'password', 'password_confirm'
         ]
         extra_kwargs = {
@@ -239,7 +239,6 @@ class UpdateUserSerializer(serializers.ModelSerializer):
             'last_name': {'required': False},
             'phone_number': {'required': False},
             'profile_image': {'required': False},
-            'address': {'required': False},
         }
 
     def validate_email(self, value):
