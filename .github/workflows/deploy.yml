@@ -44,6 +44,17 @@ jobs:
       run: |
         ssh-keyscan -p ${{ secrets.SSH_PORT || '22' }} -H ${{ secrets.SSH_HOST }} >> ~/.ssh/known_hosts 2>/dev/null || true
     
+    - name: Ensure project directories exist
+      uses: appleboy/ssh-action@v1.0.0
+      with:
+        host: ${{ secrets.SSH_HOST }}
+        username: ${{ secrets.SSH_USERNAME }}
+        key: ${{ secrets.SSH_PRIVATE_KEY }}
+        port: ${{ secrets.SSH_PORT || 22 }}
+        script: |
+          mkdir -p ${{ secrets.DEPLOY_PATH }}/backend
+          mkdir -p ${{ secrets.DEPLOY_PATH }}/frontend
+    
     - name: Copy .env files to server
       run: |
         scp -i ~/.ssh/deploy_key -P ${{ secrets.SSH_PORT || '22' }} \
