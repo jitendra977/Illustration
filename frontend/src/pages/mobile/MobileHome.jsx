@@ -476,63 +476,7 @@ const MobileHome = () => {
           </Box>
         )}
 
-        {/* Recent Illustrations */}
-        <Box>
-          <Stack
-            direction="row"
-            justifyContent="space-between"
-            alignItems="center"
-            mb={1.5}
-          >
-            <Typography variant="subtitle2" fontWeight="bold" sx={{ fontSize: '0.85rem' }}>
-              最近のイラスト
-            </Typography>
-            <IconButton
-              size="small"
-              onClick={() => navigate('/illustrations')}
-              sx={{ color: 'text.secondary' }}
-            >
-              <ChevronRightIcon fontSize="small" />
-            </IconButton>
-          </Stack>
 
-          <Stack spacing={1}>
-            {stats.recentIllustrations.length > 0 ? (
-              stats.recentIllustrations.map((illustration, index) => (
-                <IllustrationCard
-                  key={illustration.id}
-                  illustration={illustration}
-                  index={index}
-                />
-              ))
-            ) : (
-              <Card
-                sx={{
-                  borderRadius: 2.5,
-                  textAlign: 'center',
-                  py: 4,
-                  bgcolor: alpha(theme.palette.primary.main, 0.03)
-                }}
-              >
-                <ImageIcon
-                  sx={{
-                    fontSize: 40,
-                    color: theme.palette.primary.main,
-                    opacity: 0.5,
-                    mb: 1
-                  }}
-                />
-                <Typography
-                  variant="body2"
-                  color="text.secondary"
-                  fontWeight={500}
-                >
-                  まだイラストがありません
-                </Typography>
-              </Card>
-            )}
-          </Stack>
-        </Box>
       </Container>
 
       {/* Floating Action Button */}
