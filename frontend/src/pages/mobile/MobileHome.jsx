@@ -1,22 +1,22 @@
 import React, { useState, useEffect, useRef } from 'react';
-import {
-  Container,
-  Typography,
-  Card,
-  CardContent,
-  Stack,
-  Chip,
-  Alert,
-  Skeleton,
-  Slide,
-  useTheme,
-  alpha,
-  Box,
-  TextField,
-  InputAdornment,
-  IconButton,
-  Fab,
-} from '@mui/material';
+import Container from '@mui/material/Container';
+import Typography from '@mui/material/Typography';
+import Card from '@mui/material/Card';
+import CardContent from '@mui/material/CardContent';
+import Stack from '@mui/material/Stack';
+import Chip from '@mui/material/Chip';
+import Alert from '@mui/material/Alert';
+import Skeleton from '@mui/material/Skeleton';
+import Slide from '@mui/material/Slide';
+import { useTheme } from '@mui/material/styles';
+import { alpha } from '@mui/material/styles';
+import Box from '@mui/material/Box';
+import TextField from '@mui/material/TextField';
+import InputAdornment from '@mui/material/InputAdornment';
+import IconButton from '@mui/material/IconButton';
+import Fab from '@mui/material/Fab';
+import Divider from '@mui/material/Divider';
+import Avatar from '@mui/material/Avatar';
 import {
   Store as StoreIcon,
   DirectionsCar as CarIcon,
@@ -31,6 +31,7 @@ import {
 } from '@mui/icons-material';
 import { illustrationAPI, manufacturerAPI, clearCache } from '../../api/illustrations';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../../hooks/useAuth';
 import MobileIllustrationFormModal from '../../components/forms/MobileIllustrationFormModal';
 import MobileLayout from '../../layouts/MobileLayout';
 import { useManufacturers, useEngineModels, usePartCategories, usePartSubCategories, useCarModels } from '../../hooks/useIllustrations';

@@ -1,22 +1,22 @@
 import React, { useState, useEffect } from 'react';
-import {
-  Box,
-  IconButton,
-  Avatar,
-  Stack,
-  Typography,
-  SwipeableDrawer,
-  List,
-  ListItem,
-  ListItemButton,
-  ListItemIcon,
-  ListItemText,
-  Divider,
-  BottomNavigation,
-  BottomNavigationAction,
-  Paper,
-  useTheme,
-} from '@mui/material';
+import Box from '@mui/material/Box';
+import IconButton from '@mui/material/IconButton';
+import Avatar from '@mui/material/Avatar';
+import Stack from '@mui/material/Stack';
+import Typography from '@mui/material/Typography';
+import SwipeableDrawer from '@mui/material/SwipeableDrawer';
+import List from '@mui/material/List';
+import ListItem from '@mui/material/ListItem';
+import ListItemButton from '@mui/material/ListItemButton';
+import ListItemIcon from '@mui/material/ListItemIcon';
+import ListItemText from '@mui/material/ListItemText';
+import Divider from '@mui/material/Divider';
+import BottomNavigation from '@mui/material/BottomNavigation';
+import BottomNavigationAction from '@mui/material/BottomNavigationAction';
+import Paper from '@mui/material/Paper';
+import { useTheme } from '@mui/material/styles';
+import Chip from '@mui/material/Chip';
+import { alpha } from '@mui/material/styles';
 import {
   Menu as MenuIcon,
   Home as HomeIcon,
@@ -31,7 +31,7 @@ import {
   Refresh as RefreshIcon,
   ManageAccounts as ManageAccountsIcon
 } from '@mui/icons-material';
-import { useAuth } from '../context/AuthContext';
+import { useAuth } from '../hooks/useAuth';
 import { useNavigate, useLocation } from 'react-router-dom';
 
 const MobileLayout = ({ children, showHeader = true, onRefresh, refreshing = false }) => {

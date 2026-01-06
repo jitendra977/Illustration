@@ -9,7 +9,7 @@ set -e
 # CONFIGURATION
 # ==========================================
 # VPS SSH Details (Please fill these if they are different)
-VPS_USER="root"                       # Change if necessary
+VPS_USER="nishanaweb"                       # Change if necessary
 VPS_HOST="nishanaweb.cloud"       # Based on your browser URL
 REMOTE_PROJECT_DIR="/home/nishanaweb/project/Illustration" # Path on the VPS
 BRANCH="deploy-server"                # The branch to deploy
@@ -39,7 +39,8 @@ ssh "$VPS_USER@$VPS_HOST" << EOF
     echo "--- VPS: Pulling latest changes from $BRANCH ---"
     git fetch origin
     git checkout "$BRANCH"
-    git pull origin "$BRANCH"
+    git reset --hard "origin/$BRANCH"
+    git clean -fd
 
     echo "--- VPS: Restarting and rebuilding containers ---"
     # Using docker compose (v2) or docker-compose (v1)

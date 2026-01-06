@@ -2,7 +2,7 @@ import React, { createContext, useContext, useState, useEffect } from 'react';
 import { authAPI } from '../services/auth';
 import { usersAPI } from '../services/users';
 
-const AuthContext = createContext();
+export const AuthContext = createContext();
 
 export const useAuth = () => useContext(AuthContext);
 
