@@ -9,6 +9,7 @@ PROJECT_DIR=~/project/Illustration
 BRANCH=deploy-server
 
 echo "--- Deploying Illustration project ---"
+echo "--- Update Verification: Test Push $(date) ---"
 
 cd "$PROJECT_DIR"
 
