@@ -80,11 +80,11 @@ jobs:
           set -e
           
           echo "📂 Navigating to project directory..."
-          cd ${{ secrets.DEPLOY_PATH }}
+          cd /home/nishanaweb/project/Illustration
           
           echo "📦 Pulling latest code from GitHub..."
           git fetch origin
-          git reset --hard origin/main
+          git reset --hard origin/deploy-server
           
           echo "🛑 Stopping existing containers..."
           sudo docker compose down || true
