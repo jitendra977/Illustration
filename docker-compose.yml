@@ -19,6 +19,8 @@ services:
       - ./backend/.env
     environment:
       - DB_HOST=host.docker.internal
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     healthcheck:
       test: [ "CMD-SHELL", "nc -z localhost 8000 || exit 1" ]
       interval: 30s
