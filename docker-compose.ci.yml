@@ -1,0 +1,50 @@
+version: '3.8'
+
+services:
+  yaw-backend:
+    build:
+      context: ./backend
+    container_name: yaw-backend-ci
+    restart: unless-stopped
+    # In CI we don't expose ports to the host
+    # ports: []
+    volumes:
+      - ./backend:/app
+      - static_volume:/app/staticfiles
+      - media_volume:/app/media
+    env_file:
+      - ./backend/.env.ci
+    environment:
+      - DB_HOST=host.docker.internal
+    networks:
+      - yaw-network
+      - app-network
+
+  yaw-frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      args:
+        - VITE_API_URL=/api
+    container_name: yaw-frontend-ci
+    restart: unless-stopped
+    # No port exposure in CI
+    # ports: []
+    depends_on:
+      - yaw-backend
+    networks:
+      - yaw-network
+      - app-network
+
+volumes:
+  static_volume:
+    driver: local
+  media_volume:
+    driver: local
+
+networks:
+  yaw-network:
+    driver: bridge
+  app-network:
+    external: true
+    name: app-network
