@@ -52,20 +52,20 @@ jobs:
         key: ${{ secrets.SSH_PRIVATE_KEY }}
         port: ${{ secrets.SSH_PORT || 22 }}
         script: |
-          mkdir -p ${{ secrets.DEPLOY_PATH }}/backend
-          mkdir -p ${{ secrets.DEPLOY_PATH }}/frontend
+          mkdir -p /home/nishanaweb/project/Illustration/backend
+          mkdir -p /home/nishanaweb/project/Illustration/frontend
     
     - name: Copy .env files to server
       run: |
         scp -i ~/.ssh/deploy_key -P ${{ secrets.SSH_PORT || '22' }} \
           -o StrictHostKeyChecking=no \
           backend/.env \
-          ${{ secrets.SSH_USERNAME }}@${{ secrets.SSH_HOST }}:${{ secrets.DEPLOY_PATH }}/backend/.env
+          ${{ secrets.SSH_USERNAME }}@${{ secrets.SSH_HOST }}:/home/nishanaweb/project/Illustration/backend/.env
         
         scp -i ~/.ssh/deploy_key -P ${{ secrets.SSH_PORT || '22' }} \
           -o StrictHostKeyChecking=no \
           frontend/.env \
-          ${{ secrets.SSH_USERNAME }}@${{ secrets.SSH_HOST }}:${{ secrets.DEPLOY_PATH }}/frontend/.env
+          ${{ secrets.SSH_USERNAME }}@${{ secrets.SSH_HOST }}:/home/nishanaweb/project/Illustration/frontend/.env
         
         echo "✅ Environment files copied to server"
     
