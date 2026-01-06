@@ -36,9 +36,11 @@ import MobileIllustrationFormModal from '../forms/MobileIllustrationFormModal';
 import MobileFilterPanel from './MobileFilterPanel';
 import FloatingAddButton from './FloatingAddButton';
 
+const DEFAULT_EMPTY_OBJECT = {};
+
 const MobileIllustrationListView = ({
-    initialFilters = {},
-    lockedFilters = {},
+    initialFilters = DEFAULT_EMPTY_OBJECT,
+    lockedFilters = DEFAULT_EMPTY_OBJECT,
     enableHeader = true,
     enableCreate = true,
     basePath = '/illustrations'
