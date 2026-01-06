@@ -77,12 +77,14 @@ const MobileLayout = ({ children, showHeader = true, onRefresh, refreshing = fal
       {/* Header */}
       {showHeader && (
         <Box sx={{
-          background: 'linear-gradient(135deg, #1976d2 0%, #1565c0 100%)',
+          background: 'linear-gradient(135deg, #0f172a 0%, #1e293b 100%)',
           color: 'white',
-          pt: 2,
-          pb: 4,
+          pt: 1.5,
+          pb: 3.5,
           px: 2,
-          flexShrink: 0
+          flexShrink: 0,
+          borderBottom: '1px solid rgba(255,255,255,0.05)',
+          boxShadow: '0 4px 20px rgba(0,0,0,0.1)'
         }}>
           <Stack direction="row" justifyContent="space-between" alignItems="center">
             <Stack direction="row" spacing={1.5} alignItems="center">
@@ -90,18 +92,26 @@ const MobileLayout = ({ children, showHeader = true, onRefresh, refreshing = fal
                 onClick={() => setMenuOpen(true)}
                 sx={{
                   color: 'white',
-                  bgcolor: 'rgba(255,255,255,0.2)'
+                  bgcolor: 'rgba(255,255,255,0.08)',
+                  backdropFilter: 'blur(8px)',
+                  '&:hover': { bgcolor: 'rgba(255,255,255,0.15)' }
                 }}
               >
-                <MenuIcon />
+                <MenuIcon sx={{ fontSize: 20 }} />
               </IconButton>
 
-              {/* TITLE + FACTORY */}
               <Stack spacing={0}>
                 <Typography
-                  variant="h6"
-                  fontWeight="bold"
-                  lineHeight={1.2}
+                  variant="subtitle1"
+                  fontWeight="800"
+                  lineHeight={1.1}
+                  sx={{
+                    letterSpacing: '0.02em',
+                    textTransform: 'uppercase',
+                    background: 'linear-gradient(to right, #fff, #94a3b8)',
+                    WebkitBackgroundClip: 'text',
+                    WebkitTextFillColor: 'transparent'
+                  }}
                 >
                   YAW 楽天検索丸
                 </Typography>
@@ -110,11 +120,12 @@ const MobileLayout = ({ children, showHeader = true, onRefresh, refreshing = fal
                   <Typography
                     variant="caption"
                     sx={{
-                      color: 'rgba(255,255,255,0.75)',
-                      letterSpacing: '0.08em'
+                      color: 'rgba(255,255,255,0.5)',
+                      fontWeight: 500,
+                      fontSize: '0.65rem'
                     }}
                   >
-                    {user.factory_memberships.map(m => m.factory.name).join(', ')}
+                    {user.factory_memberships.map(m => m.factory.name).join(' • ')}
                   </Typography>
                 )}
               </Stack>
@@ -126,11 +137,14 @@ const MobileLayout = ({ children, showHeader = true, onRefresh, refreshing = fal
                 disabled={refreshing}
                 sx={{
                   color: 'white',
-                  bgcolor: 'rgba(255,255,255,0.2)'
+                  bgcolor: 'rgba(255,255,255,0.08)',
+                  backdropFilter: 'blur(8px)',
+                  '&:hover': { bgcolor: 'rgba(255,255,255,0.15)' }
                 }}
               >
                 <RefreshIcon
                   sx={{
+                    fontSize: 20,
                     animation: refreshing ? 'spin 1s linear infinite' : 'none'
                   }}
                 />
@@ -145,7 +159,8 @@ const MobileLayout = ({ children, showHeader = true, onRefresh, refreshing = fal
         flex: 1,
         overflowY: 'auto',
         overflowX: 'hidden',
-        WebkitOverflowScrolling: 'touch'
+        WebkitOverflowScrolling: 'touch',
+        bgcolor: '#f8fafc'
       }}>
         {children}
       </Box>
@@ -156,54 +171,158 @@ const MobileLayout = ({ children, showHeader = true, onRefresh, refreshing = fal
         open={menuOpen}
         onClose={() => setMenuOpen(false)}
         onOpen={() => setMenuOpen(true)}
-        PaperProps={{ sx: { width: '85%', maxWidth: 320 } }}
+        PaperProps={{
+          sx: {
+            width: '80%',
+            maxWidth: 320,
+            bgcolor: '#ffffff',
+            backgroundImage: 'none'
+          }
+        }}
       >
-        <Box sx={{ background: 'linear-gradient(135deg, #1976d2 0%, #1565c0 100%)', color: 'white', p: 3 }}>
-          <Stack direction="row" justifyContent="space-between" alignItems="center" mb={2}>
-            <Typography variant="h6" fontWeight="bold">メニュー</Typography>
-            <IconButton onClick={() => setMenuOpen(false)} sx={{ color: 'white', p: 0.5 }}><CloseIcon /></IconButton>
+        <Box sx={{
+          background: 'linear-gradient(135deg, #0f172a 0%, #1e293b 100%)',
+          color: 'white',
+          p: 3,
+          position: 'relative',
+          overflow: 'hidden'
+        }}>
+          {/* Decorative background element */}
+          <Box sx={{
+            position: 'absolute',
+            top: -20,
+            right: -20,
+            width: 100,
+            height: 100,
+            borderRadius: '50%',
+            background: 'radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%)',
+            zIndex: 0
+          }} />
+
+          <Stack direction="row" justifyContent="space-between" alignItems="center" mb={3} sx={{ position: 'relative', zIndex: 1 }}>
+            <Typography variant="h6" fontWeight="800">NAVIGATE</Typography>
+            <IconButton onClick={() => setMenuOpen(false)} sx={{ color: 'white', bgcolor: 'rgba(255,255,255,0.1)', p: 0.5 }}><CloseIcon fontSize="small" /></IconButton>
           </Stack>
-          <Stack direction="row" spacing={2} alignItems="center">
-            <Avatar src={user?.profile_image} sx={{ width: 48, height: 48, border: '2px solid rgba(255,255,255,0.3)' }}>
+
+          <Stack direction="row" spacing={2} alignItems="center" sx={{ position: 'relative', zIndex: 1 }}>
+            <Avatar
+              src={user?.profile_image}
+              sx={{
+                width: 56,
+                height: 56,
+                border: '2px solid rgba(255,255,255,0.2)',
+                boxShadow: '0 4px 12px rgba(0,0,0,0.2)'
+              }}
+            >
               {getUserInitial()}
             </Avatar>
             <Box sx={{ flex: 1, minWidth: 0 }}>
-              <Typography variant="body1" fontWeight={600} noWrap>{user?.first_name || user?.username}</Typography>
-              <Typography variant="caption" sx={{ opacity: 0.9, display: 'block' }} noWrap>{user?.email}</Typography>
-              <Typography variant="caption" sx={{ color: '#90caf9', fontWeight: 'bold' }}>{getUserRole()}</Typography>
+              <Typography variant="body1" fontWeight={700} noWrap sx={{ letterSpacing: '-0.01em' }}>{user?.first_name || user?.username}</Typography>
+              <Typography variant="caption" sx={{ opacity: 0.6, display: 'block', mb: 0.5 }} noWrap>{user?.email}</Typography>
+              <Chip
+                label={getUserRole()}
+                size="small"
+                sx={{
+                  height: 20,
+                  fontSize: '0.65rem',
+                  fontWeight: 700,
+                  bgcolor: 'rgba(56, 189, 248, 0.2)',
+                  color: '#7dd3fc',
+                  border: '1px solid rgba(56, 189, 248, 0.3)'
+                }}
+              />
             </Box>
           </Stack>
         </Box>
-        <List sx={{ flex: 1, overflowY: 'auto' }}>
-          <ListItem disablePadding><ListItemButton onClick={() => { setMenuOpen(false); navigate('/'); }}><ListItemIcon><HomeIcon /></ListItemIcon><ListItemText primary="ホーム" /></ListItemButton></ListItem>
-          <ListItem disablePadding><ListItemButton onClick={() => { setMenuOpen(false); navigate('/illustrations'); }}><ListItemIcon><ImageIcon /></ListItemIcon><ListItemText primary="イラスト" /></ListItemButton></ListItem>
-          <ListItem disablePadding><ListItemButton onClick={() => { setMenuOpen(false); navigate('/manufacturers'); }}><ListItemIcon><StoreIcon /></ListItemIcon><ListItemText primary="メーカー" /></ListItemButton></ListItem>
-          <ListItem disablePadding><ListItemButton onClick={() => { setMenuOpen(false); navigate('/car-models'); }}><ListItemIcon><CarIcon /></ListItemIcon><ListItemText primary="車種" /></ListItemButton></ListItem>
-          <ListItem disablePadding><ListItemButton onClick={() => { setMenuOpen(false); navigate('/engine-models'); }}><ListItemIcon><BuildIcon /></ListItemIcon><ListItemText primary="エンジン" /></ListItemButton></ListItem>
-          <ListItem disablePadding><ListItemButton onClick={() => { setMenuOpen(false); navigate('/part-categories'); }}><ListItemIcon><SettingsIcon /></ListItemIcon><ListItemText primary="部品カテゴリー" /></ListItemButton></ListItem>
-          <ListItem disablePadding><ListItemButton onClick={() => { setMenuOpen(false); navigate('/part-subcategories'); }}><ListItemIcon><SettingsIcon /></ListItemIcon><ListItemText primary="サブカテゴリー" /></ListItemButton></ListItem>
+        <List sx={{ flex: 1, py: 2 }}>
+          {[
+            { label: 'ホーム', icon: <HomeIcon />, path: '/' },
+            { label: 'イラスト', icon: <ImageIcon />, path: '/illustrations' },
+            { label: 'メーカー', icon: <StoreIcon />, path: '/manufacturers' },
+            { label: '車種', icon: <CarIcon />, path: '/car-models' },
+            { label: 'エンジン', icon: <BuildIcon />, path: '/engine-models' },
+            { label: 'カテゴリー', icon: <SettingsIcon />, path: '/part-categories' },
+            { label: 'サブカテゴリー', icon: <SettingsIcon />, path: '/part-subcategories' },
+          ].map((item, idx) => (
+            <ListItem key={idx} disablePadding>
+              <ListItemButton
+                onClick={() => { setMenuOpen(false); navigate(item.path); }}
+                sx={{
+                  mx: 1.5,
+                  my: 0.25,
+                  borderRadius: 2,
+                  '&.Mui-selected': { bgcolor: alpha(theme.palette.primary.main, 0.1) }
+                }}
+                selected={location.pathname === item.path}
+              >
+                <ListItemIcon sx={{ minWidth: 40, color: location.pathname === item.path ? theme.palette.primary.main : 'text.secondary' }}>
+                  {item.icon}
+                </ListItemIcon>
+                <ListItemText
+                  primary={item.label}
+                  primaryTypographyProps={{
+                    fontWeight: location.pathname === item.path ? 700 : 500,
+                    fontSize: '0.9rem'
+                  }}
+                />
+              </ListItemButton>
+            </ListItem>
+          ))}
 
-          {/* Admin Section */}
+          <Divider sx={{ my: 1.5, mx: 3 }} />
+
           {(user?.is_staff || user?.is_superuser) && (
             <>
-              <Divider sx={{ my: 1 }} />
+              <Typography variant="caption" sx={{ px: 3, mb: 1, display: 'block', color: 'text.secondary', fontWeight: 700 }}>管理設定</Typography>
               <ListItem disablePadding>
-                <ListItemButton onClick={() => { setMenuOpen(false); navigate('/mobile/admin/users'); }}>
-                  <ListItemIcon><ManageAccountsIcon /></ListItemIcon>
-                  <ListItemText primary="ユーザー管理" />
+                <ListItemButton
+                  onClick={() => { setMenuOpen(false); navigate('/mobile/admin/users'); }}
+                  sx={{ mx: 1.5, borderRadius: 2 }}
+                >
+                  <ListItemIcon sx={{ minWidth: 40 }}><ManageAccountsIcon /></ListItemIcon>
+                  <ListItemText primary="ユーザー管理" primaryTypographyProps={{ fontSize: '0.9rem', fontWeight: 500 }} />
                 </ListItemButton>
               </ListItem>
+              <Divider sx={{ my: 1.5, mx: 3 }} />
             </>
           )}
 
-          <Divider sx={{ my: 1 }} />
-          <ListItem disablePadding><ListItemButton onClick={() => { setMenuOpen(false); navigate('/profile'); }}><ListItemIcon><PersonIcon /></ListItemIcon><ListItemText primary="プロフィール" /></ListItemButton></ListItem>
-          <ListItem disablePadding><ListItemButton onClick={() => { setMenuOpen(false); logout(); }}><ListItemIcon><LogoutIcon color="error" /></ListItemIcon><ListItemText primary="ログアウト" primaryTypographyProps={{ color: 'error' }} /></ListItemButton></ListItem>
+          <ListItem disablePadding>
+            <ListItemButton
+              onClick={() => { setMenuOpen(false); navigate('/profile'); }}
+              sx={{ mx: 1.5, borderRadius: 2 }}
+            >
+              <ListItemIcon sx={{ minWidth: 40 }}><PersonIcon /></ListItemIcon>
+              <ListItemText primary="プロフィール" primaryTypographyProps={{ fontSize: '0.9rem', fontWeight: 500 }} />
+            </ListItemButton>
+          </ListItem>
+          <ListItem disablePadding>
+            <ListItemButton
+              onClick={() => { setMenuOpen(false); logout(); }}
+              sx={{ mx: 1.5, borderRadius: 2 }}
+            >
+              <ListItemIcon sx={{ minWidth: 40 }}><LogoutIcon color="error" /></ListItemIcon>
+              <ListItemText
+                primary="ログアウト"
+                primaryTypographyProps={{ color: 'error', fontSize: '0.9rem', fontWeight: 500 }}
+              />
+            </ListItemButton>
+          </ListItem>
         </List>
       </SwipeableDrawer>
 
       {/* Bottom Navigation */}
-      <Paper sx={{ position: 'relative', zIndex: 1100, boxShadow: '0 -2px 10px rgba(0,0,0,0.1)' }} elevation={0}>
+      <Paper
+        sx={{
+          position: 'relative',
+          zIndex: 1100,
+          boxShadow: '0 -10px 30px rgba(0,0,0,0.05)',
+          background: 'rgba(255, 255, 255, 0.8)',
+          backdropFilter: 'blur(20px)',
+          borderTop: '1px solid rgba(0,0,0,0.05)'
+        }}
+        elevation={0}
+      >
         <BottomNavigation
           value={bottomNavValue}
           onChange={(e, val) => {
@@ -211,16 +330,30 @@ const MobileLayout = ({ children, showHeader = true, onRefresh, refreshing = fal
             navigate(['/', '/illustrations', '/profile'][val]);
           }}
           showLabels
-          sx={{ height: 64 }}
+          sx={{
+            height: 72,
+            bgcolor: 'transparent',
+            '& .MuiBottomNavigationAction-root': {
+              color: 'text.secondary',
+              '&.Mui-selected': {
+                color: theme.palette.primary.main,
+                '& .MuiSvgIcon-root': { transform: 'scale(1.2)' }
+              }
+            }
+          }}
         >
-          <BottomNavigationAction label="ホーム" icon={<HomeIcon />} />
-          <BottomNavigationAction label="イラスト" icon={<ImageIcon />} />
-          <BottomNavigationAction label="プロフィール" icon={<PersonIcon />} />
+          <BottomNavigationAction label="ホーム" icon={<HomeIcon sx={{ transition: 'all 0.2s' }} />} />
+          <BottomNavigationAction label="イラスト" icon={<ImageIcon sx={{ transition: 'all 0.2s' }} />} />
+          <BottomNavigationAction label="会員情報" icon={<PersonIcon sx={{ transition: 'all 0.2s' }} />} />
         </BottomNavigation>
       </Paper>
 
-      <style>{`@keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }`}</style>
+      <style>{`
+        @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+        ::-webkit-scrollbar { width: 0px; background: transparent; }
+      `}</style>
     </Box>
+
   );
 };
 

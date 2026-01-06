@@ -38,6 +38,7 @@ import { useManufacturers, useEngineModels, usePartCategories, usePartSubCategor
 const MobileHome = () => {
   const theme = useTheme();
   const navigate = useNavigate();
+  const { user } = useAuth();
 
   const [stats, setStats] = useState({
     totalIllustrations: 0,
@@ -70,16 +71,15 @@ const MobileHome = () => {
     else setStats(prev => ({ ...prev, loading: true }));
 
     try {
-      // Fetch minimal data for speed
-      const [illustrationsRes, topManufacturersRes, topCategoriesRes] = await Promise.all([
-        illustrationAPI.getAll({ limit: 8, ordering: '-created_at', include_files: false }),
-        manufacturerAPI.getAll({ limit: 6, ordering: '-illustration_count' }),
-        illustrationAPI.getAll({ limit: 10, include_files: false })  // CRITICAL FIX: Reduced from 100 to 10
+      const [illustrationsRes, topManufacturersRes, allIllustrationsRes] = await Promise.all([
+        illustrationAPI.getAll({ limit: 5, ordering: '-created_at', include_files: true }),
+        manufacturerAPI.getAll({ limit: 8, ordering: '-illustration_count' }),
+        illustrationAPI.getAll({ limit: 20, include_files: false })
       ]);
 
       // Calculate top categories from illustrations
       const categoryCount = {};
-      (topCategoriesRes.results || []).forEach(ill => {
+      (allIllustrationsRes.results || []).forEach(ill => {
         if (ill.part_category_name) {
           categoryCount[ill.part_category_name] = (categoryCount[ill.part_category_name] || 0) + 1;
         }
@@ -87,11 +87,11 @@ const MobileHome = () => {
 
       const topCategories = Object.entries(categoryCount)
         .sort((a, b) => b[1] - a[1])
-        .slice(0, 6)
+        .slice(0, 8)
         .map(([name, count]) => ({ name, count }));
 
       setStats({
-        totalIllustrations: illustrationsRes.count || 0,
+        totalIllustrations: allIllustrationsRes.count || 0,
         totalManufacturers: topManufacturersRes.count || 0,
         recentIllustrations: illustrationsRes.results || [],
         topManufacturers: topManufacturersRes.results || [],
@@ -132,189 +132,85 @@ const MobileHome = () => {
     return Math.floor(seconds / 86400) + '日前';
   };
 
-  const QuickAccessCard = ({ title, subtitle, onClick, icon, color }) => (
-    <Card
-      sx={{
-        minWidth: 140,
-        borderRadius: 2,
-        cursor: 'pointer',
-        transition: 'all 0.2s',
-        bgcolor: alpha(theme.palette.background.paper, 0.6),
-        backdropFilter: 'blur(10px)',
-        border: `1px solid ${alpha(color || theme.palette.primary.main, 0.2)}`,
-        '&:hover': {
-          transform: 'translateY(-2px)',
-          boxShadow: theme.shadows[4],
-          borderColor: color || theme.palette.primary.main,
-        },
-        '&:active': { transform: 'scale(0.98)' }
-      }}
+  const SectionHeader = ({ title, actionLabel, onAction }) => (
+    <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ mb: 1.5, px: 0.5 }}>
+      <Typography variant="subtitle2" fontWeight="800" sx={{ color: '#1e293b', fontSize: '0.9rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+        {title}
+      </Typography>
+      {actionLabel && (
+        <Typography
+          variant="caption"
+          fontWeight="bold"
+          onClick={onAction}
+          sx={{ color: theme.palette.primary.main, cursor: 'pointer', '&:active': { opacity: 0.7 } }}
+        >
+          {actionLabel}
+        </Typography>
+      )}
+    </Stack>
+  );
+
+  const QuickActionChip = ({ icon, label, onClick, color = 'primary' }) => (
+    <Box
       onClick={onClick}
+      sx={{
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        gap: 0.75,
+        cursor: 'pointer',
+        '&:active': { transform: 'scale(0.95)' },
+        transition: 'transform 0.1s'
+      }}
     >
-      <CardContent sx={{ p: 1.5 }}>
-        <Stack direction="row" spacing={1} alignItems="center">
-          <Box sx={{
-            width: 32,
-            height: 32,
-            borderRadius: 1.5,
-            bgcolor: alpha(color || theme.palette.primary.main, 0.1),
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center'
-          }}>
-            {icon}
-          </Box>
-          <Stack spacing={0} flex={1} minWidth={0}>
-            <Typography variant="body2" fontWeight="bold" noWrap>
-              {title}
-            </Typography>
-            {subtitle && (
-              <Typography variant="caption" color="text.secondary" noWrap>
-                {subtitle}
-              </Typography>
-            )}
-          </Stack>
-        </Stack>
+      <Box sx={{
+        width: 48,
+        height: 48,
+        borderRadius: '16px',
+        bgcolor: alpha(theme.palette[color].main, 0.1),
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        border: `1px solid ${alpha(theme.palette[color].main, 0.1)}`
+      }}>
+        {React.cloneElement(icon, { sx: { color: theme.palette[color].main, fontSize: 24 } })}
+      </Box>
+      <Typography variant="caption" fontWeight="bold" sx={{ fontSize: '0.7rem', color: '#64748b' }}>
+        {label}
+      </Typography>
+    </Box>
+  );
+
+  const GlassCard = ({ children, onClick, sx = {} }) => (
+    <Card
+      onClick={onClick}
+      sx={{
+        borderRadius: '20px',
+        bgcolor: '#ffffff',
+        boxShadow: '0 4px 20px rgba(0,0,0,0.03)',
+        border: '1px solid rgba(0,0,0,0.04)',
+        transition: 'all 0.2s',
+        '&:active': { transform: 'scale(0.98)', bgcolor: '#f8fafc' },
+        ...sx
+      }}
+    >
+      <CardContent sx={{ p: '16px !important' }}>
+        {children}
       </CardContent>
     </Card>
   );
-
-  const IllustrationCard = ({ illustration, index }) => {
-    const fileCount = illustration.file_count || 0;
-    const hasPdf = fileCount > 0;
-
-    return (
-      <Slide direction="up" in timeout={100 + (index * 30)}>
-        <Card
-          sx={{
-            borderRadius: 2.5,
-            cursor: 'pointer',
-            transition: 'all 0.15s',
-            bgcolor: alpha(theme.palette.background.paper, 0.6),
-            backdropFilter: 'blur(10px)',
-            '&:active': { transform: 'scale(0.98)' },
-            '&:hover': {
-              transform: 'translateY(-2px)',
-              boxShadow: theme.shadows[3]
-            }
-          }}
-          onClick={() => navigate(`/illustrations/${illustration.id}`)}
-        >
-          <CardContent sx={{ p: 1.5 }}>
-            <Stack direction="row" spacing={1.5} alignItems="center">
-              <Box
-                sx={{
-                  width: 48,
-                  height: 48,
-                  borderRadius: 1.5,
-                  backgroundColor: alpha(theme.palette.primary.main, 0.1),
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  position: 'relative',
-                  flexShrink: 0
-                }}
-              >
-                {hasPdf ? (
-                  <PdfIcon sx={{ color: theme.palette.error.main, fontSize: 24 }} />
-                ) : (
-                  <ImageIcon sx={{ color: theme.palette.primary.main, fontSize: 24 }} />
-                )}
-                {fileCount > 0 && (
-                  <Chip
-                    label={fileCount}
-                    size="small"
-                    sx={{
-                      position: 'absolute',
-                      bottom: 2,
-                      right: 2,
-                      bgcolor: theme.palette.primary.main,
-                      color: 'white',
-                      fontSize: '0.6rem',
-                      height: 16,
-                      fontWeight: 'bold',
-                      minWidth: 16,
-                      '& .MuiChip-label': { px: 0.5 }
-                    }}
-                  />
-                )}
-              </Box>
-
-              <Box sx={{ flex: 1, minWidth: 0 }}>
-                <Typography
-                  variant="body2"
-                  fontWeight={600}
-                  noWrap
-                  sx={{ mb: 0.5 }}
-                >
-                  {illustration.title.split('#')[0].trim()}
-                </Typography>
-
-                <Stack direction="row" spacing={0.5} flexWrap="wrap" sx={{ gap: 0.5 }}>
-                  {illustration.engine_model_name && (
-                    <Chip
-                      label={illustration.engine_model_name}
-                      size="small"
-                      sx={{
-                        height: 18,
-                        fontSize: '0.6rem',
-                        bgcolor: alpha(theme.palette.secondary.main, 0.1),
-                        color: theme.palette.secondary.main,
-                        '& .MuiChip-label': { px: 0.75 }
-                      }}
-                    />
-                  )}
-                  {illustration.part_category_name && (
-                    <Chip
-                      label={illustration.part_category_name}
-                      size="small"
-                      sx={{
-                        height: 18,
-                        fontSize: '0.6rem',
-                        bgcolor: alpha(theme.palette.primary.main, 0.1),
-                        color: theme.palette.primary.main,
-                        '& .MuiChip-label': { px: 0.75 }
-                      }}
-                    />
-                  )}
-                  <Typography
-                    variant="caption"
-                    color="text.secondary"
-                    sx={{ fontSize: '0.65rem', ml: 0.5 }}
-                  >
-                    {getTimeAgo(illustration.created_at)}
-                  </Typography>
-                </Stack>
-              </Box>
-
-              <ChevronRightIcon
-                sx={{
-                  color: 'text.secondary',
-                  fontSize: 18,
-                  flexShrink: 0
-                }}
-              />
-            </Stack>
-          </CardContent>
-        </Card>
-      </Slide>
-    );
-  };
 
   if (stats.loading && !refreshing) {
     return (
       <MobileLayout showHeader={false}>
         <Container maxWidth="sm" sx={{ px: 2, pt: 3 }}>
-          <Skeleton variant="rectangular" height={48} sx={{ borderRadius: 2.5, mb: 2 }} />
-          <Skeleton variant="rectangular" height={60} sx={{ borderRadius: 2, mb: 2 }} />
-          {[1, 2, 3].map(i => (
-            <Skeleton
-              key={i}
-              variant="rectangular"
-              height={70}
-              sx={{ borderRadius: 2.5, mb: 1.5 }}
-            />
-          ))}
+          <Skeleton variant="rectangular" height={180} sx={{ borderRadius: '24px', mb: 3 }} />
+          <Skeleton variant="rectangular" height={50} sx={{ borderRadius: '12px', mb: 3 }} />
+          <Stack direction="row" spacing={2} sx={{ mb: 3 }}>
+            {[1, 2, 3, 4].map(i => <Skeleton key={i} variant="circular" width={48} height={48} />)}
+          </Stack>
+          <Skeleton variant="text" width="40%" sx={{ mb: 2 }} />
+          {[1, 2, 3].map(i => <Skeleton key={i} variant="rectangular" height={80} sx={{ borderRadius: '16px', mb: 1.5 }} />)}
         </Container>
       </MobileLayout>
     );
@@ -326,74 +222,74 @@ const MobileHome = () => {
       onRefresh={() => fetchDashboardData(true, true)}
       refreshing={refreshing}
     >
-      <Container maxWidth="sm" sx={{ px: 2, mt: -2, pb: 10 }}>
-        {stats.error && (
-          <Alert
-            severity="error"
-            sx={{ mb: 2, borderRadius: 2.5 }}
-            action={
-              <IconButton
-                color="inherit"
-                size="small"
-                onClick={() => fetchDashboardData(true, true)}
-              >
-                再試行
-              </IconButton>
-            }
-          >
-            {stats.error}
-          </Alert>
-        )}
-
-        {/* Compact Stats Bar */}
-        <Box sx={{ mt: 4, mb: 2 }}>
-          <Stack direction="row" spacing={1} sx={{
-            overflowX: 'auto',
-            pb: 1,
-            '&::-webkit-scrollbar': { height: 4 },
-            '&::-webkit-scrollbar-thumb': {
-              bgcolor: alpha(theme.palette.primary.main, 0.3),
-              borderRadius: 2
-            }
+      <Container maxWidth="sm" sx={{ px: 2, pb: 12 }}>
+        {/* HERO SECTION */}
+        <Box sx={{ mt: 2, mb: 3 }}>
+          <Box sx={{
+            background: 'linear-gradient(135deg, #0f172a 0%, #1e293b 100%)',
+            borderRadius: '24px',
+            p: 3,
+            color: 'white',
+            position: 'relative',
+            overflow: 'hidden',
+            boxShadow: '0 10px 30px rgba(15, 23, 42, 0.2)'
           }}>
-            <Chip
-              icon={<ImageIcon sx={{ fontSize: 16 }} />}
-              label={`${stats.totalIllustrations.toLocaleString()}件`}
-              onClick={() => navigate('/illustrations')}
-              sx={{
-                bgcolor: alpha(theme.palette.primary.main, 0.1),
-                color: theme.palette.primary.main,
-                fontWeight: 600,
-                '&:hover': { bgcolor: alpha(theme.palette.primary.main, 0.2) }
-              }}
-            />
-            <Chip
-              icon={<StoreIcon sx={{ fontSize: 16 }} />}
-              label={`${stats.totalManufacturers}メーカー`}
-              onClick={() => navigate('/manufacturers')}
-              sx={{
-                bgcolor: alpha(theme.palette.secondary.main, 0.1),
-                color: theme.palette.secondary.main,
-                fontWeight: 600,
-                '&:hover': { bgcolor: alpha(theme.palette.secondary.main, 0.2) }
-              }}
-            />
-          </Stack>
+            {/* Background pattern */}
+            <Box sx={{
+              position: 'absolute',
+              top: -10,
+              right: -10,
+              width: 120,
+              height: 120,
+              background: 'radial-gradient(circle, rgba(255,255,255,0.05) 0%, transparent 70%)',
+              zIndex: 0
+            }} />
+
+            <Stack spacing={2.5} sx={{ position: 'relative', zIndex: 1 }}>
+              <Stack spacing={0.5}>
+                <Typography variant="h5" fontWeight="900" sx={{ letterSpacing: '-0.02em' }}>
+                  ようこそ、{user?.first_name || user?.username}さん
+                </Typography>
+                <Typography variant="body2" sx={{ opacity: 0.7, fontWeight: 500 }}>
+                  イラスト管理システムへ。本日の状況を確認しましょう。
+                </Typography>
+              </Stack>
+
+              <Stack direction="row" spacing={3}>
+                <Box>
+                  <Typography variant="h4" fontWeight="900" sx={{ color: '#38bdf8' }}>
+                    {stats.totalIllustrations.toLocaleString()}
+                  </Typography>
+                  <Typography variant="caption" sx={{ opacity: 0.6, textTransform: 'uppercase', fontWeight: 700, letterSpacing: '0.05em' }}>
+                    Illustrations
+                  </Typography>
+                </Box>
+                <Divider orientation="vertical" flexItem sx={{ borderColor: 'rgba(255,255,255,0.1)' }} />
+                <Box>
+                  <Typography variant="h4" fontWeight="900" sx={{ color: '#818cf8' }}>
+                    {stats.totalManufacturers}
+                  </Typography>
+                  <Typography variant="caption" sx={{ opacity: 0.6, textTransform: 'uppercase', fontWeight: 700, letterSpacing: '0.05em' }}>
+                    Manufacturers
+                  </Typography>
+                </Box>
+              </Stack>
+            </Stack>
+          </Box>
         </Box>
 
-        {/* Global Search Bar */}
-        <Box sx={{ mb: 2.5 }}>
+        {/* SEARCH BAR */}
+        <Box sx={{ mb: 3 }}>
           <TextField
             fullWidth
-            size="small"
-            placeholder="イラストを検索..."
+            placeholder="イラスト、メーカーを検索..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
             InputProps={{
               startAdornment: (
                 <InputAdornment position="start">
-                  <SearchIcon sx={{ color: 'text.secondary', fontSize: 20 }} />
+                  <SearchIcon sx={{ color: '#94a3b8', fontSize: 22 }} />
                 </InputAdornment>
               ),
               endAdornment: searchQuery && (
@@ -406,95 +302,202 @@ const MobileHome = () => {
             }}
             sx={{
               '& .MuiOutlinedInput-root': {
-                borderRadius: 2.5,
-                bgcolor: alpha(theme.palette.background.paper, 0.6),
-                backdropFilter: 'blur(10px)',
-              }
+                height: 54,
+                borderRadius: '16px',
+                bgcolor: '#ffffff',
+                boxShadow: '0 4px 12px rgba(0,0,0,0.02)',
+                border: '1px solid rgba(0,0,0,0.05)',
+                '&.Mui-focused': {
+                  boxShadow: '0 4px 12px rgba(0,0,0,0.05)',
+                  borderColor: theme.palette.primary.main
+                }
+              },
+              '& .MuiOutlinedInput-notchedOutline': { border: 'none' }
             }}
           />
         </Box>
 
-        {/* Quick Access - Manufacturers */}
-        {stats.topManufacturers.length > 0 && (
-          <Box sx={{ mb: 2.5 }}>
-            <Typography variant="subtitle2" fontWeight="bold" sx={{ mb: 1, px: 0.5, fontSize: '0.85rem' }}>
-              よく使うメーカー
-            </Typography>
-            <Box sx={{
-              display: 'flex',
-              gap: 1,
-              overflowX: 'auto',
-              pb: 1,
-              '&::-webkit-scrollbar': { height: 4 },
-              '&::-webkit-scrollbar-thumb': {
-                bgcolor: alpha(theme.palette.primary.main, 0.3),
-                borderRadius: 2
-              }
-            }}>
-              {stats.topManufacturers.map((mfr) => (
-                <QuickAccessCard
-                  key={mfr.id}
-                  title={mfr.name}
-                  subtitle={`${mfr.illustration_count || 0}件`}
-                  icon={<StoreIcon sx={{ color: theme.palette.primary.main, fontSize: 18 }} />}
-                  color={theme.palette.primary.main}
-                  onClick={() => navigate(`/manufacturers/${mfr.id}/engines`)}
-                />
-              ))}
-            </Box>
+        {/* QUICK ACTIONS */}
+        <Stack direction="row" justifyContent="space-around" sx={{ mb: 4, px: 1 }}>
+          <QuickActionChip
+            icon={<AddIcon />}
+            label="新規作成"
+            onClick={() => setCreateModalOpen(true)}
+            color="primary"
+          />
+          <QuickActionChip
+            icon={<ImageIcon />}
+            label="全イラスト"
+            onClick={() => navigate('/illustrations')}
+            color="secondary"
+          />
+          <QuickActionChip
+            icon={<StoreIcon />}
+            label="メーカー"
+            onClick={() => navigate('/manufacturers')}
+            color="success"
+          />
+          <QuickActionChip
+            icon={<CategoryIcon />}
+            label="カテゴリ"
+            onClick={() => navigate('/part-categories')}
+            color="info"
+          />
+        </Stack>
+
+        {/* RECENT ILLUSTRATIONS */}
+        <Box sx={{ mb: 4 }}>
+          <SectionHeader title="最近のイラスト" actionLabel="すべて表示" onAction={() => navigate('/illustrations')} />
+          <Stack spacing={1.5}>
+            {stats.recentIllustrations.length > 0 ? (
+              stats.recentIllustrations.map((ill, idx) => (
+                <GlassCard key={ill.id} onClick={() => navigate(`/illustrations/${ill.id}`)}>
+                  <Stack direction="row" spacing={2} alignItems="center">
+                    <Box sx={{
+                      width: 52,
+                      height: 52,
+                      borderRadius: '12px',
+                      bgcolor: '#f1f5f9',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      position: 'relative',
+                      border: '1px solid #e2e8f0'
+                    }}>
+                      {ill.file_count > 0 ? <PdfIcon sx={{ color: '#ef4444', fontSize: 26 }} /> : <ImageIcon sx={{ color: '#3b82f6', fontSize: 26 }} />}
+                      {ill.file_count > 0 && (
+                        <Box sx={{
+                          position: 'absolute',
+                          top: -6,
+                          right: -6,
+                          width: 18,
+                          height: 18,
+                          borderRadius: '50%',
+                          bgcolor: theme.palette.primary.main,
+                          color: 'white',
+                          fontSize: '0.65rem',
+                          fontWeight: 900,
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          boxShadow: '0 2px 5px rgba(0,0,0,0.1)'
+                        }}>
+                          {ill.file_count}
+                        </Box>
+                      )}
+                    </Box>
+                    <Box sx={{ flex: 1, minWidth: 0 }}>
+                      <Typography variant="body2" fontWeight="700" noWrap sx={{ color: '#1e293b', mb: 0.25 }}>
+                        {ill.title}
+                      </Typography>
+                      <Stack direction="row" spacing={1} alignItems="center">
+                        <Typography variant="caption" sx={{ color: '#64748b', fontWeight: 600 }}>
+                          {ill.engine_model_name || 'エンジン未設定'}
+                        </Typography>
+                        <Box sx={{ width: 3, height: 3, borderRadius: '50%', bgcolor: '#cbd5e1' }} />
+                        <Typography variant="caption" sx={{ color: '#94a3b8' }}>
+                          {getTimeAgo(ill.created_at)}
+                        </Typography>
+                      </Stack>
+                    </Box>
+                    <ChevronRightIcon sx={{ color: '#94a3b8', fontSize: 20 }} />
+                  </Stack>
+                </GlassCard>
+              ))
+            ) : (
+              <GlassCard sx={{ py: 3, textAlign: 'center', bgcolor: alpha(theme.palette.background.paper, 0.4) }}>
+                <Typography variant="body2" color="text.secondary">データがありません</Typography>
+              </GlassCard>
+            )}
+          </Stack>
+        </Box>
+
+        {/* FREQUENT MANUFACTURERS */}
+        <Box sx={{ mb: 4 }}>
+          <SectionHeader title="よく使うメーカー" />
+          <Box sx={{
+            display: 'flex',
+            gap: 1.5,
+            overflowX: 'auto',
+            pb: 2,
+            px: 0.5,
+            '&::-webkit-scrollbar': { display: 'none' }
+          }}>
+            {stats.topManufacturers.map((mfr) => (
+              <Box
+                key={mfr.id}
+                onClick={() => navigate(`/manufacturers/${mfr.id}/engines`)}
+                sx={{
+                  minWidth: 100,
+                  p: 2,
+                  borderRadius: '20px',
+                  bgcolor: '#ffffff',
+                  boxShadow: '0 4px 12px rgba(0,0,0,0.03)',
+                  border: '1px solid rgba(0,0,0,0.05)',
+                  textAlign: 'center',
+                  cursor: 'pointer',
+                  '&:active': { transform: 'scale(0.95)' }
+                }}
+              >
+                <Avatar sx={{ mx: 'auto', mb: 1, bgcolor: alpha(theme.palette.primary.main, 0.1), color: theme.palette.primary.main, width: 40, height: 40, fontWeight: 700 }}>
+                  {mfr.name[0]}
+                </Avatar>
+                <Typography variant="caption" fontWeight="bold" noWrap sx={{ display: 'block', color: '#1e293b' }}>
+                  {mfr.name}
+                </Typography>
+                <Typography variant="caption" sx={{ color: '#94a3b8', fontSize: '0.65rem' }}>
+                  {mfr.illustration_count || 0}件
+                </Typography>
+              </Box>
+            ))}
           </Box>
-        )}
+        </Box>
 
-        {/* Quick Access - Categories */}
-        {stats.topCategories.length > 0 && (
-          <Box sx={{ mb: 2.5 }}>
-            <Typography variant="subtitle2" fontWeight="bold" sx={{ mb: 1, px: 0.5, fontSize: '0.85rem' }}>
-              人気のカテゴリ
-            </Typography>
-            <Box sx={{
-              display: 'flex',
-              gap: 1,
-              overflowX: 'auto',
-              pb: 1,
-              '&::-webkit-scrollbar': { height: 4 },
-              '&::-webkit-scrollbar-thumb': {
-                bgcolor: alpha(theme.palette.secondary.main, 0.3),
-                borderRadius: 2
-              }
-            }}>
-              {stats.topCategories.map((cat, idx) => (
-                <QuickAccessCard
-                  key={idx}
-                  title={cat.name}
-                  subtitle={`${cat.count}件`}
-                  icon={<CategoryIcon sx={{ color: theme.palette.secondary.main, fontSize: 18 }} />}
-                  color={theme.palette.secondary.main}
-                  onClick={() => navigate(`/illustrations?category=${encodeURIComponent(cat.name)}`)}
-                />
-              ))}
-            </Box>
+        {/* POPULAR CATEGORIES */}
+        <Box sx={{ mb: 4 }}>
+          <SectionHeader title="人気のカテゴリ" />
+          <Box sx={{
+            display: 'flex',
+            flexWrap: 'wrap',
+            gap: 1,
+            px: 0.5
+          }}>
+            {stats.topCategories.map((cat, idx) => (
+              <Chip
+                key={idx}
+                label={`${cat.name} (${cat.count})`}
+                onClick={() => navigate(`/illustrations?category=${encodeURIComponent(cat.name)}`)}
+                sx={{
+                  borderRadius: '12px',
+                  bgcolor: '#ffffff',
+                  border: '1px solid rgba(0,0,0,0.08)',
+                  fontWeight: 600,
+                  fontSize: '0.75rem',
+                  color: '#475569',
+                  '&:active': { bgcolor: '#f1f5f9' }
+                }}
+              />
+            ))}
           </Box>
-        )}
-
-
+        </Box>
       </Container>
 
-      {/* Floating Action Button */}
+      {/* FLOATING ACTION BUTTON */}
       <Fab
-        color="primary"
-        aria-label="add"
         onClick={() => setCreateModalOpen(true)}
         sx={{
           position: 'fixed',
-          bottom: 80,
-          right: 16,
-          zIndex: 1000,
+          bottom: 90,
+          right: 20,
+          bgcolor: '#0f172a',
+          color: 'white',
+          boxShadow: '0 8px 16px rgba(15, 23, 42, 0.3)',
+          '&:hover': { bgcolor: '#1e293b' }
         }}
       >
         <AddIcon />
       </Fab>
 
-      {/* Create Modal */}
       <MobileIllustrationFormModal
         open={createModalOpen}
         onClose={() => setCreateModalOpen(false)}

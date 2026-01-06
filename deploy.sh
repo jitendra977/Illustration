@@ -1,0 +1,55 @@
+#!/usr/bin/env bash
+
+# Deployment script for Illustration System
+# This script pushes local changes to GitHub and triggers a deployment on the VPS.
+
+set -e
+
+# ==========================================
+# CONFIGURATION
+# ==========================================
+# VPS SSH Details (Please fill these if they are different)
+VPS_USER="root"                       # Change if necessary
+VPS_HOST="nishanaweb.cloud"       # Based on your browser URL
+REMOTE_PROJECT_DIR="/home/nishanaweb/project/Illustration" # Path on the VPS
+BRANCH="deploy-server"                # The branch to deploy
+
+# ==========================================
+# LOCAL ACTIONS
+# ==========================================
+echo "🚀 Starting deployment flow..."
+
+# 1. Git Push
+echo "📦 Pushing changes to origin/$BRANCH..."
+git push origin "$BRANCH"
+
+# ==========================================
+# REMOTE ACTIONS (via SSH)
+# ==========================================
+echo "🌐 Connecting to VPS: $VPS_HOST..."
+
+ssh "$VPS_USER@$VPS_HOST" << EOF
+    set -e
+    echo "--- VPS: Navigating to project directory ---"
+    cd "$REMOTE_PROJECT_DIR"
+
+    echo "--- VPS: Configuring safe directory for Git ---"
+    git config --global --add safe.directory "$REMOTE_PROJECT_DIR"
+
+    echo "--- VPS: Pulling latest changes from $BRANCH ---"
+    git fetch origin
+    git checkout "$BRANCH"
+    git pull origin "$BRANCH"
+
+    echo "--- VPS: Restarting and rebuilding containers ---"
+    # Using docker compose (v2) or docker-compose (v1)
+    if command -v docker > /dev/null && docker compose version > /dev/null 2>&1; then
+        docker compose up -d --build
+    else
+        docker-compose up -d --build
+    fi
+
+    echo "✅ VPS: Deployment successful!"
+EOF
+
+echo "🎉 Deployment complete for branch $BRANCH!"
