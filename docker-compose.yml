@@ -13,8 +13,8 @@ services:
       - "8000:8000"
     volumes:
       - ./backend:/app
-      - static_volume:/app/staticfiles
-      - media_volume:/app/media
+      - ./backend/staticfiles:/app/staticfiles
+      - ./backend/media:/app/media
     env_file:
       - ./backend/.env
     environment:
@@ -40,6 +40,8 @@ services:
     restart: unless-stopped
     ports:
       - "3000:80"
+    volumes:
+      - ./backend/media:/app/media:ro
     depends_on:
       - yaw-backend
 
@@ -49,8 +51,6 @@ services:
 
 volumes:
   static_volume:
-    driver: local
-  media_volume:
     driver: local
 
 networks:

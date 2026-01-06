@@ -23,7 +23,8 @@ logs/
 
 # Local settings
 /.env
-.env
+backend/media/
+backend/staticfiles/
 *.env
 
 # Migrations (keep __init__.py only)
