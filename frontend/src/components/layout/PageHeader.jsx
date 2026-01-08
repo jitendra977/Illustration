@@ -1,7 +1,7 @@
 import React from 'react';
 import { Box, Typography, Button, IconButton, useTheme, useMediaQuery, alpha } from '@mui/material';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
-import Breadcrumb from './Breadcrumb';
+import Breadcrumb from '../navigation/Breadcrumb';
 import { useNavigate } from 'react-router-dom';
 
 const PageHeader = ({

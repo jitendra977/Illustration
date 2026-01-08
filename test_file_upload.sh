@@ -2,7 +2,7 @@
 
 API_BASE="http://localhost:8000/api"
 USERNAME="admin"
-PASSWORD="admin123"
+PASSWORD="adminpass"
 
 echo "================================"
 echo "File Upload CRUD Test"

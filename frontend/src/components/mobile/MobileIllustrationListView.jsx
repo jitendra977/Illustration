@@ -30,7 +30,7 @@ import { useNavigate } from 'react-router-dom';
 
 import { illustrationAPI, clearCache } from '../../api/illustrations';
 import { useManufacturers, useEngineModels, usePartCategories, usePartSubCategories, useCarModels } from '../../hooks/useIllustrations';
-import IllustrationDetailModal from '../common/IllustrationDetailModal';
+import IllustrationDetailModal from '../illustrations/IllustrationDetailModal';
 import IllustrationListCard from './IllustrationListCard';
 import MobileIllustrationFormModal from '../forms/MobileIllustrationFormModal';
 import MobileFilterPanel from './MobileFilterPanel';

@@ -36,7 +36,7 @@ import {
 } from '@mui/icons-material';
 import { useIllustrations } from '../../hooks/useIllustrations';
 import { manufacturerAPI, engineModelAPI } from '../../api/illustrations';
-import IllustrationDetailModal from '../../components/common/IllustrationDetailModal';
+import IllustrationDetailModal from '../../components/illustrations/IllustrationDetailModal';
 
 const MobileEngineIllustrations = () => {
   const { id: manufacturerId, engineId } = useParams();

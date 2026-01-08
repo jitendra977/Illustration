@@ -23,7 +23,7 @@ echo
 
 # Test admin user (staff)
 echo "2. Testing ADMIN USER (staff)..."; echo
-ADMIN_TOKEN=$(curl -s -X POST "${API_BASE}/auth/login/" -H "Content-Type: application/json" -d '{"username":"admin","password":"admin123"}' | python3 -c "import sys, json; print(json.load(sys.stdin).get('access', ''))" 2>/dev/null)
+ADMIN_TOKEN=$(curl -s -X POST "${API_BASE}/auth/login/" -H "Content-Type: application/json" -d '{"username":"admin","password":"adminpass"}' | python3 -c "import sys, json; print(json.load(sys.stdin).get('access', ''))" 2>/dev/null)
 
 if [ -z "$ADMIN_TOKEN" ]; then echo "❌ Failed to login admin"; exit 1; fi
 echo "✅ Admin logged in"; echo

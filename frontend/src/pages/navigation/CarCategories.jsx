@@ -14,7 +14,7 @@ import { carModelAPI, partCategoryAPI } from '../../api/illustrations';
 import CategoryIcon from '@mui/icons-material/Category';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import GlassCard from '../../components/common/GlassCard';
-import PageHeader from '../../components/common/PageHeader';
+import PageHeader from '../../components/layout/PageHeader';
 
 const CarCategories = () => {
     const { carSlug } = useParams();

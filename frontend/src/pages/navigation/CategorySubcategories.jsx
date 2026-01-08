@@ -16,7 +16,7 @@ import { partSubCategoryAPI, partCategoryAPI, carModelAPI } from '../../api/illu
 import ExtensionIcon from '@mui/icons-material/Extension';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import GlassCard from '../../components/common/GlassCard';
-import PageHeader from '../../components/common/PageHeader';
+import PageHeader from '../../components/layout/PageHeader';
 
 const CategorySubcategories = () => {
     const { carSlug, categoryId } = useParams();

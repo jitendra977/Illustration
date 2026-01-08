@@ -98,4 +98,4 @@ mysql/data/
 start.sh
 stop.sh
 restart.sh
-logs.sh
+logs.shdocker-compose.override.yml

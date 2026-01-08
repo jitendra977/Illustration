@@ -4,7 +4,7 @@ import { Box, Container, useTheme } from '@mui/material';
 import { useParams, useLocation } from 'react-router-dom';
 
 import MobileIllustrationListView from '../../components/mobile/MobileIllustrationListView';
-import Breadcrumbs from '../../components/common/Breadcrumbs';
+import Breadcrumbs from '../../components/navigation/Breadcrumbs';
 
 const MobileIllustrations = () => {
   const theme = useTheme();

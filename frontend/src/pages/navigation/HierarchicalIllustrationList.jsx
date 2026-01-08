@@ -10,7 +10,7 @@ import {
 } from '@mui/material';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { partSubCategoryAPI, partCategoryAPI, carModelAPI } from '../../api/illustrations';
-import Breadcrumb from '../../components/common/Breadcrumb';
+import Breadcrumb from '../../components/navigation/Breadcrumb';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import MobileIllustrationListView from '../../components/mobile/MobileIllustrationListView';
 import PageLayout from '../../components/layout/PageLayout';

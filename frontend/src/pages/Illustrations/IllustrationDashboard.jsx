@@ -42,9 +42,9 @@ import {
 } from '@mui/icons-material';
 import { useIllustrations } from '../../hooks/useIllustrations';
 import CreateIllustrationModal from '../../components/forms/CreateIllustrationModal';
-import IllustrationDetailModal from '../../components/common/IllustrationDetailModal';
-import FilterPanel from '../../components/common/FilterPanel';
-import Breadcrumbs from '../../components/common/Breadcrumbs';
+import IllustrationDetailModal from '../../components/illustrations/IllustrationDetailModal';
+import FilterPanel from '../../components/illustrations/FilterPanel';
+import Breadcrumbs from '../../components/navigation/Breadcrumbs';
 
 const IllustrationDashboard = () => {
   const [viewMode, setViewMode] = useState('grid');

@@ -36,7 +36,7 @@ import {
   Build as BuildIcon
 } from '@mui/icons-material';
 import { illustrationAPI, manufacturerAPI, carModelAPI, engineModelAPI } from '../../api/illustrations';
-import IllustrationDetailModal from '../../components/common/IllustrationDetailModal';
+import IllustrationDetailModal from '../../components/illustrations/IllustrationDetailModal';
 
 const MobileSearch = () => {
   const [searchQuery, setSearchQuery] = useState('');
