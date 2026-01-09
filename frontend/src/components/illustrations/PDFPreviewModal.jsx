@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from 'react';
+import api from '../../services/index';
+
 import {
   Dialog,
   DialogContent,
@@ -28,7 +30,7 @@ const PDFPreviewModal = ({ open, onClose, fileId, fileName }) => {
     if (open && fileId) {
       loadPDF();
     }
-    
+
     // Cleanup
     return () => {
       if (pdfUrl) {
@@ -42,31 +44,20 @@ const PDFPreviewModal = ({ open, onClose, fileId, fileName }) => {
       setLoading(true);
       setError(null);
 
-      const baseUrl = import.meta.env.VITE_API_URL || '/api';
-      const previewUrl = `${baseUrl}/illustration-files/${fileId}/preview/`;
-
-      const token = localStorage.getItem('access_token');
-
-      const response = await fetch(previewUrl, {
-        method: 'GET',
-        headers: {
-          'Authorization': token ? `Bearer ${token}` : '',
-        },
-        credentials: 'include',
+      const response = await api.get(`/illustration-files/${fileId}/preview/`, {
+        responseType: 'blob',
       });
 
-      if (!response.ok) {
-        throw new Error('プレビューの読み込みに失敗しました');
-      }
-
       // Get blob and create object URL
-      const blob = await response.blob();
+      const blob = response.data;
       const url = URL.createObjectURL(blob);
       setPdfUrl(url);
       setLoading(false);
     } catch (err) {
       console.error('Failed to load PDF:', err);
-      setError(err.message);
+      // Handle axios error object properly
+      const errorMessage = err.response?.data?.message || err.message || 'Failed to load preview';
+      setError(errorMessage);
       setLoading(false);
     }
   };
@@ -89,10 +80,10 @@ const PDFPreviewModal = ({ open, onClose, fileId, fileName }) => {
   };
 
   return (
-    <Dialog 
-      open={open} 
-      onClose={onClose} 
-      maxWidth="lg" 
+    <Dialog
+      open={open}
+      onClose={onClose}
+      maxWidth="lg"
       fullWidth
       PaperProps={{
         sx: {
@@ -101,9 +92,9 @@ const PDFPreviewModal = ({ open, onClose, fileId, fileName }) => {
         }
       }}
     >
-      <DialogTitle sx={{ 
-        display: 'flex', 
-        alignItems: 'center', 
+      <DialogTitle sx={{
+        display: 'flex',
+        alignItems: 'center',
         justifyContent: 'space-between',
         borderBottom: 1,
         borderColor: 'divider',
@@ -112,26 +103,26 @@ const PDFPreviewModal = ({ open, onClose, fileId, fileName }) => {
         <Typography variant="h6" component="div" noWrap sx={{ flex: 1 }}>
           {fileName || 'PDFプレビュー'}
         </Typography>
-        
+
         <Stack direction="row" spacing={1}>
-          <IconButton 
-            size="small" 
+          <IconButton
+            size="small"
             onClick={handleDownload}
             title="ダウンロード"
             disabled={!pdfUrl}
           >
             <DownloadIcon />
           </IconButton>
-          
-          <IconButton 
-            size="small" 
+
+          <IconButton
+            size="small"
             onClick={handleOpenNewTab}
             title="新しいタブで開く"
             disabled={!pdfUrl}
           >
             <FullscreenIcon />
           </IconButton>
-          
+
           <IconButton size="small" onClick={onClose}>
             <CloseIcon />
           </IconButton>
@@ -140,10 +131,10 @@ const PDFPreviewModal = ({ open, onClose, fileId, fileName }) => {
 
       <DialogContent sx={{ p: 0, overflow: 'hidden', bgcolor: '#525659' }}>
         {loading && (
-          <Box 
-            display="flex" 
-            justifyContent="center" 
-            alignItems="center" 
+          <Box
+            display="flex"
+            justifyContent="center"
+            alignItems="center"
             height="100%"
           >
             <CircularProgress />
