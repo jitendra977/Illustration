@@ -18,11 +18,25 @@ RUN bun install
 # Copy source code
 COPY . .
 
-# Copy production environment file
-# This ensures production builds use the correct API URL
-COPY .env.production .env
+# Set build-time environment variables for Vite
+# These will be baked into the build
+ARG VITE_API_URL=https://api.yaw.nishanaweb.cloud/api
+ARG VITE_API_BASE_URL=https://api.yaw.nishanaweb.cloud/api
+ARG VITE_APP_NAME="Yaw Illustration"
+ARG VITE_APP_URL=https://yaw.nishanaweb.cloud
+ARG VITE_ENV=production
+ARG VITE_MEDIA_URL=https://api.yaw.nishanaweb.cloud/media
+ARG VITE_STATIC_URL=https://api.yaw.nishanaweb.cloud/static
 
-# Build the app (Vite will read from .env file)
+ENV VITE_API_URL=$VITE_API_URL
+ENV VITE_API_BASE_URL=$VITE_API_BASE_URL
+ENV VITE_APP_NAME=$VITE_APP_NAME
+ENV VITE_APP_URL=$VITE_APP_URL
+ENV VITE_ENV=$VITE_ENV
+ENV VITE_MEDIA_URL=$VITE_MEDIA_URL
+ENV VITE_STATIC_URL=$VITE_STATIC_URL
+
+# Build the app (Vite will use the ENV variables above)
 RUN bun run build
 
 # ===========================
