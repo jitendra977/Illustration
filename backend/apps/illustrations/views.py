@@ -159,6 +159,7 @@ class CarModelViewSet(viewsets.ModelViewSet):
 class PartCategoryViewSet(viewsets.ModelViewSet):
     serializer_class = PartCategorySerializer
     permission_classes = [IsAdminOrReadOnly]
+    pagination_class = None
     filter_backends = [filters.SearchFilter, filters.OrderingFilter]
     search_fields = ['name', 'description', 'slug']
     ordering_fields = ['order', 'name']
@@ -201,6 +202,7 @@ class PartCategoryViewSet(viewsets.ModelViewSet):
 class PartSubCategoryViewSet(viewsets.ModelViewSet):
     serializer_class = PartSubCategorySerializer
     permission_classes = [IsAdminOrReadOnly]
+    pagination_class = None
     filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
     filterset_fields = ['part_category']
     search_fields = ['name', 'description', 'part_category__name']

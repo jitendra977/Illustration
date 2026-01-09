@@ -31,7 +31,7 @@ import {
   Refresh as RefreshIcon,
   ManageAccounts as ManageAccountsIcon
 } from '@mui/icons-material';
-import { useAuth } from '../hooks/useAuth';
+import { useAuth } from '../context/AuthContext';
 import { useNavigate, useLocation } from 'react-router-dom';
 
 const MobileLayout = ({ children, showHeader = true, onRefresh, refreshing = false }) => {

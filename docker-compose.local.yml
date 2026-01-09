@@ -1,0 +1,130 @@
+version: '3.8'
+
+services:
+  # ===========================
+  # DATABASE (MySQL)
+  # ===========================
+  mysql_db:
+    image: mysql:8.0
+    container_name: mysql_db
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: M3IF00UrzSZEEnZkp5lk
+      MYSQL_DATABASE: yaw_illustration
+      MYSQL_USER: nishanaweb
+      MYSQL_PASSWORD: M3IF00UrzSZEEnZkp5lk
+    ports:
+      - "3306:3306"
+    volumes:
+      - ./docker-data/mysql_data:/var/lib/mysql
+    healthcheck:
+      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-pM3IF00UrzSZEEnZkp5lk" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    networks:
+      - app-network
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    container_name: phpmyadmin
+    restart: unless-stopped
+    ports:
+      - "8086:80"
+    environment:
+      PMA_HOST: mysql_db
+      PMA_USER: root
+      PMA_PASSWORD: M3IF00UrzSZEEnZkp5lk
+    depends_on:
+      mysql_db:
+        condition: service_healthy
+    networks:
+      - app-network
+
+  # ===========================
+  # BACKEND (Django)
+  # ===========================
+  yaw-backend:
+    build:
+      context: ./backend
+    container_name: yaw-backend
+    volumes:
+      - ./backend:/app
+      - ./backend/media:/app/media
+    ports:
+      - "8000:8000"
+    environment:
+      - DEBUG=True
+      - DB_NAME=yaw_illustration
+      - DB_USER=nishanaweb
+      - DB_PASSWORD=M3IF00UrzSZEEnZkp5lk
+      - DB_HOST=mysql_db
+      - DB_PORT=3306
+    depends_on:
+      mysql_db:
+        condition: service_healthy
+    command: >
+      sh -c "
+        echo 'Waiting for DB to be accessible...' &&
+        python manage.py migrate &&
+        python manage.py runserver 0.0.0.0:8000
+      "
+    networks:
+      - app-network
+
+  # ===========================
+  # FRONTEND (Vite / React)
+  # ===========================
+  yaw-frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.local
+    container_name: yaw-frontend
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    ports:
+      - "5173:5173"
+    environment:
+      - VITE_API_URL=http://api.illustration.local/api
+      - VITE_MEDIA_URL=http://api.illustration.local/media
+    depends_on:
+      - yaw-backend
+    networks:
+      - app-network
+
+  # ===========================
+  # Nginx Proxy Manager
+  # ===========================
+  nginx-proxy-manager:
+    image: 'jc21/nginx-proxy-manager:latest'
+    container_name: nginx-proxy-manager
+    restart: unless-stopped
+    ports:
+      - '80:80' # HTTP
+      - '81:81' # Admin UI
+      - '443:443' # HTTPS
+    volumes:
+      - ./docker-data/npm_data:/data
+      - ./docker-data/npm_letsencrypt:/etc/letsencrypt
+    networks:
+      - app-network
+    environment:
+      - DISABLE_IPV6=true
+
+# ===========================
+# NETWORKS
+# ===========================
+networks:
+  app-network:
+    name: app-network
+    driver: bridge
+
+# ===========================
+# VOLUMES (not needed for bind mounts)
+# ===========================
+# volumes:
+#   mysql_data:
+#   npm_data:
+#   npm_letsencrypt:

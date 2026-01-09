@@ -12,7 +12,7 @@ export default defineConfig(({ mode }) => {
     },
     plugins: [react()],
     server: {
-      port: 3000,
+      port: 5173,
       host: true,
       allowedHosts: [
         'localhost',
@@ -20,13 +20,14 @@ export default defineConfig(({ mode }) => {
         '.local',
         'illustration.local',
         'yaw.nishanaweb.cloud',
+        'yaw-frontend',
       ],
       hmr: {
         // Only set these when running through Docker/Nginx
         ...(process.env.DOCKER_ENV && {
-          clientPort: 8443,
-          protocol: 'wss',
-          host: 'localshot',
+          clientPort: 80,
+          protocol: 'ws',
+          host: 'illustration.local',
         }),
       },
       proxy: {

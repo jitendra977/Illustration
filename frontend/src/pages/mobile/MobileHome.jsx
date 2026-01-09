@@ -31,7 +31,7 @@ import {
 } from '@mui/icons-material';
 import { illustrationAPI, manufacturerAPI, clearCache } from '../../api/illustrations';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../../hooks/useAuth';
+import { useAuth } from '../../context/AuthContext';
 import MobileIllustrationFormModal from '../../components/forms/MobileIllustrationFormModal';
 import MobileLayout from '../../layouts/MobileLayout';
 import { useManufacturers, useEngineModels, usePartCategories, usePartSubCategories, useCarModels } from '../../hooks/useIllustrations';

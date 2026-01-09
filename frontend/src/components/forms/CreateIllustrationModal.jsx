@@ -33,7 +33,8 @@ import {
   manufacturerAPI,
   carModelAPI,
   engineModelAPI,
-  partCategoryAPI
+  partCategoryAPI,
+  partSubCategoryAPI
 } from '../../api/illustrations';
 
 const Transition = React.forwardRef(function Transition(props, ref) {
@@ -51,6 +52,7 @@ const CreateIllustrationModal = ({ open, onClose, onSuccess, mode = 'create', il
     car_model: '',
     engine_model: '',
     part_category: '',
+    part_subcategory: '',
     uploaded_files: []
   });
 
@@ -64,12 +66,14 @@ const CreateIllustrationModal = ({ open, onClose, onSuccess, mode = 'create', il
   const [carModels, setCarModels] = useState([]);
   const [engineModels, setEngineModels] = useState([]);
   const [categories, setCategories] = useState([]);
+  const [subCategories, setSubCategories] = useState([]);
 
   // Loading states
   const [loadingManufacturers, setLoadingManufacturers] = useState(false);
   const [loadingCarModels, setLoadingCarModels] = useState(false);
   const [loadingEngineModels, setLoadingEngineModels] = useState(false);
   const [loadingCategories, setLoadingCategories] = useState(false);
+  const [loadingSubCategories, setLoadingSubCategories] = useState(false);
 
   // Fetch initial data on mount/open
   useEffect(() => {
@@ -97,6 +101,7 @@ const CreateIllustrationModal = ({ open, onClose, onSuccess, mode = 'create', il
         car_model: '',
         engine_model: illustration.engine_model || '', // ID
         part_category: illustration.part_category || '', // ID
+        part_subcategory: illustration.part_subcategory || '', // ID
         uploaded_files: []
       });
 
@@ -107,17 +112,39 @@ const CreateIllustrationModal = ({ open, onClose, onSuccess, mode = 'create', il
       if (illustration.engine_model) {
         try {
           const engineData = await engineModelAPI.getById(illustration.engine_model);
-          const carData = await carModelAPI.getById(engineData.car_model);
+          console.log('✅ engineData for edit:', engineData);
 
-          await fetchCarModels(carData.manufacturer);
-          await fetchEngineModels(carData.id);
+          const manufacturerId = engineData.manufacturer?.id || engineData.manufacturer;
 
-          setFormData(prev => ({
-            ...prev,
-            manufacturer: carData.manufacturer,
-            car_model: carData.id,
-            engine_model: engineData.id
-          }));
+          if (manufacturerId) {
+            await fetchCarModels(manufacturerId);
+
+            // Try to find a suitable car model. 
+            // If the illustration has applicable_car_models, use the first one.
+            // Otherwise, use the first car model associated with the engine.
+            let selectedCarId = '';
+            if (illustration.applicable_car_models && illustration.applicable_car_models.length > 0) {
+              selectedCarId = illustration.applicable_car_models[0];
+            } else if (engineData.car_models && engineData.car_models.length > 0) {
+              selectedCarId = engineData.car_models[0].id || engineData.car_models[0];
+            }
+
+            if (selectedCarId) {
+              await fetchEngineModels(selectedCarId);
+            }
+
+            setFormData(prev => ({
+              ...prev,
+              manufacturer: manufacturerId || '',
+              car_model: selectedCarId || '',
+              engine_model: engineData.id
+            }));
+          }
+
+          // 4. Load subcategories if category is present
+          if (illustration.part_category) {
+            await fetchSubCategories(illustration.part_category);
+          }
 
         } catch (err) {
           console.error('Failed to resolve dependencies for edit:', err);
@@ -133,12 +160,14 @@ const CreateIllustrationModal = ({ open, onClose, onSuccess, mode = 'create', il
         car_model: '',
         engine_model: '',
         part_category: '',
+        part_subcategory: '',
         uploaded_files: []
       });
       setExistingFiles([]);
       setFilesToDelete([]);
       setCarModels([]);
       setEngineModels([]);
+      setSubCategories([]);
     }
   };
 
@@ -202,6 +231,27 @@ const CreateIllustrationModal = ({ open, onClose, onSuccess, mode = 'create', il
     }
   };
 
+  const fetchSubCategories = async (categoryId) => {
+    console.log('🔄 Fetching subcategories for category:', categoryId);
+    if (!categoryId) {
+      setSubCategories([]);
+      return;
+    }
+    setLoadingSubCategories(true);
+    try {
+      const response = await partSubCategoryAPI.getByCategory(categoryId);
+      console.log('✅ Subcategories loaded:', response);
+      const data = response.results || response || [];
+      console.log('📊 Subcategories data set to state:', data);
+      setSubCategories(data);
+    } catch (error) {
+      console.error('Failed to fetch part subcategories:', error);
+      setErrors(prev => ({ ...prev, sub_categories: 'サブカテゴリの読み込みに失敗しました' }));
+    } finally {
+      setLoadingSubCategories(false);
+    }
+  };
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
@@ -220,6 +270,12 @@ const CreateIllustrationModal = ({ open, onClose, onSuccess, mode = 'create', il
         engine_model: '',
       }));
       fetchEngineModels(value);
+    } else if (name === 'part_category') {
+      setFormData(prev => ({
+        ...prev,
+        part_subcategory: '',
+      }));
+      fetchSubCategories(value);
     }
 
     // Clear error for this field
@@ -304,6 +360,7 @@ const CreateIllustrationModal = ({ open, onClose, onSuccess, mode = 'create', il
         title: formData.title.trim(),
         engine_model: formData.engine_model,
         part_category: formData.part_category,
+        part_subcategory: formData.part_subcategory || null,
       };
 
       if (formData.description && formData.description.trim()) {
@@ -345,6 +402,7 @@ const CreateIllustrationModal = ({ open, onClose, onSuccess, mode = 'create', il
         if (apiError.description) fieldErrors.description = String(apiError.description);
         if (apiError.engine_model) fieldErrors.engine_model = String(apiError.engine_model);
         if (apiError.part_category) fieldErrors.part_category = String(apiError.part_category);
+        if (apiError.part_subcategory) fieldErrors.part_subcategory = String(apiError.part_subcategory);
         if (!Object.keys(fieldErrors).length) {
           fieldErrors.submit = apiError.detail || apiError.message || JSON.stringify(apiError);
         }
@@ -367,6 +425,7 @@ const CreateIllustrationModal = ({ open, onClose, onSuccess, mode = 'create', il
       car_model: '',
       engine_model: '',
       part_category: '',
+      part_subcategory: '',
       uploaded_files: []
     });
     setExistingFiles([]);
@@ -375,6 +434,7 @@ const CreateIllustrationModal = ({ open, onClose, onSuccess, mode = 'create', il
     setLoading(false);
     setCarModels([]);
     setEngineModels([]);
+    setSubCategories([]);
     onClose();
   };
 
@@ -576,6 +636,29 @@ const CreateIllustrationModal = ({ open, onClose, onSuccess, mode = 'create', il
               {categories.map(c => (
                 <MenuItem key={c.id} value={c.id}>
                   {c.name}
+                </MenuItem>
+              ))}
+            </TextField>
+
+            {/* Part SubCategory Selection (NEW) */}
+            <TextField
+              select
+              label="パーツサブカテゴリ"
+              name="part_subcategory"
+              value={formData.part_subcategory}
+              onChange={handleChange}
+              error={!!errors.part_subcategory}
+              helperText={errors.part_subcategory}
+              disabled={loading || loadingSubCategories || !formData.part_category}
+              size={isMobile ? 'medium' : 'small'}
+              fullWidth
+            >
+              <MenuItem value="">
+                {loadingSubCategories ? '読み込み中...' : 'サブカテゴリを選択（任意）'}
+              </MenuItem>
+              {subCategories.map(sc => (
+                <MenuItem key={sc.id} value={sc.id}>
+                  {sc.name}
                 </MenuItem>
               ))}
             </TextField>
