@@ -9,7 +9,7 @@ export const authAPI = {
   login: async (credentials) => {
     try {
       const response = await api.post('auth/login/', credentials, {
-        timeout: 10000, // 10 second timeout
+        timeout: 30000, // 30 second timeout
         timeoutErrorMessage: 'Connection timeout. Please try again.'
       });
       return response.data;
@@ -28,7 +28,7 @@ export const authAPI = {
   register: async (userData) => {
     const isFormData = userData instanceof FormData;
     const config = {
-      timeout: 10000,
+      timeout: 30000,
       timeoutErrorMessage: 'Connection timeout. Please try again.'
     };
 
@@ -93,7 +93,7 @@ export const authAPI = {
 
   resendVerification: async (email) => {
     try {
-      const response = await api.post('auth/users/resend_verification/', { email }, { timeout: 10000 });
+      const response = await api.post('auth/users/resend_verification/', { email }, { timeout: 30000 });
       return response.data;
     } catch (error) {
       if (error.code === 'ECONNABORTED' || error.message.includes('timeout')) {

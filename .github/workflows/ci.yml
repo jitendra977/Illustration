@@ -112,11 +112,14 @@ jobs:
 
       - name: Create test .env file
         run: |
-          cat > backend/.env << 'EOF'
-          DJANGO_SECRET_KEY=test-secret-key-for-ci-only
+          cat > backend/.env.ci << 'EOF'
+          SECRET_KEY=test-secret-key-for-ci-only
           DEBUG=True
+          ALLOWED_HOSTS=*
           DB_ENGINE=django.db.backends.sqlite3
           DB_NAME=:memory:
+          CORS_ALLOW_ALL_ORIGINS=True
+          EMAIL_BACKEND=django.core.mail.backends.console.EmailBackend
           EOF
 
       - name: Build backend image

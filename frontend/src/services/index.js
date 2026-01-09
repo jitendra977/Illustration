@@ -6,7 +6,7 @@ const API_BASE_URL = import.meta.env.VITE_API_URL || import.meta.env.VITE_API_BA
 // Create a custom axios instance with better error handling
 const api = axios.create({
   baseURL: API_BASE_URL,
-  timeout: 10000, // 10 seconds timeout
+  timeout: 30000, // 30 seconds timeout (increased for production reliability)
 });
 
 // Enhanced request interceptor

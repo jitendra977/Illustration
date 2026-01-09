@@ -18,25 +18,11 @@ RUN bun install
 # Copy source code
 COPY . .
 
-# Build arguments for environment variables
-ARG VITE_API_URL
-ARG VITE_API_BASE_URL
-ARG VITE_APP_NAME
-ARG VITE_APP_URL
-ARG VITE_ENV
-ARG VITE_MEDIA_URL
-ARG VITE_STATIC_URL
+# Copy production environment file
+# This ensures production builds use the correct API URL
+COPY .env.production .env
 
-# Set environment variables for build
-ENV VITE_API_URL=$VITE_API_URL
-ENV VITE_API_BASE_URL=$VITE_API_BASE_URL
-ENV VITE_APP_NAME=$VITE_APP_NAME
-ENV VITE_APP_URL=$VITE_APP_URL
-ENV VITE_ENV=$VITE_ENV
-ENV VITE_MEDIA_URL=$VITE_MEDIA_URL
-ENV VITE_STATIC_URL=$VITE_STATIC_URL
-
-# Build the app
+# Build the app (Vite will read from .env file)
 RUN bun run build
 
 # ===========================
