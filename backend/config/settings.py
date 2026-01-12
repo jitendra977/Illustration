@@ -63,7 +63,7 @@ INSTALLED_APPS = [
 # MIDDLEWARE
 # ============================================
 MIDDLEWARE = [
-    'corsheaders.middleware.CorsMiddleware',  # IMPORTANT: Must be first
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -217,11 +217,13 @@ SIMPLE_JWT = {
 # ============================================
 # CORS CONFIGURATION - PRODUCTION
 # ============================================
-CORS_ALLOW_ALL_ORIGINS = os.getenv("CORS_ALLOW_ALL_ORIGINS", "False") == "True"
-
 CORS_ALLOWED_ORIGINS = [
     'https://yaw.nishanaweb.cloud',
     'https://api.yaw.nishanaweb.cloud',
+    'http://illustration.local',
+    'http://api.illustration.local',
+    'https://illustration.local',
+    'https://api.illustration.local',
 ]
 # Append origins from env
 if os.getenv("CORS_ALLOWED_ORIGINS_EXTRA"):
@@ -275,6 +277,10 @@ CSRF_TRUSTED_ORIGINS += [
     'http://0.0.0.0',
     'http://192.168.0.92',
     'http://192.168.0.105',
+    'http://illustration.local',
+    'http://api.illustration.local',
+    'https://illustration.local',
+    'https://api.illustration.local',
 ]
 
 # Allow any local IP if flag is set

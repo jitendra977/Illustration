@@ -1,0 +1,414 @@
+================================================================================
+                    ILLUSTRATION SYSTEM - DATA IMPORT FILE
+================================================================================
+
+This file contains structured illustration data ready for database import.
+Each entry follows the illustration model format with clear field separation.
+
+================================================================================
+
+[ILLUSTRATION #1]
+Manufacturer      : 日野 (Hino)
+Car Model         : レンジャー (Ranger)
+Engine Model      : J07E
+Chassis Code      : BKG-F07JHYG
+Part Category     : エンジン (Engine)
+Part Subcategory  : ターボ (Turbo)
+Part Name         : ブースト圧センサー (Boost Pressure Sensor)
+File Name         : 日野.レンジャー.J07E.BKG-F07JHYG-エンジン－ﾀｰﾎﾞ-ブースト圧ｾﾝｻｰ.pdf
+
+--------------------------------------------------------------------------------
+
+[ILLUSTRATION #2]
+Manufacturer      : 三菱 (Mitsubishi)
+Car Model         : キャンター (Canter)
+Engine Model      : 4P10
+Chassis Code      : TPG-FEA50
+Part Category     : エキゾースト (Exhaust)
+Part Subcategory  : マフラー (Muffler)
+Part Name         : マフラー周辺 (Muffler Area)
+File Name         : 三菱、キャンター、型式：TPG-FEA50,ｴﾝｼﾞﾝ：4P10 , マフラー周辺.pdf
+
+--------------------------------------------------------------------------------
+
+[ILLUSTRATION #3]
+Manufacturer      : 三菱 (Mitsubishi)
+Car Model         : キャンター (Canter)
+Engine Model      : 4P10
+Chassis Code      : TPG-FEA50
+Part Category     : エンジン (Engine)
+Part Subcategory  : EGR (Exhaust Gas Recirculation)
+Part Name         : EGR周辺 (EGR Area)
+File Name         : 三菱、キャンター、型式：TPG-FEA50,4P10,EGR周辺、EGR,.pdf
+
+--------------------------------------------------------------------------------
+
+[ILLUSTRATION #4]
+Manufacturer      : トヨタ (Toyota)
+Car Model         : ダイナー (Dyna)
+Engine Model      : N04C
+Chassis Code      : XZC600-VLIYBG
+Part Category     : 燃料系統 (Fuel System)
+Part Subcategory  : インジェクター (Injector)
+Part Name         : インジェクター周辺、サーモハウジング周辺 (Injector Area, Thermo Housing Area)
+File Name         : トヨタ、ダイナー、型式：XZC600-VLIYBG,N04C,ｲﾝｼﾞｪｸﾀｰ周辺、ｻｰﾓハウジング周辺.pdf
+
+--------------------------------------------------------------------------------
+
+[ILLUSTRATION #5]
+Manufacturer      : トヨタ (Toyota)
+Car Model         : ダイナー、デュトロ (Dyna, Dutro)
+Engine Model      : N04C
+Chassis Code      : XZC600-VLIYBG
+Part Category     : 燃料系統 (Fuel System)
+Part Subcategory  : インジェクター (Injector)
+Part Name         : サーブインジェクター周辺 (Serve Injector Area)
+File Name         : トヨタ、ダイナー、デュトロ、型式：XZC600-VLIYBG,N04C,サーブインジェクター周辺.pdf
+
+--------------------------------------------------------------------------------
+
+[ILLUSTRATION #6]
+Manufacturer      : トヨタ-日野 (Toyota-Hino)
+Car Model         : ダイナー、デュトロ (Dyna, Dutro)
+Engine Model      : N04C
+Chassis Code      : TKG-XZC600M
+Part Category     : 冷却装置 (Cooling System)
+Part Subcategory  : ウォータージャケット (Water Jacket)
+Part Name         : 冷却装置、ウォータージャケット (Cooling System, Water Jacket)
+File Name         : トヨタ‐日野、ダイナー、デュトロ、N04C、TKG-XZC600Mー冷却装置、ウオータージャケット.pdf
+
+--------------------------------------------------------------------------------
+
+[ILLUSTRATION #7]
+Manufacturer      : トヨタ-日野 (Toyota-Hino)
+Car Model         : ダイナー、デュトロ (Dyna, Dutro)
+Engine Model      : N04C
+Chassis Code      : TKG-XZC600M
+Part Category     : エンジン (Engine)
+Part Subcategory  : ターボ (Turbo)
+Part Name         : ターボ周辺 (Turbo Area)
+File Name         : トヨタ‐日野、ダイナー、デュトロ、N04C、TKG-XZC600Mーﾀｰﾎﾞ周辺.pdf
+
+--------------------------------------------------------------------------------
+
+[ILLUSTRATION #8]
+Manufacturer      : トヨタ-日野 (Toyota-Hino)
+Car Model         : ダイナー、デュトロ (Dyna, Dutro)
+Engine Model      : N04C
+Chassis Code      : TKG-XZC600M
+Part Category     : エキゾースト (Exhaust)
+Part Subcategory  : DPFマフラー (DPF Muffler)
+Part Name         : DPFマフラー周辺 (DPF Muffler Area)
+File Name         : トヨタ‐日野、ダイナー、デュトロ、N04C、TKG-XZC600MーDPFマフラー周辺.pdf
+
+--------------------------------------------------------------------------------
+
+[ILLUSTRATION #9]
+Manufacturer      : いすゞ (Isuzu)
+Car Model         : 大型2軸 (Large 2-Axle)
+Engine Model      : 4HK1
+Chassis Code      : LKG-FTR90S2
+Part Category     : 外装 (Exterior)
+Part Subcategory  : ミラー (Mirror)
+Part Name         : ミラーステーASSY (Mirror Stay Assembly)
+File Name         : いすゞ、大型2軸、ｴﾝｼﾞﾝ：４HK1、型式：LKG-FTR90S2、ミラーステーASSY.pdf
+
+--------------------------------------------------------------------------------
+
+[ILLUSTRATION #10]
+Manufacturer      : いすゞ (Isuzu)
+Car Model         : エルフ (Elf)
+Engine Model      : 4JJ1
+Chassis Code      : TPG-NMR85AN
+Part Category     : ステアリング (Steering)
+Part Subcategory  : パワステホース (Power Steering Hose)
+Part Name         : パワステホース関連、水ホース関連 (Power Steering Hose Related, Water Hose Related)
+File Name         : いすゞ、エルフ、型式：TPG-NMR85AN,4JJ1,パワステﾎｰｽ関連、水ﾎｰｽ関連。.pdf
+
+--------------------------------------------------------------------------------
+
+[ILLUSTRATION #11]
+Manufacturer      : いすゞ (Isuzu)
+Car Model         : エルフ (Elf)
+Engine Model      : 4JJ1
+Chassis Code      : TKG-NMR85AN
+Part Category     : 吸気系統 (Intake System)
+Part Subcategory  : ダクト (Duct)
+Part Name         : 左右ダクト (Left and Right Duct)
+File Name         : いすゞ、エルフ、型式：TKG-NMR85AN,4JJ1,左右ダクト。.pdf
+
+--------------------------------------------------------------------------------
+
+[ILLUSTRATION #12]
+Manufacturer      : いすゞ (Isuzu)
+Car Model         : エルフ (Elf)
+Engine Model      : 4JJ1
+Chassis Code      : TKG-NMR85AN
+Part Category     : ステアリング (Steering)
+Part Subcategory  : ステアリングコラム (Steering Column)
+Part Name         : ステアリングコラム (Steering Column)
+File Name         : いすゞ、エルフ、型式：TKG-NMR85AN,4JJ1,ステアリングコラム.pdf
+
+--------------------------------------------------------------------------------
+
+[ILLUSTRATION #13]
+Manufacturer      : いすゞ (Isuzu)
+Car Model         : エルフ (Elf)
+Engine Model      : 4JJ1
+Chassis Code      : TKG-NMR85AN
+Part Category     : 吸気系統 (Intake System)
+Part Subcategory  : エアダクト (Air Duct)
+Part Name         : エアダクト (Air Duct)
+File Name         : いすゞ、エルフ、型式：TKG-NMR85AN,4JJ1,エアダクト.pdf
+
+--------------------------------------------------------------------------------
+
+[ILLUSTRATION #14]
+Manufacturer      : いすゞ (Isuzu)
+Car Model         : エルフ (Elf)
+Engine Model      : 4JJ1
+Chassis Code      : TKG-NMR85AN
+Part Category     : 吸気系統 (Intake System)
+Part Subcategory  : インレットマニホールド (Inlet Manifold)
+Part Name         : インレットマニホールド (Inlet Manifold)
+File Name         : いすゞ、エルフ、型式：TKG-NMR85AN,4JJ1,インレットマニホールド.pdf
+
+--------------------------------------------------------------------------------
+
+[ILLUSTRATION #15]
+Manufacturer      : 日産 (Nissan)
+Car Model         : アトラス (Atlas)
+Engine Model      : ガソリン (Gasoline)
+Chassis Code      : -
+Part Category     : 足回り (Suspension)
+Part Subcategory  : フロント足回り (Front Suspension)
+Part Name         : フロント足回り (Front Suspension)
+File Name         : アトラス（ガソリン）フロント足回り.pdf
+
+--------------------------------------------------------------------------------
+
+[ILLUSTRATION #16]
+Manufacturer      : 日産 (Nissan)
+Car Model         : アトラス (Atlas)
+Engine Model      : ガソリン (Gasoline)
+Chassis Code      : -
+Part Category     : 動力伝達 (Power Transmission)
+Part Subcategory  : トランスミッション (Transmission)
+Part Name         : トランスミッション回り (Transmission Area)
+File Name         : アトラス（ガソリン）トランスミッション回り.pdf
+
+[ILLUSTRATION #17]
+Manufacturer      : 三菱ふそう (Mitsubishi Fuso)
+Car Model         : -
+Engine Model      : 6R10
+Chassis Code      : QPG-FP64VGR
+Part Category     : エンジン (Engine)
+Part Subcategory  : エンジン本体 (Engine Body)
+Part Name         : エンジン本体 (Engine Body)
+File Name         : FUSO-QPG-FP64VGR-6R10.pdf
+
+--------------------------------------------------------------------------------
+
+[ILLUSTRATION #18]
+Manufacturer      : いすゞ (Isuzu)
+Car Model         : エルフ (Elf)
+Engine Model      : 4JJ1
+Chassis Code      : TRG-NLR85AN
+Part Category     : 燃料系統 (Fuel System)
+Part Subcategory  : サブインジェクター (Sub Injector)
+Part Name         : サブインジェクター (Sub Injector)
+File Name         : ISUZU-4JJ1-TRG-NLR85AN-燃料系ーサブｲﾝｼﾞｪｸﾀｰ.pdf
+
+--------------------------------------------------------------------------------
+
+[ILLUSTRATION #19]
+Manufacturer      : いすゞ (Isuzu)
+Car Model         : エルフ (Elf)
+Engine Model      : 4JJ1
+Chassis Code      : TRG-NLR85AN
+Part Category     : エキゾースト (Exhaust)
+Part Subcategory  : マフラーDPD (Muffler DPD)
+Part Name         : マフラーDPD、センサー (Muffler DPD, Sensor)
+File Name         : ISUZU-4JJ1-TRG-NLR85AN-ﾏﾌﾗｰDPD－ｾﾝｻｰ.pdf.pdf
+
+--------------------------------------------------------------------------------
+
+[ILLUSTRATION #20]
+Manufacturer      : トヨタ (Toyota)
+Car Model         : ハイエース (Hiace)
+Engine Model      : 1KD
+Chassis Code      : KDH201-0116608
+Part Category     : 電気 (Electrical)
+Part Subcategory  : ハイマウント (High Mount)
+Part Name         : ハイマウント、ストップランプ (High Mount Stop Lamp)
+File Name         : TOYOTA-1KD-QFDKDH21V-KDH201-0116608-電気―ハイマウントーｽﾄｯﾌﾟﾗﾝﾌﾟ.pdf.pdf
+
+--------------------------------------------------------------------------------
+
+[ILLUSTRATION #21]
+Manufacturer      : トヨタ (Toyota)
+Car Model         : ハイエース (Hiace)
+Engine Model      : 1KD
+Chassis Code      : KDH201-0116608
+Part Category     : エンジン (Engine)
+Part Subcategory  : ヘッドカバー (Head Cover)
+Part Name         : ヘッドカバー (Head Cover)
+File Name         : TOYOTA-1KD-QFDKDH21V-KDH201-0116608-ｴﾝｼﾞﾝ―ヘッドカバー.pdf.pdf
+
+--------------------------------------------------------------------------------
+
+[ILLUSTRATION #22]
+Manufacturer      : トヨタ (Toyota)
+Car Model         : ダイナー、デュトロ (Dyna, Dutro)
+Engine Model      : N04C
+Chassis Code      : XZC600
+Part Category     : 冷却装置 (Cooling System)
+Part Subcategory  : ラジエーター (Radiator)
+Part Name         : ラジエーター一式 (Radiator Assembly)
+File Name         : TOYOTA-N04C-ダイナーデﾕトローXZC600-冷却装置ーﾗｼﾞｴｰﾀｰ一式.pdf
+
+--------------------------------------------------------------------------------
+
+[ILLUSTRATION #23]
+Manufacturer      : トヨタ (Toyota)
+Car Model         : デュトロ (Dutro)
+Engine Model      : N04C
+Chassis Code      : TKG-XZC600M
+Part Category     : 燃料系統 (Fuel System)
+Part Subcategory  : サブインジェクター (Sub Injector)
+Part Name         : サブインジェクター (Sub Injector)
+File Name         : TOYOTA-デﾕトローTKG-XZC600M－燃料系ーサブ.ｲﾝｼﾞｪｸﾀｰ.pdf.pdf
+
+--------------------------------------------------------------------------------
+
+[ILLUSTRATION #24]
+Manufacturer      : トヨタ (Toyota)
+Car Model         : デュトロ (Dutro)
+Engine Model      : N04C
+Chassis Code      : TKG-XZC600M
+Part Category     : エンジン (Engine)
+Part Subcategory  : ヘッドカバー (Head Cover)
+Part Name         : ヘッドカバー (Head Cover)
+File Name         : TOYOTA-デﾕトローTKG-XZC600M－ｴﾝｼﾞﾝーヘッドカバー.pdf.pdf
+
+--------------------------------------------------------------------------------
+
+[ILLUSTRATION #25]
+Manufacturer      : トヨタ (Toyota)
+Car Model         : デュトロ (Dutro)
+Engine Model      : N04C
+Chassis Code      : TKG-XZC600M
+Part Category     : エキゾースト (Exhaust)
+Part Subcategory  : マフラー (Muffler)
+Part Name         : マフラー、排気音センサー (Muffler, Exhaust Sound Sensor)
+File Name         : TOYOTA-デﾕトローTKG-XZC600M－ﾏﾌﾗｰ排気音ｾﾝｻｰ.pdf.pdf
+
+--------------------------------------------------------------------------------
+
+[ILLUSTRATION #26]
+Manufacturer      : トヨタ (Toyota)
+Car Model         : ハイエース (Hiace)
+Engine Model      : 1KD
+Chassis Code      : KR-KDH200V
+Part Category     : 冷却装置 (Cooling System)
+Part Subcategory  : ウォーターポンプ (Water Pump)
+Part Name         : ウォーターポンプ (Water Pump)
+File Name         : TOYOTAーハイエース-KR-KDH200V-冷却ーｳｵｰﾀｰポンプ.pdf.pdf
+
+--------------------------------------------------------------------------------
+
+[ILLUSTRATION #27]
+Manufacturer      : トヨタ (Toyota)
+Car Model         : ハイエース (Hiace)
+Engine Model      : 1KD
+Chassis Code      : KR-KDH200V
+Part Category     : 冷却装置 (Cooling System)
+Part Subcategory  : ラジエーター (Radiator)
+Part Name         : ラジエーター (Radiator)
+File Name         : TOYOTAーハイエース-KR-KDH200V-冷却ーﾗｼﾞｴｰﾀｰ.pdf.pdf
+
+--------------------------------------------------------------------------------
+
+[ILLUSTRATION #28]
+Manufacturer      : トヨタ (Toyota)
+Car Model         : ハイエース (Hiace)
+Engine Model      : 1KD
+Chassis Code      : KR-KDH200V
+Part Category     : 電気 (Electrical)
+Part Subcategory  : オルタネーター (Alternator)
+Part Name         : オルタネーター (Alternator)
+File Name         : TOYOTAーハイエース-KR-KDH200V-電気ーｵﾙﾀﾈｰﾀｰ.pdf.pdf
+
+--------------------------------------------------------------------------------
+
+[ILLUSTRATION #29]
+Manufacturer      : トヨタ (Toyota)
+Car Model         : ハイエース (Hiace)
+Engine Model      : 1KD
+Chassis Code      : KR-KDH200V
+Part Category     : エンジン (Engine)
+Part Subcategory  : ヘッドカバー (Head Cover)
+Part Name         : シリンダヘッドカバー (Cylinder Head Cover)
+File Name         : TOYOTAーハイエース-KR-KDH200V-ｴﾝｼﾞﾝーｼﾘﾝﾀﾞヘッドカバー.pdf.pdf
+
+--------------------------------------------------------------------------------
+
+[ILLUSTRATION #30]
+Manufacturer      : 日産UD (Nissan UD)
+Car Model         : -
+Engine Model      : -
+Chassis Code      : TKG-MK38C / MK38C-10103
+Part Category     : 燃料系統 (Fuel System)
+Part Subcategory  : インジェクション (Injection)
+Part Name         : インジェクションチューブ＆ノズル (Injection Tube & Nozzle)
+File Name         : UD－TKGMK38C-MK38C-10103-燃料ーインジェクションチューブ＆ノズル.pdf.pdf
+
+--------------------------------------------------------------------------------
+
+[ILLUSTRATION #31]
+Manufacturer      : いすゞ (Isuzu)
+Car Model         : エルフ (Elf)
+Engine Model      : 4JJ1
+Chassis Code      : TPG-NMR85AN
+Part Category     : エンジン (Engine)
+Part Subcategory  : シリンダヘッド (Cylinder Head)
+Part Name         : シリンダヘッド (Cylinder Head)
+File Name         : エルフーTPG-NMR85AN－ｼﾘﾝﾀﾞヘッド.pdf.pdf
+
+================================================================================
+                              END OF DATA FILE
+================================================================================
+
+SUMMARY:
+--------
+Total Illustrations: 31
+
+Manufacturers:
+- 日野 (Hino): 1
+- 三菱 (Mitsubishi): 2
+- 三菱ふそう (Mitsubishi Fuso): 1
+- トヨタ (Toyota): 13
+- トヨタ-日野 (Toyota-Hino): 3
+- いすゞ (Isuzu): 9
+- 日産 (Nissan): 2
+- 日産UD (Nissan UD): 1
+
+Main Categories:
+- エンジン (Engine)
+- エキゾースト (Exhaust)
+- 燃料系統 (Fuel System)
+- 冷却装置 (Cooling System)
+- 電気 (Electrical)
+- 外装 (Exterior)
+- ステアリング (Steering)
+- 吸気系統 (Intake System)
+- 足回り (Suspension)
+- 動力伝達 (Power Transmission)
+
+Popular Models:
+- ハイエース (Hiace): 6 illustrations
+- デュトロ (Dutro): 6 illustrations
+- エルフ (Elf): 8 illustrations
+- ダイナー (Dyna): 5 illustrations
+
+================================================================================

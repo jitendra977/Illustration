@@ -54,13 +54,10 @@ services:
       - ./backend/media:/app/media
     ports:
       - "8000:8000"
+    env_file:
+      - ./backend/.env.local
     environment:
-      - DEBUG=True
-      - DB_NAME=yaw_illustration
-      - DB_USER=nishanaweb
-      - DB_PASSWORD=M3IF00UrzSZEEnZkp5lk
       - DB_HOST=mysql_db
-      - DB_PORT=3306
     depends_on:
       mysql_db:
         condition: service_healthy
@@ -79,16 +76,14 @@ services:
   yaw-frontend:
     build:
       context: ./frontend
-      dockerfile: Dockerfile.local
+      dockerfile: Dockerfile.dev # ✅ Use dev Dockerfile
     container_name: yaw-frontend
+    ports:
+      - "5173:5173" # ✅ Vite dev server port
     volumes:
       - ./frontend:/app
-      - /app/node_modules
-    ports:
-      - "5173:5173"
-    environment:
-      - VITE_API_URL=http://api.illustration.local/api
-      - VITE_MEDIA_URL=http://api.illustration.local/media
+    env_file:
+      - ./frontend/.env.local # ✅ Load .env.local
     depends_on:
       - yaw-backend
     networks:
@@ -120,11 +115,3 @@ networks:
   app-network:
     name: app-network
     driver: bridge
-
-# ===========================
-# VOLUMES (not needed for bind mounts)
-# ===========================
-# volumes:
-#   mysql_data:
-#   npm_data:
-#   npm_letsencrypt:
