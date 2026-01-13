@@ -11,7 +11,7 @@ import {
 // ============================================================================
 // MANUFACTURERS HOOK
 // ============================================================================
-export const useManufacturers = () => {
+export const useManufacturers = (pageSize = null) => {
   const [manufacturers, setManufacturers] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -76,8 +76,8 @@ export const useManufacturers = () => {
   }, []);
 
   useEffect(() => {
-    fetchManufacturers();
-  }, [fetchManufacturers]);
+    fetchManufacturers(pageSize ? { page_size: pageSize } : {});
+  }, [fetchManufacturers, pageSize]);
 
   return {
     manufacturers,
@@ -93,7 +93,7 @@ export const useManufacturers = () => {
 // ============================================================================
 // ENGINE MODELS HOOK
 // ============================================================================
-export const useEngineModels = (manufacturerId = null) => {
+export const useEngineModels = (manufacturerId = null, pageSize = null) => {
   const [engineModels, setEngineModels] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -108,9 +108,9 @@ export const useEngineModels = (manufacturerId = null) => {
       setEngineModels(data.results || data);
       return data;
     } catch (err) {
-      const errorMessage = err.response?.data?.detail || 
-                          err.response?.data?.message || 
-                          'Failed to fetch engine models';
+      const errorMessage = err.response?.data?.detail ||
+        err.response?.data?.message ||
+        'Failed to fetch engine models';
       setError(errorMessage);
       throw err;
     } finally {
@@ -126,9 +126,9 @@ export const useEngineModels = (manufacturerId = null) => {
       setEngineModels(prev => [data, ...prev]);
       return data;
     } catch (err) {
-      const errorMessage = err.response?.data?.detail || 
-                          err.response?.data?.message || 
-                          'Failed to create engine model';
+      const errorMessage = err.response?.data?.detail ||
+        err.response?.data?.message ||
+        'Failed to create engine model';
       setError(errorMessage);
       throw err;
     } finally {
@@ -144,9 +144,9 @@ export const useEngineModels = (manufacturerId = null) => {
       setEngineModels(prev => prev.map(e => e.slug === slug ? data : e));
       return data;
     } catch (err) {
-      const errorMessage = err.response?.data?.detail || 
-                          err.response?.data?.message || 
-                          'Failed to update engine model';
+      const errorMessage = err.response?.data?.detail ||
+        err.response?.data?.message ||
+        'Failed to update engine model';
       setError(errorMessage);
       throw err;
     } finally {
@@ -161,9 +161,9 @@ export const useEngineModels = (manufacturerId = null) => {
       await engineModelAPI.delete(slug);
       setEngineModels(prev => prev.filter(e => e.slug !== slug));
     } catch (err) {
-      const errorMessage = err.response?.data?.detail || 
-                          err.response?.data?.message || 
-                          'Failed to delete engine model';
+      const errorMessage = err.response?.data?.detail ||
+        err.response?.data?.message ||
+        'Failed to delete engine model';
       setError(errorMessage);
       throw err;
     } finally {
@@ -172,8 +172,8 @@ export const useEngineModels = (manufacturerId = null) => {
   }, []);
 
   useEffect(() => {
-    fetchEngineModels();
-  }, [fetchEngineModels]);
+    fetchEngineModels(pageSize ? { page_size: pageSize } : {});
+  }, [fetchEngineModels, pageSize]);
 
   return {
     engineModels,
@@ -189,7 +189,7 @@ export const useEngineModels = (manufacturerId = null) => {
 // ============================================================================
 // CAR MODELS HOOK
 // ============================================================================
-export const useCarModels = (manufacturerId = null) => {
+export const useCarModels = (manufacturerId = null, pageSize = null) => {
   const [carModels, setCarModels] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -204,9 +204,9 @@ export const useCarModels = (manufacturerId = null) => {
       setCarModels(data.results || data);
       return data;
     } catch (err) {
-      const errorMessage = err.response?.data?.detail || 
-                          err.response?.data?.message || 
-                          'Failed to fetch car models';
+      const errorMessage = err.response?.data?.detail ||
+        err.response?.data?.message ||
+        'Failed to fetch car models';
       setError(errorMessage);
       throw err;
     } finally {
@@ -222,9 +222,9 @@ export const useCarModels = (manufacturerId = null) => {
       setCarModels(prev => [data, ...prev]);
       return data;
     } catch (err) {
-      const errorMessage = err.response?.data?.detail || 
-                          err.response?.data?.message || 
-                          'Failed to create car model';
+      const errorMessage = err.response?.data?.detail ||
+        err.response?.data?.message ||
+        'Failed to create car model';
       setError(errorMessage);
       throw err;
     } finally {
@@ -240,10 +240,10 @@ export const useCarModels = (manufacturerId = null) => {
       setCarModels(prev => prev.map(c => c.slug === slug ? data : c));
       return data;
     } catch (err) {
-      const errorMessage = err.response?.data?.detail || 
-                          err.response?.data?.message || 
-                          Object.values(err.response?.data || {}).join(', ') ||
-                          'Failed to update car model';
+      const errorMessage = err.response?.data?.detail ||
+        err.response?.data?.message ||
+        Object.values(err.response?.data || {}).join(', ') ||
+        'Failed to update car model';
       setError(errorMessage);
       throw err;
     } finally {
@@ -258,9 +258,9 @@ export const useCarModels = (manufacturerId = null) => {
       await carModelAPI.delete(slug);
       setCarModels(prev => prev.filter(c => c.slug !== slug));
     } catch (err) {
-      const errorMessage = err.response?.data?.detail || 
-                          err.response?.data?.message || 
-                          'Failed to delete car model';
+      const errorMessage = err.response?.data?.detail ||
+        err.response?.data?.message ||
+        'Failed to delete car model';
       setError(errorMessage);
       throw err;
     } finally {
@@ -269,8 +269,8 @@ export const useCarModels = (manufacturerId = null) => {
   }, []);
 
   useEffect(() => {
-    fetchCarModels();
-  }, [fetchCarModels]);
+    fetchCarModels(pageSize ? { page_size: pageSize } : {});
+  }, [fetchCarModels, pageSize]);
 
   return {
     carModels,
@@ -286,7 +286,7 @@ export const useCarModels = (manufacturerId = null) => {
 // ============================================================================
 // PART CATEGORIES HOOK
 // ============================================================================
-export const usePartCategories = () => {
+export const usePartCategories = (pageSize = null) => {
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -299,9 +299,9 @@ export const usePartCategories = () => {
       setCategories(data.results || data);
       return data;
     } catch (err) {
-      const errorMessage = err.response?.data?.detail || 
-                          err.response?.data?.message || 
-                          'Failed to fetch categories';
+      const errorMessage = err.response?.data?.detail ||
+        err.response?.data?.message ||
+        'Failed to fetch categories';
       setError(errorMessage);
       throw err;
     } finally {
@@ -317,9 +317,9 @@ export const usePartCategories = () => {
       setCategories(prev => [data, ...prev]);
       return data;
     } catch (err) {
-      const errorMessage = err.response?.data?.detail || 
-                          err.response?.data?.message || 
-                          'Failed to create category';
+      const errorMessage = err.response?.data?.detail ||
+        err.response?.data?.message ||
+        'Failed to create category';
       setError(errorMessage);
       throw err;
     } finally {
@@ -335,9 +335,9 @@ export const usePartCategories = () => {
       setCategories(prev => prev.map(c => c.id === id ? data : c));
       return data;
     } catch (err) {
-      const errorMessage = err.response?.data?.detail || 
-                          err.response?.data?.message || 
-                          'Failed to update category';
+      const errorMessage = err.response?.data?.detail ||
+        err.response?.data?.message ||
+        'Failed to update category';
       setError(errorMessage);
       throw err;
     } finally {
@@ -352,9 +352,9 @@ export const usePartCategories = () => {
       await partCategoryAPI.delete(id);
       setCategories(prev => prev.filter(c => c.id !== id));
     } catch (err) {
-      const errorMessage = err.response?.data?.detail || 
-                          err.response?.data?.message || 
-                          'Failed to delete category';
+      const errorMessage = err.response?.data?.detail ||
+        err.response?.data?.message ||
+        'Failed to delete category';
       setError(errorMessage);
       throw err;
     } finally {
@@ -363,8 +363,8 @@ export const usePartCategories = () => {
   }, []);
 
   useEffect(() => {
-    fetchCategories();
-  }, [fetchCategories]);
+    fetchCategories(pageSize ? { page_size: pageSize } : {});
+  }, [fetchCategories, pageSize]);
 
   return {
     categories,
@@ -380,7 +380,7 @@ export const usePartCategories = () => {
 // ============================================================================
 // PART SUBCATEGORIES HOOK
 // ============================================================================
-export const usePartSubCategories = (categoryId = null) => {
+export const usePartSubCategories = (categoryId = null, pageSize = null) => {
   const [subCategories, setSubCategories] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -395,9 +395,9 @@ export const usePartSubCategories = (categoryId = null) => {
       setSubCategories(data.results || data);
       return data;
     } catch (err) {
-      const errorMessage = err.response?.data?.detail || 
-                          err.response?.data?.message || 
-                          'Failed to fetch subcategories';
+      const errorMessage = err.response?.data?.detail ||
+        err.response?.data?.message ||
+        'Failed to fetch subcategories';
       setError(errorMessage);
       throw err;
     } finally {
@@ -413,9 +413,9 @@ export const usePartSubCategories = (categoryId = null) => {
       setSubCategories(prev => [data, ...prev]);
       return data;
     } catch (err) {
-      const errorMessage = err.response?.data?.detail || 
-                          err.response?.data?.message || 
-                          'Failed to create subcategory';
+      const errorMessage = err.response?.data?.detail ||
+        err.response?.data?.message ||
+        'Failed to create subcategory';
       setError(errorMessage);
       throw err;
     } finally {
@@ -431,9 +431,9 @@ export const usePartSubCategories = (categoryId = null) => {
       setSubCategories(prev => prev.map(s => s.id === id ? data : s));
       return data;
     } catch (err) {
-      const errorMessage = err.response?.data?.detail || 
-                          err.response?.data?.message || 
-                          'Failed to update subcategory';
+      const errorMessage = err.response?.data?.detail ||
+        err.response?.data?.message ||
+        'Failed to update subcategory';
       setError(errorMessage);
       throw err;
     } finally {
@@ -448,9 +448,9 @@ export const usePartSubCategories = (categoryId = null) => {
       await partSubCategoryAPI.delete(id);
       setSubCategories(prev => prev.filter(s => s.id !== id));
     } catch (err) {
-      const errorMessage = err.response?.data?.detail || 
-                          err.response?.data?.message || 
-                          'Failed to delete subcategory';
+      const errorMessage = err.response?.data?.detail ||
+        err.response?.data?.message ||
+        'Failed to delete subcategory';
       setError(errorMessage);
       throw err;
     } finally {
@@ -459,8 +459,8 @@ export const usePartSubCategories = (categoryId = null) => {
   }, []);
 
   useEffect(() => {
-    fetchSubCategories();
-  }, [fetchSubCategories]);
+    fetchSubCategories(pageSize ? { page_size: pageSize } : {});
+  }, [fetchSubCategories, pageSize]);
 
   return {
     subCategories,
@@ -489,9 +489,9 @@ export const useIllustrations = (filters = {}) => {
       setIllustrations(data.results || data);
       return data;
     } catch (err) {
-      const errorMessage = err.response?.data?.detail || 
-                          err.response?.data?.message || 
-                          'Failed to fetch illustrations';
+      const errorMessage = err.response?.data?.detail ||
+        err.response?.data?.message ||
+        'Failed to fetch illustrations';
       setError(errorMessage);
       throw err;
     } finally {
@@ -507,9 +507,9 @@ export const useIllustrations = (filters = {}) => {
       setIllustrations(prev => [data, ...prev]);
       return data;
     } catch (err) {
-      const errorMessage = err.response?.data?.message || 
-                          err.response?.data?.detail || 
-                          'Failed to create illustration';
+      const errorMessage = err.response?.data?.message ||
+        err.response?.data?.detail ||
+        'Failed to create illustration';
       setError(errorMessage);
       throw err;
     } finally {
@@ -525,9 +525,9 @@ export const useIllustrations = (filters = {}) => {
       setIllustrations(prev => prev.map(i => i.id === id ? data : i));
       return data;
     } catch (err) {
-      const errorMessage = err.response?.data?.detail || 
-                          err.response?.data?.message || 
-                          'Failed to update illustration';
+      const errorMessage = err.response?.data?.detail ||
+        err.response?.data?.message ||
+        'Failed to update illustration';
       setError(errorMessage);
       throw err;
     } finally {
@@ -542,9 +542,9 @@ export const useIllustrations = (filters = {}) => {
       await illustrationAPI.delete(id);
       setIllustrations(prev => prev.filter(i => i.id !== id));
     } catch (err) {
-      const errorMessage = err.response?.data?.detail || 
-                          err.response?.data?.message || 
-                          'Failed to delete illustration';
+      const errorMessage = err.response?.data?.detail ||
+        err.response?.data?.message ||
+        'Failed to delete illustration';
       setError(errorMessage);
       throw err;
     } finally {
@@ -561,9 +561,9 @@ export const useIllustrations = (filters = {}) => {
       await fetchIllustrations();
       return data;
     } catch (err) {
-      const errorMessage = err.response?.data?.detail || 
-                          err.response?.data?.message || 
-                          'Failed to add files';
+      const errorMessage = err.response?.data?.detail ||
+        err.response?.data?.message ||
+        'Failed to add files';
       setError(errorMessage);
       throw err;
     } finally {
@@ -657,22 +657,22 @@ export const useIllustrationFiles = (illustrationId = null, fileType = null) => 
   const fetchIllustrationFiles = useCallback(async (params = {}) => {
     setLoading(true);
     setError(null);
-    
+
     // Build query parameters based on props
     const queryParams = { ...params };
-    
+
     if (illustrationId) {
       queryParams.illustration = illustrationId;
     }
-    
+
     if (fileType) {
       queryParams.file_type = fileType;
     }
-    
+
     try {
       const data = await illustrationFileAPI.getAll(queryParams);
       setFiles(data.results || data);
-      
+
       // Handle pagination if available
       if (data.count !== undefined) {
         setPagination({
@@ -681,12 +681,12 @@ export const useIllustrationFiles = (illustrationId = null, fileType = null) => 
           previous: data.previous,
         });
       }
-      
+
       return data;
     } catch (err) {
-      const errorMessage = err.response?.data?.detail || 
-                          err.response?.data?.message || 
-                          'Failed to fetch illustration files';
+      const errorMessage = err.response?.data?.detail ||
+        err.response?.data?.message ||
+        'Failed to fetch illustration files';
       setError(errorMessage);
       throw err;
     } finally {
@@ -702,10 +702,10 @@ export const useIllustrationFiles = (illustrationId = null, fileType = null) => 
       setFiles(prev => [data, ...prev]);
       return data;
     } catch (err) {
-      const errorMessage = err.response?.data?.detail || 
-                          err.response?.data?.message || 
-                          Object.values(err.response?.data || {}).join(', ') ||
-                          'Failed to create illustration file';
+      const errorMessage = err.response?.data?.detail ||
+        err.response?.data?.message ||
+        Object.values(err.response?.data || {}).join(', ') ||
+        'Failed to create illustration file';
       setError(errorMessage);
       throw err;
     } finally {
@@ -721,10 +721,10 @@ export const useIllustrationFiles = (illustrationId = null, fileType = null) => 
       setFiles(prev => prev.map(f => f.id === id ? data : f));
       return data;
     } catch (err) {
-      const errorMessage = err.response?.data?.detail || 
-                          err.response?.data?.message || 
-                          Object.values(err.response?.data || {}).join(', ') ||
-                          'Failed to update illustration file';
+      const errorMessage = err.response?.data?.detail ||
+        err.response?.data?.message ||
+        Object.values(err.response?.data || {}).join(', ') ||
+        'Failed to update illustration file';
       setError(errorMessage);
       throw err;
     } finally {
@@ -739,9 +739,9 @@ export const useIllustrationFiles = (illustrationId = null, fileType = null) => 
       await illustrationFileAPI.delete(id);
       setFiles(prev => prev.filter(f => f.id !== id));
     } catch (err) {
-      const errorMessage = err.response?.data?.detail || 
-                          err.response?.data?.message || 
-                          'Failed to delete illustration file';
+      const errorMessage = err.response?.data?.detail ||
+        err.response?.data?.message ||
+        'Failed to delete illustration file';
       setError(errorMessage);
       throw err;
     } finally {
@@ -753,7 +753,7 @@ export const useIllustrationFiles = (illustrationId = null, fileType = null) => 
   const uploadFilesToIllustration = useCallback(async (illustrationId, files) => {
     setLoading(true);
     setError(null);
-    
+
     const uploadPromises = files.map(file => {
       return illustrationFileAPI.create({
         illustration: illustrationId,
@@ -762,16 +762,16 @@ export const useIllustrationFiles = (illustrationId = null, fileType = null) => 
         // file_type: 'IMAGE' // or 'PDF', 'DWG', etc.
       });
     });
-    
+
     try {
       const results = await Promise.all(uploadPromises);
       // Refresh the files list
       await fetchIllustrationFiles({ illustration: illustrationId });
       return results;
     } catch (err) {
-      const errorMessage = err.response?.data?.detail || 
-                          err.response?.data?.message || 
-                          'Failed to upload files';
+      const errorMessage = err.response?.data?.detail ||
+        err.response?.data?.message ||
+        'Failed to upload files';
       setError(errorMessage);
       throw err;
     } finally {
@@ -841,7 +841,7 @@ export const useIllustrationWithFiles = (illustrationId) => {
   const [illustration, setIllustration] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  
+
   const {
     files: illustrationFiles,
     loading: filesLoading,
@@ -854,7 +854,7 @@ export const useIllustrationWithFiles = (illustrationId) => {
 
   const fetchIllustration = useCallback(async () => {
     if (!illustrationId) return;
-    
+
     setLoading(true);
     setError(null);
     try {
@@ -862,9 +862,9 @@ export const useIllustrationWithFiles = (illustrationId) => {
       setIllustration(data);
       return data;
     } catch (err) {
-      const errorMessage = err.response?.data?.detail || 
-                          err.response?.data?.message || 
-                          'Failed to fetch illustration';
+      const errorMessage = err.response?.data?.detail ||
+        err.response?.data?.message ||
+        'Failed to fetch illustration';
       setError(errorMessage);
       throw err;
     } finally {
@@ -878,21 +878,21 @@ export const useIllustrationWithFiles = (illustrationId) => {
     try {
       // Update illustration first
       const updatedIllustration = await illustrationAPI.update(
-        illustrationId, 
+        illustrationId,
         illustrationData
       );
       setIllustration(updatedIllustration);
-      
+
       // Upload files if any
       if (files.length > 0) {
         await uploadFilesToIllustration(illustrationId, files);
       }
-      
+
       return updatedIllustration;
     } catch (err) {
-      const errorMessage = err.response?.data?.detail || 
-                          err.response?.data?.message || 
-                          'Failed to update illustration';
+      const errorMessage = err.response?.data?.detail ||
+        err.response?.data?.message ||
+        'Failed to update illustration';
       setError(errorMessage);
       throw err;
     } finally {

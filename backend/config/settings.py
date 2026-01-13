@@ -10,8 +10,8 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 load_dotenv(BASE_DIR / ".env")
 
 SECRET_KEY = os.getenv("SECRET_KEY", "unsafe-secret-for-dev")
-DEBUG = os.getenv("DEBUG", "False") == "True"
-FRONTEND_URL = os.getenv("FRONTEND_URL", "http://localhost:3000")
+DEBUG =  "True"
+FRONTEND_URL = os.getenv("FRONTEND_URL", "http://illustration.local")
 
 # ============================================
 # ALLOWED HOSTS - Complete list
@@ -19,13 +19,14 @@ FRONTEND_URL = os.getenv("FRONTEND_URL", "http://localhost:3000")
 ALLOWED_HOSTS = [
     'api.yaw.nishanaweb.cloud',
     'yaw.nishanaweb.cloud',
+    'api.illustration.local',
+    'illustration.local',
     'yaw-backend',
     'localhost',
     '127.0.0.1',
     '192.168.0.105',
     '192.168.0.92',
     '0.0.0.0',
-    '*',
 ]
 
 # ============================================
@@ -60,10 +61,10 @@ INSTALLED_APPS = [
 ]
 
 # ============================================
-# MIDDLEWARE
+# MIDDLEWARE - CORS MUST BE FIRST!
 # ============================================
 MIDDLEWARE = [
-    'corsheaders.middleware.CorsMiddleware',
+    'corsheaders.middleware.CorsMiddleware',  # MUST BE FIRST!
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -181,6 +182,8 @@ REST_FRAMEWORK = {
         'rest_framework.parsers.FormParser',
         'rest_framework.parsers.MultiPartParser',
     ],
+    'PAGE_SIZE_QUERY_PARAM': 'page_size',
+    'MAX_PAGE_SIZE': 1000,
 }
 
 # ============================================
@@ -214,23 +217,19 @@ SIMPLE_JWT = {
     'JTI_CLAIM': 'jti',
 }
 
-# ============================================
-# CORS CONFIGURATION - PRODUCTION
-# ============================================
-CORS_ALLOWED_ORIGINS = [
-    'https://yaw.nishanaweb.cloud',
-    'https://api.yaw.nishanaweb.cloud',
-    'http://illustration.local',
-    'http://api.illustration.local',
-    'https://illustration.local',
-    'https://api.illustration.local',
-]
-# Append origins from env
-if os.getenv("CORS_ALLOWED_ORIGINS_EXTRA"):
-    CORS_ALLOWED_ORIGINS += os.getenv("CORS_ALLOWED_ORIGINS_EXTRA").split(",")
 
+CORS_ALLOW_ALL_ORIGINS = True
+CORS_ALLOWED_ORIGINS = []
+
+# Append extra origins from environment variable
+if os.getenv("CORS_ALLOWED_ORIGINS_EXTRA"):
+    extra_origins = [origin.strip() for origin in os.getenv("CORS_ALLOWED_ORIGINS_EXTRA").split(",")]
+    CORS_ALLOWED_ORIGINS += extra_origins
+
+# Allow credentials (cookies, authorization headers)
 CORS_ALLOW_CREDENTIALS = True
 
+# Allowed HTTP methods
 CORS_ALLOW_METHODS = [
     'DELETE',
     'GET',
@@ -238,9 +237,9 @@ CORS_ALLOW_METHODS = [
     'PATCH',
     'POST',
     'PUT',
-    'DELETE',
 ]
 
+# Allowed request headers
 CORS_ALLOW_HEADERS = [
     'accept',
     'accept-encoding',
@@ -253,6 +252,7 @@ CORS_ALLOW_HEADERS = [
     'x-requested-with',
 ]
 
+# Headers exposed to the browser
 CORS_EXPOSE_HEADERS = [
     'content-disposition',
     'content-length',
@@ -262,32 +262,16 @@ CORS_EXPOSE_HEADERS = [
 # CSRF CONFIGURATION
 # ============================================
 CSRF_TRUSTED_ORIGINS = [
-    'https://api.yaw.nishanaweb.cloud',
-    'https://yaw.nishanaweb.cloud',
-]
-
-# Append origins from env
-if os.getenv("CSRF_TRUSTED_ORIGINS_EXTRA"):
-    CSRF_TRUSTED_ORIGINS += os.getenv("CSRF_TRUSTED_ORIGINS_EXTRA").split(",")
-
-# Fallback: Always include common local IPs for ease of use
-CSRF_TRUSTED_ORIGINS += [
-    'http://localhost', 
-    'http://127.0.0.1',
-    'http://0.0.0.0',
-    'http://192.168.0.92',
-    'http://192.168.0.105',
     'http://illustration.local',
     'http://api.illustration.local',
-    'https://illustration.local',
-    'https://api.illustration.local',
+    'https://yaw.nishanaweb.cloud',
+    'https://api.yaw.nishanaweb.cloud',
 ]
 
-# Allow any local IP if flag is set
-if os.getenv("allow_all_local_networks", "False") == "True":
-    # Logic to dynamically allow valid local IPs could go here, 
-    # but for now we rely on the specific list above.
-    pass
+# Append extra CSRF origins from environment variable
+if os.getenv("CSRF_TRUSTED_ORIGINS_EXTRA"):
+    extra_csrf = [origin.strip() for origin in os.getenv("CSRF_TRUSTED_ORIGINS_EXTRA").split(",")]
+    CSRF_TRUSTED_ORIGINS += extra_csrf
 
 # ============================================
 # EMAIL SETTINGS
@@ -350,6 +334,11 @@ LOGGING = {
             'level': 'DEBUG',
             'propagate': False,
         },
+        'corsheaders': {
+            'handlers': ['console', 'file'],
+            'level': 'DEBUG',
+            'propagate': False,
+        },
     },
 }
 
@@ -358,14 +347,7 @@ LOGGING = {
 # ============================================
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-# ============================================
-# DEVELOPMENT OVERRIDES
-# ============================================
-if DEBUG:
-    CSRF_TRUSTED_ORIGINS += ["http://localhost", "http://127.0.0.1"]
-    CORS_ALLOWED_ORIGINS += ["http://localhost:3000", "http://127.0.0.1:3000"]
-    ALLOWED_HOSTS += ["*"]  # Allow all in debug mode
-else:
+if os.getenv("DEBUG") == "False":
     # Production Security Settings
     SECURE_SSL_REDIRECT = os.getenv("SECURE_SSL_REDIRECT", "True") == "True"
     SESSION_COOKIE_SECURE = True

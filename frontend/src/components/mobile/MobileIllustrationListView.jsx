@@ -4,8 +4,6 @@ import {
     Typography,
     IconButton,
     TextField,
-    Paper,
-    Card,
     Chip,
     Stack,
     CircularProgress,
@@ -16,16 +14,15 @@ import {
     alpha,
     Button,
     Badge,
-    Avatar,
     Backdrop
 } from '@mui/material';
 import {
-    Add as PlusIcon,
-    Search as SearchIcon,
-    FilterList as FilterIcon,
-    Image as ImageIcon,
-    Close as CloseIcon,
-} from '@mui/icons-material';
+    Search,
+    Filter,
+    X,
+    Plus,
+    Image as ImageIcon
+} from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 import { illustrationAPI, clearCache } from '../../api/illustrations';
@@ -37,6 +34,21 @@ import MobileFilterPanel from './MobileFilterPanel';
 import FloatingAddButton from './FloatingAddButton';
 
 const DEFAULT_EMPTY_OBJECT = {};
+
+// Zinc color palette
+const zinc = {
+    50: '#fafafa',
+    100: '#f4f4f5',
+    200: '#e4e4e7',
+    300: '#d4d4d8',
+    400: '#a1a1aa',
+    500: '#71717a',
+    600: '#52525b',
+    700: '#3f3f46',
+    800: '#27272a',
+    900: '#18181b',
+    950: '#09090b',
+};
 
 const MobileIllustrationListView = ({
     initialFilters = DEFAULT_EMPTY_OBJECT,
@@ -68,11 +80,11 @@ const MobileIllustrationListView = ({
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
 
-    const { manufacturers } = useManufacturers();
-    const { engineModels } = useEngineModels();
-    const { categories } = usePartCategories();
-    const { subCategories } = usePartSubCategories();
-    const { carModels } = useCarModels();
+    const { manufacturers } = useManufacturers(1000);
+    const { engineModels } = useEngineModels(null, 1000);
+    const { categories } = usePartCategories(1000);
+    const { subCategories } = usePartSubCategories(null, 1000);
+    const { carModels } = useCarModels(null, 1000);
 
     // Fetch illustrations
     const fetchIllustrations = useCallback(async (customFilters = {}) => {
@@ -206,46 +218,69 @@ const MobileIllustrationListView = ({
         <Box>
             {enableHeader && (
                 <Box sx={{ mb: 3 }}>
-                    <Typography variant="h5" fontWeight="bold" gutterBottom>
+                    <Typography variant="h5" fontWeight="bold" gutterBottom sx={{ color: '#fff' }}>
                         イラストライブラリ
                     </Typography>
-                    <Typography variant="body2" color="text.secondary">
+                    <Typography variant="body2" sx={{ color: zinc[400] }}>
                         エンジンパーツの図解・イラスト集
                     </Typography>
                 </Box>
             )}
 
             {/* Search Bar */}
-            <Paper
+            <Box
                 component="form"
                 onSubmit={handleSearch}
-                elevation={0}
                 sx={{
-                    p: 1,
-                    display: 'flex',
-                    alignItems: 'center',
-                    borderRadius: 3,
+                    position: 'relative',
                     mb: 2,
-                    border: `1px solid ${theme.palette.divider}`,
+                    '&:focus-within svg': { color: '#3b82f6' }
                 }}
             >
-                <SearchIcon sx={{ mx: 1, color: 'text.secondary' }} />
-                <TextField
-                    fullWidth
+                <Box sx={{ position: 'absolute', left: 16, top: '50%', transform: 'translateY(-50%)', color: zinc[500], transition: 'color 0.2s', display: 'flex', zIndex: 1 }}>
+                    <Search size={18} />
+                </Box>
+                <Box
+                    component="input"
                     placeholder="タイトル、説明で検索..."
-                    variant="standard"
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    InputProps={{
-                        disableUnderline: true,
+                    sx={{
+                        width: '100%',
+                        bgcolor: alpha(zinc[900], 0.8),
+                        border: `1px solid ${alpha('#fff', 0.05)}`,
+                        borderRadius: 3,
+                        py: 1.75,
+                        pl: 6,
+                        pr: searchTerm ? 6 : 2,
+                        color: '#fff',
+                        outline: 'none',
+                        transition: 'all 0.2s',
+                        fontSize: '0.875rem',
+                        '::placeholder': { color: zinc[600] },
+                        '&:focus': {
+                            boxShadow: `0 0 0 2px ${alpha('#3b82f6', 0.2)}`,
+                            borderColor: alpha('#3b82f6', 0.5)
+                        }
                     }}
                 />
                 {searchTerm && (
-                    <IconButton size="small" onClick={() => setSearchTerm('')}>
-                        <CloseIcon fontSize="small" />
+                    <IconButton
+                        size="small"
+                        onClick={() => setSearchTerm('')}
+                        sx={{
+                            position: 'absolute',
+                            right: 8,
+                            top: '50%',
+                            transform: 'translateY(-50%)',
+                            color: zinc[400],
+                            '&:hover': { bgcolor: alpha('#fff', 0.05) }
+                        }}
+                    >
+                        <X size={18} />
                     </IconButton>
                 )}
-            </Paper>
+            </Box>
 
             {/* Toolbar */}
             <Stack direction="row" spacing={1} mb={2} alignItems="center">
@@ -253,8 +288,18 @@ const MobileIllustrationListView = ({
                     <Button
                         variant={activeFilterCount > 0 ? 'contained' : 'outlined'}
                         onClick={() => setShowFilters(true)}
-                        startIcon={<FilterIcon />}
-                        sx={{ borderRadius: 2, textTransform: 'none' }}
+                        startIcon={<Filter size={16} />}
+                        sx={{
+                            borderRadius: 2,
+                            textTransform: 'none',
+                            bgcolor: activeFilterCount > 0 ? '#3b82f6' : alpha(zinc[800], 0.5),
+                            color: activeFilterCount > 0 ? '#fff' : zinc[300],
+                            border: `1px solid ${alpha('#fff', 0.05)}`,
+                            '&:hover': {
+                                bgcolor: activeFilterCount > 0 ? '#2563eb' : zinc[800],
+                                color: '#fff'
+                            }
+                        }}
                     >
                         フィルター
                     </Button>
@@ -264,7 +309,16 @@ const MobileIllustrationListView = ({
                     size="small"
                     value={sortBy}
                     onChange={(e) => setSortBy(e.target.value)}
-                    sx={{ flex: 1 }}
+                    sx={{
+                        flex: 1,
+                        '& .MuiOutlinedInput-root': {
+                            bgcolor: alpha(zinc[900], 0.8),
+                            border: `1px solid ${alpha('#fff', 0.05)}`,
+                            borderRadius: 2,
+                            color: '#fff',
+                            '& fieldset': { border: 'none' }
+                        }
+                    }}
                 >
                     <MenuItem value="newest">新しい順</MenuItem>
                     <MenuItem value="oldest">古い順</MenuItem>
@@ -275,14 +329,13 @@ const MobileIllustrationListView = ({
             {/* Active Filters */}
             {activeFilterCount > 0 && (
                 <Fade in>
-                    <Paper
-                        elevation={0}
+                    <Box
                         sx={{
                             p: 1.5,
                             mb: 2,
                             borderRadius: 2,
-                            bgcolor: alpha(theme.palette.primary.main, 0.05),
-                            border: `1px solid ${alpha(theme.palette.primary.main, 0.2)}`,
+                            bgcolor: alpha('#3b82f6', 0.1),
+                            border: `1px solid ${alpha('#3b82f6', 0.3)}`,
                         }}
                     >
                         <Stack
@@ -292,7 +345,7 @@ const MobileIllustrationListView = ({
                             flexWrap="wrap"
                             gap={1}
                         >
-                            <Typography variant="caption" fontWeight="bold" color="primary">
+                            <Typography variant="caption" fontWeight="bold" sx={{ color: '#3b82f6' }}>
                                 適用中:
                             </Typography>
                             {Object.entries(filters).map(([k, v]) =>
@@ -304,19 +357,29 @@ const MobileIllustrationListView = ({
                                         onDelete={() =>
                                             handleFilterChange({ ...filters, [k]: undefined })
                                         }
-                                        sx={{ borderRadius: 1.5 }}
+                                        sx={{
+                                            borderRadius: 1.5,
+                                            bgcolor: alpha(zinc[800], 0.5),
+                                            color: '#fff',
+                                            '& .MuiChip-deleteIcon': { color: zinc[400] }
+                                        }}
                                     />
                                 ) : null
                             )}
                             <Button
                                 size="small"
                                 onClick={() => handleFilterChange({})}
-                                sx={{ ml: 'auto', textTransform: 'none' }}
+                                sx={{
+                                    ml: 'auto',
+                                    textTransform: 'none',
+                                    color: zinc[300],
+                                    '&:hover': { color: '#fff' }
+                                }}
                             >
                                 クリア
                             </Button>
                         </Stack>
-                    </Paper>
+                    </Box>
                 </Fade>
             )}
 
@@ -325,16 +388,13 @@ const MobileIllustrationListView = ({
                 onClose={() => setShowFilters(false)}
                 onFilterChange={handleFilterChange}
                 currentFilters={filters}
-            // TODO: Pass locked filters to panel to disable them?
-            // For now the panel blindly lets you edit, but handleFilterChange might re-lock.
-            // ideally we should pass disabled fields but MobileFilterPanel needs update for that.
             />
 
             {/* Loading */}
             {loading && (
                 <Box textAlign="center" py={8}>
-                    <CircularProgress size={40} />
-                    <Typography variant="body2" color="text.secondary" sx={{ mt: 2 }}>
+                    <CircularProgress size={40} sx={{ color: '#3b82f6' }} />
+                    <Typography variant="body2" sx={{ color: zinc[400], mt: 2 }}>
                         読み込み中...
                     </Typography>
                 </Box>
@@ -342,7 +402,7 @@ const MobileIllustrationListView = ({
 
             {/* Error */}
             {error && !loading && (
-                <Alert severity="error" sx={{ mb: 2, borderRadius: 2 }}>
+                <Alert severity="error" sx={{ mb: 2, borderRadius: 2, bgcolor: alpha('#ef4444', 0.1), color: '#ef4444' }}>
                     {error}
                 </Alert>
             )}
@@ -350,29 +410,34 @@ const MobileIllustrationListView = ({
             {/* No Results */}
             {!loading && !error && illustrations.length === 0 && (
                 <Fade in>
-                    <Card
+                    <Box
                         sx={{
                             borderRadius: 3,
                             p: 4,
                             textAlign: 'center',
-                            border: `2px dashed ${theme.palette.divider}`,
+                            border: `2px dashed ${alpha('#fff', 0.1)}`,
+                            bgcolor: alpha(zinc[900], 0.2)
                         }}
                     >
-                        <Avatar
+                        <Box
                             sx={{
                                 width: 64,
                                 height: 64,
                                 margin: '0 auto',
                                 mb: 2,
-                                bgcolor: alpha(theme.palette.primary.main, 0.1),
+                                borderRadius: 2,
+                                bgcolor: alpha('#3b82f6', 0.1),
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center'
                             }}
                         >
-                            <ImageIcon sx={{ fontSize: 32, color: theme.palette.primary.main }} />
-                        </Avatar>
-                        <Typography variant="h6" gutterBottom fontWeight="bold">
+                            <ImageIcon size={32} color="#3b82f6" />
+                        </Box>
+                        <Typography variant="h6" gutterBottom fontWeight="bold" sx={{ color: '#fff' }}>
                             イラストが見つかりません
                         </Typography>
-                        <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
+                        <Typography variant="body2" sx={{ color: zinc[400], mb: 3 }}>
                             {searchTerm || activeFilterCount > 0
                                 ? '検索条件を変更してください'
                                 : '最初のイラストを作成しましょう'}
@@ -380,14 +445,19 @@ const MobileIllustrationListView = ({
                         {enableCreate && !searchTerm && activeFilterCount === 0 && (
                             <Button
                                 variant="contained"
-                                startIcon={<PlusIcon />}
+                                startIcon={<Plus size={16} />}
                                 onClick={handleCreateClick}
-                                sx={{ borderRadius: 2, textTransform: 'none' }}
+                                sx={{
+                                    borderRadius: 2,
+                                    textTransform: 'none',
+                                    bgcolor: '#3b82f6',
+                                    '&:hover': { bgcolor: '#2563eb' }
+                                }}
                             >
                                 イラストを作成
                             </Button>
                         )}
-                    </Card>
+                    </Box>
                 </Fade>
             )}
 

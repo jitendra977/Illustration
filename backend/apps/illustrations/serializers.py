@@ -1,4 +1,4 @@
-# serializers.py - FIXED
+# serializers.py - CORRECTED RELATIONS (Fixed Circular Issue)
 
 from rest_framework import serializers
 from .models import (
@@ -12,9 +12,9 @@ from .models import (
 # Manufacturer Serializer
 # ------------------------------
 class ManufacturerSerializer(serializers.ModelSerializer):
-    engine_count = serializers.IntegerField(read_only=True)
-    car_model_count = serializers.IntegerField(read_only=True)
-    illustration_count = serializers.IntegerField(read_only=True)
+    engine_count = serializers.IntegerField(read_only=True, required=False)
+    car_model_count = serializers.IntegerField(read_only=True, required=False)
+    illustration_count = serializers.IntegerField(read_only=True, required=False)
     
     class Meta:
         model = Manufacturer
@@ -27,18 +27,22 @@ class ManufacturerSerializer(serializers.ModelSerializer):
 # ------------------------------
 class EngineModelSerializer(serializers.ModelSerializer):
     manufacturer_name = serializers.CharField(source='manufacturer.name', read_only=True)
+    manufacturer_slug = serializers.CharField(source='manufacturer.slug', read_only=True)
     fuel_type_display = serializers.CharField(source='get_fuel_type_display', read_only=True)
-    car_model_count = serializers.IntegerField(read_only=True)
-    illustration_count = serializers.IntegerField(read_only=True)
+    car_model_count = serializers.IntegerField(read_only=True, required=False)
+    illustration_count = serializers.IntegerField(read_only=True, required=False)
     
     class Meta:
         model = EngineModel
         fields = [
-            'id', 'manufacturer', 'manufacturer_name', 'name', 'engine_code',
-            'fuel_type', 'fuel_type_display',
+            'id', 'manufacturer', 'manufacturer_name', 'manufacturer_slug',
+            'name', 'engine_code', 'fuel_type', 'fuel_type_display',
             'slug', 'car_model_count', 'illustration_count'
         ]
-        read_only_fields = ['id', 'slug', 'manufacturer_name', 'fuel_type_display', 'car_model_count', 'illustration_count']
+        read_only_fields = [
+            'id', 'slug', 'manufacturer_name', 'manufacturer_slug',
+            'fuel_type_display', 'car_model_count', 'illustration_count'
+        ]
 
 
 # ------------------------------
@@ -46,33 +50,40 @@ class EngineModelSerializer(serializers.ModelSerializer):
 # ------------------------------
 class CarModelSerializer(serializers.ModelSerializer):
     manufacturer_name = serializers.CharField(source='manufacturer.name', read_only=True)
+    manufacturer_slug = serializers.CharField(source='manufacturer.slug', read_only=True)
     vehicle_type_display = serializers.CharField(source='get_vehicle_type_display', read_only=True)
-    engine_count = serializers.IntegerField(read_only=True)
-    illustration_count = serializers.IntegerField(read_only=True)
+    engine_count = serializers.IntegerField(read_only=True, required=False)
+    illustration_count = serializers.IntegerField(read_only=True, required=False)
     engines_detail = serializers.SerializerMethodField(read_only=True)
     
     class Meta:
         model = CarModel
         fields = [
-            'id', 'manufacturer', 'manufacturer_name', 'name', 'slug',
-            'vehicle_type', 'vehicle_type_display',
+            'id', 'manufacturer', 'manufacturer_name', 'manufacturer_slug',
+            'name', 'slug', 'vehicle_type', 'vehicle_type_display',
             'year_from', 'year_to', 'model_code', 'chassis_code',
             'engines', 'engines_detail', 'engine_count', 'illustration_count'
         ]
         read_only_fields = [
-            'id', 'slug', 'manufacturer_name', 'vehicle_type_display', 
-            'engines_detail', 'engine_count', 'illustration_count'
+            'id', 'slug', 'manufacturer_name', 'manufacturer_slug',
+            'vehicle_type_display', 'engines_detail', 'engine_count', 'illustration_count'
         ]
     
     def get_engines_detail(self, obj):
-        """Return basic engine info for the car model"""
+        """Return complete engine info with manufacturer"""
         return [
             {
                 'id': engine.id,
                 'name': engine.name,
                 'engine_code': engine.engine_code,
                 'fuel_type': engine.fuel_type,
-                'slug': engine.slug
+                'fuel_type_display': engine.get_fuel_type_display(),
+                'slug': engine.slug,
+                'manufacturer': {
+                    'id': engine.manufacturer.id,
+                    'name': engine.manufacturer.name,
+                    'slug': engine.manufacturer.slug
+                }
             }
             for engine in obj.engines.all()
         ]
@@ -82,8 +93,8 @@ class CarModelSerializer(serializers.ModelSerializer):
 # Part Category Serializer
 # ------------------------------
 class PartCategorySerializer(serializers.ModelSerializer):
-    subcategory_count = serializers.IntegerField(read_only=True)
-    illustration_count = serializers.IntegerField(read_only=True)
+    subcategory_count = serializers.IntegerField(read_only=True, required=False)
+    illustration_count = serializers.IntegerField(read_only=True, required=False)
     
     class Meta:
         model = PartCategory
@@ -99,21 +110,22 @@ class PartCategorySerializer(serializers.ModelSerializer):
 # ------------------------------
 class PartSubCategorySerializer(serializers.ModelSerializer):
     part_category_name = serializers.CharField(source='part_category.name', read_only=True)
-    illustration_count = serializers.IntegerField(read_only=True)
+    part_category_slug = serializers.CharField(source='part_category.slug', read_only=True)
+    illustration_count = serializers.IntegerField(read_only=True, required=False)
     
     class Meta:
         model = PartSubCategory
         fields = [
-            'id', 'part_category', 'part_category_name',
+            'id', 'part_category', 'part_category_name', 'part_category_slug',
             'name', 'description', 'slug', 'order', 'illustration_count'
         ]
         read_only_fields = [
-            'id', 'part_category_name', 'illustration_count'
+            'id', 'part_category_name', 'part_category_slug', 'illustration_count'
         ]
 
 
 # ------------------------------
-# Illustration File Serializer (SINGLE DEFINITION)
+# Illustration File Serializer
 # ------------------------------
 class IllustrationFileSerializer(serializers.ModelSerializer):
     file_type_display = serializers.CharField(source='get_file_type_display', read_only=True)
@@ -154,10 +166,10 @@ class IllustrationFileSerializer(serializers.ModelSerializer):
 
 
 # ------------------------------
-# Illustration Serializer (Create/Update)
+# Illustration Serializer (List/Create/Update)
 # ------------------------------
 class IllustrationSerializer(serializers.ModelSerializer):
-    # For file uploads
+    # File uploads
     uploaded_files = serializers.ListField(
         child=serializers.FileField(),
         write_only=True,
@@ -167,23 +179,34 @@ class IllustrationSerializer(serializers.ModelSerializer):
     # Read-only related names
     user_name = serializers.CharField(source='user.username', read_only=True)
     factory_name = serializers.CharField(source='factory.name', read_only=True, allow_null=True)
+    
+    # Engine with manufacturer
     engine_model_name = serializers.CharField(source='engine_model.name', read_only=True)
+    engine_model_slug = serializers.CharField(source='engine_model.slug', read_only=True)
+    manufacturer_id = serializers.IntegerField(source='engine_model.manufacturer.id', read_only=True)
+    manufacturer_name = serializers.CharField(source='engine_model.manufacturer.name', read_only=True)
+    manufacturer_slug = serializers.CharField(source='engine_model.manufacturer.slug', read_only=True)
+    
+    # Part categories
     part_category_name = serializers.CharField(source='part_category.name', read_only=True)
+    part_category_slug = serializers.CharField(source='part_category.slug', read_only=True)
     part_subcategory_name = serializers.CharField(source='part_subcategory.name', read_only=True, allow_null=True)
+    part_subcategory_slug = serializers.CharField(source='part_subcategory.slug', read_only=True, allow_null=True)
     
     # File count
-    file_count = serializers.IntegerField(read_only=True)
+    file_count = serializers.IntegerField(read_only=True, required=False)
     
-    # ⭐ CHANGED: Make first_file conditional based on context
+    # First file (conditional)
     first_file = serializers.SerializerMethodField(read_only=True)
     
     class Meta:
         model = Illustration
         fields = [
             'id', 'user', 'user_name', 'factory', 'factory_name',
-            'engine_model', 'engine_model_name',
-            'part_category', 'part_category_name', 
-            'part_subcategory', 'part_subcategory_name',
+            'engine_model', 'engine_model_name', 'engine_model_slug',
+            'manufacturer_id', 'manufacturer_name', 'manufacturer_slug',
+            'part_category', 'part_category_name', 'part_category_slug',
+            'part_subcategory', 'part_subcategory_name', 'part_subcategory_slug',
             'title', 'description',
             'applicable_car_models',
             'created_at', 'updated_at',
@@ -191,8 +214,11 @@ class IllustrationSerializer(serializers.ModelSerializer):
         ]
         read_only_fields = [
             'id', 'user', 'user_name', 'factory', 'factory_name',
-            'engine_model_name', 'part_category_name', 
-            'part_subcategory_name', 'created_at', 'updated_at', 'file_count'
+            'engine_model_name', 'engine_model_slug',
+            'manufacturer_id', 'manufacturer_name', 'manufacturer_slug',
+            'part_category_name', 'part_category_slug',
+            'part_subcategory_name', 'part_subcategory_slug',
+            'created_at', 'updated_at', 'file_count'
         ]
     
     def create(self, validated_data):
@@ -201,11 +227,9 @@ class IllustrationSerializer(serializers.ModelSerializer):
         
         illustration = Illustration.objects.create(**validated_data)
         
-        # Add applicable car models (ManyToMany)
         if applicable_car_models:
             illustration.applicable_car_models.set(applicable_car_models)
         
-        # Create illustration files
         for file in uploaded_files:
             IllustrationFile.objects.create(illustration=illustration, file=file)
         
@@ -215,54 +239,47 @@ class IllustrationSerializer(serializers.ModelSerializer):
         uploaded_files = validated_data.pop('uploaded_files', [])
         applicable_car_models = validated_data.pop('applicable_car_models', None)
         
-        # Update basic fields
         for attr, value in validated_data.items():
             setattr(instance, attr, value)
         instance.save()
         
-        # Update applicable car models if provided
         if applicable_car_models is not None:
             instance.applicable_car_models.set(applicable_car_models)
         
-        # Add new files
         for file in uploaded_files:
             IllustrationFile.objects.create(illustration=instance, file=file)
         
         return instance
     
-    # ⭐ CHANGED: Only return first_file if include_files is True
     def get_first_file(self, obj):
-        """Return the first file's data for displaying thumbnail in list views"""
-        # Check if we should include files from context
+        """Return the first file's data for thumbnails"""
         include_files = self.context.get('include_files', False)
         
         if not include_files:
-            # Return None if files not requested (for speed)
             return None
         
         first_file = obj.files.first()
         if first_file:
-            data = IllustrationFileSerializer(first_file, context=self.context).data
-            return data
+            return IllustrationFileSerializer(first_file, context=self.context).data
         return None
+
+
 # ------------------------------
-# Illustration Detail Serializer (with full nested data)
+# Illustration Detail Serializer
 # ------------------------------
 class IllustrationDetailSerializer(serializers.ModelSerializer):
-    # Nested serializers for detailed view
+    # Files
     files = IllustrationFileSerializer(many=True, read_only=True)
+    
+    # User info
     user_name = serializers.CharField(source='user.username', read_only=True)
     user_email = serializers.CharField(source='user.email', read_only=True)
     factory_name = serializers.CharField(source='factory.name', read_only=True, allow_null=True)
     
-    # Engine details
+    # Detailed nested objects
     engine_model_detail = serializers.SerializerMethodField()
-    
-    # Part details
     part_category_detail = serializers.SerializerMethodField()
     part_subcategory_detail = serializers.SerializerMethodField()
-    
-    # Applicable car models
     applicable_car_models_detail = serializers.SerializerMethodField()
     
     class Meta:
@@ -283,6 +300,8 @@ class IllustrationDetailSerializer(serializers.ModelSerializer):
             'id': obj.engine_model.id,
             'name': obj.engine_model.name,
             'engine_code': obj.engine_model.engine_code,
+            'fuel_type': obj.engine_model.fuel_type,
+            'fuel_type_display': obj.engine_model.get_fuel_type_display(),
             'slug': obj.engine_model.slug,
             'manufacturer': {
                 'id': obj.engine_model.manufacturer.id,
@@ -295,7 +314,8 @@ class IllustrationDetailSerializer(serializers.ModelSerializer):
         return {
             'id': obj.part_category.id,
             'name': obj.part_category.name,
-            'slug': obj.part_category.slug
+            'slug': obj.part_category.slug,
+            'order': obj.part_category.order
         }
     
     def get_part_subcategory_detail(self, obj):
@@ -304,7 +324,8 @@ class IllustrationDetailSerializer(serializers.ModelSerializer):
         return {
             'id': obj.part_subcategory.id,
             'name': obj.part_subcategory.name,
-            'slug': obj.part_subcategory.slug
+            'slug': obj.part_subcategory.slug,
+            'order': obj.part_subcategory.order
         }
     
     def get_applicable_car_models_detail(self, obj):
@@ -313,47 +334,134 @@ class IllustrationDetailSerializer(serializers.ModelSerializer):
                 'id': car.id,
                 'name': car.name,
                 'slug': car.slug,
-                'manufacturer': car.manufacturer.name
+                'manufacturer': {
+                    'id': car.manufacturer.id,
+                    'name': car.manufacturer.name,
+                    'slug': car.manufacturer.slug
+                },
+                'vehicle_type': car.vehicle_type,
+                'vehicle_type_display': car.get_vehicle_type_display(),
+                'year_from': car.year_from,
+                'year_to': car.year_to
             }
             for car in obj.applicable_car_models.all()
         ]
 
 
 # ------------------------------
-# Nested Detail Serializers (for other endpoints)
+# Nested Detail Serializers
 # ------------------------------
 class ManufacturerDetailSerializer(serializers.ModelSerializer):
     """Detailed manufacturer with engines and car models"""
-    car_models = CarModelSerializer(many=True, read_only=True)
+    engines = serializers.SerializerMethodField(read_only=True)
+    car_models = serializers.SerializerMethodField(read_only=True)
     
     class Meta:
         model = Manufacturer
-        fields = ['id', 'name', 'slug', 'car_models']
+        fields = ['id', 'name', 'slug', 'engines', 'car_models']
+    
+    def get_engines(self, obj):
+        """Return all engines for this manufacturer"""
+        engines = obj.engines.all()
+        return [
+            {
+                'id': engine.id,
+                'name': engine.name,
+                'engine_code': engine.engine_code,
+                'fuel_type': engine.fuel_type,
+                'fuel_type_display': engine.get_fuel_type_display(),
+                'slug': engine.slug,
+                'manufacturer': engine.manufacturer.id
+            }
+            for engine in engines
+        ]
+    
+    def get_car_models(self, obj):
+        """Return all car models for this manufacturer"""
+        car_models = obj.car_models.all()
+        return [
+            {
+                'id': car.id,
+                'name': car.name,
+                'slug': car.slug,
+                'vehicle_type': car.vehicle_type,
+                'vehicle_type_display': car.get_vehicle_type_display(),
+                'year_from': car.year_from,
+                'year_to': car.year_to,
+                'manufacturer': car.manufacturer.id
+            }
+            for car in car_models
+        ]
 
 
 class EngineModelDetailSerializer(serializers.ModelSerializer):
-    """Detailed engine with car models and illustrations"""
+    """Detailed engine with complete manufacturer and car models"""
     manufacturer = ManufacturerSerializer(read_only=True)
-    car_models = CarModelSerializer(many=True, read_only=True)
-    illustration_count = serializers.IntegerField(read_only=True)
+    car_models = serializers.SerializerMethodField(read_only=True)
+    illustration_count = serializers.IntegerField(read_only=True, required=False)
+    fuel_type_display = serializers.CharField(source='get_fuel_type_display', read_only=True)
     
     class Meta:
         model = EngineModel
         fields = [
-            'id', 'manufacturer', 'name', 'engine_code', 'fuel_type',
+            'id', 'manufacturer', 'name', 'engine_code', 
+            'fuel_type', 'fuel_type_display',
             'slug', 'car_models', 'illustration_count'
+        ]
+    
+    def get_car_models(self, obj):
+        """Return all car models with this engine"""
+        car_models = obj.car_models.all()
+        return [
+            {
+                'id': car.id,
+                'name': car.name,
+                'slug': car.slug,
+                'vehicle_type': car.vehicle_type,
+                'vehicle_type_display': car.get_vehicle_type_display(),
+                'year_from': car.year_from,
+                'year_to': car.year_to,
+                'manufacturer': {
+                    'id': car.manufacturer.id,
+                    'name': car.manufacturer.name,
+                    'slug': car.manufacturer.slug
+                }
+            }
+            for car in car_models
         ]
 
 
 class CarModelDetailSerializer(serializers.ModelSerializer):
-    """Detailed car model with engines"""
+    """Detailed car model with complete manufacturer and engines"""
     manufacturer = ManufacturerSerializer(read_only=True)
-    engines = EngineModelSerializer(many=True, read_only=True)
+    engines = serializers.SerializerMethodField(read_only=True)
+    vehicle_type_display = serializers.CharField(source='get_vehicle_type_display', read_only=True)
     
     class Meta:
         model = CarModel
         fields = [
             'id', 'manufacturer', 'name', 'slug',
-            'vehicle_type', 'year_from', 'year_to',
+            'vehicle_type', 'vehicle_type_display',
+            'year_from', 'year_to',
             'model_code', 'chassis_code', 'engines'
+        ]
+    
+    def get_engines(self, obj):
+        """Return all engines for this car model"""
+        engines = obj.engines.all()
+        return [
+            {
+                'id': engine.id,
+                'name': engine.name,
+                'engine_code': engine.engine_code,
+                'fuel_type': engine.fuel_type,
+                'fuel_type_display': engine.get_fuel_type_display(),
+                'slug': engine.slug,
+                'manufacturer': {
+                    'id': engine.manufacturer.id,
+                    'name': engine.manufacturer.name,
+                    'slug': engine.manufacturer.slug
+                }
+            }
+            for engine in engines
         ]

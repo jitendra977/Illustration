@@ -1,7 +1,14 @@
 import React from 'react';
-import { Breadcrumbs, Link, Typography, Box } from '@mui/material';
-import { NavigateNext } from '@mui/icons-material';
+import { Breadcrumbs as MuiBreadcrumbs, Typography, Box, alpha } from '@mui/material';
+import { ChevronRight } from 'lucide-react';
 import { Link as RouterLink } from 'react-router-dom';
+
+// Zinc color palette
+const zinc = {
+    400: '#a1a1aa',
+    500: '#71717a',
+    600: '#52525b',
+};
 
 /**
  * Reusable Breadcrumb component
@@ -19,17 +26,21 @@ const Breadcrumb = ({ items, isMobile = false }) => {
                 whiteSpace: 'nowrap',
                 pb: isMobile ? 1 : 0,
                 scrollbarWidth: 'none',  // Firefox
-                '&::-webkit-scrollbar': { display: 'none' }  // Chrome/Safari
+                '&::-webkit-scrollbar': { display: 'none' }, // Chrome/Safari
+                maskImage: 'linear-gradient(to right, black 90%, transparent 100%)' // Fade out effect
             }}>
-                <Breadcrumbs
-                    separator={<NavigateNext fontSize="small" />}
+                <MuiBreadcrumbs
+                    separator={<ChevronRight size={14} color={zinc[600]} />}
                     aria-label="breadcrumb"
                     itemsAfterCollapse={2}
                     itemsBeforeCollapse={isMobile ? 1 : 2}
-                    maxItems={isMobile ? 3 : 8}
+                    maxItems={isMobile ? 10 : 8} // Show more on mobile since we scroll
                     sx={{
                         '& .MuiBreadcrumbs-li': {
                             display: 'inline-flex',
+                        },
+                        '& .MuiBreadcrumbs-ol': {
+                            flexWrap: isMobile ? 'nowrap' : 'wrap',
                         }
                     }}
                 >
@@ -40,9 +51,11 @@ const Breadcrumb = ({ items, isMobile = false }) => {
                             return (
                                 <Typography
                                     key={index}
-                                    color="text.primary"
-                                    variant={isMobile ? "caption" : "body2"}
-                                    sx={{ fontWeight: 'bold' }}
+                                    sx={{
+                                        color: '#fff',
+                                        fontSize: isMobile ? '12px' : '13px',
+                                        fontWeight: 600
+                                    }}
                                 >
                                     {item.label}
                                 </Typography>
@@ -50,25 +63,31 @@ const Breadcrumb = ({ items, isMobile = false }) => {
                         }
 
                         return (
-                            <Link
+                            <Typography
                                 key={index}
                                 component={RouterLink}
                                 to={item.path}
                                 state={item.state}
-                                underline="hover"
-                                color="inherit"
-                                variant={isMobile ? "caption" : "body2"}
                                 sx={{
                                     display: 'flex',
                                     alignItems: 'center',
-                                    '&:hover': { color: 'primary.main' }
+                                    color: zinc[400],
+                                    textDecoration: 'none',
+                                    fontSize: isMobile ? '12px' : '13px',
+                                    fontWeight: 500,
+                                    transition: 'color 0.2s',
+                                    '&:hover': {
+                                        color: '#fff',
+                                        bgcolor: alpha('#fff', 0.05),
+                                        borderRadius: 0.5
+                                    }
                                 }}
                             >
                                 {item.label}
-                            </Link>
+                            </Typography>
                         );
                     })}
-                </Breadcrumbs>
+                </MuiBreadcrumbs>
             </Box>
         </Box>
     );

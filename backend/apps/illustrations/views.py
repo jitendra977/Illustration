@@ -66,7 +66,7 @@ class ManufacturerViewSet(viewsets.ModelViewSet):
 
 class EngineModelViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAdminOrReadOnly]
-    pagination_class = DefaultPagination
+    pagination_class = None
     filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
     filterset_fields = ['manufacturer', 'fuel_type']
     search_fields = ['name', 'engine_code', 'manufacturer__name']

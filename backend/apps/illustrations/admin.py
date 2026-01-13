@@ -273,7 +273,7 @@ class IllustrationFileInline(admin.TabularInline):
 
 
 # ==========================================
-# Illustration Admin
+# Illustration Admin - FIXED
 # ==========================================
 @admin.register(Illustration)
 class IllustrationAdmin(admin.ModelAdmin):
@@ -339,14 +339,33 @@ class IllustrationAdmin(admin.ModelAdmin):
         )
     
     def save_model(self, request, obj, form, change):
-        """Auto-populate factory and user"""
+        """Auto-populate factory and user - FIXED"""
         # Set user to current logged-in user if creating new
         if not change:  # Creating new object
             obj.user = request.user
         
-        # Auto-populate factory from user
-        if obj.user and obj.user.factory:
-            obj.factory = obj.user.factory
+        # FIXED: Auto-populate factory from user's active memberships
+        if obj.user:
+            # Get user's active factory memberships
+            active_memberships = obj.user.get_active_memberships()
+            
+            if active_memberships.exists():
+                # Get the first active factory
+                first_membership = active_memberships.first()
+                obj.factory = first_membership.factory
+            elif obj.user.is_staff:
+                # For staff users without factory membership, factory can be None
+                # Or you can set a default factory here if needed
+                pass
+            else:
+                # Regular user without factory - this shouldn't happen
+                # but we'll handle it gracefully
+                from django.contrib import messages
+                messages.warning(
+                    request, 
+                    f'User {obj.user.username} has no active factory membership. Factory will be set to None.'
+                )
+                obj.factory = None
         
         super().save_model(request, obj, form, change)
     
