@@ -96,14 +96,27 @@ const IllustrationDetailModal = ({
                 fullWidth
                 scroll="paper"
                 PaperProps={{
-                    sx: { borderRadius: 3 }
+                    sx: {
+                        borderRadius: 3,
+                        bgcolor: 'background.default',
+                        backgroundImage: 'none'
+                    }
                 }}
             >
-                <DialogTitle sx={{ m: 0, p: 2, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <Typography variant="h6" fontWeight="bold">
+                <DialogTitle sx={{
+                    m: 0,
+                    p: 2,
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                    borderBottom: 1,
+                    borderColor: 'divider',
+                    bgcolor: 'background.paper'
+                }}>
+                    <Typography variant="h6" fontWeight="800">
                         イラストレーション詳細
                     </Typography>
-                    <IconButton onClick={onClose} size="small">
+                    <IconButton onClick={onClose} size="small" sx={{ color: 'text.secondary' }}>
                         <CloseIcon />
                     </IconButton>
                 </DialogTitle>
@@ -116,67 +129,67 @@ const IllustrationDetailModal = ({
                         <Grid item xs={12} md={5}>
                             <Stack spacing={2}>
                                 <Box>
-                                    <Typography variant="overline" color="text.secondary" fontWeight="bold">
+                                    <Typography variant="overline" sx={{ color: 'text.secondary', fontWeight: 800 }}>
                                         タイトル
                                     </Typography>
-                                    <Typography variant="h5" fontWeight="bold" color="primary.main">
+                                    <Typography variant="h5" fontWeight="900" sx={{ color: 'primary.main' }}>
                                         {illustration.title}
                                     </Typography>
                                 </Box>
 
                                 <Box>
-                                    <Typography variant="overline" color="text.secondary" fontWeight="bold">
+                                    <Typography variant="overline" sx={{ color: 'text.secondary', fontWeight: 800 }}>
                                         説明
                                     </Typography>
-                                    <Typography variant="body2" color="text.primary">
+                                    <Typography variant="body2" sx={{ color: 'text.primary' }}>
                                         {illustration.description || '説明なし'}
                                     </Typography>
                                 </Box>
 
-                                <Divider />
+                                <Divider sx={{ borderColor: 'divider' }} />
 
                                 <Box>
-                                    <Typography variant="overline" color="text.secondary" fontWeight="bold">
+                                    <Typography variant="overline" sx={{ color: 'text.secondary', fontWeight: 800 }}>
                                         基本情報
                                     </Typography>
                                     <Stack spacing={1} mt={1}>
                                         <Box display="flex" justifyContent="space-between">
-                                            <Typography variant="caption" color="text.secondary">メーカー:</Typography>
-                                            <Typography variant="caption" fontWeight="bold">{illustration.engine_model_detail?.manufacturer?.name || illustration.manufacturer_name || '-'}</Typography>
+                                            <Typography variant="caption" sx={{ color: 'text.secondary' }}>メーカー:</Typography>
+                                            <Typography variant="caption" sx={{ fontWeight: 700, color: 'text.primary' }}>{illustration.engine_model_detail?.manufacturer?.name || illustration.manufacturer_name || '-'}</Typography>
                                         </Box>
                                         <Box display="flex" justifyContent="space-between">
-                                            <Typography variant="caption" color="text.secondary">エンジン型式:</Typography>
-                                            <Typography variant="caption" fontWeight="bold">{illustration.engine_model_name || illustration.engine_model_detail?.name || '-'}</Typography>
+                                            <Typography variant="caption" sx={{ color: 'text.secondary' }}>エンジン型式:</Typography>
+                                            <Typography variant="caption" sx={{ fontWeight: 700, color: 'text.primary' }}>{illustration.engine_model_name || illustration.engine_model_detail?.name || '-'}</Typography>
                                         </Box>
                                         <Box display="flex" justifyContent="space-between">
-                                            <Typography variant="caption" color="text.secondary">パーツカテゴリー:</Typography>
-                                            <Typography variant="caption" fontWeight="bold">{illustration.part_category_name || illustration.part_category_detail?.name || '-'}</Typography>
+                                            <Typography variant="caption" sx={{ color: 'text.secondary' }}>パーツカテゴリー:</Typography>
+                                            <Typography variant="caption" sx={{ fontWeight: 700, color: 'text.primary' }}>{illustration.part_category_name || illustration.part_category_detail?.name || '-'}</Typography>
                                         </Box>
                                         {illustration.part_subcategory_name && (
                                             <Box display="flex" justifyContent="space-between">
-                                                <Typography variant="caption" color="text.secondary">パーツサブカテゴリー:</Typography>
-                                                <Typography variant="caption" fontWeight="bold">{illustration.part_subcategory_name}</Typography>
+                                                <Typography variant="caption" sx={{ color: 'text.secondary' }}>パーツサブカテゴリー:</Typography>
+                                                <Typography variant="caption" sx={{ fontWeight: 700, color: 'text.primary' }}>{illustration.part_subcategory_name}</Typography>
                                             </Box>
                                         )}
                                     </Stack>
                                 </Box>
 
                                 <Box>
-                                    <Typography variant="overline" color="text.secondary" fontWeight="bold">
+                                    <Typography variant="overline" sx={{ color: 'text.secondary', fontWeight: 800 }}>
                                         作成情報
                                     </Typography>
                                     <Stack spacing={1} mt={1}>
                                         <Box display="flex" justifyContent="space-between">
-                                            <Typography variant="caption" color="text.secondary">作成者:</Typography>
-                                            <Typography variant="caption" fontWeight="bold">{illustration.user_name || '-'}</Typography>
+                                            <Typography variant="caption" sx={{ color: 'text.secondary' }}>作成者:</Typography>
+                                            <Typography variant="caption" sx={{ fontWeight: 700, color: 'text.primary' }}>{illustration.user_name || '-'}</Typography>
                                         </Box>
                                         <Box display="flex" justifyContent="space-between">
-                                            <Typography variant="caption" color="text.secondary">工場:</Typography>
-                                            <Typography variant="caption" fontWeight="bold">{illustration.factory_name || '-'}</Typography>
+                                            <Typography variant="caption" sx={{ color: 'text.secondary' }}>工場:</Typography>
+                                            <Typography variant="caption" sx={{ fontWeight: 700, color: 'text.primary' }}>{illustration.factory_name || '-'}</Typography>
                                         </Box>
                                         <Box display="flex" justifyContent="space-between">
-                                            <Typography variant="caption" color="text.secondary">作成日:</Typography>
-                                            <Typography variant="caption" fontWeight="bold">
+                                            <Typography variant="caption" sx={{ color: 'text.secondary' }}>作成日:</Typography>
+                                            <Typography variant="caption" sx={{ fontWeight: 700, color: 'text.primary' }}>
                                                 {illustration.created_at ? new Date(illustration.created_at).toLocaleDateString('ja-JP') : '-'}
                                             </Typography>
                                         </Box>
@@ -187,7 +200,7 @@ const IllustrationDetailModal = ({
 
                         {/* Files Section */}
                         <Grid item xs={12} md={7}>
-                            <Typography variant="overline" color="text.secondary" fontWeight="bold" gutterBottom display="block">
+                            <Typography variant="overline" sx={{ color: 'text.secondary', fontWeight: 800 }} gutterBottom display="block">
                                 添付ファイル ({illustration.files?.length || 0})
                             </Typography>
 
@@ -205,9 +218,12 @@ const IllustrationDetailModal = ({
                                                 justifyContent: 'space-between',
                                                 cursor: 'pointer',
                                                 transition: 'all 0.2s',
+                                                bgcolor: alpha(theme.palette.zinc[900], 0.3),
+                                                borderColor: 'divider',
                                                 '&:hover': {
                                                     bgcolor: alpha(theme.palette.primary.main, 0.05),
                                                     borderColor: theme.palette.primary.main,
+                                                    transform: 'translateX(4px)'
                                                 }
                                             }}
                                             onClick={() => handleFilePreview(file)}
@@ -256,8 +272,8 @@ const IllustrationDetailModal = ({
                                         </Paper>
                                     ))
                                 ) : (
-                                    <Box sx={{ py: 4, textAlign: 'center', bgcolor: alpha(theme.palette.action.disabled, 0.05), borderRadius: 2 }}>
-                                        <Typography variant="body2" color="text.secondary">
+                                    <Box sx={{ py: 4, textAlign: 'center', bgcolor: alpha(theme.palette.zinc[900], 0.5), borderRadius: 2, border: `1px dashed ${theme.palette.divider}` }}>
+                                        <Typography variant="body2" sx={{ color: 'text.secondary' }}>
                                             添付ファイルはありません
                                         </Typography>
                                     </Box>
@@ -277,6 +293,7 @@ const IllustrationDetailModal = ({
                                     onClick={handleDelete}
                                     disabled={deleting}
                                     size="small"
+                                    sx={{ fontWeight: 700, textTransform: 'none' }}
                                 >
                                     削除
                                 </Button>
@@ -285,13 +302,25 @@ const IllustrationDetailModal = ({
                                     onClick={onEdit}
                                     disabled={deleting}
                                     size="small"
+                                    sx={{ fontWeight: 700, textTransform: 'none', color: 'text.secondary' }}
                                 >
                                     編集
                                 </Button>
                             </>
                         )}
                     </Stack>
-                    <Button variant="contained" onClick={onClose} sx={{ borderRadius: 2 }}>
+                    <Button
+                        variant="contained"
+                        onClick={onClose}
+                        sx={{
+                            borderRadius: 2,
+                            fontWeight: 700,
+                            px: 3,
+                            textTransform: 'none',
+                            bgcolor: 'primary.main',
+                            '&:hover': { bgcolor: 'primary.dark' }
+                        }}
+                    >
                         閉じる
                     </Button>
                 </DialogActions>

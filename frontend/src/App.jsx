@@ -1,22 +1,14 @@
 // src/App.jsx
 import React from 'react';
-import { ThemeProvider, createTheme } from '@mui/material/styles';
+import { ThemeProvider } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 import { AuthProvider } from './context/AuthContext';
 import MobileRoutes from './routes/MobileRoutes';
-
-const theme = createTheme({
-  palette: {
-    primary: {
-      main: '#1976d2',
-    },
-    secondary: {
-      main: '#dc004e',
-    },
-  },
-});
+import { getTheme } from './theme';
 
 function App() {
+  const theme = getTheme('dark');
+
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />

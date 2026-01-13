@@ -33,22 +33,8 @@ import MobileIllustrationFormModal from '../forms/MobileIllustrationFormModal';
 import MobileFilterPanel from './MobileFilterPanel';
 import FloatingAddButton from './FloatingAddButton';
 
+// Default empty object constant
 const DEFAULT_EMPTY_OBJECT = {};
-
-// Zinc color palette
-const zinc = {
-    50: '#fafafa',
-    100: '#f4f4f5',
-    200: '#e4e4e7',
-    300: '#d4d4d8',
-    400: '#a1a1aa',
-    500: '#71717a',
-    600: '#52525b',
-    700: '#3f3f46',
-    800: '#27272a',
-    900: '#18181b',
-    950: '#09090b',
-};
 
 const MobileIllustrationListView = ({
     initialFilters = DEFAULT_EMPTY_OBJECT,
@@ -218,10 +204,10 @@ const MobileIllustrationListView = ({
         <Box>
             {enableHeader && (
                 <Box sx={{ mb: 3 }}>
-                    <Typography variant="h5" fontWeight="bold" gutterBottom sx={{ color: '#fff' }}>
+                    <Typography variant="h5" fontWeight="bold" gutterBottom sx={{ color: 'text.primary' }}>
                         イラストライブラリ
                     </Typography>
-                    <Typography variant="body2" sx={{ color: zinc[400] }}>
+                    <Typography variant="body2" sx={{ color: 'text.secondary' }}>
                         エンジンパーツの図解・イラスト集
                     </Typography>
                 </Box>
@@ -237,7 +223,7 @@ const MobileIllustrationListView = ({
                     '&:focus-within svg': { color: '#3b82f6' }
                 }}
             >
-                <Box sx={{ position: 'absolute', left: 16, top: '50%', transform: 'translateY(-50%)', color: zinc[500], transition: 'color 0.2s', display: 'flex', zIndex: 1 }}>
+                <Box sx={{ position: 'absolute', left: 16, top: '50%', transform: 'translateY(-50%)', color: 'text.secondary', transition: 'color 0.2s', display: 'flex', zIndex: 1 }}>
                     <Search size={18} />
                 </Box>
                 <Box
@@ -247,20 +233,20 @@ const MobileIllustrationListView = ({
                     onChange={(e) => setSearchTerm(e.target.value)}
                     sx={{
                         width: '100%',
-                        bgcolor: alpha(zinc[900], 0.8),
-                        border: `1px solid ${alpha('#fff', 0.05)}`,
+                        bgcolor: alpha(theme.palette.zinc[900], 0.8),
+                        border: `1px solid ${theme.palette.divider}`,
                         borderRadius: 3,
                         py: 1.75,
                         pl: 6,
                         pr: searchTerm ? 6 : 2,
-                        color: '#fff',
+                        color: 'text.primary',
                         outline: 'none',
                         transition: 'all 0.2s',
                         fontSize: '0.875rem',
-                        '::placeholder': { color: zinc[600] },
+                        '::placeholder': { color: 'text.disabled' },
                         '&:focus': {
-                            boxShadow: `0 0 0 2px ${alpha('#3b82f6', 0.2)}`,
-                            borderColor: alpha('#3b82f6', 0.5)
+                            boxShadow: `0 0 0 2px ${alpha(theme.palette.primary.main, 0.2)}`,
+                            borderColor: theme.palette.primary.main
                         }
                     }}
                 />
@@ -292,12 +278,12 @@ const MobileIllustrationListView = ({
                         sx={{
                             borderRadius: 2,
                             textTransform: 'none',
-                            bgcolor: activeFilterCount > 0 ? '#3b82f6' : alpha(zinc[800], 0.5),
-                            color: activeFilterCount > 0 ? '#fff' : zinc[300],
-                            border: `1px solid ${alpha('#fff', 0.05)}`,
+                            bgcolor: activeFilterCount > 0 ? 'primary.main' : alpha(theme.palette.zinc[800], 0.5),
+                            color: activeFilterCount > 0 ? 'white' : 'text.secondary',
+                            border: `1px solid ${theme.palette.divider}`,
                             '&:hover': {
-                                bgcolor: activeFilterCount > 0 ? '#2563eb' : zinc[800],
-                                color: '#fff'
+                                bgcolor: activeFilterCount > 0 ? 'primary.dark' : 'action.hover',
+                                color: 'text.primary'
                             }
                         }}
                     >
@@ -312,10 +298,10 @@ const MobileIllustrationListView = ({
                     sx={{
                         flex: 1,
                         '& .MuiOutlinedInput-root': {
-                            bgcolor: alpha(zinc[900], 0.8),
-                            border: `1px solid ${alpha('#fff', 0.05)}`,
+                            bgcolor: alpha(theme.palette.zinc[900], 0.8),
+                            border: `1px solid ${theme.palette.divider}`,
                             borderRadius: 2,
-                            color: '#fff',
+                            color: 'text.primary',
                             '& fieldset': { border: 'none' }
                         }
                     }}
@@ -334,8 +320,8 @@ const MobileIllustrationListView = ({
                             p: 1.5,
                             mb: 2,
                             borderRadius: 2,
-                            bgcolor: alpha('#3b82f6', 0.1),
-                            border: `1px solid ${alpha('#3b82f6', 0.3)}`,
+                            bgcolor: alpha(theme.palette.primary.main, 0.1),
+                            border: `1px solid ${alpha(theme.palette.primary.main, 0.3)}`,
                         }}
                     >
                         <Stack
@@ -345,7 +331,7 @@ const MobileIllustrationListView = ({
                             flexWrap="wrap"
                             gap={1}
                         >
-                            <Typography variant="caption" fontWeight="bold" sx={{ color: '#3b82f6' }}>
+                            <Typography variant="caption" fontWeight="bold" sx={{ color: 'primary.main' }}>
                                 適用中:
                             </Typography>
                             {Object.entries(filters).map(([k, v]) =>
@@ -359,9 +345,9 @@ const MobileIllustrationListView = ({
                                         }
                                         sx={{
                                             borderRadius: 1.5,
-                                            bgcolor: alpha(zinc[800], 0.5),
-                                            color: '#fff',
-                                            '& .MuiChip-deleteIcon': { color: zinc[400] }
+                                            bgcolor: alpha(theme.palette.zinc[800], 0.5),
+                                            color: 'text.primary',
+                                            '& .MuiChip-deleteIcon': { color: 'text.disabled' }
                                         }}
                                     />
                                 ) : null
@@ -372,8 +358,8 @@ const MobileIllustrationListView = ({
                                 sx={{
                                     ml: 'auto',
                                     textTransform: 'none',
-                                    color: zinc[300],
-                                    '&:hover': { color: '#fff' }
+                                    color: 'text.secondary',
+                                    '&:hover': { color: 'text.primary' }
                                 }}
                             >
                                 クリア
@@ -393,8 +379,8 @@ const MobileIllustrationListView = ({
             {/* Loading */}
             {loading && (
                 <Box textAlign="center" py={8}>
-                    <CircularProgress size={40} sx={{ color: '#3b82f6' }} />
-                    <Typography variant="body2" sx={{ color: zinc[400], mt: 2 }}>
+                    <CircularProgress size={40} sx={{ color: 'primary.main' }} />
+                    <Typography variant="body2" sx={{ color: 'text.secondary', mt: 2 }}>
                         読み込み中...
                     </Typography>
                 </Box>
@@ -402,7 +388,7 @@ const MobileIllustrationListView = ({
 
             {/* Error */}
             {error && !loading && (
-                <Alert severity="error" sx={{ mb: 2, borderRadius: 2, bgcolor: alpha('#ef4444', 0.1), color: '#ef4444' }}>
+                <Alert severity="error" sx={{ mb: 2, borderRadius: 2, bgcolor: alpha(theme.palette.error.main, 0.1), color: 'error.main' }}>
                     {error}
                 </Alert>
             )}
@@ -415,8 +401,8 @@ const MobileIllustrationListView = ({
                             borderRadius: 3,
                             p: 4,
                             textAlign: 'center',
-                            border: `2px dashed ${alpha('#fff', 0.1)}`,
-                            bgcolor: alpha(zinc[900], 0.2)
+                            border: `2px dashed ${theme.palette.divider}`,
+                            bgcolor: alpha(theme.palette.zinc[900], 0.2)
                         }}
                     >
                         <Box
@@ -426,18 +412,18 @@ const MobileIllustrationListView = ({
                                 margin: '0 auto',
                                 mb: 2,
                                 borderRadius: 2,
-                                bgcolor: alpha('#3b82f6', 0.1),
+                                bgcolor: alpha(theme.palette.primary.main, 0.1),
                                 display: 'flex',
                                 alignItems: 'center',
                                 justifyContent: 'center'
                             }}
                         >
-                            <ImageIcon size={32} color="#3b82f6" />
+                            <ImageIcon size={32} color={theme.palette.primary.main} />
                         </Box>
-                        <Typography variant="h6" gutterBottom fontWeight="bold" sx={{ color: '#fff' }}>
+                        <Typography variant="h6" gutterBottom fontWeight="bold" sx={{ color: 'text.primary' }}>
                             イラストが見つかりません
                         </Typography>
-                        <Typography variant="body2" sx={{ color: zinc[400], mb: 3 }}>
+                        <Typography variant="body2" sx={{ color: 'text.secondary', mb: 3 }}>
                             {searchTerm || activeFilterCount > 0
                                 ? '検索条件を変更してください'
                                 : '最初のイラストを作成しましょう'}
@@ -450,8 +436,8 @@ const MobileIllustrationListView = ({
                                 sx={{
                                     borderRadius: 2,
                                     textTransform: 'none',
-                                    bgcolor: '#3b82f6',
-                                    '&:hover': { bgcolor: '#2563eb' }
+                                    bgcolor: 'primary.main',
+                                    '&:hover': { bgcolor: 'primary.dark' }
                                 }}
                             >
                                 イラストを作成

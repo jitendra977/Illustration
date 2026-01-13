@@ -14,7 +14,9 @@ import {
   DialogTitle,
   DialogContent,
   DialogActions,
-  CircularProgress
+  CircularProgress,
+  useTheme,
+  alpha
 } from '@mui/material';
 import {
   Visibility as EyeIcon,
@@ -33,6 +35,7 @@ const IllustrationCard = ({ illustration, onDelete }) => {
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [showDetailModal, setShowDetailModal] = useState(false);
   const [deleting, setDeleting] = useState(false);
+  const theme = useTheme();
 
   const handleDelete = async () => {
     setDeleting(true);
@@ -66,19 +69,21 @@ const IllustrationCard = ({ illustration, onDelete }) => {
           display: 'flex',
           flexDirection: 'column',
           cursor: 'pointer',
-          transition: 'all 0.3s ease',
+          transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+          bgcolor: 'background.paper',
+          backgroundImage: 'none',
+          border: `1px solid ${theme.palette.divider}`,
+          borderRadius: 3,
+          overflow: 'hidden',
           '&:hover': {
             transform: 'translateY(-4px)',
-            boxShadow: 6
+            boxShadow: `0 12px 24px -10px ${alpha(theme.palette.common.black, 0.5)}`,
+            borderColor: alpha(theme.palette.primary.main, 1.0),
           }
         }}
         onClick={(e) => {
-          if (onClick) {
-            onClick(illustration);
-          } else {
-            // Fallback to opening modal directly
-            setShowDetailModal(true);
-          }
+          // Check for prop or fallback
+          setShowDetailModal(true);
         }}
       >
         <Box sx={{ position: 'relative' }}>
@@ -87,66 +92,79 @@ const IllustrationCard = ({ illustration, onDelete }) => {
             height="160"
             image={getImageUrl() || '/placeholder.jpg'}
             alt={illustration.title}
-            sx={{ bgcolor: 'grey.100' }}
+            sx={{
+              bgcolor: alpha(theme.palette.zinc[950], 0.5),
+              objectFit: 'cover'
+            }}
           />
           {illustration.files && illustration.files.length > 1 && (
             <Chip
               size="small"
               label={`${illustration.files.length} files`}
-              sx={{ position: 'absolute', top: 8, right: 8, bgcolor: 'rgba(0,0,0,0.7)', color: 'white' }}
+              sx={{
+                position: 'absolute',
+                top: 8,
+                right: 8,
+                bgcolor: alpha(theme.palette.common.black, 0.6),
+                color: 'white',
+                backdropFilter: 'blur(4px)',
+                fontWeight: 600,
+                fontSize: '0.65rem'
+              }}
             />
           )}
         </Box>
 
         <CardContent sx={{ flexGrow: 1, p: 2 }}>
-          <Typography variant="subtitle2" fontWeight="bold" gutterBottom noWrap>
+          <Typography variant="subtitle2" fontWeight="800" sx={{ color: 'text.primary', fontSize: '0.9rem' }} noWrap>
             {illustration.title}
           </Typography>
 
           {illustration.description && (
-            <Typography variant="caption" color="text.secondary" sx={{ mb: 2, display: 'block' }}>
+            <Typography variant="caption" sx={{ color: 'text.secondary', mb: 2, display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden', height: '2.5em' }}>
               {illustration.description}
             </Typography>
           )}
 
           <Stack spacing={0.5}>
             <Box display="flex" alignItems="center" gap={0.5}>
-              <Typography variant="caption" fontWeight="medium">Engine:</Typography>
-              <Typography variant="caption" color="text.secondary">
+              <Typography variant="caption" fontWeight="800" sx={{ color: 'text.secondary', fontSize: '10px', textTransform: 'uppercase' }}>Engine:</Typography>
+              <Typography variant="caption" sx={{ color: 'text.primary', fontWeight: 600 }}>
                 {illustration.engine_model?.name || illustration.engine_model_name}
               </Typography>
             </Box>
             <Box display="flex" alignItems="center" gap={0.5}>
-              <Typography variant="caption" fontWeight="medium">Category:</Typography>
-              <Typography variant="caption" color="text.secondary">
+              <Typography variant="caption" fontWeight="800" sx={{ color: 'text.secondary', fontSize: '10px', textTransform: 'uppercase' }}>Category:</Typography>
+              <Typography variant="caption" sx={{ color: 'text.primary', fontWeight: 600 }}>
                 {illustration.part_category?.name || illustration.part_category_name}
               </Typography>
             </Box>
           </Stack>
 
-          <Stack direction="row" justifyContent="space-between" alignItems="center" mt={2}>
+          <Stack direction="row" justifyContent="space-between" alignItems="center" mt={2} pt={1.5} sx={{ borderTop: `1px solid ${theme.palette.divider}` }}>
             <Stack direction="row" spacing={0.5} alignItems="center">
-              <PersonIcon fontSize="small" sx={{ color: 'text.secondary' }} />
-              <Typography variant="caption" color="text.secondary">
+              <PersonIcon sx={{ color: 'text.disabled', fontSize: 14 }} />
+              <Typography variant="caption" sx={{ color: 'text.secondary', fontWeight: 500 }}>
                 {illustration.user_name}
               </Typography>
             </Stack>
             <Stack direction="row" spacing={0.5} alignItems="center">
-              <CalendarIcon fontSize="small" sx={{ color: 'text.secondary' }} />
-              <Typography variant="caption" color="text.secondary">
+              <CalendarIcon sx={{ color: 'text.disabled', fontSize: 14 }} />
+              <Typography variant="caption" sx={{ color: 'text.secondary', fontWeight: 500 }}>
                 {formatDate(illustration.created_at)}
               </Typography>
             </Stack>
           </Stack>
         </CardContent>
 
-        <CardActions sx={{ p: 1, justifyContent: 'space-between' }}>
+        <CardActions sx={{ p: 1, justifyContent: 'space-between', bgcolor: alpha(theme.palette.zinc[950], 0.3) }}>
           <IconButton
             size="small"
             onClick={(e) => {
               e.stopPropagation();
               setShowDetailModal(true);
             }}
+            sx={{ color: 'primary.main' }}
           >
             <EyeIcon fontSize="small" />
           </IconButton>
@@ -165,6 +183,7 @@ const IllustrationCard = ({ illustration, onDelete }) => {
                 document.body.removeChild(link);
               }
             }}
+            sx={{ color: 'text.secondary' }}
           >
             <DownloadIcon fontSize="small" />
           </IconButton>
@@ -175,6 +194,7 @@ const IllustrationCard = ({ illustration, onDelete }) => {
                 e.stopPropagation();
                 setShowDeleteConfirm(true);
               }}
+              sx={{ color: 'error.main' }}
             >
               <DeleteIcon fontSize="small" />
             </IconButton>
@@ -193,15 +213,26 @@ const IllustrationCard = ({ illustration, onDelete }) => {
       <Dialog
         open={showDeleteConfirm}
         onClose={() => !deleting && setShowDeleteConfirm(false)}
+        PaperProps={{
+          sx: {
+            bgcolor: 'background.paper',
+            backgroundImage: 'none',
+            borderRadius: 3
+          }
+        }}
       >
-        <DialogTitle>Delete Illustration?</DialogTitle>
+        <DialogTitle sx={{ fontWeight: 800 }}>Delete Illustration?</DialogTitle>
         <DialogContent>
           <Typography>
             Delete "{illustration.title}"? This cannot be undone.
           </Typography>
         </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setShowDeleteConfirm(false)} disabled={deleting}>
+        <DialogActions sx={{ p: 2, pt: 0 }}>
+          <Button
+            onClick={() => setShowDeleteConfirm(false)}
+            disabled={deleting}
+            sx={{ borderRadius: 2, fontWeight: 700, textTransform: 'none', color: 'text.secondary' }}
+          >
             Cancel
           </Button>
           <Button
@@ -209,8 +240,9 @@ const IllustrationCard = ({ illustration, onDelete }) => {
             color="error"
             variant="contained"
             disabled={deleting}
+            sx={{ borderRadius: 2, fontWeight: 700, textTransform: 'none', px: 3 }}
           >
-            {deleting ? <CircularProgress size={20} /> : 'Delete'}
+            {deleting ? <CircularProgress size={20} color="inherit" /> : 'Delete'}
           </Button>
         </DialogActions>
       </Dialog>

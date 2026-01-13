@@ -231,7 +231,7 @@ const MobileIllustrationFormModal = ({
         await illustrationAPI.create(submitData);
       } else {
         // Update existing illustration
-        
+
         // First, delete files if needed
         if (filesToDelete.length > 0) {
           // Backend should handle this through the illustration files endpoint
@@ -272,11 +272,11 @@ const MobileIllustrationFormModal = ({
       onClose();
     } catch (err) {
       console.error('Form submission error:', err);
-      const errorMessage = err.response?.data?.message || 
-                          err.response?.data?.detail ||
-                          Object.values(err.response?.data || {}).flat().join(', ') ||
-                          err.message || 
-                          'エラーが発生しました';
+      const errorMessage = err.response?.data?.message ||
+        err.response?.data?.detail ||
+        Object.values(err.response?.data || {}).flat().join(', ') ||
+        err.message ||
+        'エラーが発生しました';
       setError(errorMessage);
     } finally {
       setLoading(false);
@@ -303,7 +303,10 @@ const MobileIllustrationFormModal = ({
       onClose={onClose}
       fullScreen
       PaperProps={{
-        sx: { bgcolor: 'background.default' }
+        sx: {
+          bgcolor: 'background.default',
+          backgroundImage: 'none'
+        }
       }}
     >
       {/* Header */}
@@ -314,12 +317,14 @@ const MobileIllustrationFormModal = ({
           justifyContent: 'space-between',
           borderBottom: 1,
           borderColor: 'divider',
+          bgcolor: 'background.paper',
+          color: 'text.primary'
         }}
       >
-        <Typography variant="h6">
+        <Typography variant="h6" fontWeight="800">
           {mode === 'create' ? '新規イラスト' : 'イラスト編集'}
         </Typography>
-        <IconButton edge="end" onClick={onClose} disabled={loading}>
+        <IconButton edge="end" onClick={onClose} disabled={loading} sx={{ color: 'text.secondary' }}>
           <CloseIcon />
         </IconButton>
       </DialogTitle>
@@ -438,7 +443,7 @@ const MobileIllustrationFormModal = ({
             multiple
             options={filteredCarModels}
             getOptionLabel={(option) => option.name}
-            value={filteredCarModels.filter(c => 
+            value={filteredCarModels.filter(c =>
               formData.applicable_car_models.includes(c.id)
             )}
             onChange={(e, newValue) => {
@@ -607,13 +612,18 @@ const MobileIllustrationFormModal = ({
       </DialogContent>
 
       {/* Actions */}
-      <DialogActions sx={{ p: 2, borderTop: 1, borderColor: 'divider' }}>
+      <DialogActions sx={{ p: 2, borderTop: 1, borderColor: 'divider', bgcolor: 'background.paper' }}>
         <Button
           fullWidth
           onClick={onClose}
           disabled={loading}
           variant="outlined"
-          sx={{ borderRadius: 2 }}
+          sx={{
+            borderRadius: 2,
+            borderColor: 'divider',
+            color: 'text.secondary',
+            '&:hover': { borderColor: 'text.primary', bgcolor: 'action.hover' }
+          }}
         >
           キャンセル
         </Button>
@@ -622,7 +632,11 @@ const MobileIllustrationFormModal = ({
           onClick={handleSubmit}
           disabled={loading}
           variant="contained"
-          sx={{ borderRadius: 2 }}
+          sx={{
+            borderRadius: 2,
+            bgcolor: 'primary.main',
+            '&:hover': { bgcolor: 'primary.dark' }
+          }}
         >
           {loading ? (
             <CircularProgress size={24} color="inherit" />

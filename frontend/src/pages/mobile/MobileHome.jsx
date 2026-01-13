@@ -5,9 +5,7 @@ import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import Stack from '@mui/material/Stack';
 import Chip from '@mui/material/Chip';
-import Alert from '@mui/material/Alert';
 import Skeleton from '@mui/material/Skeleton';
-import Slide from '@mui/material/Slide';
 import { useTheme } from '@mui/material/styles';
 import { alpha } from '@mui/material/styles';
 import Box from '@mui/material/Box';
@@ -19,8 +17,6 @@ import Divider from '@mui/material/Divider';
 import Avatar from '@mui/material/Avatar';
 import {
   Store as StoreIcon,
-  DirectionsCar as CarIcon,
-  Build as BuildIcon,
   Image as ImageIcon,
   Add as AddIcon,
   ChevronRight as ChevronRightIcon,
@@ -80,7 +76,6 @@ const MobileHome = () => {
         illustrationAPI.getAll({ limit: 20, include_files: false })
       ]);
 
-      // Calculate top categories from illustrations
       const categoryCount = {};
       (allIllustrationsRes.results || []).forEach(ill => {
         if (ill.part_category_name) {
@@ -137,7 +132,7 @@ const MobileHome = () => {
 
   const SectionHeader = ({ title, actionLabel, onAction }) => (
     <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ mb: 2, px: 0.5 }}>
-      <Typography variant="subtitle2" fontWeight="800" sx={{ color: '#1e293b', fontSize: '0.9rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+      <Typography variant="subtitle2" fontWeight="800" sx={{ color: 'text.primary', fontSize: '0.9rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
         {title}
       </Typography>
       {actionLabel && (
@@ -145,7 +140,7 @@ const MobileHome = () => {
           variant="caption"
           fontWeight="bold"
           onClick={onAction}
-          sx={{ color: theme.palette.primary.main, cursor: 'pointer', '&:active': { opacity: 0.7 } }}
+          sx={{ color: 'primary.main', cursor: 'pointer', '&:active': { opacity: 0.7 } }}
         >
           {actionLabel}
         </Typography>
@@ -178,7 +173,7 @@ const MobileHome = () => {
       }}>
         {React.cloneElement(icon, { sx: { color: theme.palette[color].main, fontSize: 24 } })}
       </Box>
-      <Typography variant="caption" fontWeight="bold" sx={{ fontSize: '0.7rem', color: '#64748b' }}>
+      <Typography variant="caption" fontWeight="bold" sx={{ fontSize: '0.7rem', color: 'text.secondary' }}>
         {label}
       </Typography>
     </Box>
@@ -189,11 +184,12 @@ const MobileHome = () => {
       onClick={onClick}
       sx={{
         borderRadius: '20px',
-        bgcolor: '#ffffff',
-        boxShadow: '0 4px 20px rgba(0,0,0,0.03)',
-        border: '1px solid rgba(0,0,0,0.04)',
+        bgcolor: 'background.paper',
+        backgroundImage: 'none',
+        boxShadow: theme.shadows[1],
+        border: `1px solid ${theme.palette.divider}`,
         transition: 'all 0.2s',
-        '&:active': { transform: 'scale(0.98)', bgcolor: '#f8fafc' },
+        '&:active': { transform: 'scale(0.98)', bgcolor: 'action.hover' },
         ...sx
       }}
     >
@@ -229,13 +225,14 @@ const MobileHome = () => {
         {/* HERO SECTION */}
         <Box sx={{ mt: 2, mb: 3 }}>
           <Box sx={{
-            background: 'linear-gradient(135deg, #0f172a 0%, #1e293b 100%)',
+            background: `linear-gradient(135deg, ${theme.palette.zinc[900]} 0%, ${theme.palette.zinc[950]} 100%)`,
             borderRadius: '24px',
             p: 3,
             color: 'white',
             position: 'relative',
             overflow: 'hidden',
-            boxShadow: '0 10px 30px rgba(15, 23, 42, 0.2)'
+            boxShadow: `0 10px 30px ${alpha(theme.palette.common.black, 0.2)}`,
+            border: `1px solid ${alpha(theme.palette.common.white, 0.05)}`
           }}>
             {/* Background pattern */}
             <Box sx={{
@@ -260,7 +257,7 @@ const MobileHome = () => {
 
               <Stack direction="row" spacing={3}>
                 <Box>
-                  <Typography variant="h4" fontWeight="900" sx={{ color: '#38bdf8' }}>
+                  <Typography variant="h4" fontWeight="900" sx={{ color: 'primary.light' }}>
                     {stats.totalIllustrations.toLocaleString()}
                   </Typography>
                   <Typography variant="caption" sx={{ opacity: 0.6, textTransform: 'uppercase', fontWeight: 700, letterSpacing: '0.05em' }}>
@@ -269,7 +266,7 @@ const MobileHome = () => {
                 </Box>
                 <Divider orientation="vertical" flexItem sx={{ borderColor: 'rgba(255,255,255,0.1)' }} />
                 <Box>
-                  <Typography variant="h4" fontWeight="900" sx={{ color: '#818cf8' }}>
+                  <Typography variant="h4" fontWeight="900" sx={{ color: 'secondary.light' }}>
                     {stats.totalManufacturers}
                   </Typography>
                   <Typography variant="caption" sx={{ opacity: 0.6, textTransform: 'uppercase', fontWeight: 700, letterSpacing: '0.05em' }}>
@@ -292,12 +289,12 @@ const MobileHome = () => {
             InputProps={{
               startAdornment: (
                 <InputAdornment position="start">
-                  <SearchIcon sx={{ color: '#94a3b8', fontSize: 22 }} />
+                  <SearchIcon sx={{ color: 'text.secondary', fontSize: 22 }} />
                 </InputAdornment>
               ),
               endAdornment: searchQuery && (
                 <InputAdornment position="end">
-                  <IconButton size="small" onClick={() => setSearchQuery('')}>
+                  <IconButton size="small" onClick={() => setSearchQuery('')} sx={{ color: 'text.secondary' }}>
                     <ClearIcon fontSize="small" />
                   </IconButton>
                 </InputAdornment>
@@ -307,12 +304,10 @@ const MobileHome = () => {
               '& .MuiOutlinedInput-root': {
                 height: 54,
                 borderRadius: '16px',
-                bgcolor: '#ffffff',
-                boxShadow: '0 4px 12px rgba(0,0,0,0.02)',
-                border: '1px solid rgba(0,0,0,0.05)',
+                bgcolor: 'background.paper',
+                border: `1px solid ${theme.palette.divider}`,
                 '&.Mui-focused': {
-                  boxShadow: '0 4px 12px rgba(0,0,0,0.05)',
-                  borderColor: theme.palette.primary.main
+                  borderColor: 'primary.main'
                 }
               },
               '& .MuiOutlinedInput-notchedOutline': { border: 'none' }
@@ -348,44 +343,40 @@ const MobileHome = () => {
           />
         </Stack>
 
-        {/* RECENT ILLUSTRATIONS - REDESIGNED */}
+        {/* RECENT ILLUSTRATIONS */}
         <Box sx={{ mb: 4 }}>
           <SectionHeader title="最近のイラスト" actionLabel="すべて表示" onAction={() => navigate('/illustrations')} />
           <Stack spacing={2}>
             {stats.recentIllustrations.length > 0 ? (
-              stats.recentIllustrations.slice(0, 5).map((ill, idx) => (
+              stats.recentIllustrations.slice(0, 5).map((ill) => (
                 <GlassCard
                   key={ill.id}
                   onClick={() => navigate(`/illustrations/${ill.id}`)}
                   sx={{
-                    background: 'linear-gradient(135deg, #ffffff 0%, #f8fafc 100%)',
                     '&:active': {
                       transform: 'translateY(2px)',
-                      boxShadow: '0 2px 8px rgba(0,0,0,0.05)'
                     }
                   }}
                 >
                   <Stack spacing={1.5}>
-                    {/* Header with icon and file count */}
                     <Stack direction="row" spacing={2} alignItems="flex-start">
                       <Box sx={{
                         width: 60,
                         height: 60,
                         borderRadius: '16px',
                         background: ill.file_count > 0
-                          ? 'linear-gradient(135deg, #fee2e2 0%, #fecaca 100%)'
-                          : 'linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%)',
+                          ? `linear-gradient(135deg, ${alpha(theme.palette.error.main, 0.2)} 0%, ${alpha(theme.palette.error.main, 0.1)} 100%)`
+                          : `linear-gradient(135deg, ${alpha(theme.palette.primary.main, 0.2)} 0%, ${alpha(theme.palette.primary.main, 0.1)} 100%)`,
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
                         position: 'relative',
                         flexShrink: 0,
-                        boxShadow: '0 4px 12px rgba(0,0,0,0.06)'
                       }}>
                         {ill.file_count > 0 ? (
-                          <PdfIcon sx={{ color: '#dc2626', fontSize: 30 }} />
+                          <PdfIcon sx={{ color: 'error.main', fontSize: 30 }} />
                         ) : (
-                          <DescriptionIcon sx={{ color: '#2563eb', fontSize: 30 }} />
+                          <DescriptionIcon sx={{ color: 'primary.main', fontSize: 30 }} />
                         )}
                         {ill.file_count > 0 && (
                           <Box sx={{
@@ -395,7 +386,7 @@ const MobileHome = () => {
                             minWidth: 24,
                             height: 24,
                             borderRadius: '12px',
-                            bgcolor: '#dc2626',
+                            bgcolor: 'error.main',
                             color: 'white',
                             fontSize: '0.7rem',
                             fontWeight: 900,
@@ -403,8 +394,8 @@ const MobileHome = () => {
                             alignItems: 'center',
                             justifyContent: 'center',
                             px: 0.75,
-                            boxShadow: '0 4px 8px rgba(220, 38, 38, 0.3)',
-                            border: '2px solid white'
+                            boxShadow: `0 4px 8px ${alpha(theme.palette.error.main, 0.3)}`,
+                            border: `2px solid ${theme.palette.background.paper}`
                           }}>
                             {ill.file_count}
                           </Box>
@@ -416,7 +407,7 @@ const MobileHome = () => {
                           variant="body1"
                           fontWeight="800"
                           sx={{
-                            color: '#0f172a',
+                            color: 'text.primary',
                             mb: 0.5,
                             lineHeight: 1.3,
                             display: '-webkit-box',
@@ -428,7 +419,6 @@ const MobileHome = () => {
                           {ill.title}
                         </Typography>
 
-                        {/* Engine Model Badge */}
                         {ill.engine_model_name && (
                           <Chip
                             label={ill.engine_model_name}
@@ -447,7 +437,6 @@ const MobileHome = () => {
                       </Box>
                     </Stack>
 
-                    {/* Footer with metadata */}
                     <Stack
                       direction="row"
                       alignItems="center"
@@ -455,21 +444,21 @@ const MobileHome = () => {
                       sx={{
                         pt: 1,
                         borderTop: '1px solid',
-                        borderColor: alpha('#000', 0.05)
+                        borderColor: 'divider'
                       }}
                     >
                       <Stack direction="row" spacing={1} alignItems="center">
-                        <AccessTimeIcon sx={{ fontSize: 14, color: '#94a3b8' }} />
-                        <Typography variant="caption" sx={{ color: '#64748b', fontWeight: 600 }}>
+                        <AccessTimeIcon sx={{ fontSize: 14, color: 'text.secondary' }} />
+                        <Typography variant="caption" sx={{ color: 'text.secondary', fontWeight: 600 }}>
                           {getTimeAgo(ill.created_at)}
                         </Typography>
                       </Stack>
 
                       <Stack direction="row" spacing={0.5} alignItems="center">
-                        <Typography variant="caption" sx={{ color: '#94a3b8', fontWeight: 600 }}>
+                        <Typography variant="caption" sx={{ color: 'text.secondary', fontWeight: 600 }}>
                           詳細を見る
                         </Typography>
-                        <ChevronRightIcon sx={{ color: '#94a3b8', fontSize: 18 }} />
+                        <ChevronRightIcon sx={{ color: 'text.secondary', fontSize: 18 }} />
                       </Stack>
                     </Stack>
                   </Stack>
@@ -481,7 +470,7 @@ const MobileHome = () => {
                 textAlign: 'center',
                 bgcolor: alpha(theme.palette.background.paper, 0.4)
               }}>
-                <DescriptionIcon sx={{ fontSize: 48, color: '#cbd5e1', mb: 1 }} />
+                <DescriptionIcon sx={{ fontSize: 48, color: 'text.disabled', mb: 1 }} />
                 <Typography variant="body2" color="text.secondary" fontWeight="600">
                   データがありません
                 </Typography>
@@ -512,12 +501,11 @@ const MobileHome = () => {
                   minWidth: 100,
                   p: 2,
                   borderRadius: '20px',
-                  bgcolor: '#ffffff',
-                  boxShadow: '0 4px 12px rgba(0,0,0,0.03)',
-                  border: '1px solid rgba(0,0,0,0.05)',
+                  bgcolor: 'background.paper',
+                  border: `1px solid ${theme.palette.divider}`,
                   textAlign: 'center',
                   cursor: 'pointer',
-                  '&:active': { transform: 'scale(0.95)' }
+                  '&:active': { transform: 'scale(0.95)', bgcolor: 'action.hover' }
                 }}
               >
                 <Avatar sx={{
@@ -531,10 +519,10 @@ const MobileHome = () => {
                 }}>
                   {mfr.name[0]}
                 </Avatar>
-                <Typography variant="caption" fontWeight="bold" noWrap sx={{ display: 'block', color: '#1e293b' }}>
+                <Typography variant="caption" fontWeight="bold" noWrap sx={{ display: 'block', color: 'text.primary' }}>
                   {mfr.name}
                 </Typography>
-                <Typography variant="caption" sx={{ color: '#94a3b8', fontSize: '0.65rem' }}>
+                <Typography variant="caption" sx={{ color: 'text.secondary', fontSize: '0.65rem' }}>
                   {mfr.illustration_count || 0}件
                 </Typography>
               </Box>
@@ -558,12 +546,12 @@ const MobileHome = () => {
                 onClick={() => navigate(`/illustrations?category=${encodeURIComponent(cat.name)}`)}
                 sx={{
                   borderRadius: '12px',
-                  bgcolor: '#ffffff',
-                  border: '1px solid rgba(0,0,0,0.08)',
+                  bgcolor: 'background.paper',
+                  border: `1px solid ${theme.palette.divider}`,
                   fontWeight: 600,
                   fontSize: '0.75rem',
-                  color: '#475569',
-                  '&:active': { bgcolor: '#f1f5f9' }
+                  color: 'text.secondary',
+                  '&:active': { bgcolor: 'action.hover' }
                 }}
               />
             ))}
@@ -578,10 +566,11 @@ const MobileHome = () => {
           position: 'fixed',
           bottom: 90,
           right: 20,
-          bgcolor: '#0f172a',
+          bgcolor: 'zinc.900',
           color: 'white',
-          boxShadow: '0 8px 16px rgba(15, 23, 42, 0.3)',
-          '&:hover': { bgcolor: '#1e293b' }
+          boxShadow: `0 8px 16px ${alpha(theme.palette.common.black, 0.3)}`,
+          border: `1px solid ${alpha(theme.palette.common.white, 0.1)}`,
+          '&:hover': { bgcolor: 'zinc.800' }
         }}
       >
         <AddIcon />

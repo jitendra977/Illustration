@@ -9,7 +9,9 @@ import {
   Typography,
   Divider,
   Chip,
-  Paper
+  Paper,
+  useTheme,
+  alpha
 } from '@mui/material';
 import {
   FilterList as FilterIcon,
@@ -56,7 +58,7 @@ const FilterPanel = ({ onFilterChange }) => {
 
   const handleFilterChange = (name, value) => {
     const newFilters = { ...filters, [name]: value };
-    
+
     if (name === 'manufacturer') {
       newFilters.car_model = '';
       newFilters.engine_model = '';
@@ -102,18 +104,26 @@ const FilterPanel = ({ onFilterChange }) => {
     return item?.name || value;
   };
 
+  const theme = useTheme();
+
   return (
-    <Paper sx={{ p: 2 }}>
+    <Paper sx={{
+      p: 2,
+      bgcolor: 'background.paper',
+      backgroundImage: 'none',
+      border: `1px solid ${theme.palette.divider}`,
+      borderRadius: 3
+    }}>
       <Stack spacing={2}>
         <Stack direction="row" alignItems="center" justifyContent="space-between">
           <Stack direction="row" alignItems="center" spacing={1}>
-            <FilterIcon fontSize="small" />
-            <Typography variant="subtitle2" fontWeight="medium">
+            <FilterIcon fontSize="small" sx={{ color: 'text.secondary' }} />
+            <Typography variant="subtitle2" fontWeight="800" sx={{ color: 'text.primary', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
               Filters
             </Typography>
           </Stack>
           {hasActiveFilters && (
-            <Button size="small" onClick={handleClearFilters}>
+            <Button size="small" onClick={handleClearFilters} sx={{ color: 'primary.main', fontWeight: 700 }}>
               Clear
             </Button>
           )}
@@ -126,6 +136,15 @@ const FilterPanel = ({ onFilterChange }) => {
           onChange={(e) => handleFilterChange('manufacturer', e.target.value)}
           size="small"
           fullWidth
+          sx={{
+            '& .MuiInputLabel-root': { color: 'text.secondary' },
+            '& .MuiOutlinedInput-root': {
+              bgcolor: alpha(theme.palette.zinc[900], 0.5),
+              '& fieldset': { borderColor: theme.palette.divider },
+              '&:hover fieldset': { borderColor: alpha(theme.palette.common.white, 0.2) },
+              '&.Mui-focused fieldset': { borderColor: 'primary.main' }
+            }
+          }}
         >
           <MenuItem value="">All manufacturers</MenuItem>
           {manufacturers.map(m => (
@@ -141,6 +160,15 @@ const FilterPanel = ({ onFilterChange }) => {
           disabled={!filters.manufacturer}
           size="small"
           fullWidth
+          sx={{
+            '& .MuiInputLabel-root': { color: 'text.secondary' },
+            '& .MuiOutlinedInput-root': {
+              bgcolor: alpha(theme.palette.zinc[900], 0.5),
+              '& fieldset': { borderColor: theme.palette.divider },
+              '&:hover fieldset': { borderColor: alpha(theme.palette.common.white, 0.2) },
+              '&.Mui-focused fieldset': { borderColor: 'primary.main' }
+            }
+          }}
         >
           <MenuItem value="">All models</MenuItem>
           {carModels.map(c => (
@@ -156,6 +184,15 @@ const FilterPanel = ({ onFilterChange }) => {
           disabled={!filters.car_model}
           size="small"
           fullWidth
+          sx={{
+            '& .MuiInputLabel-root': { color: 'text.secondary' },
+            '& .MuiOutlinedInput-root': {
+              bgcolor: alpha(theme.palette.zinc[900], 0.5),
+              '& fieldset': { borderColor: theme.palette.divider },
+              '&:hover fieldset': { borderColor: alpha(theme.palette.common.white, 0.2) },
+              '&.Mui-focused fieldset': { borderColor: 'primary.main' }
+            }
+          }}
         >
           <MenuItem value="">All engines</MenuItem>
           {engineModels.map(e => (
@@ -171,6 +208,15 @@ const FilterPanel = ({ onFilterChange }) => {
           disabled={!filters.engine_model}
           size="small"
           fullWidth
+          sx={{
+            '& .MuiInputLabel-root': { color: 'text.secondary' },
+            '& .MuiOutlinedInput-root': {
+              bgcolor: alpha(theme.palette.zinc[900], 0.5),
+              '& fieldset': { borderColor: theme.palette.divider },
+              '&:hover fieldset': { borderColor: alpha(theme.palette.common.white, 0.2) },
+              '&.Mui-focused fieldset': { borderColor: 'primary.main' }
+            }
+          }}
         >
           <MenuItem value="">All categories</MenuItem>
           {categories.map(c => (
@@ -178,10 +224,18 @@ const FilterPanel = ({ onFilterChange }) => {
           ))}
         </TextField>
 
-        <Button 
-          variant="contained" 
+        <Button
+          variant="contained"
           onClick={handleApplyFilters}
           fullWidth
+          sx={{
+            borderRadius: 2,
+            py: 1,
+            fontWeight: 700,
+            textTransform: 'none',
+            bgcolor: 'primary.main',
+            '&:hover': { bgcolor: 'primary.dark' }
+          }}
         >
           Apply Filters
         </Button>
@@ -198,6 +252,12 @@ const FilterPanel = ({ onFilterChange }) => {
                   label={`Manufacturer: ${getFilterLabel('manufacturer', filters.manufacturer)}`}
                   size="small"
                   onDelete={() => handleFilterChange('manufacturer', '')}
+                  sx={{
+                    borderRadius: 1.5,
+                    bgcolor: alpha(theme.palette.zinc[800], 0.5),
+                    color: 'text.primary',
+                    '& .MuiChip-deleteIcon': { color: 'text.disabled' }
+                  }}
                 />
               )}
               {filters.car_model && (
@@ -205,6 +265,12 @@ const FilterPanel = ({ onFilterChange }) => {
                   label={`Model: ${getFilterLabel('car_model', filters.car_model)}`}
                   size="small"
                   onDelete={() => handleFilterChange('car_model', '')}
+                  sx={{
+                    borderRadius: 1.5,
+                    bgcolor: alpha(theme.palette.zinc[800], 0.5),
+                    color: 'text.primary',
+                    '& .MuiChip-deleteIcon': { color: 'text.disabled' }
+                  }}
                 />
               )}
               {filters.engine_model && (
@@ -212,6 +278,12 @@ const FilterPanel = ({ onFilterChange }) => {
                   label={`Engine: ${getFilterLabel('engine_model', filters.engine_model)}`}
                   size="small"
                   onDelete={() => handleFilterChange('engine_model', '')}
+                  sx={{
+                    borderRadius: 1.5,
+                    bgcolor: alpha(theme.palette.zinc[800], 0.5),
+                    color: 'text.primary',
+                    '& .MuiChip-deleteIcon': { color: 'text.disabled' }
+                  }}
                 />
               )}
               {filters.part_category && (
@@ -219,6 +291,12 @@ const FilterPanel = ({ onFilterChange }) => {
                   label={`Category: ${getFilterLabel('part_category', filters.part_category)}`}
                   size="small"
                   onDelete={() => handleFilterChange('part_category', '')}
+                  sx={{
+                    borderRadius: 1.5,
+                    bgcolor: alpha(theme.palette.zinc[800], 0.5),
+                    color: 'text.primary',
+                    '& .MuiChip-deleteIcon': { color: 'text.disabled' }
+                  }}
                 />
               )}
             </Stack>

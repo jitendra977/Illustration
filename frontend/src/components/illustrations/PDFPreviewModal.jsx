@@ -12,6 +12,8 @@ import {
   Stack,
   Typography,
   Button,
+  useTheme,
+  alpha
 } from '@mui/material';
 import {
   Close as CloseIcon,
@@ -25,6 +27,7 @@ const PDFPreviewModal = ({ open, onClose, fileId, fileName }) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [pdfUrl, setPdfUrl] = useState(null);
+  const theme = useTheme();
 
   useEffect(() => {
     if (open && fileId) {
@@ -89,6 +92,9 @@ const PDFPreviewModal = ({ open, onClose, fileId, fileName }) => {
         sx: {
           height: '90vh',
           maxHeight: '90vh',
+          borderRadius: 3,
+          bgcolor: 'background.default',
+          backgroundImage: 'none'
         }
       }}
     >
@@ -99,8 +105,9 @@ const PDFPreviewModal = ({ open, onClose, fileId, fileName }) => {
         borderBottom: 1,
         borderColor: 'divider',
         py: 1.5,
+        bgcolor: 'background.paper'
       }}>
-        <Typography variant="h6" component="div" noWrap sx={{ flex: 1 }}>
+        <Typography variant="h6" component="div" noWrap sx={{ flex: 1, fontWeight: 800 }}>
           {fileName || 'PDFプレビュー'}
         </Typography>
 
@@ -110,6 +117,7 @@ const PDFPreviewModal = ({ open, onClose, fileId, fileName }) => {
             onClick={handleDownload}
             title="ダウンロード"
             disabled={!pdfUrl}
+            sx={{ color: 'primary.main' }}
           >
             <DownloadIcon />
           </IconButton>
@@ -119,17 +127,18 @@ const PDFPreviewModal = ({ open, onClose, fileId, fileName }) => {
             onClick={handleOpenNewTab}
             title="新しいタブで開く"
             disabled={!pdfUrl}
+            sx={{ color: 'text.secondary' }}
           >
             <FullscreenIcon />
           </IconButton>
 
-          <IconButton size="small" onClick={onClose}>
+          <IconButton size="small" onClick={onClose} sx={{ color: 'text.secondary' }}>
             <CloseIcon />
           </IconButton>
         </Stack>
       </DialogTitle>
 
-      <DialogContent sx={{ p: 0, overflow: 'hidden', bgcolor: '#525659' }}>
+      <DialogContent sx={{ p: 0, overflow: 'hidden', bgcolor: theme.palette.zinc[950] }}>
         {loading && (
           <Box
             display="flex"
@@ -137,7 +146,7 @@ const PDFPreviewModal = ({ open, onClose, fileId, fileName }) => {
             alignItems="center"
             height="100%"
           >
-            <CircularProgress />
+            <CircularProgress color="primary" />
           </Box>
         )}
 
@@ -146,7 +155,11 @@ const PDFPreviewModal = ({ open, onClose, fileId, fileName }) => {
             <Alert severity="error" sx={{ mb: 2 }}>
               {error}
             </Alert>
-            <Button variant="contained" onClick={loadPDF}>
+            <Button
+              variant="contained"
+              onClick={loadPDF}
+              sx={{ borderRadius: 2, fontWeight: 700, textTransform: 'none' }}
+            >
               再試行
             </Button>
           </Box>

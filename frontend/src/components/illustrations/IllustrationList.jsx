@@ -13,7 +13,9 @@ import {
   Typography,
   Avatar,
   Chip,
-  Stack
+  Stack,
+  useTheme,
+  alpha
 } from '@mui/material';
 import {
   Visibility as EyeIcon,
@@ -26,6 +28,7 @@ import {
 } from '@mui/icons-material';
 
 const IllustrationList = ({ illustrations, onDelete, onView }) => {
+  const theme = useTheme();
   const formatDate = (dateString) => {
     return new Date(dateString).toLocaleDateString();
   };
@@ -63,28 +66,35 @@ const IllustrationList = ({ illustrations, onDelete, onView }) => {
   };
 
   return (
-    <TableContainer component={Paper}>
+    <TableContainer component={Paper} sx={{
+      bgcolor: 'background.paper',
+      backgroundImage: 'none',
+      border: `1px solid ${theme.palette.divider}`,
+      borderRadius: 3,
+      overflow: 'hidden'
+    }}>
       <Table size="small">
-        <TableHead sx={{ bgcolor: 'grey.50' }}>
+        <TableHead sx={{ bgcolor: alpha(theme.palette.zinc[950], 0.5) }}>
           <TableRow>
-            <TableCell sx={{ fontWeight: 'bold', py: 1.5 }}>Preview</TableCell>
-            <TableCell sx={{ fontWeight: 'bold', py: 1.5 }}>Title</TableCell>
-            <TableCell sx={{ fontWeight: 'bold', py: 1.5 }}>Details</TableCell>
-            <TableCell sx={{ fontWeight: 'bold', py: 1.5 }}>Files</TableCell>
-            <TableCell sx={{ fontWeight: 'bold', py: 1.5 }}>Created</TableCell>
-            <TableCell align="right" sx={{ fontWeight: 'bold', py: 1.5 }}>Actions</TableCell>
+            <TableCell sx={{ fontWeight: 800, color: 'text.secondary', py: 2, borderBottom: `1px solid ${theme.palette.divider}`, fontSize: '0.75rem', textTransform: 'uppercase' }}>Preview</TableCell>
+            <TableCell sx={{ fontWeight: 800, color: 'text.secondary', py: 2, borderBottom: `1px solid ${theme.palette.divider}`, fontSize: '0.75rem', textTransform: 'uppercase' }}>Title</TableCell>
+            <TableCell sx={{ fontWeight: 800, color: 'text.secondary', py: 2, borderBottom: `1px solid ${theme.palette.divider}`, fontSize: '0.75rem', textTransform: 'uppercase' }}>Details</TableCell>
+            <TableCell sx={{ fontWeight: 800, color: 'text.secondary', py: 2, borderBottom: `1px solid ${theme.palette.divider}`, fontSize: '0.75rem', textTransform: 'uppercase' }}>Files</TableCell>
+            <TableCell sx={{ fontWeight: 800, color: 'text.secondary', py: 2, borderBottom: `1px solid ${theme.palette.divider}`, fontSize: '0.75rem', textTransform: 'uppercase' }}>Created</TableCell>
+            <TableCell align="right" sx={{ fontWeight: 800, color: 'text.secondary', py: 2, borderBottom: `1px solid ${theme.palette.divider}`, fontSize: '0.75rem', textTransform: 'uppercase' }}>Actions</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
           {illustrations.map((illustration) => (
-            <TableRow 
-              key={illustration.id} 
+            <TableRow
+              key={illustration.id}
               hover
-              sx={{ 
+              sx={{
                 cursor: 'pointer',
                 '&:hover': {
-                  backgroundColor: 'action.hover'
-                }
+                  backgroundColor: alpha(theme.palette.primary.main, 0.05)
+                },
+                '& td': { borderColor: theme.palette.divider }
               }}
               onClick={() => handleRowClick(illustration)}
             >
@@ -92,25 +102,25 @@ const IllustrationList = ({ illustrations, onDelete, onView }) => {
                 <Avatar
                   variant="rounded"
                   src={getImageUrl(illustration)}
-                  sx={{ width: 48, height: 48, bgcolor: 'grey.100' }}
+                  sx={{ width: 48, height: 48, bgcolor: alpha(theme.palette.zinc[950], 0.5), border: `1px solid ${theme.palette.divider}` }}
                 >
-                  <ImageIcon />
+                  <ImageIcon sx={{ color: 'text.disabled' }} />
                 </Avatar>
               </TableCell>
 
               <TableCell sx={{ py: 1.5 }}>
                 <Box>
-                  <Typography variant="body2" fontWeight="medium" noWrap>
+                  <Typography variant="body2" fontWeight="800" sx={{ color: 'text.primary' }} noWrap>
                     {illustration.title}
                   </Typography>
                   {illustration.description && (
-                    <Typography variant="caption" color="text.secondary" noWrap>
+                    <Typography variant="caption" sx={{ color: 'text.secondary' }} noWrap>
                       {illustration.description}
                     </Typography>
                   )}
                   <Stack direction="row" alignItems="center" spacing={0.5} mt={0.5}>
-                    <PersonIcon fontSize="small" sx={{ color: 'text.secondary' }} />
-                    <Typography variant="caption" color="text.secondary">
+                    <PersonIcon sx={{ color: 'text.disabled', fontSize: 14 }} />
+                    <Typography variant="caption" sx={{ color: 'text.secondary', fontWeight: 500 }}>
                       {illustration.user_name}
                     </Typography>
                   </Stack>
@@ -119,19 +129,19 @@ const IllustrationList = ({ illustrations, onDelete, onView }) => {
 
               <TableCell sx={{ py: 1.5 }}>
                 <Stack spacing={0.5}>
-                  <Typography variant="caption">
-                    <strong>Engine:</strong> {illustration.engine_model?.name || illustration.engine_model_name}
+                  <Typography variant="caption" sx={{ color: 'text.secondary' }}>
+                    <strong style={{ color: theme.palette.text.disabled }}>Engine:</strong> <span style={{ color: theme.palette.text.primary, fontWeight: 600 }}>{illustration.engine_model?.name || illustration.engine_model_name}</span>
                   </Typography>
-                  <Typography variant="caption">
-                    <strong>Category:</strong> {illustration.part_category?.name || illustration.part_category_name}
+                  <Typography variant="caption" sx={{ color: 'text.secondary' }}>
+                    <strong style={{ color: theme.palette.text.disabled }}>Category:</strong> <span style={{ color: theme.palette.text.primary, fontWeight: 600 }}>{illustration.part_category?.name || illustration.part_category_name}</span>
                   </Typography>
                 </Stack>
               </TableCell>
 
               <TableCell sx={{ py: 1.5 }}>
                 <Stack direction="row" alignItems="center" spacing={0.5}>
-                  <AttachIcon fontSize="small" />
-                  <Typography variant="caption">
+                  <AttachIcon sx={{ color: 'text.disabled', fontSize: 14 }} />
+                  <Typography variant="caption" sx={{ color: 'text.secondary', fontWeight: 600 }}>
                     {illustration.files?.length || 0}
                   </Typography>
                 </Stack>
@@ -139,8 +149,8 @@ const IllustrationList = ({ illustrations, onDelete, onView }) => {
 
               <TableCell sx={{ py: 1.5 }}>
                 <Stack direction="row" alignItems="center" spacing={0.5}>
-                  <CalendarIcon fontSize="small" />
-                  <Typography variant="caption">
+                  <CalendarIcon sx={{ color: 'text.disabled', fontSize: 14 }} />
+                  <Typography variant="caption" sx={{ color: 'text.secondary', fontWeight: 600 }}>
                     {formatDate(illustration.created_at)}
                   </Typography>
                 </Stack>
@@ -148,24 +158,27 @@ const IllustrationList = ({ illustrations, onDelete, onView }) => {
 
               <TableCell align="right" sx={{ py: 1.5 }}>
                 <Stack direction="row" spacing={0.5} justifyContent="flex-end">
-                  <IconButton 
+                  <IconButton
                     size="small"
                     onClick={(e) => {
                       e.stopPropagation();
                       if (onView) onView(illustration);
                     }}
+                    sx={{ color: 'primary.main' }}
                   >
                     <EyeIcon fontSize="small" />
                   </IconButton>
-                  <IconButton 
+                  <IconButton
                     size="small"
                     onClick={(e) => handleDownload(e, illustration)}
+                    sx={{ color: 'text.secondary' }}
                   >
                     <DownloadIcon fontSize="small" />
                   </IconButton>
-                  <IconButton 
-                    size="small" 
+                  <IconButton
+                    size="small"
                     onClick={(e) => handleDelete(e, illustration.id)}
+                    sx={{ color: 'error.main' }}
                   >
                     <DeleteIcon fontSize="small" />
                   </IconButton>
@@ -177,9 +190,9 @@ const IllustrationList = ({ illustrations, onDelete, onView }) => {
       </Table>
 
       {illustrations.length === 0 && (
-        <Box sx={{ p: 4, textAlign: 'center' }}>
-          <ImageIcon sx={{ fontSize: 48, color: 'grey.400', mb: 2 }} />
-          <Typography color="text.secondary">No illustrations</Typography>
+        <Box sx={{ p: 4, textAlign: 'center', bgcolor: alpha(theme.palette.zinc[950], 0.3) }}>
+          <ImageIcon sx={{ fontSize: 48, color: 'text.disabled', opacity: 0.3, mb: 2 }} />
+          <Typography sx={{ color: 'text.secondary', fontWeight: 600 }}>No illustrations</Typography>
         </Box>
       )}
     </TableContainer>

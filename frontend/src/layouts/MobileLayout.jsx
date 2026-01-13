@@ -77,14 +77,14 @@ const MobileLayout = ({ children, showHeader = true, onRefresh, refreshing = fal
       {/* Header */}
       {showHeader && (
         <Box sx={{
-          background: 'linear-gradient(135deg, #0f172a 0%, #1e293b 100%)',
+          background: `linear-gradient(135deg, ${theme.palette.zinc[900]} 0%, ${theme.palette.zinc[950]} 100%)`,
           color: 'white',
           pt: 1.5,
           pb: 3.5,
           px: 2,
           flexShrink: 0,
-          borderBottom: '1px solid rgba(255,255,255,0.05)',
-          boxShadow: '0 4px 20px rgba(0,0,0,0.1)'
+          borderBottom: `1px solid ${alpha(theme.palette.common.white, 0.05)}`,
+          boxShadow: `0 4px 20px ${alpha(theme.palette.common.black, 0.1)}`
         }}>
           <Stack direction="row" justifyContent="space-between" alignItems="center">
             <Stack direction="row" spacing={1.5} alignItems="center">
@@ -160,7 +160,7 @@ const MobileLayout = ({ children, showHeader = true, onRefresh, refreshing = fal
         overflowY: 'auto',
         overflowX: 'hidden',
         WebkitOverflowScrolling: 'touch',
-        bgcolor: '#f8fafc'
+        bgcolor: 'background.default'
       }}>
         {children}
       </Box>
@@ -175,13 +175,13 @@ const MobileLayout = ({ children, showHeader = true, onRefresh, refreshing = fal
           sx: {
             width: '80%',
             maxWidth: 320,
-            bgcolor: '#ffffff',
+            bgcolor: 'background.paper',
             backgroundImage: 'none'
           }
         }}
       >
         <Box sx={{
-          background: 'linear-gradient(135deg, #0f172a 0%, #1e293b 100%)',
+          background: `linear-gradient(135deg, ${theme.palette.zinc[900]} 0%, ${theme.palette.zinc[950]} 100%)`,
           color: 'white',
           p: 3,
           position: 'relative',
@@ -316,10 +316,10 @@ const MobileLayout = ({ children, showHeader = true, onRefresh, refreshing = fal
         sx={{
           position: 'relative',
           zIndex: 1100,
-          boxShadow: '0 -10px 30px rgba(0,0,0,0.05)',
-          background: 'rgba(255, 255, 255, 0.8)',
+          boxShadow: `0 -10px 30px ${alpha(theme.palette.common.black, 0.05)}`,
+          background: alpha(theme.palette.background.paper, 0.8),
           backdropFilter: 'blur(20px)',
-          borderTop: '1px solid rgba(0,0,0,0.05)'
+          borderTop: `1px solid ${theme.palette.divider}`
         }}
         elevation={0}
       >
