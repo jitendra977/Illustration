@@ -253,6 +253,8 @@ const MobileProfile = () => {
     setErrors({});
   };
 
+  const theme = useTheme();
+
   return (
     <Container maxWidth="sm" sx={{ px: 2, py: 3 }}>
       <Stack spacing={3}>
@@ -313,7 +315,8 @@ const MobileProfile = () => {
                 px: 1.5,
                 py: 0.5,
                 borderRadius: 2,
-                bgcolor: 'grey.100',
+                bgcolor: theme.palette.mode === 'dark' ? alpha(theme.palette.zinc[800], 0.5) : alpha(theme.palette.zinc[100], 0.5),
+                border: `1px solid ${theme.palette.divider}`,
                 fontSize: '0.75rem',
                 color: 'text.secondary'
               }}

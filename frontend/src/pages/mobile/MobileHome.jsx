@@ -225,14 +225,18 @@ const MobileHome = () => {
         {/* HERO SECTION */}
         <Box sx={{ mt: 2, mb: 3 }}>
           <Box sx={{
-            background: `linear-gradient(135deg, ${theme.palette.zinc[900]} 0%, ${theme.palette.zinc[950]} 100%)`,
+            background: theme.palette.mode === 'dark'
+              ? `linear-gradient(135deg, ${theme.palette.zinc[900]} 0%, ${theme.palette.zinc[950]} 100%)`
+              : `linear-gradient(135deg, ${theme.palette.primary.main} 0%, ${theme.palette.primary.dark} 100%)`,
             borderRadius: '24px',
             p: 3,
             color: 'white',
             position: 'relative',
             overflow: 'hidden',
-            boxShadow: `0 10px 30px ${alpha(theme.palette.common.black, 0.2)}`,
-            border: `1px solid ${alpha(theme.palette.common.white, 0.05)}`
+            boxShadow: theme.palette.mode === 'dark'
+              ? `0 10px 30px ${alpha(theme.palette.common.black, 0.4)}`
+              : `0 10px 30px ${alpha(theme.palette.primary.main, 0.2)}`,
+            border: `1px solid ${theme.palette.mode === 'dark' ? alpha(theme.palette.common.white, 0.05) : alpha(theme.palette.common.white, 0.2)}`
           }}>
             {/* Background pattern */}
             <Box sx={{
@@ -306,8 +310,10 @@ const MobileHome = () => {
                 borderRadius: '16px',
                 bgcolor: 'background.paper',
                 border: `1px solid ${theme.palette.divider}`,
+                boxShadow: theme.palette.mode === 'dark' ? 'none' : '0 2px 4px rgba(0,0,0,0.02)',
                 '&.Mui-focused': {
-                  borderColor: 'primary.main'
+                  borderColor: 'primary.main',
+                  boxShadow: theme.palette.mode === 'dark' ? 'none' : `0 0 0 4px ${alpha(theme.palette.primary.main, 0.1)}`
                 }
               },
               '& .MuiOutlinedInput-notchedOutline': { border: 'none' }
@@ -562,15 +568,21 @@ const MobileHome = () => {
       {/* FLOATING ACTION BUTTON */}
       <Fab
         onClick={() => setCreateModalOpen(true)}
+        color="primary"
         sx={{
           position: 'fixed',
           bottom: 90,
           right: 20,
-          bgcolor: 'zinc.900',
-          color: 'white',
-          boxShadow: `0 8px 16px ${alpha(theme.palette.common.black, 0.3)}`,
-          border: `1px solid ${alpha(theme.palette.common.white, 0.1)}`,
-          '&:hover': { bgcolor: 'zinc.800' }
+          boxShadow: theme.palette.mode === 'dark'
+            ? `0 8px 16px ${alpha(theme.palette.common.black, 0.4)}`
+            : `0 8px 16px ${alpha(theme.palette.primary.main, 0.3)}`,
+          '&:hover': {
+            transform: 'scale(1.05)',
+            boxShadow: theme.palette.mode === 'dark'
+              ? `0 12px 20px ${alpha(theme.palette.common.black, 0.5)}`
+              : `0 12px 20px ${alpha(theme.palette.primary.main, 0.4)}`,
+          },
+          transition: 'all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275)'
         }}
       >
         <AddIcon />

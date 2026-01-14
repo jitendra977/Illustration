@@ -24,19 +24,7 @@ import {
 } from 'lucide-react';
 
 // Utility for Zinc colors (simulating Tailwind Zinc palette)
-const zinc = {
-    50: '#fafafa',
-    100: '#f4f4f5',
-    200: '#e4e4e7',
-    300: '#d4d4d8',
-    400: '#a1a1aa',
-    500: '#71717a',
-    600: '#52525b',
-    700: '#3f3f46',
-    800: '#27272a',
-    900: '#18181b',
-    950: '#09090b',
-};
+// Zinc palette from theme
 
 const Badge = ({ children, sx = {}, ...props }) => (
     <Box
@@ -66,8 +54,8 @@ const ManufacturerCard = ({ manufacturer, onClick }) => {
             onClick={() => onClick(manufacturer)}
             sx={{
                 position: 'relative',
-                bgcolor: alpha(zinc[900], 0.4),
-                border: `1px solid ${alpha('#fff', 0.05)}`,
+                bgcolor: 'background.paper',
+                border: `1px solid ${theme.palette.divider}`,
                 borderRadius: 4, // rounded-2xl
                 p: { xs: 2, md: 2.5 },
                 cursor: 'pointer',
@@ -78,8 +66,8 @@ const ManufacturerCard = ({ manufacturer, onClick }) => {
                 transition: 'all 0.2s',
                 '&:active': { transform: 'scale(0.98)' },
                 '&:hover': {
-                    borderColor: { md: alpha('#fff', 0.2) },
-                    bgcolor: { md: alpha(zinc[900], 0.6) }
+                    borderColor: theme.palette.primary.main,
+                    bgcolor: theme.palette.mode === 'dark' ? alpha(theme.palette.zinc[800], 0.6) : alpha(theme.palette.zinc[100], 0.6)
                 }
             }}
         >
@@ -89,16 +77,18 @@ const ManufacturerCard = ({ manufacturer, onClick }) => {
                     width: { xs: 48, md: 56 },
                     height: { xs: 48, md: 56 },
                     borderRadius: 3, // rounded-xl
-                    background: `linear-gradient(135deg, ${zinc[800]}, ${zinc[900]})`,
-                    border: `1px solid ${alpha('#fff', 0.1)}`,
-                    color: zinc[400],
+                    background: theme.palette.mode === 'dark'
+                        ? `linear-gradient(135deg, ${theme.palette.zinc[800]}, ${theme.palette.zinc[900]})`
+                        : `linear-gradient(135deg, ${theme.palette.zinc[100]}, ${theme.palette.zinc[200]})`,
+                    border: `1px solid ${theme.palette.divider}`,
+                    color: theme.palette.text.secondary,
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
                     fontSize: '1.25rem',
                     fontWeight: 900,
                     transition: 'color 0.2s',
-                    '.MuiBox-root:hover &': { color: '#fff' }
+                    '.MuiBox-root:hover &': { color: theme.palette.primary.main }
                 }}>
                     {manufacturer.name.charAt(0)}
                 </Box>
@@ -106,21 +96,21 @@ const ManufacturerCard = ({ manufacturer, onClick }) => {
 
             <Box sx={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
                 <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 0.5 }}>
-                    <Typography variant="h6" sx={{ fontSize: { xs: '1rem', md: '1.125rem' }, fontWeight: 700, color: '#fff', lineHeight: 1.2 }} noWrap>
+                    <Typography variant="h6" sx={{ fontSize: { xs: '1rem', md: '1.125rem' }, fontWeight: 700, color: 'text.primary', lineHeight: 1.2 }} noWrap>
                         {manufacturer.name}
                     </Typography>
                 </Box>
 
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mt: 0.5 }}>
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-                        <Factory size={12} color={zinc[500]} />
-                        <Typography sx={{ fontSize: '11px', color: zinc[400], fontWeight: 500 }}>
+                        <Factory size={12} color={theme.palette.text.disabled} />
+                        <Typography sx={{ fontSize: '11px', color: theme.palette.text.secondary, fontWeight: 500 }}>
                             {manufacturer.engine_count || 0} エンジン
                         </Typography>
                     </Box>
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-                        <Car size={12} color={zinc[500]} />
-                        <Typography sx={{ fontSize: '11px', color: zinc[400], fontWeight: 500 }}>
+                        <Car size={12} color={theme.palette.text.disabled} />
+                        <Typography sx={{ fontSize: '11px', color: theme.palette.text.secondary, fontWeight: 500 }}>
                             {manufacturer.car_model_count || 0} 車種
                         </Typography>
                     </Box>
@@ -129,10 +119,10 @@ const ManufacturerCard = ({ manufacturer, onClick }) => {
 
             <Box sx={{
                 display: 'flex', alignItems: 'center',
-                color: zinc[600],
+                color: theme.palette.text.disabled,
                 transition: 'transform 0.2s',
                 '.MuiBox-root:hover &': {
-                    color: '#60a5fa',
+                    color: theme.palette.primary.main,
                     transform: 'translateX(2px)'
                 }
             }}>
@@ -149,6 +139,7 @@ const ManufacturerList = () => {
     const [isScrolled, setIsScrolled] = useState(false);
 
     const navigate = useNavigate();
+    const theme = useTheme();
 
     useEffect(() => {
         const handleScroll = () => setIsScrolled(window.scrollY > 20);
@@ -208,7 +199,7 @@ const ManufacturerList = () => {
     }, [manufacturers]);
 
     return (
-        <Box sx={{ minHeight: '100vh', bgcolor: zinc[950], color: zinc[100], fontFamily: 'Inter, sans-serif', pb: { xs: 12, md: 5 } }}>
+        <Box sx={{ minHeight: '100vh', bgcolor: 'background.default', color: 'text.primary', fontFamily: 'Inter, sans-serif', pb: { xs: 12, md: 5 } }}>
             {/* Dynamic Header */}
             <Box component="nav" sx={{
                 position: 'sticky',
@@ -217,9 +208,9 @@ const ManufacturerList = () => {
                 transition: 'all 0.3s',
                 px: { xs: 2, md: 3 },
                 py: isScrolled ? 1.5 : 2,
-                bgcolor: isScrolled ? alpha(zinc[950], 0.9) : 'transparent',
+                bgcolor: isScrolled ? alpha(theme.palette.background.default, 0.9) : 'transparent',
                 backdropFilter: isScrolled ? 'blur(24px)' : 'none',
-                borderBottom: isScrolled ? `1px solid ${alpha('#fff', 0.1)}` : 'none',
+                borderBottom: isScrolled ? `1px solid ${theme.palette.divider}` : 'none',
             }}>
 
             </Box>
@@ -234,13 +225,13 @@ const ManufacturerList = () => {
                         fontSize: { xs: '2.5rem', md: '4rem' },
                         fontWeight: 900,
                         letterSpacing: '-0.025em',
-                        color: '#fff',
+                        color: 'text.primary',
                         mb: 2,
                         lineHeight: 1
                     }}>
                         メーカー
                     </Typography>
-                    <Typography sx={{ color: zinc[400], maxWidth: '600px', fontSize: { xs: '1rem', md: '1.125rem' }, lineHeight: 1.6 }}>
+                    <Typography sx={{ color: 'text.secondary', maxWidth: '600px', fontSize: { xs: '1rem', md: '1.125rem' }, lineHeight: 1.6 }}>
                         世界クラスの自動車メーカーの認定設計図と仕様書。
                     </Typography>
 
@@ -249,24 +240,24 @@ const ManufacturerList = () => {
                         display: 'flex',
                         mt: 3,
                         p: 0.75,
-                        bgcolor: alpha(zinc[900], 0.5),
-                        border: `1px solid ${alpha('#fff', 0.05)}`,
+                        bgcolor: 'background.paper',
+                        border: `1px solid ${theme.palette.divider}`,
                         borderRadius: 3,
                         width: { xs: '100%', sm: 'max-content' }
                     }}>
-                        <Box sx={{ flex: 1, px: 2.5, py: 1, textAlign: 'center', borderRight: `1px solid ${alpha('#fff', 0.05)}` }}>
-                            <Typography sx={{ fontSize: '1.125rem', fontWeight: 700, color: '#fff', lineHeight: 1.1 }}>
+                        <Box sx={{ flex: 1, px: 2.5, py: 1, textAlign: 'center', borderRight: `1px solid ${theme.palette.divider}` }}>
+                            <Typography sx={{ fontSize: '1.125rem', fontWeight: 700, color: 'text.primary', lineHeight: 1.1 }}>
                                 {manufacturers.length}
                             </Typography>
-                            <Typography sx={{ fontSize: '9px', color: zinc[500], textTransform: 'uppercase', fontWeight: 900, letterSpacing: '0.1em', mt: 0.5 }}>
+                            <Typography sx={{ fontSize: '9px', color: 'text.secondary', textTransform: 'uppercase', fontWeight: 900, letterSpacing: '0.1em', mt: 0.5 }}>
                                 ブランド
                             </Typography>
                         </Box>
                         <Box sx={{ flex: 1, px: 2.5, py: 1, textAlign: 'center' }}>
-                            <Typography sx={{ fontSize: '1.125rem', fontWeight: 700, color: '#fff', lineHeight: 1.1 }}>
+                            <Typography sx={{ fontSize: '1.125rem', fontWeight: 700, color: 'text.primary', lineHeight: 1.1 }}>
                                 {totalStats.engines}
                             </Typography>
-                            <Typography sx={{ fontSize: '9px', color: zinc[500], textTransform: 'uppercase', fontWeight: 900, letterSpacing: '0.1em', mt: 0.5 }}>
+                            <Typography sx={{ fontSize: '9px', color: 'text.secondary', textTransform: 'uppercase', fontWeight: 900, letterSpacing: '0.1em', mt: 0.5 }}>
                                 エンジン
                             </Typography>
                         </Box>
@@ -275,8 +266,8 @@ const ManufacturerList = () => {
 
                 {/* Search & Results */}
                 <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-                    <Box sx={{ position: 'relative', flex: 1, '&:focus-within svg': { color: '#3b82f6' } }}>
-                        <Box sx={{ position: 'absolute', left: 16, top: '50%', transform: 'translateY(-50%)', color: zinc[500], transition: 'color 0.2s', display: 'flex' }}>
+                    <Box sx={{ position: 'relative', flex: 1, '&:focus-within svg': { color: 'primary.main' } }}>
+                        <Box sx={{ position: 'absolute', left: 16, top: '50%', transform: 'translateY(-50%)', color: 'text.disabled', transition: 'color 0.2s', display: 'flex' }}>
                             <Search size={18} />
                         </Box>
                         <Box
@@ -286,20 +277,20 @@ const ManufacturerList = () => {
                             onChange={(e) => setSearchTerm(e.target.value)}
                             sx={{
                                 width: '100%',
-                                bgcolor: alpha(zinc[900], 0.8),
-                                border: `1px solid ${alpha('#fff', 0.05)}`,
+                                bgcolor: 'background.paper',
+                                border: `1px solid ${theme.palette.divider}`,
                                 borderRadius: 3,
                                 py: 1.75,
                                 pl: 6,
                                 pr: 2,
-                                color: '#fff',
+                                color: 'text.primary',
                                 outline: 'none',
                                 transition: 'all 0.2s',
                                 fontSize: '0.875rem',
-                                '::placeholder': { color: zinc[600] },
+                                '::placeholder': { color: 'text.disabled' },
                                 '&:focus': {
-                                    boxShadow: `0 0 0 2px ${alpha('#3b82f6', 0.2)}`,
-                                    borderColor: alpha('#3b82f6', 0.5)
+                                    boxShadow: `0 0 0 2px ${alpha(theme.palette.primary.main, 0.2)}`,
+                                    borderColor: 'primary.main'
                                 }
                             }}
                         />
@@ -307,7 +298,7 @@ const ManufacturerList = () => {
 
                     {loading ? (
                         <Box display="flex" justifyContent="center" py={8}>
-                            <CircularProgress sx={{ color: zinc[600] }} />
+                            <CircularProgress sx={{ color: 'primary.main' }} />
                         </Box>
                     ) : (
                         <Grid container spacing={2} sx={{ mt: 1 }}>
@@ -325,8 +316,8 @@ const ManufacturerList = () => {
             </Box>
 
             {/* Footer */}
-            <Box component="footer" sx={{ display: { xs: 'none', md: 'block' }, maxWidth: '1280px', mx: 'auto', px: 3, mt: 10, pt: 5, borderTop: `1px solid ${alpha('#fff', 0.05)}` }}>
-                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', color: zinc[600], fontSize: '0.75rem', fontWeight: 500 }}>
+            <Box component="footer" sx={{ display: { xs: 'none', md: 'block' }, maxWidth: '1280px', mx: 'auto', px: 3, mt: 10, pt: 5, borderTop: `1px solid ${theme.palette.divider}` }}>
+                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', color: 'text.secondary', fontSize: '0.75rem', fontWeight: 500 }}>
                     <Typography variant="caption">© 2024 エンジンイラストレーション本部</Typography>
                 </Box>
             </Box>

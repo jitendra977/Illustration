@@ -16,7 +16,9 @@ import {
   InputAdornment,
   Divider,
   CircularProgress,
-  FormHelperText
+  FormHelperText,
+  useTheme,
+  alpha
 } from '@mui/material';
 import {
   CloudUpload,
@@ -31,9 +33,10 @@ import {
 } from '@mui/icons-material';
 
 const Register = () => {
+  const theme = useTheme();
   const { register } = useAuth();
   const navigate = useNavigate();
-  
+
   const [formData, setFormData] = useState({
     username: '',
     email: '',
@@ -45,7 +48,7 @@ const Register = () => {
     address: '',
     profile_image: null
   });
-  
+
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [imagePreview, setImagePreview] = useState(null);
@@ -59,7 +62,7 @@ const Register = () => {
       ...prev,
       [name]: value
     }));
-    
+
     // Clear error for this field when user types
     if (errors[name]) {
       setErrors(prev => ({
@@ -71,7 +74,7 @@ const Register = () => {
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
-    
+
     if (file) {
       // Validate file size (5MB max)
       if (file.size > 5 * 1024 * 1024) {
@@ -157,7 +160,7 @@ const Register = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     // Clear previous messages
     setErrors({});
     setSuccessMessage('');
@@ -174,7 +177,7 @@ const Register = () => {
     try {
       // Create FormData for file upload
       const data = new FormData();
-      
+
       // Append all form fields
       Object.keys(formData).forEach(key => {
         if (key === 'profile_image') {
@@ -190,7 +193,7 @@ const Register = () => {
 
       if (result.success) {
         setSuccessMessage('Registration successful! Please check your email to verify your account.');
-        
+
         // Redirect to login after 3 seconds
         setTimeout(() => {
           navigate('/login', {
@@ -222,7 +225,7 @@ const Register = () => {
     <Box
       sx={{
         minHeight: '100vh',
-        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+        bgcolor: 'background.default',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
@@ -231,12 +234,11 @@ const Register = () => {
     >
       <Container maxWidth="md">
         <Paper
-          elevation={10}
+          elevation={3}
           sx={{
             padding: { xs: 3, md: 5 },
-            borderRadius: 3,
-            backdropFilter: 'blur(10px)',
-            backgroundColor: 'rgba(255, 255, 255, 0.95)',
+            borderRadius: 2,
+            backgroundColor: 'background.paper',
           }}
         >
           {/* Header */}
@@ -251,19 +253,19 @@ const Register = () => {
             >
               <PersonAdd sx={{ fontSize: 40 }} />
             </Avatar>
-            
+
             <Typography
               variant="h3"
               component="h1"
               gutterBottom
               sx={{
                 fontWeight: 700,
-                color: '#333',
+                color: 'text.primary',
               }}
             >
               Create Account
             </Typography>
-            
+
             <Typography variant="body1" color="textSecondary">
               Fill in the information below to get started
             </Typography>
@@ -286,7 +288,7 @@ const Register = () => {
           {/* Registration Form */}
           <form onSubmit={handleSubmit}>
             <Grid container spacing={3}>
-              
+
               {/* Profile Image Upload */}
               <Grid item xs={12}>
                 <Box display="flex" flexDirection="column" alignItems="center" gap={2}>

@@ -361,6 +361,7 @@ const CreateIllustrationModal = ({ open, onClose, onSuccess, mode = 'create', il
         engine_model: formData.engine_model,
         part_category: formData.part_category,
         part_subcategory: formData.part_subcategory || null,
+        uploaded_files: formData.uploaded_files,
       };
 
       if (formData.description && formData.description.trim()) {
@@ -368,7 +369,6 @@ const CreateIllustrationModal = ({ open, onClose, onSuccess, mode = 'create', il
       }
 
       if (mode === 'create') {
-        dataToSend.uploaded_files = formData.uploaded_files;
         await illustrationAPI.create(dataToSend);
       } else {
         // Edit Logic
@@ -381,10 +381,7 @@ const CreateIllustrationModal = ({ open, onClose, onSuccess, mode = 'create', il
           }
         }
 
-        // Upload new files
-        if (formData.uploaded_files.length > 0) {
-          await illustrationAPI.addFiles(illustration.id, formData.uploaded_files);
-        }
+        // Upload new files is now handled by the update call itself if uploaded_files is included
       }
 
       if (onSuccess) {

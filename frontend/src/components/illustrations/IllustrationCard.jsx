@@ -77,7 +77,9 @@ const IllustrationCard = ({ illustration, onDelete }) => {
           overflow: 'hidden',
           '&:hover': {
             transform: 'translateY(-4px)',
-            boxShadow: `0 12px 24px -10px ${alpha(theme.palette.common.black, 0.5)}`,
+            boxShadow: theme.palette.mode === 'dark'
+              ? `0 12px 24px -10px ${alpha(theme.palette.common.black, 0.5)}`
+              : `0 12px 24px -10px ${alpha(theme.palette.primary.main, 0.2)}`,
             borderColor: alpha(theme.palette.primary.main, 1.0),
           }
         }}
@@ -93,7 +95,7 @@ const IllustrationCard = ({ illustration, onDelete }) => {
             image={getImageUrl() || '/placeholder.jpg'}
             alt={illustration.title}
             sx={{
-              bgcolor: alpha(theme.palette.zinc[950], 0.5),
+              bgcolor: theme.palette.mode === 'dark' ? alpha(theme.palette.zinc[950], 0.5) : alpha(theme.palette.text.primary, 0.03),
               objectFit: 'cover'
             }}
           />
@@ -157,7 +159,7 @@ const IllustrationCard = ({ illustration, onDelete }) => {
           </Stack>
         </CardContent>
 
-        <CardActions sx={{ p: 1, justifyContent: 'space-between', bgcolor: alpha(theme.palette.zinc[950], 0.3) }}>
+        <CardActions sx={{ p: 1, justifyContent: 'space-between', bgcolor: theme.palette.mode === 'dark' ? alpha(theme.palette.zinc[950], 0.3) : alpha(theme.palette.text.primary, 0.02) }}>
           <IconButton
             size="small"
             onClick={(e) => {

@@ -74,7 +74,11 @@ const IllustrationList = ({ illustrations, onDelete, onView }) => {
       overflow: 'hidden'
     }}>
       <Table size="small">
-        <TableHead sx={{ bgcolor: alpha(theme.palette.zinc[950], 0.5) }}>
+        <TableHead sx={{
+          bgcolor: theme.palette.mode === 'dark'
+            ? alpha(theme.palette.zinc[950], 0.5)
+            : alpha(theme.palette.primary.main, 0.03)
+        }}>
           <TableRow>
             <TableCell sx={{ fontWeight: 800, color: 'text.secondary', py: 2, borderBottom: `1px solid ${theme.palette.divider}`, fontSize: '0.75rem', textTransform: 'uppercase' }}>Preview</TableCell>
             <TableCell sx={{ fontWeight: 800, color: 'text.secondary', py: 2, borderBottom: `1px solid ${theme.palette.divider}`, fontSize: '0.75rem', textTransform: 'uppercase' }}>Title</TableCell>
@@ -102,7 +106,12 @@ const IllustrationList = ({ illustrations, onDelete, onView }) => {
                 <Avatar
                   variant="rounded"
                   src={getImageUrl(illustration)}
-                  sx={{ width: 48, height: 48, bgcolor: alpha(theme.palette.zinc[950], 0.5), border: `1px solid ${theme.palette.divider}` }}
+                  sx={{
+                    width: 48,
+                    height: 48,
+                    bgcolor: theme.palette.mode === 'dark' ? alpha(theme.palette.zinc[950], 0.5) : alpha(theme.palette.text.primary, 0.03),
+                    border: `1px solid ${theme.palette.divider}`
+                  }}
                 >
                   <ImageIcon sx={{ color: 'text.disabled' }} />
                 </Avatar>
@@ -118,11 +127,27 @@ const IllustrationList = ({ illustrations, onDelete, onView }) => {
                       {illustration.description}
                     </Typography>
                   )}
-                  <Stack direction="row" alignItems="center" spacing={0.5} mt={0.5}>
-                    <PersonIcon sx={{ color: 'text.disabled', fontSize: 14 }} />
-                    <Typography variant="caption" sx={{ color: 'text.secondary', fontWeight: 500 }}>
-                      {illustration.user_name}
-                    </Typography>
+                  <Stack direction="row" alignItems="center" spacing={1} mt={0.5}>
+                    <Stack direction="row" alignItems="center" spacing={0.5}>
+                      <PersonIcon sx={{ color: 'text.disabled', fontSize: 14 }} />
+                      <Typography variant="caption" sx={{ color: 'text.secondary', fontWeight: 500 }}>
+                        {illustration.user_name}
+                      </Typography>
+                    </Stack>
+                    {illustration.factory_name && (
+                      <Chip
+                        label={illustration.factory_name}
+                        size="small"
+                        sx={{
+                          height: 16,
+                          fontSize: '0.65rem',
+                          fontWeight: 700,
+                          bgcolor: alpha(theme.palette.primary.main, 0.1),
+                          color: 'primary.main',
+                          borderRadius: 1
+                        }}
+                      />
+                    )}
                   </Stack>
                 </Box>
               </TableCell>
@@ -189,13 +214,19 @@ const IllustrationList = ({ illustrations, onDelete, onView }) => {
         </TableBody>
       </Table>
 
-      {illustrations.length === 0 && (
-        <Box sx={{ p: 4, textAlign: 'center', bgcolor: alpha(theme.palette.zinc[950], 0.3) }}>
-          <ImageIcon sx={{ fontSize: 48, color: 'text.disabled', opacity: 0.3, mb: 2 }} />
-          <Typography sx={{ color: 'text.secondary', fontWeight: 600 }}>No illustrations</Typography>
-        </Box>
-      )}
-    </TableContainer>
+      {
+        illustrations.length === 0 && (
+          <Box sx={{
+            p: 4,
+            textAlign: 'center',
+            bgcolor: theme.palette.mode === 'dark' ? alpha(theme.palette.zinc[950], 0.3) : alpha(theme.palette.text.primary, 0.02)
+          }}>
+            <ImageIcon sx={{ fontSize: 48, color: 'text.disabled', opacity: 0.3, mb: 2 }} />
+            <Typography sx={{ color: 'text.secondary', fontWeight: 600 }}>No illustrations</Typography>
+          </Box>
+        )
+      }
+    </TableContainer >
   );
 };
 

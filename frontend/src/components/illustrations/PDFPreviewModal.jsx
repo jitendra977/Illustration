@@ -138,7 +138,7 @@ const PDFPreviewModal = ({ open, onClose, fileId, fileName }) => {
         </Stack>
       </DialogTitle>
 
-      <DialogContent sx={{ p: 0, overflow: 'hidden', bgcolor: theme.palette.zinc[950] }}>
+      <DialogContent sx={{ p: 0, overflow: 'hidden', bgcolor: theme.palette.mode === 'dark' ? theme.palette.zinc[950] : 'background.paper' }}>
         {loading && (
           <Box
             display="flex"

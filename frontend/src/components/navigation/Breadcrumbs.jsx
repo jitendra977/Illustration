@@ -14,15 +14,7 @@ import {
     ArrowRight
 } from 'lucide-react';
 
-// Zinc color palette
-const zinc = {
-    400: '#a1a1aa',
-    500: '#71717a',
-    600: '#52525b',
-    700: '#3f3f46',
-    800: '#27272a',
-    900: '#18181b',
-};
+// Zinc palette from theme
 
 /**
  * Breadcrumb Component
@@ -46,8 +38,8 @@ const Breadcrumbs = ({
     const navigate = useNavigate();
 
     const separatorIcon = separator === 'chevron'
-        ? <ChevronRight size={14} color={zinc[600]} />
-        : <ArrowRight size={14} color={zinc[600]} />;
+        ? <ChevronRight size={14} color={theme.palette.text.disabled} />
+        : <ArrowRight size={14} color={theme.palette.text.disabled} />;
 
     // On mobile, show only last 2 items UNLESS scrollable is true
     const displayItems = (isMobile && !scrollable && items.length > 2)
@@ -89,7 +81,7 @@ const Breadcrumbs = ({
                 sx={{
                     '& .MuiBreadcrumbs-separator': {
                         mx: 0.5,
-                        color: zinc[600]
+                        color: theme.palette.text.disabled
                     },
                     '& .MuiBreadcrumbs-ol': {
                         alignItems: 'center',
@@ -113,17 +105,17 @@ const Breadcrumbs = ({
                             width: 28,
                             height: 28,
                             borderRadius: '50%',
-                            bgcolor: alpha(zinc[800], 0.4),
-                            border: `1px solid ${alpha(zinc[700], 0.3)}`,
-                            color: zinc[400],
+                            bgcolor: theme.palette.mode === 'dark' ? alpha(theme.palette.zinc[800], 0.4) : alpha(theme.palette.zinc[100], 0.8),
+                            border: `1px solid ${theme.palette.divider}`,
+                            color: theme.palette.text.secondary,
                             textDecoration: 'none',
                             transition: 'all 0.2s',
                             flexShrink: 0,
                             '&:hover': {
-                                bgcolor: alpha(zinc[700], 0.6),
-                                borderColor: alpha(zinc[600], 0.5),
-                                color: '#fff',
-                                transform: 'scale(1.05)'
+                                bgcolor: alpha(theme.palette.primary.main, 1),
+                                borderColor: theme.palette.primary.main,
+                                color: theme.palette.primary.contrastText,
+                                transform: 'scale(1.1)'
                             },
                         }}
                     >
@@ -154,8 +146,8 @@ const Breadcrumbs = ({
                                         alignItems: 'center',
                                         gap: 0.5,
                                         fontSize: isMobile ? '12px' : '13px',
-                                        fontWeight: 600,
-                                        color: '#fff',
+                                        fontWeight: 700,
+                                        color: theme.palette.text.primary,
                                         lineHeight: 1
                                     }}
                                 >
@@ -180,16 +172,16 @@ const Breadcrumbs = ({
                                 height: 28,
                                 px: 1.5,
                                 borderRadius: '9999px',
-                                bgcolor: alpha(zinc[800], 0.4),
-                                border: `1px solid ${alpha(zinc[700], 0.3)}`,
+                                bgcolor: theme.palette.mode === 'dark' ? alpha(theme.palette.zinc[800], 0.4) : alpha(theme.palette.zinc[100], 0.8),
+                                border: `1px solid ${theme.palette.divider}`,
                                 textDecoration: 'none',
                                 cursor: item.path ? 'pointer' : 'default',
                                 transition: 'all 0.2s',
                                 flexShrink: 0,
                                 ...(item.path && {
                                     '&:hover': {
-                                        bgcolor: alpha(zinc[700], 0.6),
-                                        borderColor: alpha(zinc[600], 0.5),
+                                        bgcolor: theme.palette.mode === 'dark' ? alpha(theme.palette.zinc[700], 0.6) : alpha(theme.palette.zinc[200], 0.8),
+                                        borderColor: theme.palette.mode === 'dark' ? alpha(theme.palette.zinc[600], 0.5) : alpha(theme.palette.zinc[300], 0.5),
                                         transform: 'translateY(-1px)'
                                     },
                                     '&:active': {
@@ -204,12 +196,12 @@ const Breadcrumbs = ({
                                     alignItems: 'center',
                                     gap: 0.5,
                                     fontSize: isMobile ? '11px' : '12px',
-                                    fontWeight: 500,
-                                    color: zinc[400],
+                                    fontWeight: 600,
+                                    color: theme.palette.text.secondary,
                                     lineHeight: 1,
                                     transition: 'color 0.2s',
                                     '.MuiBox-root:hover &': item.path ? {
-                                        color: '#fff'
+                                        color: theme.palette.mode === 'dark' ? '#fff' : theme.palette.text.primary
                                     } : {}
                                 }}
                             >
@@ -229,7 +221,7 @@ const Breadcrumbs = ({
                         display: 'block',
                         mt: 0.5,
                         fontSize: '0.7rem',
-                        color: zinc[600],
+                        color: theme.palette.text.disabled,
                         textAlign: 'center'
                     }}
                 >

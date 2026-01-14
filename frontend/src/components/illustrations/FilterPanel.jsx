@@ -23,20 +23,38 @@ import {
   useCarModels,
   useEngineModels,
   usePartCategories,
+  usePartSubCategories,
+  useFactories,
+  useUsersList,
 } from '../../hooks/useIllustrations';
 
-const FilterPanel = ({ onFilterChange }) => {
+const FilterPanel = ({ onFilterChange, initialFilters = {} }) => {
   const [filters, setFilters] = useState({
-    manufacturer: '',
-    car_model: '',
-    engine_model: '',
-    part_category: '',
+    manufacturer: initialFilters.manufacturer || '',
+    car_model: initialFilters.car_model || '',
+    engine_model: initialFilters.engine_model || '',
+    part_category: initialFilters.part_category || '',
+    part_subcategory: initialFilters.part_subcategory || '',
+    factory: initialFilters.factory || '',
+    user: initialFilters.user || '',
   });
+
+  useEffect(() => {
+    if (Object.keys(initialFilters).length > 0) {
+      setFilters(prev => ({
+        ...prev,
+        ...initialFilters
+      }));
+    }
+  }, [initialFilters]);
 
   const { manufacturers } = useManufacturers();
   const { carModels, fetchCarModels } = useCarModels();
   const { engineModels, fetchEngineModels } = useEngineModels();
   const { categories, fetchCategories } = usePartCategories();
+  const { subCategories, fetchSubCategories } = usePartSubCategories();
+  const { factories } = useFactories();
+  const { users } = useUsersList(filters.factory);
 
   useEffect(() => {
     if (filters.manufacturer) {
@@ -56,6 +74,12 @@ const FilterPanel = ({ onFilterChange }) => {
     }
   }, [filters.engine_model]);
 
+  useEffect(() => {
+    if (filters.part_category) {
+      fetchSubCategories({ part_category: filters.part_category });
+    }
+  }, [filters.part_category]);
+
   const handleFilterChange = (name, value) => {
     const newFilters = { ...filters, [name]: value };
 
@@ -63,11 +87,18 @@ const FilterPanel = ({ onFilterChange }) => {
       newFilters.car_model = '';
       newFilters.engine_model = '';
       newFilters.part_category = '';
+      newFilters.part_subcategory = '';
     } else if (name === 'car_model') {
       newFilters.engine_model = '';
       newFilters.part_category = '';
+      newFilters.part_subcategory = '';
     } else if (name === 'engine_model') {
       newFilters.part_category = '';
+      newFilters.part_subcategory = '';
+    } else if (name === 'part_category') {
+      newFilters.part_subcategory = '';
+    } else if (name === 'factory') {
+      newFilters.user = '';
     }
 
     setFilters(newFilters);
@@ -87,6 +118,9 @@ const FilterPanel = ({ onFilterChange }) => {
       car_model: '',
       engine_model: '',
       part_category: '',
+      part_subcategory: '',
+      factory: '',
+      user: '',
     });
     onFilterChange({});
   };
@@ -98,9 +132,13 @@ const FilterPanel = ({ onFilterChange }) => {
       manufacturer: manufacturers,
       car_model: carModels,
       engine_model: engineModels,
-      part_category: categories
+      part_category: categories,
+      part_subcategory: subCategories,
+      factory: factories,
+      user: users,
     };
     const item = items[type]?.find(item => item.id == value);
+    if (type === 'user' && item) return item.username;
     return item?.name || value;
   };
 
@@ -129,6 +167,10 @@ const FilterPanel = ({ onFilterChange }) => {
           )}
         </Stack>
 
+        <Typography variant="caption" sx={{ color: 'text.secondary', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.05em', fontSize: '0.65rem', opacity: 0.8, mb: -1 }}>
+          Vehicle Information
+        </Typography>
+
         <TextField
           select
           label="Manufacturer"
@@ -139,9 +181,9 @@ const FilterPanel = ({ onFilterChange }) => {
           sx={{
             '& .MuiInputLabel-root': { color: 'text.secondary' },
             '& .MuiOutlinedInput-root': {
-              bgcolor: alpha(theme.palette.zinc[900], 0.5),
+              bgcolor: theme.palette.mode === 'dark' ? alpha(theme.palette.zinc[900], 0.5) : alpha(theme.palette.text.primary, 0.03),
               '& fieldset': { borderColor: theme.palette.divider },
-              '&:hover fieldset': { borderColor: alpha(theme.palette.common.white, 0.2) },
+              '&:hover fieldset': { borderColor: theme.palette.mode === 'dark' ? alpha(theme.palette.common.white, 0.2) : alpha(theme.palette.common.black, 0.2) },
               '&.Mui-focused fieldset': { borderColor: 'primary.main' }
             }
           }}
@@ -163,9 +205,9 @@ const FilterPanel = ({ onFilterChange }) => {
           sx={{
             '& .MuiInputLabel-root': { color: 'text.secondary' },
             '& .MuiOutlinedInput-root': {
-              bgcolor: alpha(theme.palette.zinc[900], 0.5),
+              bgcolor: theme.palette.mode === 'dark' ? alpha(theme.palette.zinc[900], 0.5) : alpha(theme.palette.text.primary, 0.03),
               '& fieldset': { borderColor: theme.palette.divider },
-              '&:hover fieldset': { borderColor: alpha(theme.palette.common.white, 0.2) },
+              '&:hover fieldset': { borderColor: theme.palette.mode === 'dark' ? alpha(theme.palette.common.white, 0.2) : alpha(theme.palette.common.black, 0.2) },
               '&.Mui-focused fieldset': { borderColor: 'primary.main' }
             }
           }}
@@ -175,6 +217,11 @@ const FilterPanel = ({ onFilterChange }) => {
             <MenuItem key={c.id} value={c.id}>{c.name}</MenuItem>
           ))}
         </TextField>
+
+        <Divider sx={{ my: 0.5 }} />
+        <Typography variant="caption" sx={{ color: 'text.secondary', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.05em', fontSize: '0.65rem', opacity: 0.8 }}>
+          Technical Details
+        </Typography>
 
         <TextField
           select
@@ -187,9 +234,9 @@ const FilterPanel = ({ onFilterChange }) => {
           sx={{
             '& .MuiInputLabel-root': { color: 'text.secondary' },
             '& .MuiOutlinedInput-root': {
-              bgcolor: alpha(theme.palette.zinc[900], 0.5),
+              bgcolor: theme.palette.mode === 'dark' ? alpha(theme.palette.zinc[900], 0.5) : alpha(theme.palette.text.primary, 0.03),
               '& fieldset': { borderColor: theme.palette.divider },
-              '&:hover fieldset': { borderColor: alpha(theme.palette.common.white, 0.2) },
+              '&:hover fieldset': { borderColor: theme.palette.mode === 'dark' ? alpha(theme.palette.common.white, 0.2) : alpha(theme.palette.common.black, 0.2) },
               '&.Mui-focused fieldset': { borderColor: 'primary.main' }
             }
           }}
@@ -211,9 +258,9 @@ const FilterPanel = ({ onFilterChange }) => {
           sx={{
             '& .MuiInputLabel-root': { color: 'text.secondary' },
             '& .MuiOutlinedInput-root': {
-              bgcolor: alpha(theme.palette.zinc[900], 0.5),
+              bgcolor: theme.palette.mode === 'dark' ? alpha(theme.palette.zinc[900], 0.5) : alpha(theme.palette.text.primary, 0.03),
               '& fieldset': { borderColor: theme.palette.divider },
-              '&:hover fieldset': { borderColor: alpha(theme.palette.common.white, 0.2) },
+              '&:hover fieldset': { borderColor: theme.palette.mode === 'dark' ? alpha(theme.palette.common.white, 0.2) : alpha(theme.palette.common.black, 0.2) },
               '&.Mui-focused fieldset': { borderColor: 'primary.main' }
             }
           }}
@@ -221,6 +268,82 @@ const FilterPanel = ({ onFilterChange }) => {
           <MenuItem value="">All categories</MenuItem>
           {categories.map(c => (
             <MenuItem key={c.id} value={c.id}>{c.name}</MenuItem>
+          ))}
+        </TextField>
+
+        <TextField
+          select
+          label="Part Subcategory"
+          value={filters.part_subcategory}
+          onChange={(e) => handleFilterChange('part_subcategory', e.target.value)}
+          disabled={!filters.part_category}
+          size="small"
+          fullWidth
+          sx={{
+            '& .MuiInputLabel-root': { color: 'text.secondary' },
+            '& .MuiOutlinedInput-root': {
+              bgcolor: theme.palette.mode === 'dark' ? alpha(theme.palette.zinc[900], 0.5) : alpha(theme.palette.text.primary, 0.03),
+              '& fieldset': { borderColor: theme.palette.divider },
+              '&:hover fieldset': { borderColor: theme.palette.mode === 'dark' ? alpha(theme.palette.common.white, 0.2) : alpha(theme.palette.common.black, 0.2) },
+              '&.Mui-focused fieldset': { borderColor: 'primary.main' }
+            }
+          }}
+        >
+          <MenuItem value="">All subcategories</MenuItem>
+          {subCategories.map(sc => (
+            <MenuItem key={sc.id} value={sc.id}>{sc.name}</MenuItem>
+          ))}
+        </TextField>
+
+        <Divider sx={{ my: 0.5 }} />
+        <Typography variant="caption" sx={{ color: 'text.secondary', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.05em', fontSize: '0.65rem', opacity: 0.8 }}>
+          Organization
+        </Typography>
+
+        <TextField
+          select
+          label="Factory"
+          value={filters.factory}
+          onChange={(e) => handleFilterChange('factory', e.target.value)}
+          size="small"
+          fullWidth
+          sx={{
+            '& .MuiInputLabel-root': { color: 'text.secondary' },
+            '& .MuiOutlinedInput-root': {
+              bgcolor: theme.palette.mode === 'dark' ? alpha(theme.palette.zinc[900], 0.5) : alpha(theme.palette.text.primary, 0.03),
+              '& fieldset': { borderColor: theme.palette.divider },
+              '&:hover fieldset': { borderColor: theme.palette.mode === 'dark' ? alpha(theme.palette.common.white, 0.2) : alpha(theme.palette.common.black, 0.2) },
+              '&.Mui-focused fieldset': { borderColor: 'primary.main' }
+            }
+          }}
+        >
+          <MenuItem value="">All factories</MenuItem>
+          {factories.map(f => (
+            <MenuItem key={f.id} value={f.id}>{f.name}</MenuItem>
+          ))}
+        </TextField>
+
+        <TextField
+          select
+          label="User"
+          value={filters.user}
+          onChange={(e) => handleFilterChange('user', e.target.value)}
+          disabled={!filters.factory}
+          size="small"
+          fullWidth
+          sx={{
+            '& .MuiInputLabel-root': { color: 'text.secondary' },
+            '& .MuiOutlinedInput-root': {
+              bgcolor: theme.palette.mode === 'dark' ? alpha(theme.palette.zinc[900], 0.5) : alpha(theme.palette.text.primary, 0.03),
+              '& fieldset': { borderColor: theme.palette.divider },
+              '&:hover fieldset': { borderColor: theme.palette.mode === 'dark' ? alpha(theme.palette.common.white, 0.2) : alpha(theme.palette.common.black, 0.2) },
+              '&.Mui-focused fieldset': { borderColor: 'primary.main' }
+            }
+          }}
+        >
+          <MenuItem value="">All users</MenuItem>
+          {users.map(u => (
+            <MenuItem key={u.id} value={u.id}>{u.username}</MenuItem>
           ))}
         </TextField>
 
@@ -254,7 +377,7 @@ const FilterPanel = ({ onFilterChange }) => {
                   onDelete={() => handleFilterChange('manufacturer', '')}
                   sx={{
                     borderRadius: 1.5,
-                    bgcolor: alpha(theme.palette.zinc[800], 0.5),
+                    bgcolor: theme.palette.mode === 'dark' ? alpha(theme.palette.zinc[800], 0.5) : theme.palette.action.hover,
                     color: 'text.primary',
                     '& .MuiChip-deleteIcon': { color: 'text.disabled' }
                   }}
@@ -267,7 +390,7 @@ const FilterPanel = ({ onFilterChange }) => {
                   onDelete={() => handleFilterChange('car_model', '')}
                   sx={{
                     borderRadius: 1.5,
-                    bgcolor: alpha(theme.palette.zinc[800], 0.5),
+                    bgcolor: theme.palette.mode === 'dark' ? alpha(theme.palette.zinc[800], 0.5) : theme.palette.action.hover,
                     color: 'text.primary',
                     '& .MuiChip-deleteIcon': { color: 'text.disabled' }
                   }}
@@ -280,7 +403,7 @@ const FilterPanel = ({ onFilterChange }) => {
                   onDelete={() => handleFilterChange('engine_model', '')}
                   sx={{
                     borderRadius: 1.5,
-                    bgcolor: alpha(theme.palette.zinc[800], 0.5),
+                    bgcolor: theme.palette.mode === 'dark' ? alpha(theme.palette.zinc[800], 0.5) : theme.palette.action.hover,
                     color: 'text.primary',
                     '& .MuiChip-deleteIcon': { color: 'text.disabled' }
                   }}
@@ -293,7 +416,46 @@ const FilterPanel = ({ onFilterChange }) => {
                   onDelete={() => handleFilterChange('part_category', '')}
                   sx={{
                     borderRadius: 1.5,
-                    bgcolor: alpha(theme.palette.zinc[800], 0.5),
+                    bgcolor: theme.palette.mode === 'dark' ? alpha(theme.palette.zinc[800], 0.5) : theme.palette.action.hover,
+                    color: 'text.primary',
+                    '& .MuiChip-deleteIcon': { color: 'text.disabled' }
+                  }}
+                />
+              )}
+              {filters.part_subcategory && (
+                <Chip
+                  label={`Subcategory: ${getFilterLabel('part_subcategory', filters.part_subcategory)}`}
+                  size="small"
+                  onDelete={() => handleFilterChange('part_subcategory', '')}
+                  sx={{
+                    borderRadius: 1.5,
+                    bgcolor: theme.palette.mode === 'dark' ? alpha(theme.palette.zinc[800], 0.5) : theme.palette.action.hover,
+                    color: 'text.primary',
+                    '& .MuiChip-deleteIcon': { color: 'text.disabled' }
+                  }}
+                />
+              )}
+              {filters.factory && (
+                <Chip
+                  label={`Factory: ${getFilterLabel('factory', filters.factory)}`}
+                  size="small"
+                  onDelete={() => handleFilterChange('factory', '')}
+                  sx={{
+                    borderRadius: 1.5,
+                    bgcolor: theme.palette.mode === 'dark' ? alpha(theme.palette.zinc[800], 0.5) : theme.palette.action.hover,
+                    color: 'text.primary',
+                    '& .MuiChip-deleteIcon': { color: 'text.disabled' }
+                  }}
+                />
+              )}
+              {filters.user && (
+                <Chip
+                  label={`User: ${getFilterLabel('user', filters.user)}`}
+                  size="small"
+                  onDelete={() => handleFilterChange('user', '')}
+                  sx={{
+                    borderRadius: 1.5,
+                    bgcolor: theme.palette.mode === 'dark' ? alpha(theme.palette.zinc[800], 0.5) : theme.palette.action.hover,
                     color: 'text.primary',
                     '& .MuiChip-deleteIcon': { color: 'text.disabled' }
                   }}

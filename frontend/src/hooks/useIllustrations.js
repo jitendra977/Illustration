@@ -6,6 +6,8 @@ import {
   partCategoryAPI,
   partSubCategoryAPI,
   illustrationAPI,
+  factoryAPI,
+  userListAPI,
 } from '../api/illustrations';
 
 // ============================================================================
@@ -471,6 +473,66 @@ export const usePartSubCategories = (categoryId = null, pageSize = null) => {
     updateSubCategory,
     deleteSubCategory,
   };
+};
+
+// ============================================================================
+// FACTORIES HOOK
+// ============================================================================
+export const useFactories = () => {
+  const [factories, setFactories] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+
+  const fetchFactories = useCallback(async (params = {}) => {
+    setLoading(true);
+    setError(null);
+    try {
+      const data = await factoryAPI.getAll(params);
+      setFactories(data.results || data);
+      return data;
+    } catch (err) {
+      setError(err.response?.data?.message || 'Failed to fetch factories');
+      throw err;
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchFactories();
+  }, [fetchFactories]);
+
+  return { factories, loading, error, fetchFactories };
+};
+
+// ============================================================================
+// USERS LIST HOOK
+// ============================================================================
+export const useUsersList = (factoryId = null) => {
+  const [users, setUsers] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+
+  const fetchUsers = useCallback(async (params = {}) => {
+    setLoading(true);
+    setError(null);
+    try {
+      const data = await userListAPI.getAll(params);
+      setUsers(data.results || data);
+      return data;
+    } catch (err) {
+      setError(err.response?.data?.message || 'Failed to fetch users');
+      throw err;
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchUsers(factoryId ? { factory: factoryId } : {});
+  }, [fetchUsers, factoryId]);
+
+  return { users, loading, error, fetchUsers };
 };
 
 // ============================================================================

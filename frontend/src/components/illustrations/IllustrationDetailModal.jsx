@@ -218,7 +218,7 @@ const IllustrationDetailModal = ({
                                                 justifyContent: 'space-between',
                                                 cursor: 'pointer',
                                                 transition: 'all 0.2s',
-                                                bgcolor: alpha(theme.palette.zinc[900], 0.3),
+                                                bgcolor: theme.palette.mode === 'dark' ? alpha(theme.palette.zinc[900], 0.3) : alpha(theme.palette.text.primary, 0.02),
                                                 borderColor: 'divider',
                                                 '&:hover': {
                                                     bgcolor: alpha(theme.palette.primary.main, 0.05),
@@ -272,7 +272,13 @@ const IllustrationDetailModal = ({
                                         </Paper>
                                     ))
                                 ) : (
-                                    <Box sx={{ py: 4, textAlign: 'center', bgcolor: alpha(theme.palette.zinc[900], 0.5), borderRadius: 2, border: `1px dashed ${theme.palette.divider}` }}>
+                                    <Box sx={{
+                                        py: 4,
+                                        textAlign: 'center',
+                                        bgcolor: theme.palette.mode === 'dark' ? alpha(theme.palette.zinc[900], 0.5) : alpha(theme.palette.text.primary, 0.02),
+                                        borderRadius: 2,
+                                        border: `1px dashed ${theme.palette.divider}`
+                                    }}>
                                         <Typography variant="body2" sx={{ color: 'text.secondary' }}>
                                             添付ファイルはありません
                                         </Typography>

@@ -13,7 +13,8 @@ import {
     CircularProgress,
     Container,
     InputAdornment,
-    TextField
+    TextField,
+    alpha
 } from '@mui/material';
 import {
     Add as AddIcon,
@@ -91,22 +92,36 @@ const MobileUserManagement = () => {
     return (
         <Box sx={{ pb: 10, bgcolor: 'background.default', minHeight: '100vh' }}>
             {/* Header */}
-            <Box sx={{ p: 2, bgcolor: 'background.paper', position: 'sticky', top: 0, zIndex: 10, boxShadow: 1 }}>
-                <Typography variant="h6" fontWeight="bold" gutterBottom>
-                    User Management
+            <Box sx={{
+                p: 2,
+                bgcolor: alpha(theme.palette.background.paper, 0.8),
+                backdropFilter: 'blur(12px)',
+                position: 'sticky',
+                top: 0,
+                zIndex: 10,
+                borderBottom: `1px solid ${theme.palette.divider}`
+            }}>
+                <Typography variant="h6" fontWeight="900" sx={{ mb: 1.5, letterSpacing: '-0.01em' }}>
+                    ユーザー管理
                 </Typography>
                 <TextField
                     fullWidth
                     size="small"
-                    placeholder="Search users..."
+                    placeholder="ユーザーを検索..."
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                     InputProps={{
                         startAdornment: (
                             <InputAdornment position="start">
-                                <SearchIcon color="action" />
+                                <SearchIcon sx={{ color: 'text.disabled', fontSize: 20 }} />
                             </InputAdornment>
                         ),
+                    }}
+                    sx={{
+                        '& .MuiOutlinedInput-root': {
+                            bgcolor: 'background.default',
+                            borderRadius: 2,
+                        }
                     }}
                 />
             </Box>
@@ -118,9 +133,15 @@ const MobileUserManagement = () => {
                         <CircularProgress />
                     </Box>
                 ) : (
-                    <Stack spacing={2}>
+                    <Stack spacing={1.5}>
                         {filteredUsers.map((user) => (
-                            <Card key={user.id} elevation={2} sx={{ borderRadius: 2 }}>
+                            <Card key={user.id} sx={{
+                                borderRadius: 3,
+                                border: `1px solid ${theme.palette.divider}`,
+                                bgcolor: 'background.paper',
+                                transition: 'all 0.2s',
+                                '&:active': { transform: 'scale(0.98)' }
+                            }}>
                                 <CardContent sx={{ p: 2, '&:last-child': { pb: 2 } }}>
                                     <Stack direction="row" spacing={2} alignItems="center">
                                         <Avatar

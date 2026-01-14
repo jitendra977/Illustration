@@ -4,6 +4,7 @@ import {
     Grid,
     Typography,
     CircularProgress,
+    useTheme,
     alpha,
     IconButton
 } from '@mui/material';
@@ -19,19 +20,7 @@ import {
 } from 'lucide-react';
 
 // Zinc color palette
-const zinc = {
-    50: '#fafafa',
-    100: '#f4f4f5',
-    200: '#e4e4e7',
-    300: '#d4d4d8',
-    400: '#a1a1aa',
-    500: '#71717a',
-    600: '#52525b',
-    700: '#3f3f46',
-    800: '#27272a',
-    900: '#18181b',
-    950: '#09090b',
-};
+// Zinc palette from theme
 
 const Badge = ({ children, sx = {}, ...props }) => (
     <Box
@@ -54,13 +43,14 @@ const Badge = ({ children, sx = {}, ...props }) => (
 );
 
 const CategoryCard = ({ category, onClick }) => {
+    const theme = useTheme();
     return (
         <Box
             onClick={() => onClick(category)}
             sx={{
                 position: 'relative',
-                bgcolor: alpha(zinc[900], 0.4),
-                border: `1px solid ${alpha('#fff', 0.05)}`,
+                bgcolor: 'background.paper',
+                border: `1px solid ${theme.palette.divider}`,
                 borderRadius: 3,
                 p: 1.5,
                 cursor: 'pointer',
@@ -71,7 +61,8 @@ const CategoryCard = ({ category, onClick }) => {
                 transition: 'all 0.2s',
                 '&:active': { transform: 'scale(0.98)' },
                 '&:hover': {
-                    borderColor: alpha('#fff', 0.2)
+                    borderColor: theme.palette.primary.main,
+                    bgcolor: theme.palette.mode === 'dark' ? alpha(theme.palette.zinc[800], 0.6) : alpha(theme.palette.zinc[50], 0.5)
                 }
             }}
         >
@@ -80,21 +71,23 @@ const CategoryCard = ({ category, onClick }) => {
                 <Box sx={{
                     p: 1.5,
                     borderRadius: 2,
-                    background: `linear-gradient(135deg, ${zinc[800]}, ${zinc[900]})`,
-                    border: `1px solid ${alpha('#fff', 0.1)}`,
-                    color: zinc[400],
+                    background: theme.palette.mode === 'dark'
+                        ? `linear-gradient(135deg, ${theme.palette.zinc[800]}, ${theme.palette.zinc[900]})`
+                        : `linear-gradient(135deg, ${theme.palette.zinc[100]}, ${theme.palette.zinc[200]})`,
+                    border: `1px solid ${theme.palette.divider}`,
+                    color: theme.palette.text.secondary,
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
                     transition: 'color 0.2s',
-                    '.MuiBox-root:hover &': { color: '#f59e0b' }
+                    '.MuiBox-root:hover &': { color: theme.palette.primary.main }
                 }}>
                     <Folder size={18} />
                 </Box>
             </Box>
 
             <Box sx={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
-                <Typography variant="h6" sx={{ fontSize: '1rem', fontWeight: 700, color: '#fff', lineHeight: 1.2, mb: 0.5 }} noWrap>
+                <Typography variant="h6" sx={{ fontSize: '1rem', fontWeight: 700, color: 'text.primary', lineHeight: 1.2, mb: 0.5 }} noWrap>
                     {category.name}
                 </Typography>
 
@@ -103,24 +96,24 @@ const CategoryCard = ({ category, onClick }) => {
                         display: 'flex', alignItems: 'center', gap: 0.75,
                         px: 1, py: 0.5,
                         borderRadius: 1.5,
-                        bgcolor: alpha('#fff', 0.05),
-                        border: `1px solid ${alpha('#fff', 0.05)}`
+                        bgcolor: theme.palette.mode === 'dark' ? alpha(theme.palette.zinc[800], 0.4) : alpha(theme.palette.zinc[100], 0.5),
+                        border: `1px solid ${theme.palette.divider}`
                     }}>
-                        <Layers size={12} color={zinc[500]} />
-                        <Typography component="span" sx={{ fontSize: '11px', color: zinc[300], fontWeight: 600 }}>
-                            {category.subcategory_count || 0} <Box component="span" sx={{ display: { xs: 'none', sm: 'inline' }, color: zinc[500], fontWeight: 400 }}>サブ</Box>
+                        <Layers size={12} color={theme.palette.text.disabled} />
+                        <Typography component="span" sx={{ fontSize: '11px', color: 'text.secondary', fontWeight: 600 }}>
+                            {category.subcategory_count || 0} <Box component="span" sx={{ display: { xs: 'none', sm: 'inline' }, color: 'text.disabled', fontWeight: 400 }}>サブ</Box>
                         </Typography>
                     </Box>
                     <Box sx={{
                         display: 'flex', alignItems: 'center', gap: 0.75,
                         px: 1, py: 0.5,
                         borderRadius: 1.5,
-                        bgcolor: alpha('#fff', 0.05),
-                        border: `1px solid ${alpha('#fff', 0.05)}`
+                        bgcolor: theme.palette.mode === 'dark' ? alpha(theme.palette.zinc[800], 0.4) : alpha(theme.palette.zinc[100], 0.5),
+                        border: `1px solid ${theme.palette.divider}`
                     }}>
-                        <ImageIcon size={12} color={zinc[500]} />
-                        <Typography component="span" sx={{ fontSize: '11px', color: zinc[300], fontWeight: 600 }}>
-                            {category.illustration_count || 0} <Box component="span" sx={{ display: { xs: 'none', sm: 'inline' }, color: zinc[500], fontWeight: 400 }}>イラスト</Box>
+                        <ImageIcon size={12} color={theme.palette.text.disabled} />
+                        <Typography component="span" sx={{ fontSize: '11px', color: 'text.secondary', fontWeight: 600 }}>
+                            {category.illustration_count || 0} <Box component="span" sx={{ display: { xs: 'none', sm: 'inline' }, color: 'text.disabled', fontWeight: 400 }}>イラスト</Box>
                         </Typography>
                     </Box>
                 </Box>
@@ -131,10 +124,11 @@ const CategoryCard = ({ category, onClick }) => {
                 opacity: 0.4,
                 transition: 'all 0.2s',
                 '.MuiBox-root:hover &': {
-                    opacity: 1
+                    opacity: 1,
+                    color: theme.palette.primary.main
                 }
             }}>
-                <ChevronRight size={18} color={zinc[400]} />
+                <ChevronRight size={18} color={theme.palette.text.disabled} />
             </Box>
         </Box>
     );
@@ -147,6 +141,7 @@ const PartCategoryList = () => {
     const [isScrolled, setIsScrolled] = useState(false);
 
     const navigate = useNavigate();
+    const theme = useTheme();
 
     useEffect(() => {
         const handleScroll = () => setIsScrolled(window.scrollY > 20);
@@ -192,7 +187,7 @@ const PartCategoryList = () => {
     }, [categories]);
 
     return (
-        <Box sx={{ minHeight: '100vh', bgcolor: zinc[950], color: zinc[100], fontFamily: 'Inter, sans-serif', pb: { xs: 12, md: 5 } }}>
+        <Box sx={{ minHeight: '100vh', bgcolor: 'background.default', color: 'text.primary', fontFamily: 'Inter, sans-serif', pb: { xs: 12, md: 5 } }}>
             {/* Sticky Header */}
             <Box component="nav" sx={{
                 position: 'sticky',
@@ -201,12 +196,12 @@ const PartCategoryList = () => {
                 transition: 'all 0.3s',
                 px: { xs: 1.5, md: 3 },
                 py: isScrolled ? 1.5 : 2,
-                bgcolor: isScrolled ? alpha(zinc[950], 0.9) : 'transparent',
+                bgcolor: isScrolled ? alpha(theme.palette.background.default, 0.9) : 'transparent',
                 backdropFilter: isScrolled ? 'blur(24px)' : 'none',
-                borderBottom: isScrolled ? `1px solid ${alpha('#fff', 0.1)}` : 'none',
+                borderBottom: isScrolled ? `1px solid ${theme.palette.divider}` : 'none',
             }}>
                 <Box sx={{ maxWidth: '1280px', mx: 'auto', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                    <IconButton onClick={handleBack} sx={{ color: zinc[400], '&:hover': { bgcolor: alpha('#fff', 0.05), color: '#fff' } }}>
+                    <IconButton onClick={handleBack} sx={{ color: 'text.secondary', '&:hover': { bgcolor: alpha(theme.palette.primary.main, 0.05), color: 'primary.main' } }}>
                         <ArrowLeft size={20} />
                     </IconButton>
 
@@ -230,19 +225,19 @@ const PartCategoryList = () => {
                 {/* Hero Section */}
                 <Box component="header" sx={{ mb: { xs: 4, md: 6 } }}>
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1.5 }}>
-                        <Badge sx={{ bgcolor: alpha('#f59e0b', 0.2), color: '#f59e0b', border: `1px solid ${alpha('#f59e0b', 0.3)}` }}>パーツ</Badge>
+                        <Badge sx={{ bgcolor: 'background.paper', border: `1px solid ${theme.palette.divider}`, color: 'text.secondary' }}>パーツ</Badge>
                     </Box>
                     <Typography variant="h1" sx={{
                         fontSize: { xs: '2.5rem', md: '4rem' },
                         fontWeight: 900,
                         letterSpacing: '-0.025em',
-                        color: '#fff',
+                        color: 'text.primary',
                         mb: 2,
                         lineHeight: 1
                     }}>
                         カテゴリー選択
                     </Typography>
-                    <Typography sx={{ color: zinc[400], maxWidth: '600px', fontSize: { xs: '1rem', md: '1.125rem' }, lineHeight: 1.6 }}>
+                    <Typography sx={{ color: 'text.secondary', maxWidth: '600px', fontSize: { xs: '1rem', md: '1.125rem' }, lineHeight: 1.6 }}>
                         イラストを検索するカテゴリーを選択してください。
                     </Typography>
 
@@ -251,24 +246,24 @@ const PartCategoryList = () => {
                         display: 'flex',
                         mt: 3,
                         p: 0.75,
-                        bgcolor: alpha(zinc[900], 0.5),
-                        border: `1px solid ${alpha('#fff', 0.05)}`,
+                        bgcolor: 'background.paper',
+                        border: `1px solid ${theme.palette.divider}`,
                         borderRadius: 3,
                         width: { xs: '100%', sm: 'max-content' }
                     }}>
-                        <Box sx={{ flex: 1, px: 2.5, py: 1, textAlign: 'center', borderRight: `1px solid ${alpha('#fff', 0.05)}` }}>
-                            <Typography sx={{ fontSize: '1.125rem', fontWeight: 700, color: '#fff', lineHeight: 1.1 }}>
+                        <Box sx={{ flex: 1, px: 2.5, py: 1, textAlign: 'center', borderRight: `1px solid ${theme.palette.divider}` }}>
+                            <Typography sx={{ fontSize: '1.125rem', fontWeight: 700, color: 'text.primary', lineHeight: 1.1 }}>
                                 {categories.length}
                             </Typography>
-                            <Typography sx={{ fontSize: '9px', color: zinc[500], textTransform: 'uppercase', fontWeight: 900, letterSpacing: '0.1em', mt: 0.5 }}>
+                            <Typography sx={{ fontSize: '9px', color: 'text.secondary', textTransform: 'uppercase', fontWeight: 900, letterSpacing: '0.1em', mt: 0.5 }}>
                                 カテゴリー
                             </Typography>
                         </Box>
                         <Box sx={{ flex: 1, px: 2.5, py: 1, textAlign: 'center' }}>
-                            <Typography sx={{ fontSize: '1.125rem', fontWeight: 700, color: '#fff', lineHeight: 1.1 }}>
+                            <Typography sx={{ fontSize: '1.125rem', fontWeight: 700, color: 'text.primary', lineHeight: 1.1 }}>
                                 {totalStats.illustrations}
                             </Typography>
-                            <Typography sx={{ fontSize: '9px', color: zinc[500], textTransform: 'uppercase', fontWeight: 900, letterSpacing: '0.1em', mt: 0.5 }}>
+                            <Typography sx={{ fontSize: '9px', color: 'text.secondary', textTransform: 'uppercase', fontWeight: 900, letterSpacing: '0.1em', mt: 0.5 }}>
                                 イラスト
                             </Typography>
                         </Box>
@@ -277,8 +272,8 @@ const PartCategoryList = () => {
 
                 {/* Search Bar */}
                 <Box sx={{ display: 'flex', flexDirection: { xs: 'column', sm: 'row' }, gap: 1.5, mb: 4 }}>
-                    <Box sx={{ position: 'relative', flex: 1, '&:focus-within svg': { color: '#3b82f6' } }}>
-                        <Box sx={{ position: 'absolute', left: 16, top: '50%', transform: 'translateY(-50%)', color: zinc[500], transition: 'color 0.2s', display: 'flex' }}>
+                    <Box sx={{ position: 'relative', flex: 1, '&:focus-within svg': { color: 'primary.main' } }}>
+                        <Box sx={{ position: 'absolute', left: 16, top: '50%', transform: 'translateY(-50%)', color: 'text.disabled', transition: 'color 0.2s', display: 'flex' }}>
                             <Search size={18} />
                         </Box>
                         <Box
@@ -288,20 +283,20 @@ const PartCategoryList = () => {
                             onChange={(e) => setSearchTerm(e.target.value)}
                             sx={{
                                 width: '100%',
-                                bgcolor: alpha(zinc[900], 0.8),
-                                border: `1px solid ${alpha('#fff', 0.05)}`,
+                                bgcolor: 'background.paper',
+                                border: `1px solid ${theme.palette.divider}`,
                                 borderRadius: 3,
                                 py: 1.75,
                                 pl: 6,
                                 pr: 2,
-                                color: '#fff',
+                                color: 'text.primary',
                                 outline: 'none',
                                 transition: 'all 0.2s',
                                 fontSize: '0.875rem',
-                                '::placeholder': { color: zinc[600] },
+                                '::placeholder': { color: 'text.disabled' },
                                 '&:focus': {
-                                    boxShadow: `0 0 0 2px ${alpha('#3b82f6', 0.2)}`,
-                                    borderColor: alpha('#3b82f6', 0.5)
+                                    boxShadow: `0 0 0 2px ${alpha(theme.palette.primary.main, 0.2)}`,
+                                    borderColor: 'primary.main'
                                 }
                             }}
                         />
@@ -311,7 +306,7 @@ const PartCategoryList = () => {
                 {/* Content Area */}
                 {loading ? (
                     <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', py: 12, gap: 2 }}>
-                        <CircularProgress sx={{ color: '#3b82f6' }} />
+                        <CircularProgress sx={{ color: 'primary.main' }} />
                     </Box>
                 ) : filteredCategories.length > 0 ? (
                     <Grid container spacing={{ xs: 1, md: 2 }}>
@@ -323,16 +318,16 @@ const PartCategoryList = () => {
                     </Grid>
                 ) : (
                     <Box sx={{
-                        bgcolor: alpha(zinc[900], 0.2),
-                        border: `1px dashed ${alpha('#fff', 0.1)}`,
+                        bgcolor: alpha(theme.palette.zinc[900], 0.2),
+                        border: `1px dashed ${alpha(theme.palette.text.primary, 0.1)}`,
                         borderRadius: 4,
                         py: 10,
                         textAlign: 'center'
                     }}>
-                        <Typography variant="h6" sx={{ color: '#fff', fontWeight: 700, mb: 0.5 }}>
+                        <Typography variant="h6" sx={{ color: 'text.primary', fontWeight: 700, mb: 0.5 }}>
                             「{searchTerm}」の検索結果はありません
                         </Typography>
-                        <Typography variant="body2" sx={{ color: zinc[500] }}>
+                        <Typography variant="body2" sx={{ color: 'text.disabled' }}>
                             別の検索語句を試してください。
                         </Typography>
                     </Box>
@@ -340,8 +335,8 @@ const PartCategoryList = () => {
             </Box>
 
             {/* Footer */}
-            <Box component="footer" sx={{ display: { xs: 'none', md: 'block' }, maxWidth: '1280px', mx: 'auto', px: 3, mt: 10, pt: 5, borderTop: `1px solid ${alpha('#fff', 0.05)}` }}>
-                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', color: zinc[600], fontSize: '0.75rem', fontWeight: 500 }}>
+            <Box component="footer" sx={{ display: { xs: 'none', md: 'block' }, maxWidth: '1280px', mx: 'auto', px: 3, mt: 10, pt: 5, borderTop: `1px solid ${theme.palette.divider}` }}>
+                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', color: 'text.secondary', fontSize: '0.75rem', fontWeight: 500 }}>
                     <Typography variant="caption">© 2024 エンジンイラストレーション本部</Typography>
                 </Box>
             </Box>

@@ -34,8 +34,8 @@ export const getTheme = (mode) => {
         palette: {
             mode,
             background: {
-                default: isDark ? zinc[950] : '#ffffff', // Bright white for light mode
-                paper: isDark ? zinc[900] : '#ffffff',   // White cards for light mode, distinction via shadow/border
+                default: isDark ? zinc[950] : zinc[50],
+                paper: isDark ? zinc[900] : '#ffffff',
             },
             primary: {
                 main: '#3b82f6', // Bright blue works for both
@@ -54,12 +54,12 @@ export const getTheme = (mode) => {
                 secondary: isDark ? zinc[400] : zinc[500],
                 disabled: isDark ? zinc[600] : zinc[300],
             },
-            divider: isDark ? alpha('#ffffff', 0.05) : alpha('#000000', 0.05),
+            divider: isDark ? alpha('#ffffff', 0.05) : alpha(zinc[200], 0.8),
             action: {
-                hover: isDark ? alpha(zinc[800], 0.5) : alpha(zinc[100], 0.5),
+                hover: isDark ? alpha(zinc[800], 0.5) : alpha(zinc[100], 0.8),
                 selected: alpha('#3b82f6', 0.1),
-                disabled: isDark ? zinc[700] : zinc[200],
-                disabledBackground: isDark ? zinc[800] : zinc[100],
+                disabled: isDark ? zinc[700] : zinc[300],
+                disabledBackground: isDark ? zinc[800] : zinc[50],
             },
             zinc: zinc,
         },
@@ -78,6 +78,7 @@ export const getTheme = (mode) => {
             body2: { fontSize: '0.875rem', lineHeight: 1.5 },
             caption: { fontSize: '0.75rem', color: isDark ? zinc[500] : zinc[400] },
             button: { textTransform: 'none', fontWeight: 600 },
+            overline: { fontWeight: 800, letterSpacing: '0.05em', fontSize: '0.65rem' },
         },
         components: {
             MuiCssBaseline: {
@@ -107,7 +108,8 @@ export const getTheme = (mode) => {
                     root: {
                         backgroundImage: 'none',
                         backgroundColor: isDark ? zinc[900] : '#ffffff',
-                        border: `1px solid ${isDark ? alpha('#ffffff', 0.05) : alpha('#000000', 0.05)}`,
+                        border: `1px solid ${isDark ? alpha('#ffffff', 0.05) : alpha(zinc[200], 0.6)}`,
+                        boxShadow: isDark ? 'none' : '0 1px 2px 0 rgb(0 0 0 / 0.05)',
                     },
                     // Light mode shadows need to be softer
                     elevation1: { boxShadow: isDark ? '0 4px 6px -1px rgb(0 0 0 / 0.1)' : '0 2px 4px rgba(0,0,0,0.02), 0 1px 2px rgba(0,0,0,0.03)' },
@@ -118,11 +120,16 @@ export const getTheme = (mode) => {
                 styleOverrides: {
                     root: {
                         backgroundImage: 'none',
-                        backgroundColor: isDark ? alpha(zinc[900], 0.4) : alpha('#ffffff', 0.8),
-                        backdropFilter: 'blur(12px)',
-                        border: `1px solid ${isDark ? alpha('#ffffff', 0.05) : alpha('#000000', 0.05)}`,
+                        backgroundColor: isDark ? alpha(zinc[900], 0.6) : '#ffffff',
+                        backdropFilter: isDark ? 'blur(16px)' : 'none',
+                        border: `1px solid ${isDark ? alpha('#ffffff', 0.1) : alpha(zinc[200], 0.6)}`,
                         borderRadius: 16,
-                        boxShadow: isDark ? 'none' : '0 4px 12px rgba(0,0,0,0.03)',
+                        boxShadow: isDark ? '0 10px 15px -3px rgb(0 0 0 / 0.1)' : '0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1)',
+                        transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
+                        '&:hover': {
+                            boxShadow: isDark ? '0 20px 25px -5px rgb(0 0 0 / 0.1)' : '0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1)',
+                            borderColor: isDark ? alpha('#ffffff', 0.15) : alpha(zinc[300], 0.6),
+                        }
                     },
                 },
             },
@@ -140,8 +147,8 @@ export const getTheme = (mode) => {
                         color: isDark ? zinc[300] : zinc[700],
                         '&:hover': {
                             borderColor: isDark ? alpha('#ffffff', 0.2) : alpha('#000000', 0.2),
-                            backgroundColor: isDark ? alpha('#ffffff', 0.05) : alpha('#000000', 0.05),
-                            color: isDark ? '#ffffff' : '#000000',
+                            backgroundColor: isDark ? alpha('#ffffff', 0.05) : alpha(zinc[100], 0.5),
+                            color: isDark ? '#ffffff' : zinc[900],
                         },
                     },
                 },
@@ -153,7 +160,7 @@ export const getTheme = (mode) => {
                         backdropFilter: 'blur(12px)',
                         borderBottom: `1px solid ${isDark ? alpha('#ffffff', 0.05) : alpha('#000000', 0.05)}`,
                         boxShadow: 'none',
-                        color: isDark ? '#ffffff' : zinc[900],
+                        color: isDark ? '#ffffff' : zinc[950],
                     },
                 },
             },
@@ -161,7 +168,7 @@ export const getTheme = (mode) => {
                 styleOverrides: {
                     paper: {
                         backgroundColor: isDark ? zinc[950] : '#ffffff',
-                        borderRight: `1px solid ${isDark ? alpha('#ffffff', 0.05) : alpha('#000000', 0.05)}`,
+                        borderRight: `1px solid ${isDark ? alpha('#ffffff', 0.05) : alpha(zinc[200], 0.5)}`,
                     },
                 },
             },
@@ -169,12 +176,12 @@ export const getTheme = (mode) => {
                 styleOverrides: {
                     root: {
                         '& .MuiOutlinedInput-root': {
-                            backgroundColor: isDark ? alpha(zinc[900], 0.4) : alpha(zinc[100], 0.5),
+                            backgroundColor: isDark ? alpha(zinc[900], 0.4) : alpha('#ffffff', 0.5),
                             '& fieldset': {
-                                borderColor: isDark ? alpha('#ffffff', 0.05) : alpha('#000000', 0.05),
+                                borderColor: isDark ? alpha('#ffffff', 0.05) : alpha(zinc[200], 0.8),
                             },
                             '&:hover fieldset': {
-                                borderColor: isDark ? alpha('#ffffff', 0.1) : alpha('#000000', 0.1),
+                                borderColor: isDark ? alpha('#ffffff', 0.1) : alpha(zinc[300], 0.8),
                             },
                             '&.Mui-focused fieldset': {
                                 borderColor: '#3b82f6',

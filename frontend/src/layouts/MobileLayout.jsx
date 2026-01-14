@@ -29,9 +29,12 @@ import {
   Person as PersonIcon,
   Close as CloseIcon,
   Refresh as RefreshIcon,
-  ManageAccounts as ManageAccountsIcon
+  ManageAccounts as ManageAccountsIcon,
+  DarkMode as DarkModeIcon,
+  LightMode as LightModeIcon
 } from '@mui/icons-material';
 import { useAuth } from '../context/AuthContext';
+import { useColorMode } from '../context/ThemeContext';
 import { useNavigate, useLocation } from 'react-router-dom';
 
 const MobileLayout = ({ children, showHeader = true, onRefresh, refreshing = false }) => {
@@ -40,6 +43,7 @@ const MobileLayout = ({ children, showHeader = true, onRefresh, refreshing = fal
   const navigate = useNavigate();
   const location = useLocation();
   const theme = useTheme();
+  const { mode, toggleColorMode } = useColorMode();
   const [bottomNavValue, setBottomNavValue] = useState(0);
 
   useEffect(() => {
@@ -77,14 +81,16 @@ const MobileLayout = ({ children, showHeader = true, onRefresh, refreshing = fal
       {/* Header */}
       {showHeader && (
         <Box sx={{
-          background: `linear-gradient(135deg, ${theme.palette.zinc[900]} 0%, ${theme.palette.zinc[950]} 100%)`,
+          background: theme.palette.mode === 'dark'
+            ? `linear-gradient(135deg, ${theme.palette.zinc[900]} 0%, ${theme.palette.zinc[950]} 100%)`
+            : `linear-gradient(135deg, ${theme.palette.primary.main} 0%, ${theme.palette.primary.dark} 100%)`,
           color: 'white',
           pt: 1.5,
           pb: 3.5,
           px: 2,
           flexShrink: 0,
-          borderBottom: `1px solid ${alpha(theme.palette.common.white, 0.05)}`,
-          boxShadow: `0 4px 20px ${alpha(theme.palette.common.black, 0.1)}`
+          borderBottom: `1px solid ${alpha(theme.palette.common.white, 0.1)}`,
+          boxShadow: `0 4px 20px ${alpha(theme.palette.common.black, 0.15)}`
         }}>
           <Stack direction="row" justifyContent="space-between" alignItems="center">
             <Stack direction="row" spacing={1.5} alignItems="center">
@@ -131,10 +137,29 @@ const MobileLayout = ({ children, showHeader = true, onRefresh, refreshing = fal
               </Stack>
             </Stack>
 
-            {onRefresh && (
+            <Stack direction="row" spacing={1}>
+              {onRefresh && (
+                <IconButton
+                  onClick={onRefresh}
+                  disabled={refreshing}
+                  sx={{
+                    color: 'white',
+                    bgcolor: 'rgba(255,255,255,0.08)',
+                    backdropFilter: 'blur(8px)',
+                    '&:hover': { bgcolor: 'rgba(255,255,255,0.15)' }
+                  }}
+                >
+                  <RefreshIcon
+                    sx={{
+                      fontSize: 20,
+                      animation: refreshing ? 'spin 1s linear infinite' : 'none'
+                    }}
+                  />
+                </IconButton>
+              )}
+
               <IconButton
-                onClick={onRefresh}
-                disabled={refreshing}
+                onClick={toggleColorMode}
                 sx={{
                   color: 'white',
                   bgcolor: 'rgba(255,255,255,0.08)',
@@ -142,14 +167,9 @@ const MobileLayout = ({ children, showHeader = true, onRefresh, refreshing = fal
                   '&:hover': { bgcolor: 'rgba(255,255,255,0.15)' }
                 }}
               >
-                <RefreshIcon
-                  sx={{
-                    fontSize: 20,
-                    animation: refreshing ? 'spin 1s linear infinite' : 'none'
-                  }}
-                />
+                {theme.palette.mode === 'dark' ? <LightModeIcon sx={{ fontSize: 20 }} /> : <DarkModeIcon sx={{ fontSize: 20 }} />}
               </IconButton>
-            )}
+            </Stack>
           </Stack>
         </Box>
       )}
@@ -181,7 +201,9 @@ const MobileLayout = ({ children, showHeader = true, onRefresh, refreshing = fal
         }}
       >
         <Box sx={{
-          background: `linear-gradient(135deg, ${theme.palette.zinc[900]} 0%, ${theme.palette.zinc[950]} 100%)`,
+          background: theme.palette.mode === 'dark'
+            ? `linear-gradient(135deg, ${theme.palette.zinc[900]} 0%, ${theme.palette.zinc[950]} 100%)`
+            : `linear-gradient(135deg, ${theme.palette.primary.main} 0%, ${theme.palette.primary.dark} 100%)`,
           color: 'white',
           p: 3,
           position: 'relative',
@@ -226,9 +248,9 @@ const MobileLayout = ({ children, showHeader = true, onRefresh, refreshing = fal
                   height: 20,
                   fontSize: '0.65rem',
                   fontWeight: 700,
-                  bgcolor: 'rgba(56, 189, 248, 0.2)',
-                  color: '#7dd3fc',
-                  border: '1px solid rgba(56, 189, 248, 0.3)'
+                  bgcolor: theme.palette.mode === 'dark' ? 'rgba(56, 189, 248, 0.2)' : 'rgba(255, 255, 255, 0.2)',
+                  color: theme.palette.mode === 'dark' ? '#7dd3fc' : '#ffffff',
+                  border: theme.palette.mode === 'dark' ? '1px solid rgba(56, 189, 248, 0.3)' : '1px solid rgba(255, 255, 255, 0.4)'
                 }}
               />
             </Box>
@@ -316,10 +338,15 @@ const MobileLayout = ({ children, showHeader = true, onRefresh, refreshing = fal
         sx={{
           position: 'relative',
           zIndex: 1100,
-          boxShadow: `0 -10px 30px ${alpha(theme.palette.common.black, 0.05)}`,
-          background: alpha(theme.palette.background.paper, 0.8),
+          boxShadow: theme.palette.mode === 'dark'
+            ? `0 -10px 30px ${alpha(theme.palette.common.black, 0.4)}`
+            : `0 -10px 30px ${alpha(theme.palette.common.black, 0.05)}`,
+          background: theme.palette.mode === 'dark'
+            ? alpha(theme.palette.zinc[950], 0.9)
+            : alpha(theme.palette.background.paper, 0.9),
           backdropFilter: 'blur(20px)',
-          borderTop: `1px solid ${theme.palette.divider}`
+          borderTop: `1px solid ${theme.palette.divider}`,
+          pb: 'env(safe-area-inset-bottom)',
         }}
         elevation={0}
       >
@@ -334,10 +361,25 @@ const MobileLayout = ({ children, showHeader = true, onRefresh, refreshing = fal
             height: 72,
             bgcolor: 'transparent',
             '& .MuiBottomNavigationAction-root': {
-              color: 'text.secondary',
+              color: theme.palette.text.secondary,
+              minWidth: 0,
+              padding: '12px 0',
               '&.Mui-selected': {
                 color: theme.palette.primary.main,
-                '& .MuiSvgIcon-root': { transform: 'scale(1.2)' }
+                '& .MuiBottomNavigationAction-label': {
+                  fontWeight: 800,
+                  fontSize: '0.75rem',
+                  mt: 0.5
+                },
+                '& .MuiSvgIcon-root': {
+                  transform: 'scale(1.1) translateY(-2px)',
+                  transition: 'all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275)'
+                }
+              },
+              '& .MuiBottomNavigationAction-label': {
+                fontSize: '0.7rem',
+                fontWeight: 600,
+                transition: 'all 0.2s'
               }
             }
           }}

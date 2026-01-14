@@ -164,11 +164,11 @@ const HierarchicalIllustrationList = () => {
                     variant="outlined"
                     size="small"
                     sx={{
-                        borderColor: 'rgba(255, 255, 255, 0.2)',
-                        color: 'white',
+                        borderColor: theme.palette.divider,
+                        color: 'text.primary',
                         '&:hover': {
-                            borderColor: 'rgba(255, 255, 255, 0.4)',
-                            bgcolor: 'rgba(255, 255, 255, 0.05)'
+                            borderColor: theme.palette.primary.main,
+                            bgcolor: alpha(theme.palette.primary.main, 0.05)
                         }
                     }}
                 >

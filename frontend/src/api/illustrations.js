@@ -1231,4 +1231,50 @@ export const illustrationFileAPI = {
   },
 };
 
+// ============================================================================
+// FACTORIES API
+// ============================================================================
+export const factoryAPI = {
+  getAll: async (params = {}) => {
+    const cacheKey = getCacheKey('factories', params);
+    const cached = getFromCache(cacheKey);
+    if (cached) return cached;
+
+    try {
+      const response = await api.get('/auth/factories/', { params });
+      setCache(cacheKey, response.data);
+      return response.data;
+    } catch (error) {
+      console.error('Factory API error:', error);
+      throw {
+        error: error.response?.data?.detail || error.message || '工場一覧の取得に失敗しました',
+        details: error.response?.data
+      };
+    }
+  },
+};
+
+// ============================================================================
+// USERS LIST API
+// ============================================================================
+export const userListAPI = {
+  getAll: async (params = {}) => {
+    const cacheKey = getCacheKey('users-list', params);
+    const cached = getFromCache(cacheKey);
+    if (cached) return cached;
+
+    try {
+      const response = await api.get('/auth/users-list/', { params });
+      setCache(cacheKey, response.data);
+      return response.data;
+    } catch (error) {
+      console.error('User list API error:', error);
+      throw {
+        error: error.response?.data?.detail || error.message || 'ユーザー一覧の取得に失敗しました',
+        details: error.response?.data
+      };
+    }
+  },
+};
+
 export default api;

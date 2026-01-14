@@ -248,6 +248,7 @@ class IllustrationViewSet(viewsets.ModelViewSet):
     pagination_class = DefaultPagination
     filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
     filterset_fields = [
+        'user',
         'factory',
         'engine_model',
         'engine_model__manufacturer',
@@ -256,7 +257,7 @@ class IllustrationViewSet(viewsets.ModelViewSet):
         'applicable_car_models'
     ]
     search_fields = ['title', 'description']
-    ordering_fields = ['created_at', 'updated_at', 'title']
+    ordering_fields = ['created_at', 'updated_at', 'title', 'factory__name', 'user__username']
     ordering = ['-created_at']
 
     def get_permissions(self):

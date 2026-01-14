@@ -8,7 +8,7 @@ from rest_framework.decorators import action
 from rest_framework.views import APIView
 import uuid
 
-from .models import User
+from .models import User, Factory
 from .serializers import (
     UserSerializer,
     RegisterSerializer,
@@ -16,7 +16,8 @@ from .serializers import (
     ChangePasswordSerializer,
     CustomTokenObtainPairSerializer,
     EmailVerificationSerializer,
-    AdminUserSerializer
+    AdminUserSerializer,
+    FactorySerializer
 )
 
 
@@ -372,3 +373,37 @@ class UserViewSet(viewsets.ModelViewSet):
             'current_user': str(request.user),
             'user_is_authenticated': request.user.is_authenticated
         })
+class FactoryViewSet(viewsets.ReadOnlyModelViewSet):
+    """
+    Viewset for listing factories.
+    Accessible to all authenticated users.
+    """
+    queryset = Factory.objects.all().order_by('name')
+    serializer_class = FactorySerializer
+    permission_classes = [permissions.IsAuthenticated]
+    pagination_class = None
+
+class UserListViewSet(viewsets.ReadOnlyModelViewSet):
+    """
+    Simplified user list for filter dropdowns.
+    Accessible to all authenticated users.
+    """
+    permission_classes = [permissions.IsAuthenticated]
+    pagination_class = None
+
+    def get_queryset(self):
+        queryset = User.objects.filter(is_active=True).order_by('username')
+        factory_id = self.request.query_params.get('factory')
+        if factory_id:
+            queryset = queryset.filter(
+                factory_memberships__factory_id=factory_id, 
+                factory_memberships__is_active=True
+            ).distinct()
+        return queryset
+
+    def get_serializer_class(self):
+        class SimpleUserSerializer(serializers.ModelSerializer):
+            class Meta:
+                model = User
+                fields = ['id', 'username', 'first_name', 'last_name']
+        return SimpleUserSerializer
