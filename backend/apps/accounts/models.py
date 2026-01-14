@@ -74,7 +74,6 @@ class Role(models.Model):
 
     code = models.CharField(
         max_length=20,
-        choices=ROLE_CODES,
         unique=True
     )
     name = models.CharField(max_length=50)

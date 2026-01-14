@@ -308,3 +308,114 @@ export const usersAPI = {
     return `${getBaseUrl()}${relativeUrl}`;
   }
 };
+
+// ============================================================================
+// FACTORIES API (Management)
+// ============================================================================
+export const factoriesAPI = {
+  getAll: async (params = {}) => {
+    try {
+      const response = await api.get('auth/factories/', { params });
+      return response.data;
+    } catch (error) {
+      return handleApiError(error, 'fetching factories');
+    }
+  },
+  create: async (data) => {
+    try {
+      const response = await api.post('auth/factories/', data);
+      return response.data;
+    } catch (error) {
+      return handleApiError(error, 'creating factory');
+    }
+  },
+  update: async (id, data) => {
+    try {
+      const response = await api.put(`auth/factories/${id}/`, data);
+      return response.data;
+    } catch (error) {
+      return handleApiError(error, `updating factory ${id}`);
+    }
+  },
+  delete: async (id) => {
+    try {
+      await api.delete(`auth/factories/${id}/`);
+    } catch (error) {
+      return handleApiError(error, `deleting factory ${id}`);
+    }
+  }
+};
+
+// ============================================================================
+// ROLES API
+// ============================================================================
+export const rolesAPI = {
+  getAll: async (params = {}) => {
+    try {
+      const response = await api.get('auth/roles/', { params });
+      return response.data;
+    } catch (error) {
+      return handleApiError(error, 'fetching roles');
+    }
+  },
+  create: async (data) => {
+    try {
+      const response = await api.post('auth/roles/', data);
+      return response.data;
+    } catch (error) {
+      return handleApiError(error, 'creating role');
+    }
+  },
+  update: async (id, data) => {
+    try {
+      const response = await api.put(`auth/roles/${id}/`, data);
+      return response.data;
+    } catch (error) {
+      return handleApiError(error, `updating role ${id}`);
+    }
+  },
+  delete: async (id) => {
+    try {
+      await api.delete(`auth/roles/${id}/`);
+    } catch (error) {
+      return handleApiError(error, `deleting role ${id}`);
+    }
+  }
+};
+
+// ============================================================================
+// FACTORY MEMBERS API
+// ============================================================================
+export const factoryMembersAPI = {
+  getAll: async (params = {}) => {
+    try {
+      const response = await api.get('auth/factory-members/', { params });
+      return response.data;
+    } catch (error) {
+      return handleApiError(error, 'fetching factory members');
+    }
+  },
+  create: async (data) => {
+    try {
+      const response = await api.post('auth/factory-members/', data);
+      return response.data;
+    } catch (error) {
+      return handleApiError(error, 'creating factory member');
+    }
+  },
+  update: async (id, data) => {
+    try {
+      const response = await api.put(`auth/factory-members/${id}/`, data);
+      return response.data;
+    } catch (error) {
+      return handleApiError(error, `updating factory member ${id}`);
+    }
+  },
+  delete: async (id) => {
+    try {
+      await api.delete(`auth/factory-members/${id}/`);
+    } catch (error) {
+      return handleApiError(error, `deleting factory member ${id}`);
+    }
+  }
+};

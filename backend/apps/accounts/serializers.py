@@ -26,12 +26,18 @@ class RoleSerializer(serializers.ModelSerializer):
         ]
 
 class FactoryMemberSerializer(serializers.ModelSerializer):
-    factory = FactorySerializer(read_only=True)
-    role = RoleSerializer(read_only=True)
+    factory_name = serializers.CharField(source='factory.name', read_only=True)
+    role_name = serializers.CharField(source='role.name', read_only=True)
+    role_code = serializers.CharField(source='role.code', read_only=True)
+    user_email = serializers.EmailField(source='user.email', read_only=True)
     
     class Meta:
         model = FactoryMember
-        fields = ['factory', 'role', 'is_active', 'joined_at']
+        fields = [
+            'id', 'user', 'user_email', 'factory', 'factory_name', 
+            'role', 'role_name', 'role_code', 'is_active', 'joined_at'
+        ]
+        read_only_fields = ['joined_at']
 
 class UserSerializer(serializers.ModelSerializer):
     """Serializer for user model (read operations)."""
@@ -65,13 +71,15 @@ class AdminUserSerializer(serializers.ModelSerializer):
         help_text="Leave blank to keep current password when editing"
     )
 
+    factory_memberships = FactoryMemberSerializer(many=True, read_only=True)
+
     class Meta:
         model = User
         fields = [
             'id', 'username', 'email', 'first_name', 'last_name',
             'is_active', 'is_staff', 'is_superuser', 'is_verified', 
             'phone_number', 'profile_image', 'password',
-            'date_joined', 'last_login'
+            'date_joined', 'last_login', 'factory_memberships'
         ]
         read_only_fields = ['id', 'date_joined', 'last_login']
         extra_kwargs = {

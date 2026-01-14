@@ -11,12 +11,18 @@ import {
     Grid,
     MenuItem,
     Stack,
-    Alert
+    Alert,
+    Typography,
+    Box,
+    IconButton,
+    Paper,
+    Divider,
+    Chip
 } from '@mui/material';
-// We'll update services/users.js later to export this or add it to api
-import { usersAPI } from '../../services/users';
+import { Delete as DeleteIcon, Add as AddIcon, Business as BusinessIcon, Security as SecurityIcon } from '@mui/icons-material';
+import { factoriesAPI, rolesAPI, factoryMembersAPI } from '../../services/users';
 
-const UserDialog = ({ open, onClose, user, onSave }) => {
+const UserDialog = ({ open, onClose, user, onSave, loading: externalLoading }) => {
     const [formData, setFormData] = useState({
         username: '',
         email: '',
@@ -28,38 +34,75 @@ const UserDialog = ({ open, onClose, user, onSave }) => {
         is_superuser: false,
         is_verified: false,
     });
+    const [memberships, setMemberships] = useState([]);
+    const [factories, setFactories] = useState([]);
+    const [roles, setRoles] = useState([]);
+    const [newMember, setNewMember] = useState({ factory: '', role: '' });
+
     const [errors, setErrors] = useState({});
     const [loading, setLoading] = useState(false);
+    const isLoading = loading || externalLoading;
 
     useEffect(() => {
-        if (user) {
-            setFormData({
-                username: user.username || '',
-                email: user.email || '',
-                first_name: user.first_name || '',
-                last_name: user.last_name || '',
-                password: '', // Blank for edit
-                is_active: user.is_active ?? true,
-                is_staff: user.is_staff ?? false,
-                is_superuser: user.is_superuser ?? false,
-                is_verified: user.is_verified ?? false,
-            });
-        } else {
-            // Reset for create
-            setFormData({
-                username: '',
-                email: '',
-                first_name: '',
-                last_name: '',
-                password: '',
-                is_active: true,
-                is_staff: false,
-                is_superuser: false,
-                is_verified: false,
-            });
+        if (open) {
+            fetchInitialData();
         }
-        setErrors({});
+    }, [open]);
+
+    useEffect(() => {
+        if (open) {
+            if (user) {
+                setFormData({
+                    username: user.username || '',
+                    email: user.email || '',
+                    first_name: user.first_name || '',
+                    last_name: user.last_name || '',
+                    password: '', // Blank for edit
+                    is_active: user.is_active ?? true,
+                    is_staff: user.is_staff ?? false,
+                    is_superuser: user.is_superuser ?? false,
+                    is_verified: user.is_verified ?? false,
+                });
+                setMemberships(user.factory_memberships || []);
+            } else {
+                setFormData({
+                    username: '',
+                    email: '',
+                    first_name: '',
+                    last_name: '',
+                    password: '',
+                    is_active: true,
+                    is_staff: false,
+                    is_superuser: false,
+                    is_verified: false,
+                });
+                setMemberships([]);
+            }
+            setErrors({});
+            setNewMember({ factory: '', role: '' });
+        }
     }, [user, open]);
+
+    const fetchInitialData = async () => {
+        try {
+            console.log('Fetching factories and roles...');
+            const factoriesRes = await factoriesAPI.getAll();
+            console.log('Factories response:', factoriesRes);
+            setFactories(factoriesRes.results || factoriesRes || []);
+        } catch (error) {
+            console.error("Failed to fetch factories:", error);
+            setFactories([]);
+        }
+
+        try {
+            const rolesRes = await rolesAPI.getAll();
+            console.log('Roles response:', rolesRes);
+            setRoles(rolesRes.results || rolesRes || []);
+        } catch (error) {
+            console.error("Failed to fetch roles:", error);
+            setRoles([]);
+        }
+    };
 
     const handleChange = (e) => {
         const { name, value, checked, type } = e.target;
@@ -69,8 +112,64 @@ const UserDialog = ({ open, onClose, user, onSave }) => {
         }));
     };
 
+    const handleAddMembership = async () => {
+        if (!newMember.factory || !newMember.role) return;
+
+        if (user?.id) {
+            try {
+                setLoading(true);
+                setErrors(prev => ({ ...prev, membership: null }));
+
+                const memberData = {
+                    user: user.id,
+                    factory: newMember.factory,
+                    role: newMember.role,
+                    is_active: true
+                };
+
+                const response = await factoryMembersAPI.create(memberData);
+                if (response && response.id) {
+                    setMemberships(prev => [...prev, response]);
+                    setNewMember({ factory: '', role: '' });
+                } else if (response?.error) {
+                    setErrors({ membership: response.error });
+                }
+            } catch (error) {
+                console.error("Failed to add membership:", error);
+                const message = error.response?.data?.detail ||
+                    error.response?.data?.non_field_errors?.[0] ||
+                    "所属の追加に失敗しました。既に追加されている可能性があります。";
+                setErrors({ membership: message });
+            } finally {
+                setLoading(false);
+            }
+        } else {
+            setErrors({ membership: "ユーザー作成後に工場の所属を設定できます。" });
+        }
+    };
+
+    const handleRemoveMembership = async (id) => {
+        try {
+            setLoading(true);
+            await factoryMembersAPI.delete(id);
+            setMemberships(memberships.filter(m => m.id !== id));
+        } catch (error) {
+            console.error("Failed to remove membership:", error);
+        } finally {
+            setLoading(false);
+        }
+    };
+
     const handleSubmit = async (e) => {
         e.preventDefault();
+
+        // Warning if membership selected but not added
+        if (newMember.factory && newMember.role) {
+            if (!window.confirm("工場とロールが選択されていますが、追加ボタン（＋）が押されていません。このまま保存しますか？（選択中の所属は保存されません）")) {
+                return;
+            }
+        }
+
         setLoading(true);
         setErrors({});
 
@@ -79,110 +178,200 @@ const UserDialog = ({ open, onClose, user, onSave }) => {
             onClose();
         } catch (error) {
             console.error("Save error:", error);
-            setErrors(error.response?.data || { detail: "Failed to save user" });
+            setErrors(error.response?.data || { detail: "保存に失敗しました。" });
         } finally {
             setLoading(false);
         }
     };
 
     return (
-        <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
+        <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth>
             <form onSubmit={handleSubmit}>
-                <DialogTitle>{user ? 'Edit User' : 'Create New User'}</DialogTitle>
+                <DialogTitle sx={{ fontWeight: 800 }}>{user ? 'Edit User' : 'Create New User'}</DialogTitle>
                 <DialogContent dividers>
                     {errors.detail && <Alert severity="error" sx={{ mb: 2 }}>{errors.detail}</Alert>}
 
-                    <Grid container spacing={2}>
-                        <Grid item xs={12} sm={6}>
-                            <TextField
-                                name="username"
-                                label="Username"
-                                fullWidth
-                                required
-                                value={formData.username}
-                                onChange={handleChange}
-                                error={!!errors.username}
-                                helperText={errors.username}
-                            />
-                        </Grid>
-                        <Grid item xs={12} sm={6}>
-                            <TextField
-                                name="email"
-                                label="Email"
-                                type="email"
-                                fullWidth
-                                required
-                                value={formData.email}
-                                onChange={handleChange}
-                                error={!!errors.email}
-                                helperText={errors.email}
-                            />
-                        </Grid>
-
-                        <Grid item xs={12} sm={6}>
-                            <TextField
-                                name="first_name"
-                                label="First Name"
-                                fullWidth
-                                value={formData.first_name}
-                                onChange={handleChange}
-                                error={!!errors.first_name}
-                                helperText={errors.first_name}
-                            />
-                        </Grid>
-                        <Grid item xs={12} sm={6}>
-                            <TextField
-                                name="last_name"
-                                label="Last Name"
-                                fullWidth
-                                value={formData.last_name}
-                                onChange={handleChange}
-                                error={!!errors.last_name}
-                                helperText={errors.last_name}
-                            />
-                        </Grid>
-
-                        <Grid item xs={12}>
-                            <TextField
-                                name="password"
-                                label={user ? "Password (leave blank to keep current)" : "Password"}
-                                type="password"
-                                fullWidth
-                                required={!user}
-                                value={formData.password}
-                                onChange={handleChange}
-                                error={!!errors.password}
-                                helperText={errors.password}
-                            />
-                        </Grid>
-
-                        {/* Permissions */}
-                        <Grid item xs={12}>
-                            <Stack spacing={1} sx={{ mt: 1, p: 1, border: '1px solid #eee', borderRadius: 1 }}>
-                                <FormControlLabel
-                                    control={<Switch checked={formData.is_active} onChange={handleChange} name="is_active" color="primary" />}
-                                    label="Active Account"
+                    <Grid container spacing={3}>
+                        {/* Basic Info */}
+                        <Grid item xs={12} md={6}>
+                            <Typography variant="subtitle2" color="primary" gutterBottom sx={{ fontWeight: 700 }}>基本情報</Typography>
+                            <Stack spacing={2}>
+                                <TextField
+                                    name="username"
+                                    label="Username"
+                                    fullWidth
+                                    required
+                                    size="small"
+                                    value={formData.username}
+                                    onChange={handleChange}
+                                    error={!!errors.username}
+                                    helperText={errors.username}
                                 />
-                                <FormControlLabel
-                                    control={<Switch checked={formData.is_verified} onChange={handleChange} name="is_verified" color="success" />}
-                                    label="Email Verified"
+                                <TextField
+                                    name="email"
+                                    label="Email"
+                                    type="email"
+                                    fullWidth
+                                    required
+                                    size="small"
+                                    value={formData.email}
+                                    onChange={handleChange}
+                                    error={!!errors.email}
+                                    helperText={errors.email}
                                 />
-                                <FormControlLabel
-                                    control={<Switch checked={formData.is_staff} onChange={handleChange} name="is_staff" color="warning" />}
-                                    label="Staff Status (Can access Admin)"
-                                />
-                                <FormControlLabel
-                                    control={<Switch checked={formData.is_superuser} onChange={handleChange} name="is_superuser" color="error" />}
-                                    label="Superuser Status (Full Permissions)"
+                                <Stack direction="row" spacing={2}>
+                                    <TextField
+                                        name="first_name"
+                                        label="First Name"
+                                        fullWidth
+                                        size="small"
+                                        value={formData.first_name}
+                                        onChange={handleChange}
+                                    />
+                                    <TextField
+                                        name="last_name"
+                                        label="Last Name"
+                                        fullWidth
+                                        size="small"
+                                        value={formData.last_name}
+                                        onChange={handleChange}
+                                    />
+                                </Stack>
+                                <TextField
+                                    name="password"
+                                    label={user ? "Password (leave blank to keep current)" : "Password"}
+                                    type="password"
+                                    fullWidth
+                                    size="small"
+                                    required={!user}
+                                    value={formData.password}
+                                    onChange={handleChange}
+                                    error={!!errors.password}
+                                    helperText={errors.password}
                                 />
                             </Stack>
+
+                            <Typography variant="subtitle2" color="primary" gutterBottom sx={{ mt: 3, fontWeight: 700 }}>権限設定</Typography>
+                            <Paper variant="outlined" sx={{ p: 2, borderRadius: 2 }}>
+                                <Stack spacing={1}>
+                                    <FormControlLabel
+                                        control={<Switch checked={formData.is_active} onChange={handleChange} name="is_active" color="primary" size="small" />}
+                                        label={<Typography variant="body2">Active Account</Typography>}
+                                    />
+                                    <FormControlLabel
+                                        control={<Switch checked={formData.is_verified} onChange={handleChange} name="is_verified" color="success" size="small" />}
+                                        label={<Typography variant="body2">Email Verified</Typography>}
+                                    />
+                                    <FormControlLabel
+                                        control={<Switch checked={formData.is_staff} onChange={handleChange} name="is_staff" color="warning" size="small" />}
+                                        label={<Typography variant="body2">Staff Status (Admin Access)</Typography>}
+                                    />
+                                    <FormControlLabel
+                                        control={<Switch checked={formData.is_superuser} onChange={handleChange} name="is_superuser" color="error" size="small" />}
+                                        label={<Typography variant="body2">Superuser Status (ROOT)</Typography>}
+                                    />
+                                </Stack>
+                            </Paper>
+                        </Grid>
+
+                        {/* Factory Memberships */}
+                        <Grid item xs={12} md={6}>
+                            <Typography variant="subtitle2" color="primary" gutterBottom sx={{ fontWeight: 700 }}>工場所属管理</Typography>
+
+                            {!user && (
+                                <Alert severity="info" sx={{ mb: 2 }}>
+                                    ユーザー作成後に工場の所属を設定できます。
+                                </Alert>
+                            )}
+
+                            {user && (
+                                <Box>
+                                    <Paper variant="outlined" sx={{ mb: 2, p: 2, borderRadius: 2, bgcolor: 'background.default' }}>
+                                        <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mb: 1, fontWeight: 700 }}>新しい所属を追加</Typography>
+                                        <Grid container spacing={1} alignItems="center">
+                                            <Grid item xs={5}>
+                                                <TextField
+                                                    select
+                                                    label="工場"
+                                                    fullWidth
+                                                    size="small"
+                                                    value={newMember.factory}
+                                                    onChange={(e) => setNewMember({ ...newMember, factory: e.target.value })}
+                                                >
+                                                    {factories.map((f) => (
+                                                        <MenuItem key={f.id} value={f.id}>{f.name}</MenuItem>
+                                                    ))}
+                                                </TextField>
+                                            </Grid>
+                                            <Grid item xs={5}>
+                                                <TextField
+                                                    select
+                                                    label="ロール"
+                                                    fullWidth
+                                                    size="small"
+                                                    value={newMember.role}
+                                                    onChange={(e) => setNewMember({ ...newMember, role: e.target.value })}
+                                                >
+                                                    {roles.map((r) => (
+                                                        <MenuItem key={r.id} value={r.id}>
+                                                            {r.name} ({r.code})
+                                                        </MenuItem>
+                                                    ))}
+                                                </TextField>
+                                            </Grid>
+                                            <Grid item xs={2}>
+                                                <IconButton
+                                                    color="primary"
+                                                    onClick={handleAddMembership}
+                                                    disabled={!newMember.factory || !newMember.role || isLoading}
+                                                >
+                                                    <AddIcon />
+                                                </IconButton>
+                                            </Grid>
+                                        </Grid>
+                                        {errors.membership && <Typography variant="caption" color="error">{errors.membership}</Typography>}
+                                    </Paper>
+
+                                    <Stack spacing={1}>
+                                        {memberships.length === 0 ? (
+                                            <Typography variant="body2" color="text.secondary" align="center" sx={{ py: 2 }}>
+                                                所属している工場はありません。
+                                            </Typography>
+                                        ) : (
+                                            memberships.map((m) => (
+                                                <Paper key={m.id} variant="outlined" sx={{ p: 1.5, borderRadius: 2, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                                                    <Box>
+                                                        <Stack direction="row" spacing={1} alignItems="center">
+                                                            <BusinessIcon fontSize="small" color="action" />
+                                                            <Typography variant="body2" fontWeight="bold">{m.factory_name || m.factory?.name}</Typography>
+                                                        </Stack>
+                                                        <Stack direction="row" spacing={1} alignItems="center" sx={{ mt: 0.5 }}>
+                                                            <SecurityIcon fontSize="small" color="action" />
+                                                            <Chip
+                                                                label={`${m.role_name || m.role?.name}${m.role_code || m.role?.code ? ` (${m.role_code || m.role?.code})` : ''}`}
+                                                                size="small"
+                                                                variant="outlined"
+                                                                color="primary"
+                                                                sx={{ height: 20, fontSize: '0.7rem' }}
+                                                            />
+                                                        </Stack>
+                                                    </Box>
+                                                    <IconButton size="small" color="error" onClick={() => handleRemoveMembership(m.id)} disabled={isLoading}>
+                                                        <DeleteIcon fontSize="small" />
+                                                    </IconButton>
+                                                </Paper>
+                                            ))
+                                        )}
+                                    </Stack>
+                                </Box>
+                            )}
                         </Grid>
                     </Grid>
                 </DialogContent>
-                <DialogActions>
-                    <Button onClick={onClose} disabled={loading}>Cancel</Button>
-                    <Button type="submit" variant="contained" disabled={loading}>
-                        {loading ? 'Saving...' : 'Save User'}
+                <DialogActions sx={{ px: 3, py: 2 }}>
+                    <Button onClick={onClose} disabled={isLoading} color="inherit">キャンセル</Button>
+                    <Button type="submit" variant="contained" disabled={isLoading} sx={{ borderRadius: 2, fontWeight: 700 }}>
+                        {isLoading ? '保存中...' : 'ユーザー情報を保存'}
                     </Button>
                 </DialogActions>
             </form>

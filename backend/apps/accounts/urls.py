@@ -2,11 +2,20 @@ from django.urls import path, include
 from rest_framework.routers import DefaultRouter
 from rest_framework_simplejwt.views import TokenRefreshView
 
-from .views import UserViewSet, CustomTokenObtainPairView, FactoryViewSet, UserListViewSet
+from .views import (
+    UserViewSet, 
+    CustomTokenObtainPairView, 
+    FactoryViewSet, 
+    UserListViewSet,
+    RoleViewSet,
+    FactoryMemberViewSet
+)
 
 router = DefaultRouter()
 router.register(r'users', UserViewSet, basename='users')
 router.register(r'factories', FactoryViewSet, basename='factories')
+router.register(r'roles', RoleViewSet, basename='roles')
+router.register(r'factory-members', FactoryMemberViewSet, basename='factory-members')
 router.register(r'users-list', UserListViewSet, basename='users-list')
 
 

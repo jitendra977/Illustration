@@ -8,7 +8,7 @@ from rest_framework.decorators import action
 from rest_framework.views import APIView
 import uuid
 
-from .models import User, Factory
+from .models import User, Factory, Role, FactoryMember
 from .serializers import (
     UserSerializer,
     RegisterSerializer,
@@ -17,7 +17,9 @@ from .serializers import (
     CustomTokenObtainPairSerializer,
     EmailVerificationSerializer,
     AdminUserSerializer,
-    FactorySerializer
+    FactorySerializer,
+    RoleSerializer,
+    FactoryMemberSerializer
 )
 
 
@@ -123,8 +125,8 @@ class UserViewSet(viewsets.ModelViewSet):
             'resend_verification': serializers.Serializer,  # No data needed for resend
         }
         
-        # Use AdminUserSerializer for staff members creating/updating users
-        if self.request.user.is_staff and self.action in ['create', 'update', 'partial_update']:
+        # Use AdminUserSerializer for staff members
+        if self.request.user and self.request.user.is_staff:
             return AdminUserSerializer
             
         return serializer_map.get(self.action, UserSerializer)
@@ -373,15 +375,49 @@ class UserViewSet(viewsets.ModelViewSet):
             'current_user': str(request.user),
             'user_is_authenticated': request.user.is_authenticated
         })
-class FactoryViewSet(viewsets.ReadOnlyModelViewSet):
+class FactoryViewSet(viewsets.ModelViewSet):
     """
-    Viewset for listing factories.
-    Accessible to all authenticated users.
+    Viewset for managing factories.
     """
     queryset = Factory.objects.all().order_by('name')
     serializer_class = FactorySerializer
     permission_classes = [permissions.IsAuthenticated]
     pagination_class = None
+
+    def get_permissions(self):
+        if self.action in ['create', 'update', 'partial_update', 'destroy']:
+            return [permissions.IsAdminUser()]
+        return super().get_permissions()
+
+class RoleViewSet(viewsets.ModelViewSet):
+    """
+    Viewset for managing roles.
+    """
+    queryset = Role.objects.all().order_by('name')
+    serializer_class = RoleSerializer
+    permission_classes = [permissions.IsAdminUser]
+    pagination_class = None
+
+class FactoryMemberViewSet(viewsets.ModelViewSet):
+    """
+    Viewset for managing factory memberships.
+    """
+    queryset = FactoryMember.objects.all().select_related('user', 'factory', 'role')
+    serializer_class = FactoryMemberSerializer
+    permission_classes = [permissions.IsAdminUser]
+    pagination_class = None
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        user_id = self.request.query_params.get('user')
+        factory_id = self.request.query_params.get('factory')
+        
+        if user_id:
+            queryset = queryset.filter(user_id=user_id)
+        if factory_id:
+            queryset = queryset.filter(factory_id=factory_id)
+            
+        return queryset
 
 class UserListViewSet(viewsets.ReadOnlyModelViewSet):
     """

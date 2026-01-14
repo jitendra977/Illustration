@@ -302,7 +302,7 @@ const MobileLayout = ({ children, showHeader = true, onRefresh, refreshing = fal
                   sx={{ mx: 1.5, borderRadius: 2 }}
                 >
                   <ListItemIcon sx={{ minWidth: 40 }}><ManageAccountsIcon /></ListItemIcon>
-                  <ListItemText primary="ユーザー管理" primaryTypographyProps={{ fontSize: '0.9rem', fontWeight: 500 }} />
+                  <ListItemText primary="システム管理" primaryTypographyProps={{ fontSize: '0.9rem', fontWeight: 500 }} />
                 </ListItemButton>
               </ListItem>
               <Divider sx={{ my: 1.5, mx: 3 }} />
