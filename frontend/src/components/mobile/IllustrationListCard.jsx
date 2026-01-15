@@ -24,8 +24,8 @@ const IllustrationListCard = ({ illustration, toggleFavorite, favorites = [], on
             height: 80,
             objectFit: 'cover',
             borderRadius: 2,
-            bgcolor: 'zinc.900',
-            border: `1px solid ${alpha(theme.palette.common.white, 0.05)}`
+            bgcolor: theme.palette.mode === 'dark' ? 'zinc.900' : 'action.hover',
+            border: `1px solid ${theme.palette.mode === 'dark' ? alpha(theme.palette.common.white, 0.05) : theme.palette.divider}`
           }}
         />
       );
@@ -38,11 +38,14 @@ const IllustrationListCard = ({ illustration, toggleFavorite, favorites = [], on
           bgcolor: alpha(theme.palette.error.main, 0.1),
           border: `1px solid ${alpha(theme.palette.error.main, 0.2)}`,
           display: 'flex',
+          flexDirection: 'column',
           alignItems: 'center',
           justifyContent: 'center',
-          color: 'error.main'
+          color: 'error.main',
+          gap: 0.5
         }}>
-          <FileText size={32} />
+          <FileText size={24} />
+          <Typography variant="caption" sx={{ fontWeight: 800, fontSize: '10px', lineHeight: 1 }}>PDF</Typography>
         </Box>
       );
     } else {
@@ -51,12 +54,12 @@ const IllustrationListCard = ({ illustration, toggleFavorite, favorites = [], on
           width: 80,
           height: 80,
           borderRadius: 2,
-          bgcolor: alpha(theme.palette.zinc[800], 0.5),
-          border: `1px solid ${alpha(theme.palette.common.white, 0.05)}`,
+          bgcolor: theme.palette.mode === 'dark' ? alpha(theme.palette.zinc[800], 0.5) : alpha(theme.palette.action.disabledBackground, 0.5),
+          border: `1px solid ${theme.palette.mode === 'dark' ? alpha(theme.palette.common.white, 0.05) : theme.palette.divider}`,
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          color: 'zinc.400'
+          color: theme.palette.mode === 'dark' ? 'zinc.400' : 'text.disabled'
         }}>
           <File size={32} />
         </Box>
@@ -68,12 +71,12 @@ const IllustrationListCard = ({ illustration, toggleFavorite, favorites = [], on
         width: 80,
         height: 80,
         borderRadius: 2,
-        bgcolor: alpha(theme.palette.zinc[800], 0.5),
-        border: `1px solid ${alpha(theme.palette.common.white, 0.05)}`,
+        bgcolor: theme.palette.mode === 'dark' ? alpha(theme.palette.zinc[800], 0.5) : alpha(theme.palette.action.disabledBackground, 0.5),
+        border: `1px solid ${theme.palette.mode === 'dark' ? alpha(theme.palette.common.white, 0.05) : theme.palette.divider}`,
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        color: 'zinc.400'
+        color: theme.palette.mode === 'dark' ? 'zinc.400' : 'text.disabled'
       }}>
         <ImageIcon size={32} />
       </Box>
@@ -86,18 +89,20 @@ const IllustrationListCard = ({ illustration, toggleFavorite, favorites = [], on
       sx={{
         p: 1.5,
         borderRadius: 2.5,
-        bgcolor: alpha(theme.palette.zinc[900], 0.4),
-        border: `1px solid ${alpha(theme.palette.common.white, 0.05)}`,
+        bgcolor: theme.palette.mode === 'dark' ? alpha(theme.palette.zinc[900], 0.4) : theme.palette.background.paper,
+        border: `1px solid ${theme.palette.mode === 'dark' ? alpha(theme.palette.common.white, 0.05) : theme.palette.divider}`,
         transition: 'all 0.2s',
         display: 'flex',
         alignItems: 'flex-start',
         gap: 2,
         cursor: 'pointer',
         '&:hover': {
-          bgcolor: alpha(theme.palette.zinc[900], 0.6),
-          borderColor: alpha(theme.palette.primary.main, 0.5),
+          bgcolor: theme.palette.mode === 'dark' ? alpha(theme.palette.zinc[900], 0.6) : alpha(theme.palette.primary.main, 0.05),
+          borderColor: theme.palette.mode === 'dark' ? alpha(theme.palette.primary.main, 0.5) : theme.palette.primary.main,
           transform: 'translateY(-2px)',
-          boxShadow: `0 4px 12px ${alpha(theme.palette.common.black, 0.3)}`
+          boxShadow: theme.palette.mode === 'dark'
+            ? `0 4px 12px ${alpha(theme.palette.common.black, 0.3)}`
+            : `0 4px 12px ${alpha(theme.palette.primary.main, 0.15)}`
         },
         '&:active': {
           transform: 'translateY(0)',
@@ -110,34 +115,52 @@ const IllustrationListCard = ({ illustration, toggleFavorite, favorites = [], on
       </Box>
 
       {/* Content Section */}
-      <Box sx={{ flex: 1, minWidth: 0 }}>
+      <Box sx={{ flex: 1, minWidth: 0, overflow: 'hidden' }}>
         <Stack direction="row" justifyContent="space-between" alignItems="flex-start">
-          <Box sx={{ pr: 1, flex: 1 }}>
+          <Box sx={{ pr: 1, flex: 1, minWidth: 0 }}>
             {/* Metadata Chips (Top) */}
             <Stack direction="row" spacing={0.5} mb={0.5} flexWrap="wrap">
-              {illustration.part_subcategory_name && (
+              {(illustration.part_category_name || illustration.part_category?.name) && (
                 <Typography
                   variant="caption"
                   sx={{
-                    color: 'primary.light',
+                    color: theme.palette.mode === 'dark' ? 'warning.light' : 'warning.dark',
                     fontWeight: 700,
-                    bgcolor: alpha(theme.palette.primary.main, 0.15),
+                    bgcolor: theme.palette.mode === 'dark' ? alpha(theme.palette.warning.main, 0.15) : alpha(theme.palette.warning.main, 0.1),
                     px: 0.8,
                     py: 0.25,
                     borderRadius: 1,
-                    fontSize: '10px'
+                    fontSize: '10px',
+                    border: `1px solid ${alpha(theme.palette.warning.main, 0.2)}`
                   }}
                 >
-                  {illustration.part_subcategory_name}
+                  {illustration.part_category_name || illustration.part_category?.name}
+                </Typography>
+              )}
+              {(illustration.part_subcategory_name || illustration.part_subcategory?.name) && (
+                <Typography
+                  variant="caption"
+                  sx={{
+                    color: theme.palette.mode === 'dark' ? 'secondary.light' : 'secondary.main',
+                    fontWeight: 700,
+                    bgcolor: theme.palette.mode === 'dark' ? alpha(theme.palette.secondary.main, 0.15) : alpha(theme.palette.secondary.main, 0.1),
+                    px: 0.8,
+                    py: 0.25,
+                    borderRadius: 1,
+                    fontSize: '10px',
+                    border: `1px solid ${alpha(theme.palette.secondary.main, 0.2)}`
+                  }}
+                >
+                  {illustration.part_subcategory_name || illustration.part_subcategory?.name}
                 </Typography>
               )}
               {illustration.file_count > 1 && (
                 <Typography
                   variant="caption"
                   sx={{
-                    color: 'zinc.300',
+                    color: theme.palette.mode === 'dark' ? 'zinc.300' : 'text.secondary',
                     fontWeight: 600,
-                    bgcolor: alpha(theme.palette.zinc[800], 0.5),
+                    bgcolor: theme.palette.mode === 'dark' ? alpha(theme.palette.zinc[800], 0.5) : alpha(theme.palette.action.disabled, 0.1),
                     px: 0.8,
                     py: 0.25,
                     borderRadius: 1,
@@ -147,6 +170,23 @@ const IllustrationListCard = ({ illustration, toggleFavorite, favorites = [], on
                   +{illustration.file_count - 1}枚
                 </Typography>
               )}
+              {(illustration.engine_model_name || illustration.engine_model?.name) && (
+                <Typography
+                  variant="caption"
+                  sx={{
+                    color: theme.palette.mode === 'dark' ? 'success.light' : 'success.dark',
+                    fontWeight: 700,
+                    bgcolor: theme.palette.mode === 'dark' ? alpha(theme.palette.success.main, 0.15) : alpha(theme.palette.success.main, 0.1),
+                    px: 0.8,
+                    py: 0.25,
+                    borderRadius: 1,
+                    fontSize: '10px',
+                    border: `1px solid ${alpha(theme.palette.success.main, 0.2)}`
+                  }}
+                >
+                  {illustration.engine_model_name || illustration.engine_model?.name}
+                </Typography>
+              )}
             </Stack>
 
             <Typography
@@ -154,7 +194,7 @@ const IllustrationListCard = ({ illustration, toggleFavorite, favorites = [], on
               fontWeight={700}
               lineHeight={1.3}
               noWrap
-              sx={{ mb: 0.5, color: 'text.primary' }}
+              sx={{ mb: 0.25, color: 'text.primary' }}
             >
               {illustration.title}
             </Typography>
@@ -166,8 +206,8 @@ const IllustrationListCard = ({ illustration, toggleFavorite, favorites = [], on
                 WebkitLineClamp: 2,
                 WebkitBoxOrient: 'vertical',
                 overflow: 'hidden',
-                lineHeight: 1.4,
-                minHeight: '2.8em',
+                lineHeight: 1,
+                minHeight: '2em',
                 color: 'text.secondary'
               }}
             >
@@ -193,10 +233,18 @@ const IllustrationListCard = ({ illustration, toggleFavorite, favorites = [], on
         </Stack>
 
         {/* Footer Info */}
-        <Stack direction="row" spacing={1} alignItems="center" mt={1}>
+        <Stack direction="row" spacing={1} alignItems="center" mt={0.5}>
           <Typography variant="caption" sx={{ color: 'text.disabled', fontSize: '11px' }}>
             {new Date(illustration.created_at).toLocaleDateString('ja-JP', { year: 'numeric', month: '2-digit', day: '2-digit' })}
           </Typography>
+          {illustration.factory_name && (
+            <>
+              <Typography variant="caption" sx={{ color: 'text.disabled' }}>•</Typography>
+              <Typography variant="caption" sx={{ color: 'text.secondary', fontWeight: 500, fontSize: '11px' }}>
+                {illustration.factory_name}
+              </Typography>
+            </>
+          )}
           {illustration.user_name && (
             <>
               <Typography variant="caption" sx={{ color: 'text.disabled' }}>•</Typography>

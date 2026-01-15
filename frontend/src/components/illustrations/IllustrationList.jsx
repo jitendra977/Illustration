@@ -15,7 +15,8 @@ import {
   Chip,
   Stack,
   useTheme,
-  alpha
+  alpha,
+  useMediaQuery // Add useMediaQuery
 } from '@mui/material';
 import {
   Visibility as EyeIcon,
@@ -26,9 +27,14 @@ import {
   Person as PersonIcon,
   AttachFile as AttachIcon
 } from '@mui/icons-material';
+// Import IllustrationListCard from mobile components
+import IllustrationListCard from '../mobile/IllustrationListCard';
 
 const IllustrationList = ({ illustrations, onDelete, onView }) => {
   const theme = useTheme();
+  // Detect mobile screen
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+
   const formatDate = (dateString) => {
     return new Date(dateString).toLocaleDateString();
   };
@@ -65,6 +71,35 @@ const IllustrationList = ({ illustrations, onDelete, onView }) => {
     onDelete?.(id);
   };
 
+  // Mobile View: Render List of Cards
+  if (isMobile) {
+    return (
+      <Stack spacing={2}>
+        {illustrations.map((illustration) => (
+          <IllustrationListCard
+            key={illustration.id}
+            illustration={illustration}
+            onClick={() => handleRowClick(illustration)}
+            // Pass minimal props needed for display, toggleFavorite is optional/not in this context yet
+            toggleFavorite={() => { }}
+          />
+        ))}
+        {illustrations.length === 0 && (
+          <Box sx={{
+            p: 4,
+            textAlign: 'center',
+            bgcolor: theme.palette.mode === 'dark' ? alpha(theme.palette.zinc[950], 0.3) : alpha(theme.palette.text.primary, 0.02),
+            borderRadius: 3
+          }}>
+            <ImageIcon sx={{ fontSize: 48, color: 'text.disabled', opacity: 0.3, mb: 2 }} />
+            <Typography sx={{ color: 'text.secondary', fontWeight: 600 }}>No illustrations</Typography>
+          </Box>
+        )}
+      </Stack>
+    );
+  }
+
+  // Desktop View: Render Table
   return (
     <TableContainer component={Paper} sx={{
       bgcolor: 'background.paper',
@@ -160,6 +195,11 @@ const IllustrationList = ({ illustrations, onDelete, onView }) => {
                   <Typography variant="caption" sx={{ color: 'text.secondary' }}>
                     <strong style={{ color: theme.palette.text.disabled }}>Category:</strong> <span style={{ color: theme.palette.text.primary, fontWeight: 600 }}>{illustration.part_category?.name || illustration.part_category_name}</span>
                   </Typography>
+                  {(illustration.part_subcategory?.name || illustration.part_subcategory_name) && (
+                    <Typography variant="caption" sx={{ color: 'text.secondary' }}>
+                      <strong style={{ color: theme.palette.text.disabled }}>Subcategory:</strong> <span style={{ color: theme.palette.text.primary, fontWeight: 600 }}>{illustration.part_subcategory?.name || illustration.part_subcategory_name}</span>
+                    </Typography>
+                  )}
                 </Stack>
               </TableCell>
 
@@ -213,7 +253,6 @@ const IllustrationList = ({ illustrations, onDelete, onView }) => {
           ))}
         </TableBody>
       </Table>
-
       {
         illustrations.length === 0 && (
           <Box sx={{

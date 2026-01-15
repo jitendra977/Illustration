@@ -1,233 +1,155 @@
 import React from 'react';
-import { Link as RouterLink, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import {
-    Breadcrumbs as MuiBreadcrumbs,
-    Typography,
     Box,
+    Typography,
     useTheme,
     useMediaQuery,
-    alpha
+    alpha,
+    styled
 } from '@mui/material';
-import {
-    Home,
-    ChevronRight,
-    ArrowRight
-} from 'lucide-react';
+import { Home } from 'lucide-react';
 
-// Zinc palette from theme
+// 1. A sophisticated container track
+const BreadcrumbTrack = styled(Box)(({ theme }) => ({
+    display: 'inline-flex',
+    alignItems: 'center',
+    padding: '4px',
+    backgroundColor: theme.palette.mode === 'dark'
+        ? alpha(theme.palette.common.white, 0.05)
+        : alpha(theme.palette.common.black, 0.03),
+    borderRadius: '12px',
+    border: `1px solid ${theme.palette.divider}`,
+    gap: '2px',
+    backdropFilter: 'blur(8px)',
+    transition: 'background-color 0.3s',
+}));
 
-/**
- * Breadcrumb Component
- * 
- * @param {Array} items - Array of breadcrumb items
- *   Each item: { label: string, path?: string, icon?: ReactElement, state?: object }
- * @param {string} separator - Separator between items (default: 'chevron')
- * @param {boolean} showHome - Show home icon (default: true)
- * @param {string} homePath - Path for home link (default: '/')
- * @param {boolean} scrollable - Whether to scroll on mobile instead of truncate (default: false)
- */
+// 2. Enhanced Segment with Theme-Based Logic
+const BreadcrumbSegment = styled(Box, {
+    shouldForwardProp: (prop) => !['active', 'isFirst', 'isLast'].includes(prop),
+})(({ theme, active, isFirst, isLast }) => {
+    // Theme-based Palette
+    const inactiveBg = theme.palette.mode === 'dark'
+        ? alpha(theme.palette.background.paper, 0.4)
+        : alpha(theme.palette.background.paper, 0.8);
+
+    const activeBg = theme.palette.primary.main;
+    const activeText = theme.palette.primary.contrastText;
+    const hoverBg = alpha(theme.palette.primary.main, 0.08);
+    const hoverText = theme.palette.primary.main;
+
+    return {
+        display: 'flex',
+        alignItems: 'center',
+        position: 'relative',
+        height: 34,
+        paddingLeft: isFirst ? theme.spacing(2) : theme.spacing(3),
+        paddingRight: isLast ? theme.spacing(2.5) : theme.spacing(2),
+        backgroundColor: active ? activeBg : inactiveBg,
+        color: active ? activeText : theme.palette.text.secondary,
+        textDecoration: 'none',
+        transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
+        cursor: active ? 'default' : 'pointer',
+        fontWeight: active ? 600 : 500,
+        zIndex: active ? 2 : 1,
+
+        // The Sharp Arrow Geometry
+        clipPath: isLast
+            ? `polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%, 12px 50%)`
+            : isFirst
+                ? `polygon(0% 0%, calc(100% - 12px) 0%, 100% 50%, calc(100% - 12px) 100%, 0% 100%)`
+                : `polygon(0% 0%, calc(100% - 12px) 0%, 100% 50%, calc(100% - 12px) 100%, 0% 100%, 12px 50%)`,
+
+        marginLeft: isFirst ? 0 : -10,
+
+        // Modern "Soft Border" effect
+        boxShadow: active
+            ? `0 4px 12px ${alpha(activeBg, 0.3)}`
+            : `inset 0 0 0 1px ${alpha(theme.palette.divider, 0.1)}`,
+
+        '&:hover': {
+            backgroundColor: active ? activeBg : hoverBg,
+            color: active ? activeText : hoverText,
+            zIndex: 3,
+            transform: active ? 'none' : 'translateY(-1px)',
+        },
+        '&:active': {
+            transform: 'scale(0.98)',
+        }
+    };
+});
+
 const Breadcrumbs = ({
     items = [],
-    separator = 'chevron',
     showHome = true,
     homePath = '/',
-    scrollable = false
+    scrollable = true
 }) => {
     const theme = useTheme();
     const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
     const navigate = useNavigate();
 
-    const separatorIcon = separator === 'chevron'
-        ? <ChevronRight size={14} color={theme.palette.text.disabled} />
-        : <ArrowRight size={14} color={theme.palette.text.disabled} />;
-
-    // On mobile, show only last 2 items UNLESS scrollable is true
-    const displayItems = (isMobile && !scrollable && items.length > 2)
-        ? items.slice(-2)
-        : items;
-
-    const handleClick = (event, path, state) => {
-        if (path) {
-            event.preventDefault();
-            // navigate(path, { state }); // correctly pass state if provided
-            // Actually RouterLink handles this, but since we have an onClick handler preventing default...
-            // We should let RouterLink handle it OR use navigate.
-            // Using navigate is safer with preventDefault.
-            navigate(path, { state });
-        }
+    const handleNavigate = (path, state) => {
+        if (path) navigate(path, { state });
     };
 
     return (
-        <Box
-            sx={{
-                py: isMobile ? 1 : 1.5,
-                px: isMobile ? 2 : 0,
-                mb: isMobile ? 0 : 2,
-                ...(scrollable && isMobile && {
-                    overflowX: 'auto',
-                    whiteSpace: 'nowrap',
-                    px: 1, // smaller padding for scroll view
-                    maskImage: 'linear-gradient(to right, black 90%, transparent 100%)',
-                    scrollbarWidth: 'none',
-                    '&::-webkit-scrollbar': { display: 'none' }
-                })
-            }}
-        >
-            <MuiBreadcrumbs
-                separator={separatorIcon}
-                aria-label="breadcrumb"
-                itemsAfterCollapse={scrollable ? 10 : 2} // if scrollable, show many
-                maxItems={scrollable ? 20 : 8}
+        <Box sx={{ py: 2, display: 'flex' }}>
+            <BreadcrumbTrack
                 sx={{
-                    '& .MuiBreadcrumbs-separator': {
-                        mx: 0.5,
-                        color: theme.palette.text.disabled
-                    },
-                    '& .MuiBreadcrumbs-ol': {
-                        alignItems: 'center',
-                        flexWrap: (scrollable && isMobile) ? 'nowrap' : 'wrap'
-                    },
-                    '& .MuiBreadcrumbs-li': {
-                        display: 'inline-flex'
-                    }
+                    overflowX: scrollable ? 'auto' : 'hidden',
+                    scrollbarWidth: 'none',
+                    '&::-webkit-scrollbar': { display: 'none' },
+                    ...(isMobile && scrollable && {
+                        maxWidth: '100%',
+                        maskImage: 'linear-gradient(to right, black 90%, transparent 100%)',
+                    })
                 }}
             >
-                {/* Home Link */}
+                {/* Home Segment */}
                 {showHome && (
-                    <Box
-                        component={RouterLink}
-                        to={homePath}
-                        onClick={(e) => handleClick(e, homePath)}
-                        sx={{
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            width: 28,
-                            height: 28,
-                            borderRadius: '50%',
-                            bgcolor: theme.palette.mode === 'dark' ? alpha(theme.palette.zinc[800], 0.4) : alpha(theme.palette.zinc[100], 0.8),
-                            border: `1px solid ${theme.palette.divider}`,
-                            color: theme.palette.text.secondary,
-                            textDecoration: 'none',
-                            transition: 'all 0.2s',
-                            flexShrink: 0,
-                            '&:hover': {
-                                bgcolor: alpha(theme.palette.primary.main, 1),
-                                borderColor: theme.palette.primary.main,
-                                color: theme.palette.primary.contrastText,
-                                transform: 'scale(1.1)'
-                            },
-                        }}
+                    <BreadcrumbSegment
+                        isFirst
+                        onClick={() => handleNavigate(homePath)}
+                        sx={{ minWidth: 44, justifyContent: 'center', pr: 2 }}
                     >
-                        <Home size={isMobile ? 14 : 16} />
-                    </Box>
+                        <Home size={16} strokeWidth={2.5} />
+                    </BreadcrumbSegment>
                 )}
 
-                {/* Breadcrumb Items */}
-                {displayItems.map((item, index) => {
-                    const isLast = index === displayItems.length - 1;
+                {/* Path Segments */}
+                {items.map((item, index) => {
+                    const isLast = index === items.length - 1;
 
-                    if (isLast) {
-                        // Last item - not clickable
-                        return (
-                            <Box
-                                key={index}
-                                sx={{
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    height: 28,
-                                    px: 1.5,
-                                    flexShrink: 0
-                                }}
-                            >
-                                <Typography
-                                    sx={{
-                                        display: 'flex',
-                                        alignItems: 'center',
-                                        gap: 0.5,
-                                        fontSize: isMobile ? '12px' : '13px',
-                                        fontWeight: 700,
-                                        color: theme.palette.text.primary,
-                                        lineHeight: 1
-                                    }}
-                                >
-                                    {item.icon}
-                                    {item.label}
-                                </Typography>
-                            </Box>
-                        );
-                    }
-
-                    // Intermediate items - clickable
                     return (
-                        <Box
+                        <BreadcrumbSegment
                             key={index}
-                            component={item.path ? RouterLink : 'span'}
-                            to={item.path || ''}
-                            state={item.state} // Pass state to RouterLink
-                            onClick={(e) => handleClick(e, item.path, item.state)}
-                            sx={{
-                                display: 'flex',
-                                alignItems: 'center',
-                                height: 28,
-                                px: 1.5,
-                                borderRadius: '9999px',
-                                bgcolor: theme.palette.mode === 'dark' ? alpha(theme.palette.zinc[800], 0.4) : alpha(theme.palette.zinc[100], 0.8),
-                                border: `1px solid ${theme.palette.divider}`,
-                                textDecoration: 'none',
-                                cursor: item.path ? 'pointer' : 'default',
-                                transition: 'all 0.2s',
-                                flexShrink: 0,
-                                ...(item.path && {
-                                    '&:hover': {
-                                        bgcolor: theme.palette.mode === 'dark' ? alpha(theme.palette.zinc[700], 0.6) : alpha(theme.palette.zinc[200], 0.8),
-                                        borderColor: theme.palette.mode === 'dark' ? alpha(theme.palette.zinc[600], 0.5) : alpha(theme.palette.zinc[300], 0.5),
-                                        transform: 'translateY(-1px)'
-                                    },
-                                    '&:active': {
-                                        transform: 'translateY(0)'
-                                    }
-                                })
-                            }}
+                            isFirst={!showHome && index === 0}
+                            isLast={isLast}
+                            active={isLast}
+                            onClick={() => !isLast && handleNavigate(item.path, item.state)}
                         >
                             <Typography
+                                variant="caption"
                                 sx={{
+                                    fontWeight: 'inherit',
+                                    fontSize: isMobile ? '0.7rem' : '0.8rem',
+                                    whiteSpace: 'nowrap',
                                     display: 'flex',
                                     alignItems: 'center',
-                                    gap: 0.5,
-                                    fontSize: isMobile ? '11px' : '12px',
-                                    fontWeight: 600,
-                                    color: theme.palette.text.secondary,
-                                    lineHeight: 1,
-                                    transition: 'color 0.2s',
-                                    '.MuiBox-root:hover &': item.path ? {
-                                        color: theme.palette.mode === 'dark' ? '#fff' : theme.palette.text.primary
-                                    } : {}
+                                    gap: 1,
+                                    letterSpacing: '0.02em',
+                                    color: 'inherit'
                                 }}
                             >
-                                {item.icon}
+                                {item.icon && React.cloneElement(item.icon, { size: 14, strokeWidth: 2.5 })}
                                 {item.label}
                             </Typography>
-                        </Box>
+                        </BreadcrumbSegment>
                     );
                 })}
-            </MuiBreadcrumbs>
-
-            {/* Mobile: Show ellipsis if items were truncated */}
-            {isMobile && !scrollable && items.length > 2 && (
-                <Typography
-                    variant="caption"
-                    sx={{
-                        display: 'block',
-                        mt: 0.5,
-                        fontSize: '0.7rem',
-                        color: theme.palette.text.disabled,
-                        textAlign: 'center'
-                    }}
-                >
-                    + {items.length - 2} ...
-                </Typography>
-            )}
+            </BreadcrumbTrack>
         </Box>
     );
 };

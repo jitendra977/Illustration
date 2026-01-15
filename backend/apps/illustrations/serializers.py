@@ -132,16 +132,18 @@ class IllustrationFileSerializer(serializers.ModelSerializer):
     file_name = serializers.SerializerMethodField(read_only=True)
     download_url = serializers.SerializerMethodField(read_only=True)
     preview_url = serializers.SerializerMethodField(read_only=True)
+    file_size = serializers.SerializerMethodField(read_only=True)
     
     class Meta:
         model = IllustrationFile
         fields = [
-            'id', 'illustration', 'file', 'file_name', 'file_type', 
-            'file_type_display', 'uploaded_at', 'download_url', 'preview_url'
+            'id', 'illustration', 'file', 'file_name', 'title', 'file_type', 
+            'file_type_display', 'uploaded_at', 'download_url', 'preview_url',
+            'file_size'
         ]
         read_only_fields = [
             'id', 'file_type', 'file_type_display', 'uploaded_at', 
-            'file_name', 'download_url', 'preview_url'
+            'file_name', 'download_url', 'preview_url', 'file_size'
         ]
     
     def get_file_name(self, obj):
@@ -149,6 +151,15 @@ class IllustrationFileSerializer(serializers.ModelSerializer):
         if obj.file:
             return obj.file.name.split('/')[-1]
         return 'file'
+
+    def get_file_size(self, obj):
+        """Return file size in bytes"""
+        try:
+            if obj.file:
+                return obj.file.size
+        except Exception:
+            pass
+        return 0
     
     def get_download_url(self, obj):
         """Build download URL"""

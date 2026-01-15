@@ -1047,6 +1047,21 @@ export const illustrationAPI = {
     }
   },
 
+  updateFile: async (fileId, data) => {
+    try {
+      clearCache();
+      const response = await api.patch(`/illustration-files/${fileId}/`, data);
+      return response.data;
+    } catch (error) {
+      console.error('File update error:', error);
+      throw {
+        error: error.response?.data?.detail || error.message || 'ファイルの更新に失敗しました',
+        details: error.response?.data
+      };
+    }
+  },
+
+
   // Batch operations
   bulkDelete: async (ids) => {
     try {

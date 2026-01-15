@@ -14,6 +14,7 @@ import {
   ListItemIcon,
   ListItemText,
   Divider,
+  Chip,
   Button,
   Dialog,
   DialogTitle,
@@ -23,7 +24,9 @@ import {
   IconButton,
   Alert,
   CircularProgress,
-  Snackbar
+  Snackbar,
+  useTheme,
+  alpha
 } from '@mui/material';
 import {
   Person as PersonIcon,
@@ -78,6 +81,12 @@ const MobileProfile = () => {
       return `${user.first_name[0]}${user.last_name[0]}`;
     }
     return user?.username?.[0]?.toUpperCase() || 'U';
+  };
+
+  const getSystemRole = () => {
+    if (user?.is_superuser) return 'Super Admin';
+    if (user?.is_staff) return 'Admin';
+    return 'User';
   };
 
   const handleImageChange = (event) => {
@@ -303,6 +312,14 @@ const MobileProfile = () => {
               )}
             </Stack>
 
+            {/* System Role */}
+            <Chip
+              label={getSystemRole()}
+              size="small"
+              color={user?.is_superuser ? "secondary" : user?.is_staff ? "primary" : "default"}
+              sx={{ height: 20, fontSize: '0.7rem', fontWeight: 600 }}
+            />
+
             {/* Email */}
             <Typography variant="body2" color="text.secondary">
               {user?.email}
@@ -324,14 +341,14 @@ const MobileProfile = () => {
               {user?.factory_memberships?.length > 0 ? (
                 user.factory_memberships.map((m, idx) => (
                   <Box key={idx} sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 0.5, mb: idx < user.factory_memberships.length - 1 ? 0.5 : 0 }}>
-                    <span>🏭 {m.factory.name}</span>
+                    <span>🏭 {m.factory_name || 'Unknown Factory'}</span>
                     <Typography variant="caption" sx={{ color: 'primary.main', fontWeight: 'bold', fontSize: '0.7rem' }}>
-                      ({m.role.name})
+                      ({m.role_name || 'Member'})
                     </Typography>
                   </Box>
                 ))
               ) : (
-                '🏭 No Factory'
+                <Typography variant="caption">🏭 No Factory Assignments</Typography>
               )}
             </Box>
 

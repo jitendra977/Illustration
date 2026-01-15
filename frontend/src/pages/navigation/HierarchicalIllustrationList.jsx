@@ -6,11 +6,12 @@ import {
     Alert,
     useTheme,
     useMediaQuery,
-    Button
+    Button,
+    alpha
 } from '@mui/material';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { partSubCategoryAPI, partCategoryAPI, carModelAPI } from '../../api/illustrations';
-import Breadcrumb from '../../components/navigation/Breadcrumb';
+import Breadcrumbs from '../../components/navigation/Breadcrumbs';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import MobileIllustrationListView from '../../components/mobile/MobileIllustrationListView';
 import PageLayout from '../../components/layout/PageLayout';
@@ -57,7 +58,31 @@ const HierarchicalIllustrationList = () => {
                 if (!newContext.car && carSlug) {
                     const car = await carModelAPI.getBySlug(carSlug);
                     newContext.car = car;
+
+                    // Populate missing parent context from car data
+                    if (!newContext.manufacturer && car.manufacturer) {
+                        if (typeof car.manufacturer === 'object') {
+                            newContext.manufacturer = car.manufacturer;
+                        } else if (typeof car.manufacturer === 'number' || typeof car.manufacturer === 'string') {
+                            try {
+                                const manuf = await import('../../api/illustrations').then(m => m.manufacturerAPI.getById(car.manufacturer));
+                                newContext.manufacturer = manuf;
+                            } catch (e) { console.warn('Failed to fetch manufacturer context', e); }
+                        }
+                    }
+
+                    if (!newContext.engine && car.engine_model) {
+                        if (typeof car.engine_model === 'object') {
+                            newContext.engine = car.engine_model;
+                        } else if (typeof car.engine_model === 'number' || typeof car.engine_model === 'string') {
+                            try {
+                                const eng = await import('../../api/illustrations').then(m => m.engineModelAPI.getById(car.engine_model));
+                                newContext.engine = eng;
+                            } catch (e) { console.warn('Failed to fetch engine context', e); }
+                        }
+                    }
                 }
+
                 if (!newContext.category && categoryId) {
                     const cat = await partCategoryAPI.getById(categoryId);
                     newContext.category = cat;
@@ -154,7 +179,7 @@ const HierarchicalIllustrationList = () => {
             showBack={false}
         >
             <Box sx={{ mb: 2 }}>
-                <Breadcrumb items={breadcrumbs} isMobile={false} />
+                <Breadcrumbs items={breadcrumbs} scrollable={true} />
             </Box>
 
             <Box sx={{ mb: 3, display: 'flex', alignItems: 'center', gap: 2 }}>

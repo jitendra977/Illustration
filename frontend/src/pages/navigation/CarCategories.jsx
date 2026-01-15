@@ -9,7 +9,8 @@ import {
     IconButton
 } from '@mui/material';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
-import { carModelAPI, partCategoryAPI } from '../../api/illustrations';
+import Breadcrumbs from '../../components/navigation/Breadcrumbs';
+import { carModelAPI, partCategoryAPI, manufacturerAPI, engineModelAPI } from '../../api/illustrations';
 import {
     Search,
     Folder,
@@ -166,6 +167,30 @@ const CarCategories = () => {
                 if (state.engineCode) {
                     newContext.engine = { id: state.engineId, model_code: state.engineCode };
                 }
+
+                // Robust Context Recovery using carData
+                if (!newContext.manufacturer && carData?.manufacturer) {
+                    if (typeof carData.manufacturer === 'object') {
+                        newContext.manufacturer = carData.manufacturer;
+                    } else {
+                        try {
+                            const m = await manufacturerAPI.getById(carData.manufacturer);
+                            newContext.manufacturer = m;
+                        } catch (e) { console.warn('Failed to fetch manufacturer', e); }
+                    }
+                }
+
+                if (!newContext.engine && carData?.engine_model) {
+                    if (typeof carData.engine_model === 'object') {
+                        newContext.engine = carData.engine_model;
+                    } else {
+                        try {
+                            const e = await engineModelAPI.getById(carData.engine_model);
+                            newContext.engine = e;
+                        } catch (err) { console.warn('Failed to fetch engine', err); }
+                    }
+                }
+
                 setContextData(newContext);
 
                 // Prepare params for filtered counts
@@ -227,6 +252,14 @@ const CarCategories = () => {
         return categories.reduce((acc, curr) => acc + (curr.illustration_count || 0), 0);
     }, [categories]);
 
+    const breadcrumbs = [
+        { label: 'ホーム', path: '/' },
+        { label: 'メーカー選択', path: '/manufacturers' },
+        { label: contextData.manufacturer?.name || 'メーカー', path: contextData.manufacturer ? `/manufacturers/${contextData.manufacturer.id}/engines` : null },
+        { label: contextData.engine?.model_code || contextData.engine?.name || 'エンジン', path: contextData.engine ? `/engines/${contextData.engine.id}/cars` : null },
+        { label: car?.name || '車種' }
+    ];
+
     return (
         <Box sx={{ minHeight: '100vh', bgcolor: 'background.default', color: 'text.primary', fontFamily: 'Inter, sans-serif', pb: { xs: 12, md: 5 } }}>
             {/* Sticky Header */}
@@ -241,24 +274,8 @@ const CarCategories = () => {
                 backdropFilter: isScrolled ? 'blur(24px)' : 'none',
                 borderBottom: isScrolled ? `1px solid ${theme.palette.divider}` : 'none',
             }}>
-                <Box sx={{ maxWidth: '1280px', mx: 'auto', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                    <IconButton onClick={handleBack} sx={{ color: 'text.secondary', '&:hover': { bgcolor: alpha(theme.palette.primary.main, 0.05), color: 'primary.main' } }}>
-                        <ArrowLeft size={20} />
-                    </IconButton>
-
-                    <Typography sx={{
-                        position: 'absolute',
-                        left: '50%',
-                        transform: 'translateX(-50%)',
-                        fontWeight: 700,
-                        fontSize: { xs: '1.125rem', md: '1.25rem' },
-                        opacity: isScrolled ? 1 : 0,
-                        transition: 'all 0.3s',
-                        transform: isScrolled ? 'translate(-50%, 0)' : 'translate(-50%, -10px)',
-                        pointerEvents: 'none'
-                    }}>
-                        {car?.name}
-                    </Typography>
+                <Box sx={{ maxWidth: '1280px', mx: 'auto' }}>
+                    <Breadcrumbs items={breadcrumbs} scrollable={true} />
                 </Box>
             </Box>
 

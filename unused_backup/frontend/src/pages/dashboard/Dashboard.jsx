@@ -48,7 +48,7 @@ const Dashboard = () => {
     error: null,
     lastUpdated: null
   });
-  
+
   const [refreshing, setRefreshing] = useState(false);
   const [createModalOpen, setCreateModalOpen] = useState(false);
   const { user } = useAuth();
@@ -56,21 +56,21 @@ const Dashboard = () => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
   const isTablet = useMediaQuery(theme.breakpoints.down('md'));
-  
+
   const hasFetchedRef = useRef(false);
   const isFetchingRef = useRef(false);
 
   const fetchDashboardData = async (showRefresh = false) => {
     if (isFetchingRef.current) return;
-    
+
     if (showRefresh) {
       setRefreshing(true);
     } else {
       setStats(prev => ({ ...prev, loading: true, error: null }));
     }
-    
+
     isFetchingRef.current = true;
-    
+
     try {
       const results = await Promise.allSettled([
         illustrationAPI.getAll({ limit: 5, ordering: '-created_at' }),
@@ -101,7 +101,7 @@ const Dashboard = () => {
         error: null,
         lastUpdated: new Date()
       });
-      
+
       hasFetchedRef.current = true;
     } catch (error) {
       setStats(prev => ({
@@ -130,11 +130,11 @@ const Dashboard = () => {
   };
 
   const StatCard = ({ title, value, icon, color, onClick, loading }) => (
-    <Card 
-      sx={{ 
+    <Card
+      sx={{
         height: '100%',
         cursor: onClick ? 'pointer' : 'default',
-        background: isMobile 
+        background: isMobile
           ? `linear-gradient(135deg, ${color} 0%, ${alpha(color, 0.9)} 100%)`
           : `linear-gradient(135deg, ${color} 0%, ${alpha(color, 0.85)} 100%)`,
         color: 'white',
@@ -153,7 +153,7 @@ const Dashboard = () => {
     >
       <CardContent sx={{ p: isMobile ? 2 : 3 }}>
         <Stack direction={isMobile ? 'row' : 'column'} spacing={isMobile ? 1.5 : 2} alignItems={isMobile ? 'center' : 'flex-start'}>
-          <Box sx={{ 
+          <Box sx={{
             opacity: 0.95,
             bgcolor: 'rgba(255,255,255,0.2)',
             borderRadius: isMobile ? 2 : 1,
@@ -162,31 +162,31 @@ const Dashboard = () => {
             alignItems: 'center',
             justifyContent: 'center'
           }}>
-            {React.cloneElement(icon, { 
-              sx: { fontSize: isMobile ? 28 : 40 } 
+            {React.cloneElement(icon, {
+              sx: { fontSize: isMobile ? 28 : 40 }
             })}
           </Box>
-          
+
           <Stack spacing={0.5} flex={1}>
             {loading ? (
-              <Skeleton 
-                variant="text" 
+              <Skeleton
+                variant="text"
                 width={isMobile ? '80px' : '60%'}
-                height={isMobile ? 32 : 40} 
-                sx={{ bgcolor: 'rgba(255,255,255,0.3)' }} 
+                height={isMobile ? 32 : 40}
+                sx={{ bgcolor: 'rgba(255,255,255,0.3)' }}
               />
             ) : (
-              <Typography 
-                variant={isMobile ? 'h5' : 'h3'} 
+              <Typography
+                variant={isMobile ? 'h5' : 'h3'}
                 fontWeight="bold"
                 sx={{ lineHeight: 1 }}
               >
                 {value.toLocaleString()}
               </Typography>
             )}
-            
-            <Typography 
-              variant={isMobile ? 'caption' : 'body1'} 
+
+            <Typography
+              variant={isMobile ? 'caption' : 'body1'}
               sx={{ opacity: 0.9, fontWeight: isMobile ? 600 : 500 }}
             >
               {title}
@@ -200,10 +200,10 @@ const Dashboard = () => {
   const IllustrationCard = ({ illustration }) => {
     const firstFile = illustration.files?.[0];
     const timeAgo = getTimeAgo(new Date(illustration.created_at));
-    
+
     return (
-      <Paper 
-        sx={{ 
+      <Paper
+        sx={{
           p: isMobile ? 1.5 : 2.5,
           borderRadius: isMobile ? 3 : 2,
           cursor: 'pointer',
@@ -222,7 +222,7 @@ const Dashboard = () => {
         onClick={() => navigate(`/illustrations/${illustration.id}`)}
       >
         <Stack direction="row" spacing={isMobile ? 1.5 : 2} alignItems="center">
-          <Box sx={{ 
+          <Box sx={{
             width: isMobile ? 60 : 64,
             height: isMobile ? 60 : 64,
             borderRadius: isMobile ? 2.5 : 2,
@@ -235,8 +235,8 @@ const Dashboard = () => {
             border: isMobile && !firstFile ? `2px dashed ${alpha(theme.palette.primary.main, 0.3)}` : 'none'
           }}>
             {firstFile ? (
-              <img 
-                src={firstFile.file} 
+              <img
+                src={firstFile.file}
                 alt={illustration.title}
                 style={{ width: '100%', height: '100%', objectFit: 'cover' }}
               />
@@ -244,23 +244,23 @@ const Dashboard = () => {
               <ImageIcon color="primary" sx={{ fontSize: isMobile ? 26 : 32 }} />
             )}
           </Box>
-          
+
           <Box sx={{ flex: 1, minWidth: 0 }}>
-            <Typography 
-              variant={isMobile ? 'body1' : 'h6'} 
+            <Typography
+              variant={isMobile ? 'body1' : 'h6'}
               fontWeight={isMobile ? 600 : 'bold'}
-              gutterBottom 
+              gutterBottom
               noWrap
               sx={{ mb: isMobile ? 0.5 : 1 }}
             >
               {illustration.title || 'タイトルなし'}
             </Typography>
             <Stack direction="row" spacing={1} alignItems="center" flexWrap="wrap" sx={{ gap: 0.5 }}>
-              {illustration.part_category?.name && (
-                <Chip 
-                  label={illustration.part_category.name}
+              {(illustration.part_category_name || illustration.part_category?.name) && (
+                <Chip
+                  label={illustration.part_category_name || illustration.part_category.name}
                   size="small"
-                  sx={{ 
+                  sx={{
                     height: isMobile ? 22 : 24,
                     fontSize: isMobile ? '0.7rem' : '0.75rem',
                     fontWeight: 600,
@@ -268,23 +268,38 @@ const Dashboard = () => {
                   }}
                 />
               )}
-              <Typography 
-                variant="caption" 
+              {(illustration.part_subcategory_name || illustration.part_subcategory?.name) && (
+                <Chip
+                  label={illustration.part_subcategory_name || illustration.part_subcategory.name}
+                  size="small"
+                  sx={{
+                    height: isMobile ? 22 : 24,
+                    fontSize: isMobile ? '0.7rem' : '0.75rem',
+                    fontWeight: 600,
+                    borderRadius: isMobile ? 1.5 : 1,
+                    bgcolor: alpha(theme.palette.secondary.main, 0.1),
+                    color: theme.palette.secondary.main,
+                    border: `1px solid ${alpha(theme.palette.secondary.main, 0.2)}`
+                  }}
+                />
+              )}
+              <Typography
+                variant="caption"
                 color="text.secondary"
-                sx={{ 
+                sx={{
                   fontSize: isMobile ? '0.7rem' : '0.75rem',
-                  fontWeight: 500 
+                  fontWeight: 500
                 }}
               >
                 {timeAgo}
               </Typography>
             </Stack>
           </Box>
-          
+
           {!isMobile && (
-            <ArrowForwardIcon 
-              color="action" 
-              sx={{ fontSize: 24 }} 
+            <ArrowForwardIcon
+              color="action"
+              sx={{ fontSize: 24 }}
             />
           )}
         </Stack>
@@ -294,7 +309,7 @@ const Dashboard = () => {
 
   if (stats.loading && !refreshing) {
     return (
-      <Box sx={{ 
+      <Box sx={{
         minHeight: '100vh',
         display: 'flex',
         justifyContent: 'center',
@@ -312,42 +327,42 @@ const Dashboard = () => {
   }
 
   return (
-    <Box sx={{ 
+    <Box sx={{
       minHeight: '100vh',
       bgcolor: 'background.default',
       pb: { xs: 2, sm: 4 }
     }}>
       {/* ヘッダー */}
-      <Paper 
+      <Paper
         elevation={0}
-        sx={{ 
+        sx={{
           borderRadius: 0,
           borderBottom: `1px solid ${theme.palette.divider}`,
           mb: isMobile ? 2 : 3,
-          background: isMobile 
-            ? `linear-gradient(135deg, ${theme.palette.primary.main} 0%, ${theme.palette.primary.dark} 100%)` 
+          background: isMobile
+            ? `linear-gradient(135deg, ${theme.palette.primary.main} 0%, ${theme.palette.primary.dark} 100%)`
             : 'transparent',
           color: isMobile ? 'white' : 'inherit'
         }}
       >
         <Container maxWidth="xl">
-          <Stack 
-            direction="row" 
-            justifyContent="space-between" 
+          <Stack
+            direction="row"
+            justifyContent="space-between"
             alignItems="center"
             py={isMobile ? 2.5 : 3}
           >
             <Box>
-              <Typography 
-                variant={isMobile ? 'h5' : 'h5'} 
+              <Typography
+                variant={isMobile ? 'h5' : 'h5'}
                 fontWeight="bold"
                 sx={{ mb: isMobile ? 0.5 : 0 }}
               >
                 ダッシュボード
               </Typography>
-              <Typography 
-                variant="caption" 
-                sx={{ 
+              <Typography
+                variant="caption"
+                sx={{
                   fontSize: isMobile ? '0.8rem' : '0.875rem',
                   opacity: isMobile ? 0.95 : 0.7,
                   color: isMobile ? 'inherit' : 'text.secondary',
@@ -357,9 +372,9 @@ const Dashboard = () => {
                 {user?.first_name || user?.username || 'ゲスト'}さん、ようこそ！
               </Typography>
             </Box>
-            
-            <IconButton 
-              onClick={() => fetchDashboardData(true)} 
+
+            <IconButton
+              onClick={() => fetchDashboardData(true)}
               disabled={refreshing}
               size="medium"
               sx={{
@@ -370,11 +385,11 @@ const Dashboard = () => {
                 }
               }}
             >
-              <RefreshIcon 
-                sx={{ 
+              <RefreshIcon
+                sx={{
                   animation: refreshing ? 'spin 1s linear infinite' : 'none',
                   fontSize: 24
-                }} 
+                }}
               />
             </IconButton>
           </Stack>
@@ -384,7 +399,7 @@ const Dashboard = () => {
       <Container maxWidth="xl">
         {/* エラーアラート */}
         {stats.error && (
-          <Alert 
+          <Alert
             severity="error"
             sx={{ mb: { xs: 2, sm: 3 } }}
             action={
@@ -443,9 +458,9 @@ const Dashboard = () => {
 
         {/* クイックアクション */}
         <Box mb={isMobile ? 2.5 : 4}>
-          <Typography 
-            variant={isMobile ? 'body1' : 'h6'} 
-            fontWeight="bold" 
+          <Typography
+            variant={isMobile ? 'body1' : 'h6'}
+            fontWeight="bold"
             mb={isMobile ? 1.5 : 2}
           >
             クイックアクション
@@ -458,7 +473,7 @@ const Dashboard = () => {
                 size="large"
                 startIcon={<AddIcon />}
                 onClick={() => setCreateModalOpen(true)}
-                sx={{ 
+                sx={{
                   py: isMobile ? 1.75 : 2,
                   background: `linear-gradient(135deg, ${theme.palette.primary.main}, ${theme.palette.primary.dark})`,
                   fontSize: isMobile ? '0.95rem' : '1rem',
@@ -478,7 +493,7 @@ const Dashboard = () => {
                 size="large"
                 startIcon={<ImageIcon />}
                 onClick={() => navigate('/illustrations')}
-                sx={{ 
+                sx={{
                   py: isMobile ? 1.75 : 2,
                   fontSize: isMobile ? '0.95rem' : '1rem',
                   fontWeight: 600,
@@ -496,24 +511,24 @@ const Dashboard = () => {
         <Grid container spacing={isMobile ? 2 : 3}>
           {/* 最近のイラスト */}
           <Grid item xs={12} lg={8}>
-            <Paper sx={{ 
+            <Paper sx={{
               p: isMobile ? 2 : 3,
               borderRadius: isMobile ? 3 : 2,
               boxShadow: isMobile ? 1 : 'inherit'
             }}>
-              <Stack 
-                direction="row" 
-                justifyContent="space-between" 
-                alignItems="center" 
+              <Stack
+                direction="row"
+                justifyContent="space-between"
+                alignItems="center"
                 mb={isMobile ? 2 : 3}
               >
-                <Typography 
-                  variant={isMobile ? 'body1' : 'h6'} 
+                <Typography
+                  variant={isMobile ? 'body1' : 'h6'}
                   fontWeight="bold"
                 >
                   最近のイラスト
                 </Typography>
-                <Button 
+                <Button
                   size="small"
                   endIcon={<ArrowForwardIcon />}
                   onClick={() => navigate('/illustrations')}
@@ -530,11 +545,11 @@ const Dashboard = () => {
               <Stack spacing={isMobile ? 1.5 : 2}>
                 {stats.loading ? (
                   Array.from({ length: 3 }).map((_, i) => (
-                    <Skeleton 
-                      key={i} 
-                      variant="rectangular" 
-                      height={isMobile ? 76 : 96} 
-                      sx={{ borderRadius: isMobile ? 3 : 2 }} 
+                    <Skeleton
+                      key={i}
+                      variant="rectangular"
+                      height={isMobile ? 76 : 96}
+                      sx={{ borderRadius: isMobile ? 3 : 2 }}
                     />
                   ))
                 ) : stats.recentIllustrations.length > 0 ? (
@@ -543,13 +558,13 @@ const Dashboard = () => {
                   ))
                 ) : (
                   <Box sx={{ textAlign: 'center', py: isMobile ? 6 : 6 }}>
-                    <ImageIcon sx={{ 
+                    <ImageIcon sx={{
                       fontSize: isMobile ? 56 : 64,
                       color: 'grey.300',
-                      mb: 1.5 
+                      mb: 1.5
                     }} />
-                    <Typography 
-                      variant={isMobile ? 'body2' : 'subtitle2'} 
+                    <Typography
+                      variant={isMobile ? 'body2' : 'subtitle2'}
                       color="text.secondary"
                       fontWeight={500}
                     >
@@ -565,26 +580,26 @@ const Dashboard = () => {
           <Grid item xs={12} lg={4}>
             <Stack spacing={isMobile ? 2 : 3}>
               {/* システム状態 */}
-              <Paper sx={{ 
+              <Paper sx={{
                 p: isMobile ? 2 : 3,
                 borderRadius: isMobile ? 3 : 2,
                 boxShadow: isMobile ? 1 : 'inherit'
               }}>
-                <Stack 
-                  direction="row" 
-                  justifyContent="space-between" 
-                  alignItems="center" 
+                <Stack
+                  direction="row"
+                  justifyContent="space-between"
+                  alignItems="center"
                   mb={2}
                 >
-                  <Typography 
-                    variant={isMobile ? 'body1' : 'h6'} 
+                  <Typography
+                    variant={isMobile ? 'body1' : 'h6'}
                     fontWeight="bold"
                   >
                     システム状態
                   </Typography>
-                  <Chip 
-                    label="良好" 
-                    size="small" 
+                  <Chip
+                    label="良好"
+                    size="small"
                     color="success"
                     icon={<StorageIcon sx={{ fontSize: 14 }} />}
                     sx={{
@@ -593,89 +608,89 @@ const Dashboard = () => {
                     }}
                   />
                 </Stack>
-                
+
                 <Stack spacing={2}>
                   <Box>
                     <Stack direction="row" justifyContent="space-between" mb={0.5}>
-                      <Typography 
-                        variant="caption" 
+                      <Typography
+                        variant="caption"
                         fontWeight={600}
                         sx={{ fontSize: isMobile ? '0.75rem' : '0.8rem' }}
                       >
                         API
                       </Typography>
-                      <Typography 
-                        variant="caption" 
+                      <Typography
+                        variant="caption"
                         fontWeight="bold"
                         sx={{ fontSize: isMobile ? '0.75rem' : '0.8rem' }}
                       >
                         98%
                       </Typography>
                     </Stack>
-                    <LinearProgress 
-                      variant="determinate" 
-                      value={98} 
-                      sx={{ 
+                    <LinearProgress
+                      variant="determinate"
+                      value={98}
+                      sx={{
                         height: isMobile ? 8 : 8,
-                        borderRadius: 4 
-                      }} 
-                      color="success" 
+                        borderRadius: 4
+                      }}
+                      color="success"
                     />
                   </Box>
-                  
+
                   <Box>
                     <Stack direction="row" justifyContent="space-between" mb={0.5}>
-                      <Typography 
+                      <Typography
                         variant="caption"
                         fontWeight={600}
                         sx={{ fontSize: isMobile ? '0.75rem' : '0.8rem' }}
                       >
                         データベース
                       </Typography>
-                      <Typography 
-                        variant="caption" 
+                      <Typography
+                        variant="caption"
                         fontWeight="bold"
                         sx={{ fontSize: isMobile ? '0.75rem' : '0.8rem' }}
                       >
                         85%
                       </Typography>
                     </Stack>
-                    <LinearProgress 
-                      variant="determinate" 
-                      value={85} 
-                      sx={{ 
+                    <LinearProgress
+                      variant="determinate"
+                      value={85}
+                      sx={{
                         height: isMobile ? 8 : 8,
-                        borderRadius: 4 
-                      }} 
+                        borderRadius: 4
+                      }}
                     />
                   </Box>
                 </Stack>
               </Paper>
 
               {/* 週間インサイト */}
-              <Paper sx={{ 
+              <Paper sx={{
                 p: isMobile ? 2.5 : 3,
                 borderRadius: isMobile ? 3 : 2,
                 background: `linear-gradient(135deg, ${theme.palette.primary.main} 0%, ${theme.palette.primary.dark} 100%)`,
                 color: 'white',
                 boxShadow: isMobile ? 3 : 2
               }}>
-                <Stack 
-                  direction="row" 
-                  justifyContent="space-between" 
-                  alignItems="start" 
+                <Stack
+                  direction="row"
+                  justifyContent="space-between"
+                  alignItems="start"
                   mb={isMobile ? 2.5 : 3}
                 >
                   <Box>
-                    <Typography 
-                      variant={isMobile ? 'body1' : 'h6'} 
+                    <Typography
+                      variant={isMobile ? 'body1' : 'h6'}
                       fontWeight="bold"
                     >
                       週間インサイト
                     </Typography>
-                    <Typography 
-                      variant="caption" 
-                      sx={{ 
+                    <Typography
+                      variant="caption"
+                      sx={{
                         opacity: 0.9,
                         fontSize: isMobile ? '0.75rem' : '0.8rem',
                         fontWeight: 500
@@ -686,24 +701,24 @@ const Dashboard = () => {
                   </Box>
                   <TrendingUpIcon sx={{ fontSize: isMobile ? 28 : 28 }} />
                 </Stack>
-                
+
                 <Grid container spacing={isMobile ? 1.5 : 1.5}>
                   <Grid item xs={4}>
-                    <Box sx={{ 
+                    <Box sx={{
                       p: isMobile ? 2 : 2,
                       borderRadius: isMobile ? 2.5 : 2,
                       bgcolor: 'rgba(255,255,255,0.2)',
                       textAlign: 'center'
                     }}>
-                      <Typography 
-                        variant={isMobile ? 'h5' : 'h5'} 
+                      <Typography
+                        variant={isMobile ? 'h5' : 'h5'}
                         fontWeight="bold"
                       >
                         +24
                       </Typography>
-                      <Typography 
-                        variant="caption" 
-                        sx={{ 
+                      <Typography
+                        variant="caption"
+                        sx={{
                           opacity: 0.9,
                           fontSize: isMobile ? '0.7rem' : '0.75rem',
                           fontWeight: 500
@@ -714,21 +729,21 @@ const Dashboard = () => {
                     </Box>
                   </Grid>
                   <Grid item xs={4}>
-                    <Box sx={{ 
+                    <Box sx={{
                       p: isMobile ? 2 : 2,
                       borderRadius: isMobile ? 2.5 : 2,
                       bgcolor: 'rgba(255,255,255,0.2)',
                       textAlign: 'center'
                     }}>
-                      <Typography 
-                        variant={isMobile ? 'h5' : 'h5'} 
+                      <Typography
+                        variant={isMobile ? 'h5' : 'h5'}
                         fontWeight="bold"
                       >
                         89%
                       </Typography>
-                      <Typography 
-                        variant="caption" 
-                        sx={{ 
+                      <Typography
+                        variant="caption"
+                        sx={{
                           opacity: 0.9,
                           fontSize: isMobile ? '0.7rem' : '0.75rem',
                           fontWeight: 500
@@ -739,21 +754,21 @@ const Dashboard = () => {
                     </Box>
                   </Grid>
                   <Grid item xs={4}>
-                    <Box sx={{ 
+                    <Box sx={{
                       p: isMobile ? 2 : 2,
                       borderRadius: isMobile ? 2.5 : 2,
                       bgcolor: 'rgba(255,255,255,0.2)',
                       textAlign: 'center'
                     }}>
-                      <Typography 
-                        variant={isMobile ? 'h5' : 'h5'} 
+                      <Typography
+                        variant={isMobile ? 'h5' : 'h5'}
                         fontWeight="bold"
                       >
                         5.2h
                       </Typography>
-                      <Typography 
-                        variant="caption" 
-                        sx={{ 
+                      <Typography
+                        variant="caption"
+                        sx={{
                           opacity: 0.9,
                           fontSize: isMobile ? '0.7rem' : '0.75rem',
                           fontWeight: 500

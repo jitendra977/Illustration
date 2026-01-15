@@ -28,12 +28,12 @@ const PageLayout = ({
         <Box
             sx={{
                 minHeight: '100vh',
-                background: `
+                background: theme.palette.mode === 'dark' ? `
                     radial-gradient(at 0% 0%, hsla(253,16%,7%,1) 0, transparent 50%), 
                     radial-gradient(at 50% 0%, hsla(225,39%,30%,1) 0, transparent 50%), 
                     radial-gradient(at 100% 0%, hsla(339,49%,30%,1) 0, transparent 50%)
-                `,
-                backgroundColor: '#1a1a1a', // Fallback/Base dark color
+                ` : theme.palette.background.default,
+                backgroundColor: theme.palette.background.default,
                 position: 'relative',
                 display: 'flex',
                 flexDirection: 'column',
@@ -49,10 +49,10 @@ const PageLayout = ({
                     right: 0,
                     bottom: 0,
                     opacity: 0.4,
-                    background: `
+                    background: theme.palette.mode === 'dark' ? `
                         radial-gradient(circle at 15% 50%, ${alpha(theme.palette.primary.main, 0.15)}, transparent 25%),
                         radial-gradient(circle at 85% 30%, ${alpha(theme.palette.secondary.main, 0.15)}, transparent 25%)
-                    `,
+                    ` : 'none',
                     zIndex: 0,
                     pointerEvents: 'none'
                 }}
@@ -65,8 +65,8 @@ const PageLayout = ({
                     top: 0,
                     zIndex: 1100,
                     backdropFilter: 'blur(12px)',
-                    backgroundColor: alpha('#1a1a1a', 0.6), // Semi-transparent dark
-                    borderBottom: '1px solid rgba(255, 255, 255, 0.08)',
+                    backgroundColor: theme.palette.mode === 'dark' ? alpha('#1a1a1a', 0.6) : alpha(theme.palette.background.paper, 0.8),
+                    borderBottom: `1px solid ${theme.palette.divider}`,
                     px: 2,
                     py: 1.5,
                     display: 'flex',
@@ -79,10 +79,10 @@ const PageLayout = ({
                         onClick={handleBack}
                         size="small"
                         sx={{
-                            color: 'white',
-                            bgcolor: 'rgba(255, 255, 255, 0.05)',
-                            '&:hover': { bgcolor: alpha('#fff', 0.1) },
-                            border: '1px solid rgba(255,255,255,0.1)'
+                            color: 'text.primary',
+                            bgcolor: theme.palette.mode === 'dark' ? 'rgba(255, 255, 255, 0.05)' : alpha(theme.palette.action.active, 0.05),
+                            '&:hover': { bgcolor: theme.palette.mode === 'dark' ? alpha('#fff', 0.1) : alpha(theme.palette.action.active, 0.1) },
+                            border: `1px solid ${theme.palette.divider}`
                         }}
                     >
                         <ArrowBackIcon fontSize="small" />
@@ -98,7 +98,7 @@ const PageLayout = ({
                                 noWrap
                                 sx={{
                                     fontWeight: 700,
-                                    color: 'white',
+                                    color: 'text.primary',
                                     fontSize: '1.1rem',
                                     letterSpacing: '0.02em'
                                 }}
@@ -109,7 +109,7 @@ const PageLayout = ({
                                 <Typography
                                     variant="caption"
                                     sx={{
-                                        color: alpha('#fff', 0.6),
+                                        color: 'text.secondary',
                                         display: 'block',
                                         lineHeight: 1
                                     }}

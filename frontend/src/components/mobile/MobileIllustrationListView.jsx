@@ -30,8 +30,11 @@ import { useManufacturers, useEngineModels, usePartCategories, usePartSubCategor
 import IllustrationDetailModal from '../illustrations/IllustrationDetailModal';
 import IllustrationListCard from './IllustrationListCard';
 import MobileIllustrationFormModal from '../forms/MobileIllustrationFormModal';
-import MobileFilterPanel from './MobileFilterPanel';
+import FilterPanel from '../illustrations/FilterPanel'; // Import FilterPanel
 import FloatingAddButton from './FloatingAddButton';
+
+// Additional imports for Drawer wrapper
+import { Drawer } from '@mui/material';
 
 // Default empty object constant
 const DEFAULT_EMPTY_OBJECT = {};
@@ -233,7 +236,7 @@ const MobileIllustrationListView = ({
                     onChange={(e) => setSearchTerm(e.target.value)}
                     sx={{
                         width: '100%',
-                        bgcolor: alpha(theme.palette.zinc[900], 0.8),
+                        bgcolor: theme.palette.mode === 'dark' ? alpha(theme.palette.zinc[900], 0.8) : theme.palette.background.paper,
                         border: `1px solid ${theme.palette.divider}`,
                         borderRadius: 3,
                         py: 1.75,
@@ -259,8 +262,8 @@ const MobileIllustrationListView = ({
                             right: 8,
                             top: '50%',
                             transform: 'translateY(-50%)',
-                            color: zinc[400],
-                            '&:hover': { bgcolor: alpha('#fff', 0.05) }
+                            color: 'text.secondary',
+                            '&:hover': { bgcolor: alpha(theme.palette.text.primary, 0.05) }
                         }}
                     >
                         <X size={18} />
@@ -298,7 +301,7 @@ const MobileIllustrationListView = ({
                     sx={{
                         flex: 1,
                         '& .MuiOutlinedInput-root': {
-                            bgcolor: alpha(theme.palette.zinc[900], 0.8),
+                            bgcolor: theme.palette.mode === 'dark' ? alpha(theme.palette.zinc[900], 0.8) : theme.palette.background.paper,
                             border: `1px solid ${theme.palette.divider}`,
                             borderRadius: 2,
                             color: 'text.primary',
@@ -369,12 +372,27 @@ const MobileIllustrationListView = ({
                 </Fade>
             )}
 
-            <MobileFilterPanel
+            <Drawer
+                anchor="right"
                 open={showFilters}
                 onClose={() => setShowFilters(false)}
-                onFilterChange={handleFilterChange}
-                currentFilters={filters}
-            />
+                PaperProps={{
+                    sx: { width: '85%', maxWidth: 360, p: 2 }
+                }}
+            >
+                <Box sx={{ display: 'flex', justifyContent: 'flex-end', mb: 1 }}>
+                    <IconButton onClick={() => setShowFilters(false)}>
+                        <X size={24} />
+                    </IconButton>
+                </Box>
+                <FilterPanel
+                    initialFilters={filters}
+                    onFilterChange={(newFilters) => {
+                        handleFilterChange(newFilters);
+                        setShowFilters(false);
+                    }}
+                />
+            </Drawer>
 
             {/* Loading */}
             {loading && (
@@ -402,7 +420,7 @@ const MobileIllustrationListView = ({
                             p: 4,
                             textAlign: 'center',
                             border: `2px dashed ${theme.palette.divider}`,
-                            bgcolor: alpha(theme.palette.zinc[900], 0.2)
+                            bgcolor: theme.palette.mode === 'dark' ? alpha(theme.palette.zinc[900], 0.2) : alpha(theme.palette.action.hover, 0.5)
                         }}
                     >
                         <Box

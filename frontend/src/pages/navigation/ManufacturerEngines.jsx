@@ -10,6 +10,7 @@ import {
     Button
 } from '@mui/material';
 import { useParams, useNavigate } from 'react-router-dom';
+import Breadcrumbs from '../../components/navigation/Breadcrumbs';
 import { manufacturerAPI, engineModelAPI } from '../../api/illustrations';
 import {
     Search,
@@ -199,6 +200,12 @@ const ManufacturerEngines = () => {
     const navigate = useNavigate();
     const theme = useTheme();
 
+    const breadcrumbs = [
+        { label: 'ホーム', path: '/' },
+        { label: 'メーカー選択', path: '/manufacturers' },
+        { label: manufacturer?.name || 'メーカー' }
+    ];
+
     useEffect(() => {
         const handleScroll = () => setIsScrolled(window.scrollY > 20);
         window.addEventListener('scroll', handleScroll);
@@ -264,26 +271,8 @@ const ManufacturerEngines = () => {
                 backdropFilter: isScrolled ? 'blur(24px)' : 'none',
                 borderBottom: isScrolled ? `1px solid ${theme.palette.divider}` : 'none',
             }}>
-                <Box sx={{ maxWidth: '1280px', mx: 'auto', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                    <IconButton onClick={handleBack} sx={{ color: 'text.secondary', '&:hover': { bgcolor: alpha(theme.palette.primary.main, 0.05), color: 'primary.main' } }}>
-                        <ArrowLeft size={20} />
-                    </IconButton>
-
-                    <Typography sx={{
-                        position: 'absolute',
-                        left: '50%',
-                        transform: 'translateX(-50%)',
-                        fontWeight: 700,
-                        fontSize: { xs: '1.125rem', md: '1.25rem' },
-                        opacity: isScrolled ? 1 : 0,
-                        transition: 'all 0.3s',
-                        transform: isScrolled ? 'translate(-50%, 0)' : 'translate(-50%, -10px)',
-                        pointerEvents: 'none'
-                    }}>
-                        {manufacturer?.name}
-                    </Typography>
-
-
+                <Box sx={{ maxWidth: '1280px', mx: 'auto' }}>
+                    <Breadcrumbs items={breadcrumbs} scrollable={true} />
                 </Box>
             </Box>
 

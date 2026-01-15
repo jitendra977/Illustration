@@ -5,23 +5,12 @@ import {
     CircularProgress,
     useTheme,
     alpha,
-    IconButton,
-    Button,
     Grid
 } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
-import { manufacturerAPI } from '../../api/illustrations'; // Assumed API export
-import {
-    Search,
-    Factory,
-    Car,
-    Image as ImageIcon,
-    ChevronRight,
-    Menu,
-    Filter,
-    Activity,
-    Globe
-} from 'lucide-react';
+import { Search, Car, Factory, ChevronRight } from 'lucide-react';
+import Breadcrumbs from '../../components/navigation/Breadcrumbs';
+import { manufacturerAPI } from '../../api/illustrations';
 
 // Utility for Zinc colors (simulating Tailwind Zinc palette)
 // Zinc palette from theme
@@ -141,6 +130,11 @@ const ManufacturerList = () => {
     const navigate = useNavigate();
     const theme = useTheme();
 
+    const breadcrumbs = [
+        { label: 'ホーム', path: '/' },
+        { label: 'メーカー選択' }
+    ];
+
     useEffect(() => {
         const handleScroll = () => setIsScrolled(window.scrollY > 20);
         window.addEventListener('scroll', handleScroll);
@@ -174,22 +168,6 @@ const ManufacturerList = () => {
         });
     };
 
-    const getVehicleTypeLabel = (type) => {
-        const labels = {
-            'truck_2t': '2tトラック',
-            'truck_3t': '3tトラック',
-            'truck_4t': '4tトラック',
-            'truck_10t': '10tトラック',
-            'truck_light_duty': '小型トラック',
-            'truck_medium_duty': '中型トラック',
-            'truck_heavy_duty': '大型トラック',
-            'bus': 'バス',
-            'bus_city': '路線バス',
-            'bus_highway': '高速バス'
-        };
-        return labels[type] || '乗用車';
-    };
-
     // Calculate total stats
     const totalStats = useMemo(() => {
         return manufacturers.reduce((acc, curr) => ({
@@ -212,7 +190,9 @@ const ManufacturerList = () => {
                 backdropFilter: isScrolled ? 'blur(24px)' : 'none',
                 borderBottom: isScrolled ? `1px solid ${theme.palette.divider}` : 'none',
             }}>
-
+                <Box sx={{ maxWidth: '1280px', mx: 'auto' }}>
+                    <Breadcrumbs items={breadcrumbs} scrollable={true} />
+                </Box>
             </Box>
 
             <Box component="main" sx={{ maxWidth: '1280px', mx: 'auto', px: { xs: 2, md: 3 }, pt: 1 }}>

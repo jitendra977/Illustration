@@ -155,7 +155,7 @@ const MobileFilterPanel = ({
         >
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
             <Filter size={20} color={theme.palette.text.secondary} />
-            <Typography variant="h6" sx={{ color: 'text.primary' }}>フィルター</Typography>
+            <Typography variant="h6" sx={{ color: 'text.primary' }}>フィルターf</Typography>
             {activeFilterCount > 0 && (
               <Chip
                 label={activeFilterCount}

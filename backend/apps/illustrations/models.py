@@ -262,7 +262,7 @@ class Illustration(models.Model):
     # Factory is set on creation
     factory = models.ForeignKey(
         Factory,
-        on_delete=models.PROTECT,
+        on_delete=models.SET_NULL,
         related_name="illustrations",
         null=True,
         blank=True,
@@ -375,6 +375,11 @@ class IllustrationFile(models.Model):
             ('other', 'Other'),
         ],
         default='image'
+    )
+    title = models.CharField(
+        max_length=255, 
+        blank=True, 
+        help_text="User-friendly title for the file"
     )
     uploaded_at = models.DateTimeField(auto_now_add=True)
 

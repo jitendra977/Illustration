@@ -141,6 +141,14 @@ const IllustrationCard = ({ illustration, onDelete }) => {
                 {illustration.part_category?.name || illustration.part_category_name}
               </Typography>
             </Box>
+            {(illustration.part_subcategory?.name || illustration.part_subcategory_name) && (
+              <Box display="flex" alignItems="center" gap={0.5}>
+                <Typography variant="caption" fontWeight="800" sx={{ color: 'text.secondary', fontSize: '10px', textTransform: 'uppercase' }}>Subcategory:</Typography>
+                <Typography variant="caption" sx={{ color: 'text.primary', fontWeight: 600 }}>
+                  {illustration.part_subcategory?.name || illustration.part_subcategory_name}
+                </Typography>
+              </Box>
+            )}
           </Stack>
 
           <Stack direction="row" justifyContent="space-between" alignItems="center" mt={2} pt={1.5} sx={{ borderTop: `1px solid ${theme.palette.divider}` }}>

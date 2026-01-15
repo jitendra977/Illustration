@@ -145,12 +145,9 @@ const FilterPanel = ({ onFilterChange, initialFilters = {} }) => {
   const theme = useTheme();
 
   return (
-    <Paper sx={{
-      p: 2,
-      bgcolor: 'background.paper',
-      backgroundImage: 'none',
-      border: `1px solid ${theme.palette.divider}`,
-      borderRadius: 3
+    <Box sx={{
+      p: 0,
+      bgcolor: 'transparent',
     }}>
       <Stack spacing={2}>
         <Stack direction="row" alignItems="center" justifyContent="space-between">
@@ -181,7 +178,7 @@ const FilterPanel = ({ onFilterChange, initialFilters = {} }) => {
           sx={{
             '& .MuiInputLabel-root': { color: 'text.secondary' },
             '& .MuiOutlinedInput-root': {
-              bgcolor: theme.palette.mode === 'dark' ? alpha(theme.palette.zinc[900], 0.5) : alpha(theme.palette.text.primary, 0.03),
+              bgcolor: theme.palette.mode === 'dark' ? alpha(theme.palette.grey[900], 0.5) : theme.palette.background.paper,
               '& fieldset': { borderColor: theme.palette.divider },
               '&:hover fieldset': { borderColor: theme.palette.mode === 'dark' ? alpha(theme.palette.common.white, 0.2) : alpha(theme.palette.common.black, 0.2) },
               '&.Mui-focused fieldset': { borderColor: 'primary.main' }
@@ -205,7 +202,7 @@ const FilterPanel = ({ onFilterChange, initialFilters = {} }) => {
           sx={{
             '& .MuiInputLabel-root': { color: 'text.secondary' },
             '& .MuiOutlinedInput-root': {
-              bgcolor: theme.palette.mode === 'dark' ? alpha(theme.palette.zinc[900], 0.5) : alpha(theme.palette.text.primary, 0.03),
+              bgcolor: theme.palette.mode === 'dark' ? alpha(theme.palette.grey[900], 0.5) : theme.palette.background.paper,
               '& fieldset': { borderColor: theme.palette.divider },
               '&:hover fieldset': { borderColor: theme.palette.mode === 'dark' ? alpha(theme.palette.common.white, 0.2) : alpha(theme.palette.common.black, 0.2) },
               '&.Mui-focused fieldset': { borderColor: 'primary.main' }
@@ -234,7 +231,7 @@ const FilterPanel = ({ onFilterChange, initialFilters = {} }) => {
           sx={{
             '& .MuiInputLabel-root': { color: 'text.secondary' },
             '& .MuiOutlinedInput-root': {
-              bgcolor: theme.palette.mode === 'dark' ? alpha(theme.palette.zinc[900], 0.5) : alpha(theme.palette.text.primary, 0.03),
+              bgcolor: theme.palette.mode === 'dark' ? alpha(theme.palette.grey[900], 0.5) : theme.palette.background.paper,
               '& fieldset': { borderColor: theme.palette.divider },
               '&:hover fieldset': { borderColor: theme.palette.mode === 'dark' ? alpha(theme.palette.common.white, 0.2) : alpha(theme.palette.common.black, 0.2) },
               '&.Mui-focused fieldset': { borderColor: 'primary.main' }
@@ -258,7 +255,7 @@ const FilterPanel = ({ onFilterChange, initialFilters = {} }) => {
           sx={{
             '& .MuiInputLabel-root': { color: 'text.secondary' },
             '& .MuiOutlinedInput-root': {
-              bgcolor: theme.palette.mode === 'dark' ? alpha(theme.palette.zinc[900], 0.5) : alpha(theme.palette.text.primary, 0.03),
+              bgcolor: theme.palette.mode === 'dark' ? alpha(theme.palette.grey[900], 0.5) : theme.palette.background.paper,
               '& fieldset': { borderColor: theme.palette.divider },
               '&:hover fieldset': { borderColor: theme.palette.mode === 'dark' ? alpha(theme.palette.common.white, 0.2) : alpha(theme.palette.common.black, 0.2) },
               '&.Mui-focused fieldset': { borderColor: 'primary.main' }
@@ -282,7 +279,7 @@ const FilterPanel = ({ onFilterChange, initialFilters = {} }) => {
           sx={{
             '& .MuiInputLabel-root': { color: 'text.secondary' },
             '& .MuiOutlinedInput-root': {
-              bgcolor: theme.palette.mode === 'dark' ? alpha(theme.palette.zinc[900], 0.5) : alpha(theme.palette.text.primary, 0.03),
+              bgcolor: theme.palette.mode === 'dark' ? alpha(theme.palette.grey[900], 0.5) : theme.palette.background.paper,
               '& fieldset': { borderColor: theme.palette.divider },
               '&:hover fieldset': { borderColor: theme.palette.mode === 'dark' ? alpha(theme.palette.common.white, 0.2) : alpha(theme.palette.common.black, 0.2) },
               '&.Mui-focused fieldset': { borderColor: 'primary.main' }
@@ -310,7 +307,7 @@ const FilterPanel = ({ onFilterChange, initialFilters = {} }) => {
           sx={{
             '& .MuiInputLabel-root': { color: 'text.secondary' },
             '& .MuiOutlinedInput-root': {
-              bgcolor: theme.palette.mode === 'dark' ? alpha(theme.palette.zinc[900], 0.5) : alpha(theme.palette.text.primary, 0.03),
+              bgcolor: theme.palette.mode === 'dark' ? alpha(theme.palette.grey[900], 0.5) : theme.palette.background.paper,
               '& fieldset': { borderColor: theme.palette.divider },
               '&:hover fieldset': { borderColor: theme.palette.mode === 'dark' ? alpha(theme.palette.common.white, 0.2) : alpha(theme.palette.common.black, 0.2) },
               '&.Mui-focused fieldset': { borderColor: 'primary.main' }
@@ -390,7 +387,7 @@ const FilterPanel = ({ onFilterChange, initialFilters = {} }) => {
                   onDelete={() => handleFilterChange('car_model', '')}
                   sx={{
                     borderRadius: 1.5,
-                    bgcolor: theme.palette.mode === 'dark' ? alpha(theme.palette.zinc[800], 0.5) : theme.palette.action.hover,
+                    bgcolor: theme.palette.mode === 'dark' ? alpha(theme.palette.grey[800], 0.5) : theme.palette.action.hover,
                     color: 'text.primary',
                     '& .MuiChip-deleteIcon': { color: 'text.disabled' }
                   }}
@@ -403,7 +400,7 @@ const FilterPanel = ({ onFilterChange, initialFilters = {} }) => {
                   onDelete={() => handleFilterChange('engine_model', '')}
                   sx={{
                     borderRadius: 1.5,
-                    bgcolor: theme.palette.mode === 'dark' ? alpha(theme.palette.zinc[800], 0.5) : theme.palette.action.hover,
+                    bgcolor: theme.palette.mode === 'dark' ? alpha(theme.palette.grey[800], 0.5) : theme.palette.action.hover,
                     color: 'text.primary',
                     '& .MuiChip-deleteIcon': { color: 'text.disabled' }
                   }}
@@ -416,7 +413,7 @@ const FilterPanel = ({ onFilterChange, initialFilters = {} }) => {
                   onDelete={() => handleFilterChange('part_category', '')}
                   sx={{
                     borderRadius: 1.5,
-                    bgcolor: theme.palette.mode === 'dark' ? alpha(theme.palette.zinc[800], 0.5) : theme.palette.action.hover,
+                    bgcolor: theme.palette.mode === 'dark' ? alpha(theme.palette.grey[800], 0.5) : theme.palette.action.hover,
                     color: 'text.primary',
                     '& .MuiChip-deleteIcon': { color: 'text.disabled' }
                   }}
@@ -429,7 +426,7 @@ const FilterPanel = ({ onFilterChange, initialFilters = {} }) => {
                   onDelete={() => handleFilterChange('part_subcategory', '')}
                   sx={{
                     borderRadius: 1.5,
-                    bgcolor: theme.palette.mode === 'dark' ? alpha(theme.palette.zinc[800], 0.5) : theme.palette.action.hover,
+                    bgcolor: theme.palette.mode === 'dark' ? alpha(theme.palette.grey[800], 0.5) : theme.palette.action.hover,
                     color: 'text.primary',
                     '& .MuiChip-deleteIcon': { color: 'text.disabled' }
                   }}
@@ -442,7 +439,7 @@ const FilterPanel = ({ onFilterChange, initialFilters = {} }) => {
                   onDelete={() => handleFilterChange('factory', '')}
                   sx={{
                     borderRadius: 1.5,
-                    bgcolor: theme.palette.mode === 'dark' ? alpha(theme.palette.zinc[800], 0.5) : theme.palette.action.hover,
+                    bgcolor: theme.palette.mode === 'dark' ? alpha(theme.palette.grey[800], 0.5) : theme.palette.action.hover,
                     color: 'text.primary',
                     '& .MuiChip-deleteIcon': { color: 'text.disabled' }
                   }}
@@ -455,7 +452,7 @@ const FilterPanel = ({ onFilterChange, initialFilters = {} }) => {
                   onDelete={() => handleFilterChange('user', '')}
                   sx={{
                     borderRadius: 1.5,
-                    bgcolor: theme.palette.mode === 'dark' ? alpha(theme.palette.zinc[800], 0.5) : theme.palette.action.hover,
+                    bgcolor: theme.palette.mode === 'dark' ? alpha(theme.palette.grey[800], 0.5) : theme.palette.action.hover,
                     color: 'text.primary',
                     '& .MuiChip-deleteIcon': { color: 'text.disabled' }
                   }}
@@ -465,7 +462,7 @@ const FilterPanel = ({ onFilterChange, initialFilters = {} }) => {
           </Box>
         )}
       </Stack>
-    </Paper>
+    </Box>
   );
 };
 

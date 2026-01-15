@@ -9,7 +9,8 @@ import {
     IconButton
 } from '@mui/material';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
-import { partSubCategoryAPI, partCategoryAPI, carModelAPI } from '../../api/illustrations';
+import Breadcrumbs from '../../components/navigation/Breadcrumbs';
+import { partSubCategoryAPI, partCategoryAPI, carModelAPI, manufacturerAPI, engineModelAPI } from '../../api/illustrations';
 import {
     Search,
     Package,
@@ -162,7 +163,7 @@ const CategorySubcategories = () => {
                     newContext.engine = { id: state.engineId, model_code: state.engineCode };
                 }
 
-                // Resolve Car
+                // Resolve Car & recover parent context if missing
                 let currentCar = null;
                 if (state.carName) {
                     newContext.car = { id: state.carId, name: state.carName };
@@ -173,10 +174,40 @@ const CategorySubcategories = () => {
                         newContext.car = car;
                         currentCar = car;
                     } else {
-                        newContext.car = { id: carSlug };
-                        currentCar = newContext.car;
+                        // We need the full car object to retrieve parents
+                        const allCars = await carModelAPI.getAll();
+                        const results = allCars.results || allCars;
+                        const car = results.find(c => c.id == carSlug);
+                        newContext.car = car;
+                        currentCar = car;
                     }
                 }
+
+                // Recover Manufacturer and Engine from Current Car if missing
+                if (currentCar) {
+                    if (!newContext.manufacturer && currentCar.manufacturer) {
+                        if (typeof currentCar.manufacturer === 'object') {
+                            newContext.manufacturer = currentCar.manufacturer;
+                        } else {
+                            try {
+                                const m = await manufacturerAPI.getById(currentCar.manufacturer);
+                                newContext.manufacturer = m;
+                            } catch (e) { console.warn('Failed to fetch manufacturer', e); }
+                        }
+                    }
+
+                    if (!newContext.engine && currentCar.engine_model) {
+                        if (typeof currentCar.engine_model === 'object') {
+                            newContext.engine = currentCar.engine_model;
+                        } else {
+                            try {
+                                const e = await engineModelAPI.getById(currentCar.engine_model);
+                                newContext.engine = e;
+                            } catch (err) { console.warn('Failed to fetch engine', err); }
+                        }
+                    }
+                }
+
                 setContextData(newContext);
 
                 // Fetch Subcategories with Context
@@ -229,6 +260,15 @@ const CategorySubcategories = () => {
         return subcategories.reduce((acc, curr) => acc + (curr.illustration_count || 0), 0);
     }, [subcategories]);
 
+    const breadcrumbs = [
+        { label: 'ホーム', path: '/' },
+        { label: 'メーカー選択', path: '/manufacturers' },
+        { label: contextData.manufacturer?.name || 'メーカー', path: contextData.manufacturer ? `/manufacturers/${contextData.manufacturer.id}/engines` : null },
+        { label: contextData.engine?.model_code || contextData.engine?.name || 'エンジン', path: contextData.engine ? `/engines/${contextData.engine.id}/cars` : null },
+        { label: contextData.car?.name || '車種', path: contextData.car ? `/cars/${contextData.car.id || contextData.car.slug}/categories` : null },
+        { label: category?.name || 'カテゴリー' }
+    ];
+
     return (
         <Box sx={{ minHeight: '100vh', bgcolor: 'background.default', color: 'text.primary', fontFamily: 'Inter, sans-serif', pb: { xs: 12, md: 5 } }}>
             {/* Sticky Header */}
@@ -243,24 +283,8 @@ const CategorySubcategories = () => {
                 backdropFilter: isScrolled ? 'blur(24px)' : 'none',
                 borderBottom: isScrolled ? `1px solid ${theme.palette.divider}` : 'none',
             }}>
-                <Box sx={{ maxWidth: '1280px', mx: 'auto', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                    <IconButton onClick={handleBack} sx={{ color: 'text.secondary', '&:hover': { bgcolor: alpha(theme.palette.primary.main, 0.05), color: 'primary.main' } }}>
-                        <ArrowLeft size={20} />
-                    </IconButton>
-
-                    <Typography sx={{
-                        position: 'absolute',
-                        left: '50%',
-                        transform: 'translateX(-50%)',
-                        fontWeight: 700,
-                        fontSize: { xs: '1.125rem', md: '1.25rem' },
-                        opacity: isScrolled ? 1 : 0,
-                        transition: 'all 0.3s',
-                        transform: isScrolled ? 'translate(-50%, 0)' : 'translate(-50%, -10px)',
-                        pointerEvents: 'none'
-                    }}>
-                        {category?.name}
-                    </Typography>
+                <Box sx={{ maxWidth: '1280px', mx: 'auto' }}>
+                    <Breadcrumbs items={breadcrumbs} scrollable={true} />
                 </Box>
             </Box>
 

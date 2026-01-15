@@ -440,6 +440,36 @@ const MobileHome = () => {
                             }}
                           />
                         )}
+                        {(ill.part_category_name || ill.part_category?.name) && (
+                          <Chip
+                            label={ill.part_category_name || ill.part_category?.name}
+                            size="small"
+                            sx={{
+                              height: 22,
+                              fontSize: '0.7rem',
+                              fontWeight: 700,
+                              bgcolor: alpha(theme.palette.info.main, 0.1),
+                              color: theme.palette.info.main,
+                              border: `1px solid ${alpha(theme.palette.info.main, 0.2)}`,
+                              '& .MuiChip-label': { px: 1.5 }
+                            }}
+                          />
+                        )}
+                        {(ill.part_subcategory_name || ill.part_subcategory?.name) && (
+                          <Chip
+                            label={ill.part_subcategory_name || ill.part_subcategory?.name}
+                            size="small"
+                            sx={{
+                              height: 22,
+                              fontSize: '0.7rem',
+                              fontWeight: 700,
+                              bgcolor: alpha(theme.palette.secondary.main, 0.1),
+                              color: theme.palette.secondary.main,
+                              border: `1px solid ${alpha(theme.palette.secondary.main, 0.2)}`,
+                              '& .MuiChip-label': { px: 1.5 }
+                            }}
+                          />
+                        )}
                       </Box>
                     </Stack>
 
