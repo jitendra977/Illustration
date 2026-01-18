@@ -66,24 +66,26 @@ const IllustrationList = ({ illustrations, onDelete, onView, onEdit }) => {
   }
 
   return (
-    <Grid container spacing={2}>
-      {illustrations.map((illustration, index) => (
-        <Grid item xs={12} sm={6} md={4} lg={3} key={illustration.id}>
-          <Fade in timeout={150 + index * 50}>
-            <Box>
-              <IllustrationListCard
-                illustration={illustration}
-                onClick={() => handleRowClick(illustration)}
-                toggleFavorite={() => { }} // FavoriteButton handles itself or through state
-                onEdit={onEdit}
-                onDelete={onDelete}
-                onDownload={handleDownload}
-              />
-            </Box>
-          </Fade>
-        </Grid>
-      ))}
-    </Grid>
+    <Box sx={{ maxWidth: 800, mx: 'auto' }}>
+      <Grid container spacing={2}>
+        {illustrations.map((illustration, index) => (
+          <Grid item xs={12} key={illustration.id}>
+            <Fade in timeout={150 + index * 50}>
+              <Box>
+                <IllustrationListCard
+                  illustration={illustration}
+                  onClick={() => handleRowClick(illustration)}
+                  toggleFavorite={() => { }} // FavoriteButton handles itself or through state
+                  onEdit={onEdit}
+                  onDelete={onDelete}
+                  onDownload={handleDownload}
+                />
+              </Box>
+            </Fade>
+          </Grid>
+        ))}
+      </Grid>
+    </Box>
   );
 };
 

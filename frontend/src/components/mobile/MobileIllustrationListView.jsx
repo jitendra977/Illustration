@@ -466,25 +466,27 @@ const MobileIllustrationListView = ({
                 </Fade>
             )}
 
-            {/* Results - responsive Grid View */}
+            {/* Results - single column Grid View */}
             {!loading && !error && illustrations.length > 0 && (
-                <Grid container spacing={2}>
-                    {illustrations.map((ill, i) => (
-                        <Grid item xs={12} sm={6} md={4} lg={3} key={ill.id}>
-                            <Fade in timeout={150 + i * 25}>
-                                <Box>
-                                    <IllustrationListCard
-                                        illustration={ill}
-                                        toggleFavorite={toggleFavorite}
-                                        favorites={favorites}
-                                        onClick={() => handleCardClick(ill)}
-                                        theme={theme}
-                                    />
-                                </Box>
-                            </Fade>
-                        </Grid>
-                    ))}
-                </Grid>
+                <Box sx={{ maxWidth: 800, mx: 'auto' }}>
+                    <Grid container spacing={2}>
+                        {illustrations.map((ill, i) => (
+                            <Grid item xs={12} key={ill.id}>
+                                <Fade in timeout={150 + i * 25}>
+                                    <Box>
+                                        <IllustrationListCard
+                                            illustration={ill}
+                                            toggleFavorite={toggleFavorite}
+                                            favorites={favorites}
+                                            onClick={() => handleCardClick(ill)}
+                                            theme={theme}
+                                        />
+                                    </Box>
+                                </Fade>
+                            </Grid>
+                        ))}
+                    </Grid>
+                </Box>
             )}
 
             {/* create illustration button */}
