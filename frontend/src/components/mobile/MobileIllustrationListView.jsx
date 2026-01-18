@@ -554,58 +554,69 @@ const MobileIllustrationListView = ({
                                             }}
                                         >
                                             <TableCell>
-                                                {fileType === 'image' ? (
-                                                    <Avatar
-                                                        variant="rounded"
-                                                        src={previewUrl}
-                                                        sx={{
-                                                            width: 50,
-                                                            height: 50,
-                                                            bgcolor: theme.palette.mode === 'dark' ? 'zinc.800' : 'action.hover',
-                                                            border: `1px solid ${theme.palette.divider}`
-                                                        }}
-                                                    >
-                                                        <ImageIcon />
-                                                    </Avatar>
-                                                ) : (
-                                                    <Box
-                                                        sx={{
-                                                            width: 50,
-                                                            height: 50,
-                                                            borderRadius: 2,
-                                                            display: 'flex',
-                                                            alignItems: 'center',
-                                                            justifyContent: 'center',
-                                                            bgcolor: fileType === 'pdf' ? alpha(theme.palette.error.main, 0.1) : alpha(theme.palette.primary.main, 0.1),
-                                                            border: `1px solid ${fileType === 'pdf' ? alpha(theme.palette.error.main, 0.2) : theme.palette.divider}`,
-                                                            color: fileType === 'pdf' ? 'error.main' : 'primary.main'
-                                                        }}
-                                                    >
-                                                        {getFileIcon(fileType, { fontSize: 32 })}
-                                                    </Box>
-                                                )}
+                                                <Box sx={{ position: 'relative', width: 50, height: 50 }}>
+                                                    {fileType === 'image' ? (
+                                                        <Avatar
+                                                            variant="rounded"
+                                                            src={previewUrl}
+                                                            sx={{
+                                                                width: 50,
+                                                                height: 50,
+                                                                bgcolor: theme.palette.mode === 'dark' ? 'zinc.800' : 'action.hover',
+                                                                border: `1px solid ${theme.palette.divider}`
+                                                            }}
+                                                        >
+                                                            <ImageIcon />
+                                                        </Avatar>
+                                                    ) : (
+                                                        <Box
+                                                            sx={{
+                                                                width: 50,
+                                                                height: 50,
+                                                                borderRadius: 2,
+                                                                display: 'flex',
+                                                                alignItems: 'center',
+                                                                justifyContent: 'center',
+                                                                bgcolor: fileType === 'pdf' ? alpha(theme.palette.error.main, 0.1) : alpha(theme.palette.primary.main, 0.1),
+                                                                border: `1px solid ${fileType === 'pdf' ? alpha(theme.palette.error.main, 0.2) : theme.palette.divider}`,
+                                                                color: fileType === 'pdf' ? 'error.main' : 'primary.main'
+                                                            }}
+                                                        >
+                                                            {getFileIcon(fileType, { fontSize: 32 })}
+                                                        </Box>
+                                                    )}
+                                                    {ill.file_count > 0 && (
+                                                        <Box
+                                                            sx={{
+                                                                position: 'absolute',
+                                                                top: -6,
+                                                                right: -6,
+                                                                minWidth: 20,
+                                                                height: 20,
+                                                                borderRadius: '10px',
+                                                                bgcolor: 'error.main',
+                                                                color: 'white',
+                                                                fontSize: '10px',
+                                                                fontWeight: 900,
+                                                                display: 'flex',
+                                                                alignItems: 'center',
+                                                                justifyContent: 'center',
+                                                                px: 0.5,
+                                                                boxShadow: `0 2px 4px ${alpha(theme.palette.error.main, 0.3)}`,
+                                                                border: `2px solid ${theme.palette.background.paper}`,
+                                                                zIndex: 2
+                                                            }}
+                                                        >
+                                                            {ill.file_count}
+                                                        </Box>
+                                                    )}
+                                                </Box>
                                             </TableCell>
                                             <TableCell>
                                                 <Stack direction="row" alignItems="center" spacing={1}>
                                                     <Typography variant="subtitle2" fontWeight={700}>
                                                         {ill.title}
                                                     </Typography>
-                                                    {ill.file_count > 0 && (
-                                                        <Box
-                                                            sx={{
-                                                                bgcolor: alpha(theme.palette.primary.main, 0.1),
-                                                                color: 'primary.main',
-                                                                px: 0.8,
-                                                                py: 0.2,
-                                                                borderRadius: 1,
-                                                                fontSize: '0.7rem',
-                                                                fontWeight: 700,
-                                                                border: `1px solid ${alpha(theme.palette.primary.main, 0.2)}`
-                                                            }}
-                                                        >
-                                                            {ill.file_count}
-                                                        </Box>
-                                                    )}
                                                 </Stack>
                                                 <Typography variant="caption" color="text.secondary" sx={{ display: 'block', maxWidth: 300, noWrap: true, overflow: 'hidden', textOverflow: 'ellipsis' }}>
                                                     {ill.description || 'No description'}
