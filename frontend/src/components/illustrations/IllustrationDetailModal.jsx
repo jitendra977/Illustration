@@ -44,7 +44,6 @@ const IllustrationDetailModal = ({
     onEdit
 }) => {
     const { user } = useAuth();
-    const canEdit = user?.is_staff || user?.is_superuser || (user && currentIllustration && user.id === currentIllustration.user);
     const theme = useTheme();
     const [deleting, setDeleting] = useState(false);
     const [error, setError] = useState(null);
@@ -90,6 +89,8 @@ const IllustrationDetailModal = ({
     }, [open, illustration?.id]);
 
     const currentIllustration = fullIllustration || illustration;
+
+    const canEdit = user?.is_staff || user?.is_superuser || (user && currentIllustration && user.id === currentIllustration.user);
 
     if (!currentIllustration) return null;
 

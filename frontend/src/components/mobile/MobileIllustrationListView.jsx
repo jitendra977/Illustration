@@ -14,7 +14,8 @@ import {
     alpha,
     Button,
     Badge,
-    Backdrop
+    Backdrop,
+    Grid
 } from '@mui/material';
 import {
     Search,
@@ -465,23 +466,25 @@ const MobileIllustrationListView = ({
                 </Fade>
             )}
 
-            {/* Results - List View */}
+            {/* Results - responsive Grid View */}
             {!loading && !error && illustrations.length > 0 && (
-                <Stack spacing={2}>
+                <Grid container spacing={2}>
                     {illustrations.map((ill, i) => (
-                        <Fade key={ill.id} in timeout={150 + i * 25}>
-                            <Box>
-                                <IllustrationListCard
-                                    illustration={ill}
-                                    toggleFavorite={toggleFavorite}
-                                    favorites={favorites}
-                                    onClick={() => handleCardClick(ill)}
-                                    theme={theme}
-                                />
-                            </Box>
-                        </Fade>
+                        <Grid item xs={12} sm={6} md={4} lg={3} key={ill.id}>
+                            <Fade in timeout={150 + i * 25}>
+                                <Box>
+                                    <IllustrationListCard
+                                        illustration={ill}
+                                        toggleFavorite={toggleFavorite}
+                                        favorites={favorites}
+                                        onClick={() => handleCardClick(ill)}
+                                        theme={theme}
+                                    />
+                                </Box>
+                            </Fade>
+                        </Grid>
                     ))}
-                </Stack>
+                </Grid>
             )}
 
             {/* create illustration button */}

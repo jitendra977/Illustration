@@ -451,12 +451,13 @@ class IllustrationFileViewSet(viewsets.ModelViewSet):
 
     def get_permissions(self):
         """
-        All actions require verified user
-        Write operations also require verification (redundant but explicit)
+        Permissions for IllustrationFile actions
         """
-        if self.action in ['create', 'update', 'partial_update', 'destroy']:
-            return [IsVerifiedUser()]
-        return [IsVerifiedUser()]
+        if self.action == 'preview':
+            return [AllowAny()]
+        if self.action in ['create', 'update', 'partial_update', 'destroy', 'download']:
+            return [IsAuthenticatedAndActive(), IsVerifiedUser()]
+        return [IsAuthenticatedAndActive()]
 
     def get_queryset(self):
         if getattr(self, 'swagger_fake_view', False):
@@ -470,14 +471,15 @@ class IllustrationFileViewSet(viewsets.ModelViewSet):
 
         user = self.request.user
 
-        # Not authenticated - no access
+        # ⭐ Allow access to preview for everyone
+        if self.action == 'preview':
+            return qs
+
+        # Not authenticated - no access for other actions
         if not user.is_authenticated:
             return qs.none()
         
         # Verified users (including staff) can see all files
-        # We implicitly check active status via IsVerifiedUser permission class,
-        # but for filtering, we assume if they are here, they have permission.
-        # Ideally, we allow access to everything for verified users.
         if user.is_verified or user.is_staff:
             return qs
         
@@ -488,8 +490,8 @@ class IllustrationFileViewSet(viewsets.ModelViewSet):
     def preview(self, request, pk=None):
         """Preview file inline in browser"""
         try:
-            # get_object() will automatically apply queryset filtering
-            file_obj = self.get_object()
+            # We use the full queryset for preview to bypass restrictions
+            file_obj = IllustrationFile.objects.get(pk=pk)
             
             if not file_obj.file:
                 return Response(
@@ -508,8 +510,14 @@ class IllustrationFileViewSet(viewsets.ModelViewSet):
             
             # Check if file exists
             if not os.path.exists(file_path):
+                print(f"❌ Preview error: File does not exist at {file_path}")
                 return Response(
-                    {'error': 'ファイルが見つかりません'},
+                    {
+                        'error': 'ファイルがサーバー上に見つかりません',
+                        'detail': f'Path not found: {file_path}',
+                        'file_id': pk,
+                        'illustration_id': file_obj.illustration_id
+                    },
                     status=status.HTTP_404_NOT_FOUND
                 )
             
@@ -527,23 +535,18 @@ class IllustrationFileViewSet(viewsets.ModelViewSet):
             # Open file
             try:
                 file_handle = open(file_path, 'rb')
-            except PermissionError:
+            except PermissionError as e:
+                print(f"❌ Preview error: Permission denied for {file_path}: {str(e)}")
                 return Response(
-                    {'error': 'ファイルの読み取り権限がありません'},
+                    {'error': 'ファイルの読み取り権限がありません', 'detail': str(e)},
                     status=status.HTTP_403_FORBIDDEN
                 )
             
             # Create response for inline viewing
-            if file_size > 10 * 1024 * 1024:  # 10MB
-                response = StreamingHttpResponse(
-                    file_handle,
-                    content_type=content_type
-                )
-            else:
-                response = FileResponse(
-                    file_handle,
-                    content_type=content_type
-                )
+            response = FileResponse(
+                file_handle,
+                content_type=content_type
+            )
             
             # Set inline disposition
             response['Content-Disposition'] = f'inline; filename="{original_name}"'
@@ -552,24 +555,22 @@ class IllustrationFileViewSet(viewsets.ModelViewSet):
             
             # CORS headers
             origin = request.META.get('HTTP_ORIGIN', '')
-            allowed_origins = ['https://yaw.nishanaweb.cloud', 'https://api.yaw.nishanaweb.cloud']
-            
-            if origin in allowed_origins:
-                response['Access-Control-Allow-Origin'] = origin
-                response['Access-Control-Allow-Credentials'] = 'true'
-                response['Access-Control-Expose-Headers'] = 'Content-Disposition, Content-Length'
+            response['Access-Control-Allow-Origin'] = origin if origin else '*'
+            response['Access-Control-Allow-Credentials'] = 'true'
+            response['Access-Control-Expose-Headers'] = 'Content-Disposition, Content-Length'
             
             return response
             
         except IllustrationFile.DoesNotExist:
+            print(f"❌ Preview error: IllustrationFile with PK {pk} does not exist")
             return Response(
-                {'error': 'ファイルが見つかりません（アクセス権がないか存在しません）'},
+                {'error': 'ファイルレコードが見つかりません', 'pk': pk},
                 status=status.HTTP_404_NOT_FOUND
             )
         except Exception as e:
             import traceback
             error_trace = traceback.format_exc()
-            print(f"Preview error: {str(e)}")
+            print(f"❌ Preview error: {str(e)}")
             print(f"Full traceback:\n{error_trace}")
             
             return Response(
@@ -601,8 +602,14 @@ class IllustrationFileViewSet(viewsets.ModelViewSet):
             
             # Check if file exists
             if not os.path.exists(file_path):
+                print(f"❌ Download error: File does not exist at {file_path}")
                 return Response(
-                    {'error': f'ファイルが見つかりません'},
+                    {
+                        'error': 'ファイルがサーバー上に見つかりません',
+                        'detail': f'Path not found: {file_path}',
+                        'file_id': pk,
+                        'illustration_id': file_obj.illustration_id
+                    },
                     status=status.HTTP_404_NOT_FOUND
                 )
             

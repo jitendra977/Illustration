@@ -358,61 +358,64 @@ const IllustrationListCard = ({ illustration, toggleFavorite, favorites = [], on
             )}
           </Stack>
 
-          {canModify() && (
-            <Stack direction="row" spacing={0.5}>
-              {onDownload && (
-                <IconButton
-                  size="small"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    onDownload(e, illustration);
-                  }}
-                  sx={{
-                    p: 0.5,
-                    color: 'success.main',
-                    bgcolor: alpha(theme.palette.success.main, 0.1),
-                    '&:hover': { bgcolor: alpha(theme.palette.success.main, 0.2) }
-                  }}
-                >
-                  <Download size={14} />
-                </IconButton>
-              )}
-              {onEdit && (
-                <IconButton
-                  size="small"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    onEdit(illustration);
-                  }}
-                  sx={{
-                    p: 0.5,
-                    color: 'info.main',
-                    bgcolor: alpha(theme.palette.info.main, 0.1),
-                    '&:hover': { bgcolor: alpha(theme.palette.info.main, 0.2) }
-                  }}
-                >
-                  <Edit2 size={14} />
-                </IconButton>
-              )}
-              {onDelete && (
-                <IconButton
-                  size="small"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    onDelete(illustration.id);
-                  }}
-                  sx={{
-                    p: 0.5,
-                    color: 'error.main',
-                    bgcolor: alpha(theme.palette.error.main, 0.1),
-                    '&:hover': { bgcolor: alpha(theme.palette.error.main, 0.2) }
-                  }}
-                >
-                  <Trash2 size={14} />
-                </IconButton>
-              )}
-            </Stack>
-          )}
+          <Stack direction="row" spacing={0.5}>
+            {onDownload && (
+              <IconButton
+                size="small"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onDownload(e, illustration);
+                }}
+                sx={{
+                  p: 0.5,
+                  color: 'success.main',
+                  bgcolor: alpha(theme.palette.success.main, 0.1),
+                  '&:hover': { bgcolor: alpha(theme.palette.success.main, 0.2) }
+                }}
+              >
+                <Download size={14} />
+              </IconButton>
+            )}
+
+            {canModify() && (
+              <>
+                {onEdit && (
+                  <IconButton
+                    size="small"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onEdit(illustration);
+                    }}
+                    sx={{
+                      p: 0.5,
+                      color: 'info.main',
+                      bgcolor: alpha(theme.palette.info.main, 0.1),
+                      '&:hover': { bgcolor: alpha(theme.palette.info.main, 0.2) }
+                    }}
+                  >
+                    <Edit2 size={14} />
+                  </IconButton>
+                )}
+                {onDelete && (
+                  <IconButton
+                    size="small"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onDelete(illustration.id);
+                    }}
+                    sx={{
+                      p: 0.5,
+                      color: 'error.main',
+                      bgcolor: alpha(theme.palette.error.main, 0.1),
+                      '&:hover': { bgcolor: alpha(theme.palette.error.main, 0.2) }
+                    }}
+                  >
+                    <Trash2 size={14} />
+                  </IconButton>
+                )}
+              </>
+            )}
+          </Stack>
         </Stack>
       </Box>
     </Box>

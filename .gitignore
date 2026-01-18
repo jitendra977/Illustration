@@ -117,3 +117,7 @@ backend/.env.dev
 frontend/.env
 frontend/.env.local
 frontend/.env.dev
+
+# Production/Backup Media
+backend/media_production/
+*.pdf

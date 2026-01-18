@@ -19,6 +19,8 @@ FRONTEND_URL = os.getenv("FRONTEND_URL", "http://illustration.local")
 ALLOWED_HOSTS = [
     'api.yaw.nishanaweb.cloud',
     'yaw.nishanaweb.cloud',
+    'nishanaweb.cloud',
+    '.nishanaweb.cloud',
     'api.illustration.local',
     'illustration.local',
     'yaw-backend',
@@ -28,6 +30,11 @@ ALLOWED_HOSTS = [
     '192.168.0.92',
     '0.0.0.0',
 ]
+
+# Append extra hosts from environment variable
+if os.getenv("ALLOWED_HOSTS_EXTRA"):
+    extra_hosts = [host.strip() for host in os.getenv("ALLOWED_HOSTS_EXTRA").split(",")]
+    ALLOWED_HOSTS += extra_hosts
 
 # ============================================
 # PROXY CONFIGURATION (for Nginx Proxy Manager)
@@ -218,8 +225,13 @@ SIMPLE_JWT = {
 }
 
 
-CORS_ALLOW_ALL_ORIGINS = True
+CORS_ALLOW_ALL_ORIGINS = os.getenv("CORS_ALLOW_ALL_ORIGINS", "True") == "True"
 CORS_ALLOWED_ORIGINS = []
+
+# Load origins from environment variable
+if os.getenv("CORS_ALLOWED_ORIGINS"):
+    origins = [origin.strip() for origin in os.getenv("CORS_ALLOWED_ORIGINS").split(",")]
+    CORS_ALLOWED_ORIGINS += origins
 
 # Append extra origins from environment variable
 if os.getenv("CORS_ALLOWED_ORIGINS_EXTRA"):
@@ -258,15 +270,18 @@ CORS_EXPOSE_HEADERS = [
     'content-length',
 ]
 
-# ============================================
-# CSRF CONFIGURATION
-# ============================================
 CSRF_TRUSTED_ORIGINS = [
     'http://illustration.local',
     'http://api.illustration.local',
     'https://yaw.nishanaweb.cloud',
     'https://api.yaw.nishanaweb.cloud',
+    'https://nishanaweb.cloud',
 ]
+
+# Append origins from environment variable
+if os.getenv("CSRF_TRUSTED_ORIGINS"):
+    origins = [origin.strip() for origin in os.getenv("CSRF_TRUSTED_ORIGINS").split(",")]
+    CSRF_TRUSTED_ORIGINS += origins
 
 # Append extra CSRF origins from environment variable
 if os.getenv("CSRF_TRUSTED_ORIGINS_EXTRA"):
