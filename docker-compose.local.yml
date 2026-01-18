@@ -82,6 +82,7 @@ services:
       - "5173:5173" # ✅ Vite dev server port
     volumes:
       - ./frontend:/app
+      - /app/node_modules
     env_file:
       - ./frontend/.env.local # ✅ Load .env.local
     depends_on:
