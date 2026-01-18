@@ -30,8 +30,8 @@ const IllustrationListCard = ({ illustration, toggleFavorite, favorites = [], on
             src={previewUrl}
             alt={illustration.title}
             sx={{
-              width: 80,
-              height: 80,
+              width: { xs: 80, sm: 100 },
+              height: { xs: 80, sm: 100 },
               objectFit: 'cover',
               borderRadius: 2,
               bgcolor: theme.palette.mode === 'dark' ? 'zinc.900' : 'action.hover',
@@ -157,8 +157,8 @@ const IllustrationListCard = ({ illustration, toggleFavorite, favorites = [], on
     Thumbnail = (
       <Box sx={{ position: 'relative' }}>
         <Box sx={{
-          width: 80,
-          height: 80,
+          width: { xs: 80, sm: 100 },
+          height: { xs: 80, sm: 100 },
           borderRadius: 2,
           bgcolor: theme.palette.mode === 'dark' ? 'zinc.900' : 'action.hover',
           border: `1px solid ${theme.palette.mode === 'dark' ? alpha(theme.palette.common.white, 0.05) : theme.palette.divider}`,
@@ -169,33 +169,35 @@ const IllustrationListCard = ({ illustration, toggleFavorite, favorites = [], on
           color: 'text.disabled',
           gap: 0.5
         }}>
-          <File size={24} />
-          <Typography variant="caption" sx={{ fontSize: '10px' }}>NO FILE</Typography>
+          <File size={28} />
+          <Typography variant="caption" sx={{ fontSize: '11px' }}>NO FILE</Typography>
         </Box>
-        {illustration.file_count > 0 && (
-          <Box sx={{
-            position: 'absolute',
-            top: -6,
-            right: -6,
-            minWidth: 20,
-            height: 20,
-            borderRadius: '10px',
-            bgcolor: 'error.main',
-            color: 'white',
-            fontSize: '10px',
-            fontWeight: 900,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            px: 0.5,
-            boxShadow: `0 4px 8px ${alpha(theme.palette.error.main, 0.3)}`,
-            border: `2px solid ${theme.palette.background.paper}`,
-            zIndex: 2
-          }}>
-            {illustration.file_count}
-          </Box>
-        )}
-      </Box>
+        {
+          illustration.file_count > 0 && (
+            <Box sx={{
+              position: 'absolute',
+              top: -6,
+              right: -6,
+              minWidth: 20,
+              height: 20,
+              borderRadius: '10px',
+              bgcolor: 'error.main',
+              color: 'white',
+              fontSize: '10px',
+              fontWeight: 900,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              px: 0.5,
+              boxShadow: `0 4px 8px ${alpha(theme.palette.error.main, 0.3)}`,
+              border: `2px solid ${theme.palette.background.paper}`,
+              zIndex: 2
+            }}>
+              {illustration.file_count}
+            </Box>
+          )
+        }
+      </Box >
     );
   }
 

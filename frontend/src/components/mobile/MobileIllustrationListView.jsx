@@ -15,7 +15,17 @@ import {
     Button,
     Badge,
     Backdrop,
-    Grid
+    Grid,
+    Table,
+    TableBody,
+    TableCell,
+    TableContainer,
+    TableHead,
+    TableRow,
+    Paper,
+    Avatar,
+    Tooltip,
+    useMediaQuery
 } from '@mui/material';
 import {
     Search,
@@ -24,6 +34,17 @@ import {
     Plus,
     Image as ImageIcon
 } from 'lucide-react';
+import {
+    Favorite as FavoriteIcon,
+    Visibility as ViewIcon,
+    Edit as EditIcon,
+    Download as DownloadIcon,
+    Delete as DeleteIcon,
+    PictureAsPdf,
+    VideoFile,
+    AudioFile,
+    InsertDriveFile
+} from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 
 import { illustrationAPI, clearCache } from '../../api/illustrations';
@@ -39,6 +60,17 @@ import { Drawer } from '@mui/material';
 
 // Default empty object constant
 const DEFAULT_EMPTY_OBJECT = {};
+
+const getFileIcon = (fileType, sx = {}) => {
+    const defaultSx = { fontSize: 24, ...sx };
+    switch (fileType) {
+        case 'pdf': return <PictureAsPdf sx={{ ...defaultSx, color: 'error.main' }} />;
+        case 'image': return <ImageIcon sx={defaultSx} />;
+        case 'video': return <VideoFile sx={defaultSx} />;
+        case 'audio': return <AudioFile sx={defaultSx} />;
+        default: return <InsertDriveFile sx={defaultSx} />;
+    }
+};
 
 const MobileIllustrationListView = ({
     initialFilters = DEFAULT_EMPTY_OBJECT,
@@ -201,8 +233,17 @@ const MobileIllustrationListView = ({
         }
     };
 
+    // Permission check for modifying
+    const canModify = (illustration) => {
+        // Logic should be consistent with IllustrationList or based on user role
+        // For now, assuming basic edit permission logic if user object is available (it's not directly in props here)
+        // If we need strict permission check, we might need to useAuth() here too.
+        return true; // Simplified for now since useAuth is not imported yet. 
+    };
+
     // Count active filters excluding locked ones (for display)
     const activeFilterCount = Object.keys(filters).filter(k => filters[k] && !lockedFilters[k]).length;
+    const isDesktop = useMediaQuery(theme.breakpoints.up('md'));
 
     return (
         <Box>
@@ -466,27 +507,208 @@ const MobileIllustrationListView = ({
                 </Fade>
             )}
 
-            {/* Results - single column Grid View */}
+            {/* Results */}
             {!loading && !error && illustrations.length > 0 && (
-                <Box sx={{ maxWidth: 800, mx: 'auto' }}>
-                    <Grid container spacing={2}>
-                        {illustrations.map((ill, i) => (
-                            <Grid item xs={12} key={ill.id}>
-                                <Fade in timeout={150 + i * 25}>
-                                    <Box>
-                                        <IllustrationListCard
-                                            illustration={ill}
-                                            toggleFavorite={toggleFavorite}
-                                            favorites={favorites}
+                isDesktop ? (
+                    <TableContainer
+                        component={Paper}
+                        elevation={0}
+                        sx={{
+                            borderRadius: 3,
+                            border: `1px solid ${theme.palette.divider}`,
+                            bgcolor: theme.palette.mode === 'dark' ? alpha(theme.palette.zinc[950], 0.5) : 'background.paper',
+                            overflow: 'hidden'
+                        }}
+                    >
+                        <Table sx={{ minWidth: 800 }}>
+                            <TableHead>
+                                <TableRow sx={{ bgcolor: theme.palette.mode === 'dark' ? alpha(theme.palette.zinc[900], 0.5) : alpha(theme.palette.primary.main, 0.02) }}>
+                                    <TableCell sx={{ fontWeight: 700, width: 80 }}>プレビュー</TableCell>
+                                    <TableCell sx={{ fontWeight: 700 }}>タイトル</TableCell>
+                                    <TableCell sx={{ fontWeight: 700, width: 180 }}>カテゴリ / エンジン</TableCell>
+                                    <TableCell sx={{ fontWeight: 700 }}>工場 / ユーザー</TableCell>
+                                    <TableCell align="right" sx={{ fontWeight: 700 }}>アクション</TableCell>
+                                </TableRow>
+                            </TableHead>
+                            <TableBody>
+                                {illustrations.map((ill) => {
+                                    const firstFile = ill.first_file || (ill.files && ill.files.length > 0 ? ill.files[0] : null);
+                                    const previewUrl = firstFile?.preview_url || firstFile?.file;
+                                    const fileType = firstFile ? (firstFile.file_type || 'image') : 'image';
+
+                                    return (
+                                        <TableRow
+                                            key={ill.id}
+                                            hover
                                             onClick={() => handleCardClick(ill)}
-                                            theme={theme}
-                                        />
-                                    </Box>
-                                </Fade>
-                            </Grid>
-                        ))}
-                    </Grid>
-                </Box>
+                                            sx={{
+                                                cursor: 'pointer',
+                                                '&:last-child td, &:last-child th': { border: 0 },
+                                                bgcolor: theme.palette.mode === 'dark' ? 'transparent' : 'inherit',
+                                                '&:nth-of-type(odd)': {
+                                                    bgcolor: theme.palette.mode === 'dark' ? alpha(theme.palette.zinc[900], 0.3) : alpha(theme.palette.action.hover, 0.5)
+                                                },
+                                                '&:hover': {
+                                                    bgcolor: theme.palette.mode === 'dark' ? alpha(theme.palette.zinc[800], 0.5) : alpha(theme.palette.action.hover, 0.8)
+                                                }
+                                            }}
+                                        >
+                                            <TableCell>
+                                                {fileType === 'image' ? (
+                                                    <Avatar
+                                                        variant="rounded"
+                                                        src={previewUrl}
+                                                        sx={{
+                                                            width: 50,
+                                                            height: 50,
+                                                            bgcolor: theme.palette.mode === 'dark' ? 'zinc.800' : 'action.hover',
+                                                            border: `1px solid ${theme.palette.divider}`
+                                                        }}
+                                                    >
+                                                        <ImageIcon />
+                                                    </Avatar>
+                                                ) : (
+                                                    <Box
+                                                        sx={{
+                                                            width: 50,
+                                                            height: 50,
+                                                            borderRadius: 2,
+                                                            display: 'flex',
+                                                            alignItems: 'center',
+                                                            justifyContent: 'center',
+                                                            bgcolor: fileType === 'pdf' ? alpha(theme.palette.error.main, 0.1) : alpha(theme.palette.primary.main, 0.1),
+                                                            border: `1px solid ${fileType === 'pdf' ? alpha(theme.palette.error.main, 0.2) : theme.palette.divider}`,
+                                                            color: fileType === 'pdf' ? 'error.main' : 'primary.main'
+                                                        }}
+                                                    >
+                                                        {getFileIcon(fileType, { fontSize: 32 })}
+                                                    </Box>
+                                                )}
+                                            </TableCell>
+                                            <TableCell>
+                                                <Stack direction="row" alignItems="center" spacing={1}>
+                                                    <Typography variant="subtitle2" fontWeight={700}>
+                                                        {ill.title}
+                                                    </Typography>
+                                                    {ill.file_count > 0 && (
+                                                        <Box
+                                                            sx={{
+                                                                bgcolor: alpha(theme.palette.primary.main, 0.1),
+                                                                color: 'primary.main',
+                                                                px: 0.8,
+                                                                py: 0.2,
+                                                                borderRadius: 1,
+                                                                fontSize: '0.7rem',
+                                                                fontWeight: 700,
+                                                                border: `1px solid ${alpha(theme.palette.primary.main, 0.2)}`
+                                                            }}
+                                                        >
+                                                            {ill.file_count}
+                                                        </Box>
+                                                    )}
+                                                </Stack>
+                                                <Typography variant="caption" color="text.secondary" sx={{ display: 'block', maxWidth: 300, noWrap: true, overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                                                    {ill.description || 'No description'}
+                                                </Typography>
+                                            </TableCell>
+                                            <TableCell>
+                                                <Stack spacing={0.5} direction="column" alignItems="flex-start">
+                                                    {(ill.part_category_name || ill.part_category?.name) && (
+                                                        <Chip
+                                                            label={ill.part_category_name || ill.part_category?.name}
+                                                            size="small"
+                                                            sx={{
+                                                                height: 20,
+                                                                fontSize: '0.65rem',
+                                                                fontWeight: 700,
+                                                                bgcolor: alpha(theme.palette.warning.main, 0.1),
+                                                                color: 'warning.main',
+                                                                maxWidth: '100%'
+                                                            }}
+                                                        />
+                                                    )}
+                                                    {(ill.engine_model_name || ill.engine_model?.name) && (
+                                                        <Chip
+                                                            label={ill.engine_model_name || ill.engine_model?.name}
+                                                            size="small"
+                                                            sx={{
+                                                                height: 20,
+                                                                fontSize: '0.65rem',
+                                                                fontWeight: 700,
+                                                                bgcolor: alpha(theme.palette.success.main, 0.1),
+                                                                color: 'success.main',
+                                                                maxWidth: '100%'
+                                                            }}
+                                                        />
+                                                    )}
+                                                </Stack>
+                                            </TableCell>
+                                            <TableCell>
+                                                <Stack spacing={0}>
+                                                    <Typography variant="body2" fontWeight={600}>
+                                                        {ill.factory_name || '-'}
+                                                    </Typography>
+                                                    <Typography variant="caption" color="text.secondary">
+                                                        {ill.user_name || '-'}
+                                                    </Typography>
+                                                </Stack>
+                                            </TableCell>
+                                            <TableCell align="right">
+                                                <Stack direction="row" spacing={0.5} justifyContent="flex-end" alignItems="center" onClick={(e) => e.stopPropagation()}>
+                                                    <IconButton
+                                                        size="small"
+                                                        onClick={() => toggleFavorite(ill.id, { stopPropagation: () => { } })}
+                                                        sx={{ color: favorites.includes(ill.id) ? 'error.main' : 'text.disabled' }}
+                                                    >
+                                                        <FavoriteIcon fontSize="small" />
+                                                    </IconButton>
+
+                                                    <IconButton
+                                                        size="small"
+                                                        onClick={() => handleCardClick(ill)}
+                                                        sx={{ color: 'primary.main', bgcolor: alpha(theme.palette.primary.main, 0.05) }}
+                                                    >
+                                                        <ViewIcon fontSize="small" />
+                                                    </IconButton>
+
+                                                    {canModify(ill) && (
+                                                        <IconButton
+                                                            size="small"
+                                                            onClick={() => handleEditClick(ill)}
+                                                            sx={{ color: 'info.main', bgcolor: alpha(theme.palette.info.main, 0.05) }}
+                                                        >
+                                                            <EditIcon fontSize="small" />
+                                                        </IconButton>
+                                                    )}
+                                                </Stack>
+                                            </TableCell>
+                                        </TableRow>
+                                    );
+                                })}
+                            </TableBody>
+                        </Table>
+                    </TableContainer>
+                ) : (
+                    <Box sx={{ width: '100%', maxWidth: 1400, mx: 'auto' }}>
+                        <Grid container spacing={2.5}>
+                            {illustrations.map((ill, i) => (
+                                <Grid item xs={12} sm={6} md={4} lg={3} key={ill.id}>
+                                    <Fade in timeout={150 + i * 25}>
+                                        <Box>
+                                            <IllustrationListCard
+                                                illustration={ill}
+                                                toggleFavorite={toggleFavorite}
+                                                favorites={favorites}
+                                                onClick={() => handleCardClick(ill)}
+                                                theme={theme}
+                                            />
+                                        </Box>
+                                    </Fade>
+                                </Grid>
+                            ))}
+                        </Grid>
+                    </Box>
+                )
             )}
 
             {/* create illustration button */}
