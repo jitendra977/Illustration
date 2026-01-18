@@ -1,85 +1,200 @@
 import React from 'react';
-import { Box, Typography, IconButton, Stack, alpha, useTheme } from '@mui/material';
-import { Heart, Image as ImageIcon, FileText, File } from 'lucide-react';
+import { Box, Typography, IconButton, Stack, alpha, useTheme, Tooltip } from '@mui/material';
+import { Heart, Image as ImageIcon, FileText, File, Trash2, Edit2, Download } from 'lucide-react';
 import FavoriteButton from '../illustrations/FavoriteButton';
+import { useAuth } from '../../context/AuthContext';
 
-const IllustrationListCard = ({ illustration, toggleFavorite, favorites = [], onClick }) => {
+const IllustrationListCard = ({ illustration, toggleFavorite, favorites = [], onClick, onEdit, onDelete, onDownload }) => {
   const theme = useTheme();
+  const { user } = useAuth();
+
+  const canModify = () => {
+    if (!user) return false;
+    if (user.is_superuser || user.is_staff) return true;
+    return user.id === illustration.user;
+  };
   const zinc = theme.palette.zinc;
   const isFav = favorites.includes(illustration.id);
 
   // Determine thumbnail
   let Thumbnail = null;
-  const firstFile = illustration.first_file;
+  const firstFile = illustration.first_file || (illustration.files && illustration.files.length > 0 ? illustration.files[0] : null);
 
   if (firstFile) {
     if (firstFile.file_type === 'image') {
       const previewUrl = firstFile.preview_url || firstFile.file;
       Thumbnail = (
-        <Box
-          component="img"
-          src={previewUrl}
-          alt={illustration.title}
-          sx={{
-            width: 80,
-            height: 80,
-            objectFit: 'cover',
-            borderRadius: 2,
-            bgcolor: theme.palette.mode === 'dark' ? 'zinc.900' : 'action.hover',
-            border: `1px solid ${theme.palette.mode === 'dark' ? alpha(theme.palette.common.white, 0.05) : theme.palette.divider}`
-          }}
-        />
+        <Box sx={{ position: 'relative' }}>
+          <Box
+            component="img"
+            src={previewUrl}
+            alt={illustration.title}
+            sx={{
+              width: 80,
+              height: 80,
+              objectFit: 'cover',
+              borderRadius: 2,
+              bgcolor: theme.palette.mode === 'dark' ? 'zinc.900' : 'action.hover',
+              border: `1px solid ${theme.palette.mode === 'dark' ? alpha(theme.palette.common.white, 0.05) : theme.palette.divider}`
+            }}
+          />
+          {illustration.file_count > 0 && (
+            <Box sx={{
+              position: 'absolute',
+              top: -6,
+              right: -6,
+              minWidth: 20,
+              height: 20,
+              borderRadius: '10px',
+              bgcolor: 'error.main',
+              color: 'white',
+              fontSize: '10px',
+              fontWeight: 900,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              px: 0.5,
+              boxShadow: `0 4px 8px ${alpha(theme.palette.error.main, 0.3)}`,
+              border: `2px solid ${theme.palette.background.paper}`,
+              zIndex: 2
+            }}>
+              {illustration.file_count}
+            </Box>
+          )}
+        </Box>
       );
     } else if (firstFile.file_type === 'pdf') {
       Thumbnail = (
-        <Box sx={{
-          width: 80,
-          height: 80,
-          borderRadius: 2,
-          bgcolor: alpha(theme.palette.error.main, 0.1),
-          border: `1px solid ${alpha(theme.palette.error.main, 0.2)}`,
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          justifyContent: 'center',
-          color: 'error.main',
-          gap: 0.5
-        }}>
-          <FileText size={24} />
-          <Typography variant="caption" sx={{ fontWeight: 800, fontSize: '10px', lineHeight: 1 }}>PDF</Typography>
+        <Box sx={{ position: 'relative' }}>
+          <Box sx={{
+            width: 80,
+            height: 80,
+            borderRadius: 2,
+            bgcolor: alpha(theme.palette.error.main, 0.1),
+            border: `1px solid ${alpha(theme.palette.error.main, 0.2)}`,
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            color: 'error.main',
+            gap: 0.5
+          }}>
+            <FileText size={24} />
+            <Typography variant="caption" sx={{ fontWeight: 800, fontSize: '10px', lineHeight: 1 }}>PDF</Typography>
+          </Box>
+          {illustration.file_count > 0 && (
+            <Box sx={{
+              position: 'absolute',
+              top: -6,
+              right: -6,
+              minWidth: 20,
+              height: 20,
+              borderRadius: '10px',
+              bgcolor: 'error.main',
+              color: 'white',
+              fontSize: '10px',
+              fontWeight: 900,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              px: 0.5,
+              boxShadow: `0 4px 8px ${alpha(theme.palette.error.main, 0.3)}`,
+              border: `2px solid ${theme.palette.background.paper}`,
+              zIndex: 2
+            }}>
+              {illustration.file_count}
+            </Box>
+          )}
         </Box>
       );
     } else {
+      // Other file types or generic image
       Thumbnail = (
-        <Box sx={{
-          width: 80,
-          height: 80,
-          borderRadius: 2,
-          bgcolor: theme.palette.mode === 'dark' ? alpha(theme.palette.zinc[800], 0.5) : alpha(theme.palette.action.disabledBackground, 0.5),
-          border: `1px solid ${theme.palette.mode === 'dark' ? alpha(theme.palette.common.white, 0.05) : theme.palette.divider}`,
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          color: theme.palette.mode === 'dark' ? 'zinc.400' : 'text.disabled'
-        }}>
-          <File size={32} />
+        <Box sx={{ position: 'relative' }}>
+          <Box sx={{
+            width: 80,
+            height: 80,
+            borderRadius: 2,
+            bgcolor: alpha(theme.palette.primary.main, 0.1),
+            border: `1px solid ${alpha(theme.palette.primary.main, 0.2)}`,
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            color: 'primary.main',
+            gap: 0.5
+          }}>
+            <ImageIcon size={24} />
+            <Typography variant="caption" sx={{ fontWeight: 800, fontSize: '10px', lineHeight: 1 }}>IMAGE</Typography>
+          </Box>
+          {illustration.file_count > 0 && (
+            <Box sx={{
+              position: 'absolute',
+              top: -6,
+              right: -6,
+              minWidth: 20,
+              height: 20,
+              borderRadius: '10px',
+              bgcolor: 'error.main',
+              color: 'white',
+              fontSize: '10px',
+              fontWeight: 900,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              px: 0.5,
+              boxShadow: `0 4px 8px ${alpha(theme.palette.error.main, 0.3)}`,
+              border: `2px solid ${theme.palette.background.paper}`,
+              zIndex: 2
+            }}>
+              {illustration.file_count}
+            </Box>
+          )}
         </Box>
       );
     }
   } else {
     Thumbnail = (
-      <Box sx={{
-        width: 80,
-        height: 80,
-        borderRadius: 2,
-        bgcolor: theme.palette.mode === 'dark' ? alpha(theme.palette.zinc[800], 0.5) : alpha(theme.palette.action.disabledBackground, 0.5),
-        border: `1px solid ${theme.palette.mode === 'dark' ? alpha(theme.palette.common.white, 0.05) : theme.palette.divider}`,
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        color: theme.palette.mode === 'dark' ? 'zinc.400' : 'text.disabled'
-      }}>
-        <ImageIcon size={32} />
+      <Box sx={{ position: 'relative' }}>
+        <Box sx={{
+          width: 80,
+          height: 80,
+          borderRadius: 2,
+          bgcolor: theme.palette.mode === 'dark' ? 'zinc.900' : 'action.hover',
+          border: `1px solid ${theme.palette.mode === 'dark' ? alpha(theme.palette.common.white, 0.05) : theme.palette.divider}`,
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'center',
+          color: 'text.disabled',
+          gap: 0.5
+        }}>
+          <File size={24} />
+          <Typography variant="caption" sx={{ fontSize: '10px' }}>NO FILE</Typography>
+        </Box>
+        {illustration.file_count > 0 && (
+          <Box sx={{
+            position: 'absolute',
+            top: -6,
+            right: -6,
+            minWidth: 20,
+            height: 20,
+            borderRadius: '10px',
+            bgcolor: 'error.main',
+            color: 'white',
+            fontSize: '10px',
+            fontWeight: 900,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            px: 0.5,
+            boxShadow: `0 4px 8px ${alpha(theme.palette.error.main, 0.3)}`,
+            border: `2px solid ${theme.palette.background.paper}`,
+            zIndex: 2
+          }}>
+            {illustration.file_count}
+          </Box>
+        )}
       </Box>
     );
   }
@@ -219,26 +334,84 @@ const IllustrationListCard = ({ illustration, toggleFavorite, favorites = [], on
           <FavoriteButton illustration={illustration} />
         </Stack>
 
-        {/* Footer Info */}
-        <Stack direction="row" spacing={1} alignItems="center" mt={0.5}>
-          <Typography variant="caption" sx={{ color: 'text.disabled', fontSize: '11px' }}>
-            {new Date(illustration.created_at).toLocaleDateString('ja-JP', { year: 'numeric', month: '2-digit', day: '2-digit' })}
-          </Typography>
-          {illustration.factory_name && (
-            <>
-              <Typography variant="caption" sx={{ color: 'text.disabled' }}>•</Typography>
-              <Typography variant="caption" sx={{ color: 'text.secondary', fontWeight: 500, fontSize: '11px' }}>
-                {illustration.factory_name}
-              </Typography>
-            </>
-          )}
-          {illustration.user_name && (
-            <>
-              <Typography variant="caption" sx={{ color: 'text.disabled' }}>•</Typography>
-              <Typography variant="caption" sx={{ color: 'text.secondary', fontWeight: 500, fontSize: '11px' }}>
-                {illustration.user_name}
-              </Typography>
-            </>
+        {/* Footer Info & Actions */}
+        <Stack direction="row" justifyContent="space-between" alignItems="center" mt={0.5}>
+          <Stack direction="row" spacing={1} alignItems="center">
+            <Typography variant="caption" sx={{ color: 'text.disabled', fontSize: '11px' }}>
+              {new Date(illustration.created_at).toLocaleDateString('ja-JP', { year: 'numeric', month: '2-digit', day: '2-digit' })}
+            </Typography>
+            {illustration.factory_name && (
+              <>
+                <Typography variant="caption" sx={{ color: 'text.disabled' }}>•</Typography>
+                <Typography variant="caption" sx={{ color: 'text.secondary', fontWeight: 500, fontSize: '11px' }}>
+                  {illustration.factory_name}
+                </Typography>
+              </>
+            )}
+            {illustration.user_name && (
+              <>
+                <Typography variant="caption" sx={{ color: 'text.disabled' }}>•</Typography>
+                <Typography variant="caption" sx={{ color: 'text.secondary', fontWeight: 500, fontSize: '11px' }}>
+                  {illustration.user_name}
+                </Typography>
+              </>
+            )}
+          </Stack>
+
+          {canModify() && (
+            <Stack direction="row" spacing={0.5}>
+              {onDownload && (
+                <IconButton
+                  size="small"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onDownload(e, illustration);
+                  }}
+                  sx={{
+                    p: 0.5,
+                    color: 'success.main',
+                    bgcolor: alpha(theme.palette.success.main, 0.1),
+                    '&:hover': { bgcolor: alpha(theme.palette.success.main, 0.2) }
+                  }}
+                >
+                  <Download size={14} />
+                </IconButton>
+              )}
+              {onEdit && (
+                <IconButton
+                  size="small"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onEdit(illustration);
+                  }}
+                  sx={{
+                    p: 0.5,
+                    color: 'info.main',
+                    bgcolor: alpha(theme.palette.info.main, 0.1),
+                    '&:hover': { bgcolor: alpha(theme.palette.info.main, 0.2) }
+                  }}
+                >
+                  <Edit2 size={14} />
+                </IconButton>
+              )}
+              {onDelete && (
+                <IconButton
+                  size="small"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onDelete(illustration.id);
+                  }}
+                  sx={{
+                    p: 0.5,
+                    color: 'error.main',
+                    bgcolor: alpha(theme.palette.error.main, 0.1),
+                    '&:hover': { bgcolor: alpha(theme.palette.error.main, 0.2) }
+                  }}
+                >
+                  <Trash2 size={14} />
+                </IconButton>
+              )}
+            </Stack>
           )}
         </Stack>
       </Box>

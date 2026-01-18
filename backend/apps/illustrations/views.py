@@ -266,12 +266,12 @@ class IllustrationViewSet(viewsets.ModelViewSet):
         Write (create, update, delete): Staff or superuser only
         """
         if self.action in ['list', 'retrieve']:
-            # All authenticated users can view illustrations
-            return [IsAuthenticatedAndActive()]
+            # Validated users can view illustrations
+            return [IsVerifiedUser()]
         # Create, update, delete require staff status
         if self.action in ['create', 'update', 'partial_update', 'destroy', 'upload_file', 'delete_file']:
             return [IsVerifiedStaff()]  # Changed from IsVerifiedUser to IsVerifiedStaff
-        return [IsAuthenticatedAndActive()]
+        return [IsVerifiedUser()]
 
     def get_queryset(self):
         if getattr(self, 'swagger_fake_view', False):
@@ -451,12 +451,12 @@ class IllustrationFileViewSet(viewsets.ModelViewSet):
 
     def get_permissions(self):
         """
-        All actions require authentication
-        But write operations also require verification
+        All actions require verified user
+        Write operations also require verification (redundant but explicit)
         """
         if self.action in ['create', 'update', 'partial_update', 'destroy']:
             return [IsVerifiedUser()]
-        return [IsAuthenticatedAndActive()]
+        return [IsVerifiedUser()]
 
     def get_queryset(self):
         if getattr(self, 'swagger_fake_view', False):
@@ -474,16 +474,14 @@ class IllustrationFileViewSet(viewsets.ModelViewSet):
         if not user.is_authenticated:
             return qs.none()
         
-        # Staff can see all files
-        if user.is_staff:
+        # Verified users (including staff) can see all files
+        # We implicitly check active status via IsVerifiedUser permission class,
+        # but for filtering, we assume if they are here, they have permission.
+        # Ideally, we allow access to everything for verified users.
+        if user.is_verified or user.is_staff:
             return qs
-
-        # Regular users: only their factories' files
-        user_factories = user.get_factories()
-        if user_factories.exists():
-            return qs.filter(illustration__factory__in=user_factories)
         
-        # No factory assigned - no access
+        # Unverified users see nothing
         return qs.none()
 
     @action(detail=True, methods=['get'], permission_classes=[AllowAny])
@@ -718,6 +716,13 @@ class FavoriteIllustrationViewSet(viewsets.ModelViewSet):
             'illustration__files',
             'illustration__applicable_car_models'
         )
+
+    def get_serializer_context(self):
+        context = super().get_serializer_context()
+        # Pass the include_files parameter to serializer
+        include_files = self.request.query_params.get('include_files', 'false').lower() == 'true'
+        context['include_files'] = include_files
+        return context
 
     def perform_create(self, serializer):
         """Auto-set user when creating favorite"""

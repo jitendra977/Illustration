@@ -205,7 +205,7 @@ class IllustrationSerializer(serializers.ModelSerializer):
     part_subcategory_slug = serializers.CharField(source='part_subcategory.slug', read_only=True, allow_null=True)
     
     # File count
-    file_count = serializers.IntegerField(read_only=True, required=False)
+    file_count = serializers.SerializerMethodField(read_only=True)
     
     # First file (conditional)
     first_file = serializers.SerializerMethodField(read_only=True)
@@ -231,6 +231,14 @@ class IllustrationSerializer(serializers.ModelSerializer):
             'part_subcategory_name', 'part_subcategory_slug',
             'created_at', 'updated_at', 'file_count'
         ]
+    
+    def get_file_count(self, obj):
+        """Return the number of files for this illustration"""
+        # If already annotated, use it
+        if hasattr(obj, 'file_count'):
+            return obj.file_count
+        # Fallback to count
+        return obj.files.count()
     
     def create(self, validated_data):
         uploaded_files = validated_data.pop('uploaded_files', [])

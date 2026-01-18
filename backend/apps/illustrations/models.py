@@ -427,8 +427,8 @@ class FavoriteIllustration(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
-        verbose_name = "Favorite Illustration"
-        verbose_name_plural = "Favorite Illustrations"
+        verbose_name = "お気に入り"
+        verbose_name_plural = "お気に入り"
         ordering = ['-created_at']
         unique_together = ('user', 'illustration')
         indexes = [

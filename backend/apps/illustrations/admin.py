@@ -7,7 +7,8 @@ from django.contrib.auth import get_user_model
 from .models import (
     Manufacturer, CarModel, EngineModel,
     PartCategory, PartSubCategory,
-    Illustration, IllustrationFile
+    Illustration, IllustrationFile,
+    FavoriteIllustration
 )
 
 User = get_user_model()
@@ -514,3 +515,38 @@ class IllustrationFileAdmin(admin.ModelAdmin):
                 )
         return "-"
     file_preview_large.short_description = 'File Preview'
+
+
+# ==========================================
+# Favorite Illustration Admin
+# ==========================================
+@admin.register(FavoriteIllustration)
+class FavoriteIllustrationAdmin(admin.ModelAdmin):
+    list_display = ['user_display', 'illustration_link', 'created_at']
+    list_filter = ['created_at', 'user']
+    search_fields = [
+        'user__username', 
+        'user__email',
+        'illustration__title',
+        'illustration__description'
+    ]
+    raw_id_fields = ['user', 'illustration']
+    date_hierarchy = 'created_at'
+    readonly_fields = ['created_at']
+    
+    def get_queryset(self, request):
+        qs = super().get_queryset(request)
+        return qs.select_related('user', 'illustration')
+    
+    def user_display(self, obj):
+        url = reverse('admin:accounts_user_change', args=[obj.user.id])
+        return format_html('<a href="{}">{}</a>', url, obj.user.username)
+    user_display.short_description = 'User'
+    user_display.admin_order_field = 'user__username'
+    
+    def illustration_link(self, obj):
+        url = reverse('admin:illustrations_illustration_change', args=[obj.illustration.id])
+        title = Truncator(obj.illustration.title).chars(50)
+        return format_html('<a href="{}">{}</a>', url, title)
+    illustration_link.short_description = 'Illustration'
+    illustration_link.admin_order_field = 'illustration__title'

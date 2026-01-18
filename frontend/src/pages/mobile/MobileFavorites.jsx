@@ -19,7 +19,7 @@ import {
 } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 
-import { favoriteAPI } from '../../api/illustrations';
+import { favoriteAPI, clearCache } from '../../api/illustrations';
 import IllustrationList from '../../components/illustrations/IllustrationList';
 import IllustrationDetailModal from '../../components/illustrations/IllustrationDetailModal';
 import Breadcrumbs from '../../components/navigation/Breadcrumbs';
@@ -41,10 +41,12 @@ const MobileFavorites = () => {
     const fetchFavorites = useCallback(async () => {
         setLoading(true);
         setError(null);
+        // Clear cache to ensure we get the latest data (including file_count fix)
+        clearCache();
         try {
             // Get all favorites
             // Note: Pagination could be implemented here if list gets long
-            const response = await favoriteAPI.getAll({ limit: 100 });
+            const response = await favoriteAPI.getAll({ limit: 100, include_files: true });
 
             // Transform response to illustration list format
             const items = response.results || response;
@@ -102,7 +104,7 @@ const MobileFavorites = () => {
                 bgcolor: theme.palette.background.default,
             }}
         >
-            <Container maxWidth="sm" sx={{ px: 2, py: 3 }}>
+            <Container maxWidth={false} sx={{ px: { xs: 2, md: 4 }, py: 3, maxWidth: { md: 1200, lg: 1400 }, mx: 'auto' }}>
                 <Breadcrumbs items={[{ label: 'お気に入り' }]} />
 
                 <Box sx={{ mb: 3, mt: 1, display: 'flex', alignItems: 'center', gap: 1 }}>

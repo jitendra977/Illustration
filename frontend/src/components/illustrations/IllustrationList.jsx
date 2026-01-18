@@ -1,4 +1,3 @@
-// IllustrationList.jsx
 import React from 'react';
 import {
   Table,
@@ -16,30 +15,45 @@ import {
   Stack,
   useTheme,
   alpha,
-  useMediaQuery // Add useMediaQuery
+  useMediaQuery
 } from '@mui/material';
 import {
   Visibility as EyeIcon,
   Download as DownloadIcon,
+  Edit as EditIcon,
   Delete as DeleteIcon,
   Image as ImageIcon,
   CalendarToday as CalendarIcon,
   Person as PersonIcon,
   AttachFile as AttachIcon
 } from '@mui/icons-material';
-// Import IllustrationListCard from mobile components
 import IllustrationListCard from '../mobile/IllustrationListCard';
+import { useAuth } from '../../context/AuthContext';
 
-const IllustrationList = ({ illustrations, onDelete, onView }) => {
+const IllustrationList = ({ illustrations, onDelete, onView, onEdit }) => {
   const theme = useTheme();
   // Detect mobile screen
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+  const { user } = useAuth();
+
+  const canModify = (illustration) => {
+    if (!user) return false;
+    // Superusers and Staff can always modify
+    if (user.is_superuser || user.is_staff) return true;
+    // Owners can also modify
+    return user.id === illustration.user;
+  };
 
   const formatDate = (dateString) => {
     return new Date(dateString).toLocaleDateString();
   };
 
   const getImageUrl = (illustration) => {
+    // Check first_file (common in list view)
+    if (illustration.first_file?.file) {
+      return illustration.first_file.file;
+    }
+    // Check files array (common in detail view or if include_files is true)
     if (illustration.files && illustration.files.length > 0) {
       return illustration.files[0].file;
     }
@@ -55,15 +69,22 @@ const IllustrationList = ({ illustrations, onDelete, onView }) => {
   const handleDownload = (e, illustration) => {
     e.stopPropagation();
     const imageUrl = getImageUrl(illustration);
-    if (imageUrl) {
-      const link = document.createElement('a');
-      link.href = imageUrl;
-      link.download = `${illustration.title}_1`;
-      link.target = '_blank';
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
+    if (!imageUrl) {
+      console.warn('No image URL found for download');
+      return;
     }
+
+    const downloadFileName = illustration.first_file?.title ||
+      illustration.first_file?.file_name ||
+      `${illustration.title}_download`;
+
+    const link = document.createElement('a');
+    link.href = imageUrl;
+    link.download = downloadFileName;
+    link.target = '_blank';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
   };
 
   const handleDelete = (e, id) => {
@@ -80,8 +101,11 @@ const IllustrationList = ({ illustrations, onDelete, onView }) => {
             key={illustration.id}
             illustration={illustration}
             onClick={() => handleRowClick(illustration)}
-            // Pass minimal props needed for display, toggleFavorite is optional/not in this context yet
+            // Pass minimal props needed for display
             toggleFavorite={() => { }}
+            onEdit={onEdit}
+            onDelete={onDelete}
+            onDownload={handleDownload}
           />
         ))}
         {illustrations.length === 0 && (
@@ -207,7 +231,7 @@ const IllustrationList = ({ illustrations, onDelete, onView }) => {
                 <Stack direction="row" alignItems="center" spacing={0.5}>
                   <AttachIcon sx={{ color: 'text.disabled', fontSize: 14 }} />
                   <Typography variant="caption" sx={{ color: 'text.secondary', fontWeight: 600 }}>
-                    {illustration.files?.length || 0}
+                    {illustration.file_count || 0}
                   </Typography>
                 </Stack>
               </TableCell>
@@ -240,13 +264,27 @@ const IllustrationList = ({ illustrations, onDelete, onView }) => {
                   >
                     <DownloadIcon fontSize="small" />
                   </IconButton>
-                  <IconButton
-                    size="small"
-                    onClick={(e) => handleDelete(e, illustration.id)}
-                    sx={{ color: 'error.main' }}
-                  >
-                    <DeleteIcon fontSize="small" />
-                  </IconButton>
+                  {onEdit && canModify(illustration) && (
+                    <IconButton
+                      size="small"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        onEdit(illustration);
+                      }}
+                      sx={{ color: 'info.main' }}
+                    >
+                      <EditIcon fontSize="small" />
+                    </IconButton>
+                  )}
+                  {onDelete && canModify(illustration) && (
+                    <IconButton
+                      size="small"
+                      onClick={(e) => handleDelete(e, illustration.id)}
+                      sx={{ color: 'error.main' }}
+                    >
+                      <DeleteIcon fontSize="small" />
+                    </IconButton>
+                  )}
                 </Stack>
               </TableCell>
             </TableRow>

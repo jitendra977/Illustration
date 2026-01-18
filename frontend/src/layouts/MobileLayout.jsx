@@ -1,22 +1,26 @@
 import React, { useState, useEffect } from 'react';
-import Box from '@mui/material/Box';
-import IconButton from '@mui/material/IconButton';
-import Avatar from '@mui/material/Avatar';
-import Stack from '@mui/material/Stack';
-import Typography from '@mui/material/Typography';
-import SwipeableDrawer from '@mui/material/SwipeableDrawer';
-import List from '@mui/material/List';
-import ListItem from '@mui/material/ListItem';
-import ListItemButton from '@mui/material/ListItemButton';
-import ListItemIcon from '@mui/material/ListItemIcon';
-import ListItemText from '@mui/material/ListItemText';
-import Divider from '@mui/material/Divider';
-import BottomNavigation from '@mui/material/BottomNavigation';
-import BottomNavigationAction from '@mui/material/BottomNavigationAction';
-import Paper from '@mui/material/Paper';
-import { useTheme } from '@mui/material/styles';
-import Chip from '@mui/material/Chip';
-import { alpha } from '@mui/material/styles';
+
+// Consolidating all @mui/material imports
+import {
+  Box,
+  IconButton,
+  Avatar,
+  Stack,
+  Typography,
+  SwipeableDrawer,
+  Collapse,
+  List,
+  ListItem,
+  ListItemButton,
+  ListItemIcon,
+  ListItemText,
+  Divider,
+  BottomNavigation,
+  BottomNavigationAction,
+  Paper,
+  Chip
+} from '@mui/material';
+import { useTheme, alpha } from '@mui/material/styles';
 import {
   Menu as MenuIcon,
   Home as HomeIcon,
@@ -33,7 +37,10 @@ import {
   ManageAccounts as ManageAccountsIcon,
   DarkMode as DarkModeIcon,
   LightMode as LightModeIcon,
-  Help as HelpIcon
+  Help as HelpIcon,
+  ExpandLess,
+  ExpandMore,
+  AdminPanelSettings as AdminIcon
 } from '@mui/icons-material';
 import { useAuth } from '../context/AuthContext';
 import { useColorMode } from '../context/ThemeContext';
@@ -47,6 +54,8 @@ const MobileLayout = ({ children, showHeader = true, onRefresh, refreshing = fal
   const theme = useTheme();
   const { mode, toggleColorMode } = useColorMode();
   const [bottomNavValue, setBottomNavValue] = useState(0);
+  const [openManagement, setOpenManagement] = useState(false);
+  const [openSettings, setOpenSettings] = useState(false);
 
   useEffect(() => {
     const path = location.pathname;
@@ -242,8 +251,12 @@ const MobileLayout = ({ children, showHeader = true, onRefresh, refreshing = fal
               {getUserInitial()}
             </Avatar>
             <Box sx={{ flex: 1, minWidth: 0 }}>
-              <Typography variant="body1" fontWeight={700} noWrap sx={{ letterSpacing: '-0.01em' }}>{user?.first_name || user?.username}</Typography>
-              <Typography variant="caption" sx={{ opacity: 0.6, display: 'block', mb: 0.5 }} noWrap>{user?.email}</Typography>
+              <Typography variant="body1" fontWeight={700} noWrap sx={{ letterSpacing: '-0.01em', color: 'white' }}>
+                {user?.last_name && user?.first_name ? `${user.last_name} ${user.first_name}` : (user?.username || 'Guest')}
+              </Typography>
+              <Typography variant="caption" sx={{ opacity: 0.8, display: 'block', mb: 0.5, color: 'rgba(255,255,255,0.8)' }} noWrap>
+                {user?.email || ''}
+              </Typography>
               <Chip
                 label={getUserRole()}
                 size="small"
@@ -347,78 +360,115 @@ const MobileLayout = ({ children, showHeader = true, onRefresh, refreshing = fal
           <Divider sx={{ my: 1.5, mx: 3 }} />
 
           {/* Management Section */}
-          <Typography variant="caption" sx={{ px: 3, mb: 1, display: 'block', color: 'text.secondary', fontWeight: 700 }}>管理</Typography>
-          {[
-            { label: 'イラスト', icon: <ImageIcon />, path: '/illustrations' },
-            { label: '車種管理', icon: <CarIcon />, path: '/car-models' },
-            { label: 'エンジン管理', icon: <BuildIcon />, path: '/engine-models' },
-            { label: 'カテゴリー管理', icon: <SettingsIcon />, path: '/part-categories' },
-            { label: 'サブカテゴリー管理', icon: <SettingsIcon />, path: '/part-subcategories' },
-          ].map((item, idx) => {
-            const isSuperuser = user?.is_superuser;
-            const isDisabled = !isSuperuser;
+          {/* Management Section - Dropdown */}
+          <ListItem disablePadding>
+            <ListItemButton onClick={() => setOpenManagement(!openManagement)} sx={{ mx: 1.5, borderRadius: 2 }}>
+              <ListItemIcon sx={{ minWidth: 40 }}><AdminIcon /></ListItemIcon>
+              <ListItemText primary="管理" primaryTypographyProps={{ fontSize: '0.9rem', fontWeight: 700 }} />
+              {openManagement ? <ExpandLess /> : <ExpandMore />}
+            </ListItemButton>
+          </ListItem>
+          <Collapse in={openManagement} timeout="auto" unmountOnExit>
+            <List component="div" disablePadding>
+              {[
+                { label: 'イラスト', icon: <ImageIcon />, path: '/illustrations' },
+                { label: '車種管理', icon: <CarIcon />, path: '/car-models' },
+                { label: 'エンジン管理', icon: <BuildIcon />, path: '/engine-models' },
+                { label: 'カテゴリー管理', icon: <SettingsIcon />, path: '/part-categories' },
+                { label: 'サブカテゴリー管理', icon: <SettingsIcon />, path: '/part-subcategories' },
+              ].map((item, idx) => {
+                const isSuperuser = user?.is_superuser;
+                const isDisabled = !isSuperuser;
 
-            return (
-              <ListItem key={idx} disablePadding>
+                return (
+                  <ListItem key={idx} disablePadding>
+                    <ListItemButton
+                      onClick={() => {
+                        if (isSuperuser) {
+                          setMenuOpen(false);
+                          navigate(item.path);
+                        }
+                      }}
+                      disabled={isDisabled}
+                      sx={{
+                        pl: 4,
+                        mx: 1.5,
+                        my: 0.25,
+                        borderRadius: 2,
+                        opacity: isDisabled ? 0.5 : 1,
+                        cursor: isDisabled ? 'not-allowed' : 'pointer',
+                        '&.Mui-selected': { bgcolor: alpha(theme.palette.primary.main, 0.1) },
+                        '&.Mui-disabled': {
+                          opacity: 0.5,
+                          pointerEvents: 'none'
+                        }
+                      }}
+                      selected={location.pathname === item.path && isSuperuser}
+                    >
+                      <ListItemIcon sx={{
+                        minWidth: 40,
+                        color: location.pathname === item.path && isSuperuser ? theme.palette.primary.main : 'text.secondary',
+                        opacity: isDisabled ? 0.5 : 1
+                      }}>
+                        {item.icon}
+                      </ListItemIcon>
+                      <ListItemText
+                        primary={item.label}
+                        primaryTypographyProps={{
+                          fontWeight: location.pathname === item.path && isSuperuser ? 700 : 500,
+                          fontSize: '0.85rem'
+                        }}
+                      />
+                    </ListItemButton>
+                  </ListItem>
+                );
+              })}
+            </List>
+          </Collapse>
+
+
+          <Divider sx={{ my: 1.5, mx: 3 }} />
+
+          {/* Management Settings Section - Dropdown */}
+          <ListItem disablePadding>
+            <ListItemButton onClick={() => setOpenSettings(!openSettings)} sx={{ mx: 1.5, borderRadius: 2 }}>
+              <ListItemIcon sx={{ minWidth: 40 }}><SettingsIcon /></ListItemIcon>
+              <ListItemText primary="管理設定" primaryTypographyProps={{ fontSize: '0.9rem', fontWeight: 700 }} />
+              {openSettings ? <ExpandLess /> : <ExpandMore />}
+            </ListItemButton>
+          </ListItem>
+          <Collapse in={openSettings} timeout="auto" unmountOnExit>
+            <List component="div" disablePadding>
+              <ListItem disablePadding>
                 <ListItemButton
                   onClick={() => {
-                    if (isSuperuser) {
+                    if (user?.is_staff || user?.is_superuser) {
                       setMenuOpen(false);
-                      navigate(item.path);
+                      navigate('/mobile/admin/users');
                     }
                   }}
-                  disabled={isDisabled}
+                  disabled={!user?.is_staff && !user?.is_superuser}
                   sx={{
+                    pl: 4,
                     mx: 1.5,
-                    my: 0.25,
                     borderRadius: 2,
-                    opacity: isDisabled ? 0.5 : 1,
-                    cursor: isDisabled ? 'not-allowed' : 'pointer',
-                    '&.Mui-selected': { bgcolor: alpha(theme.palette.primary.main, 0.1) },
+                    opacity: (!user?.is_staff && !user?.is_superuser) ? 0.5 : 1,
+                    cursor: (!user?.is_staff && !user?.is_superuser) ? 'not-allowed' : 'pointer',
                     '&.Mui-disabled': {
                       opacity: 0.5,
                       pointerEvents: 'none'
                     }
                   }}
-                  selected={location.pathname === item.path && isSuperuser}
                 >
-                  <ListItemIcon sx={{
-                    minWidth: 40,
-                    color: location.pathname === item.path && isSuperuser ? theme.palette.primary.main : 'text.secondary',
-                    opacity: isDisabled ? 0.5 : 1
-                  }}>
-                    {item.icon}
+                  <ListItemIcon sx={{ minWidth: 40, opacity: (!user?.is_staff && !user?.is_superuser) ? 0.5 : 1 }}>
+                    <ManageAccountsIcon />
                   </ListItemIcon>
-                  <ListItemText
-                    primary={item.label}
-                    primaryTypographyProps={{
-                      fontWeight: location.pathname === item.path && isSuperuser ? 700 : 500,
-                      fontSize: '0.9rem'
-                    }}
-                  />
+                  <ListItemText primary="システム管理" primaryTypographyProps={{ fontSize: '0.85rem', fontWeight: 500 }} />
                 </ListItemButton>
               </ListItem>
-            );
-          })}
-
-
+            </List>
+          </Collapse>
           <Divider sx={{ my: 1.5, mx: 3 }} />
-
-          {(user?.is_staff || user?.is_superuser) && (
-            <>
-              <Typography variant="caption" sx={{ px: 3, mb: 1, display: 'block', color: 'text.secondary', fontWeight: 700 }}>管理設定</Typography>
-              <ListItem disablePadding>
-                <ListItemButton
-                  onClick={() => { setMenuOpen(false); navigate('/mobile/admin/users'); }}
-                  sx={{ mx: 1.5, borderRadius: 2 }}
-                >
-                  <ListItemIcon sx={{ minWidth: 40 }}><ManageAccountsIcon /></ListItemIcon>
-                  <ListItemText primary="システム管理" primaryTypographyProps={{ fontSize: '0.9rem', fontWeight: 500 }} />
-                </ListItemButton>
-              </ListItem>
-              <Divider sx={{ my: 1.5, mx: 3 }} />
-            </>
-          )}
 
           <ListItem disablePadding>
             <ListItemButton

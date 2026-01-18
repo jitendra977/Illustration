@@ -1,5 +1,5 @@
 // src/pages/mobile/MobileIllustrations.jsx
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState, useCallback, useMemo } from 'react';
 import {
   Box,
   Container,
@@ -65,7 +65,8 @@ const MobileIllustrations = () => {
   const { factories } = useFactories();
   const { users } = useUsersList(filters.factory);
 
-  const { illustrations, loading, error, fetchIllustrations, deleteIllustration } = useIllustrations(filters);
+  const illustrationFilters = useMemo(() => ({ ...filters, include_files: true }), [filters]);
+  const { illustrations, loading, error, fetchIllustrations, deleteIllustration } = useIllustrations(illustrationFilters);
 
   // Initialize search from navigation state (when coming from MobileHome)
   useEffect(() => {
@@ -127,7 +128,7 @@ const MobileIllustrations = () => {
         bgcolor: theme.palette.background.default,
       }}
     >
-      <Container maxWidth="sm" sx={{ px: 2, py: 3 }}>
+      <Container maxWidth={false} sx={{ px: { xs: 2, md: 4 }, py: 3, maxWidth: { md: 1200, lg: 1400 }, mx: 'auto' }}>
         <Breadcrumbs items={[{ label: 'イラスト' }]} />
 
         <Box sx={{ mb: 3, mt: 1 }}>
@@ -270,6 +271,7 @@ const MobileIllustrations = () => {
             illustrations={illustrations}
             onView={handleCardClick}
             onDelete={handleDelete}
+            onEdit={handleEdit}
           />
         )}
       </Container>
