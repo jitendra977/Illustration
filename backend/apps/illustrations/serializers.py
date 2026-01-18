@@ -4,7 +4,7 @@ from rest_framework import serializers
 from .models import (
     Manufacturer, CarModel, EngineModel, 
     PartCategory, PartSubCategory, 
-    Illustration, IllustrationFile
+    Illustration, IllustrationFile, FavoriteIllustration
 )
 
 
@@ -476,3 +476,23 @@ class CarModelDetailSerializer(serializers.ModelSerializer):
             }
             for engine in engines
         ]
+
+
+# ------------------------------
+# Favorite Illustration Serializer
+# ------------------------------
+class FavoriteIllustrationSerializer(serializers.ModelSerializer):
+    """Serializer for user favorites"""
+    illustration_detail = IllustrationSerializer(source='illustration', read_only=True)
+    
+    class Meta:
+        model = FavoriteIllustration
+        fields = ['id', 'user', 'illustration', 'illustration_detail', 'created_at']
+        read_only_fields = ['id', 'user', 'created_at']
+    
+    def create(self, validated_data):
+        # Auto-set user from request context
+        request = self.context.get('request')
+        if request and hasattr(request, 'user'):
+            validated_data['user'] = request.user
+        return super().create(validated_data)

@@ -12,7 +12,7 @@ import mimetypes
 from .models import (
     Manufacturer, CarModel, EngineModel,
     PartCategory, PartSubCategory,
-    Illustration, IllustrationFile
+    Illustration, IllustrationFile, FavoriteIllustration
 )
 
 from .serializers import (
@@ -21,7 +21,7 @@ from .serializers import (
     EngineModelSerializer, EngineModelDetailSerializer,
     PartCategorySerializer, PartSubCategorySerializer,
     IllustrationSerializer, IllustrationDetailSerializer,
-    IllustrationFileSerializer
+    IllustrationFileSerializer, FavoriteIllustrationSerializer
 )
 
 from .permissions import (
@@ -685,3 +685,119 @@ class IllustrationFileViewSet(viewsets.ModelViewSet):
                 {'error': 'ダウンロード失敗', 'detail': str(e)},
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR
             )
+
+
+# ========================================
+# Favorite Illustrations
+# ========================================
+class FavoriteIllustrationViewSet(viewsets.ModelViewSet):
+    """ViewSet for managing user favorites"""
+    serializer_class = FavoriteIllustrationSerializer
+    permission_classes = [IsAuthenticatedAndActive]
+    pagination_class = DefaultPagination
+    filter_backends = [filters.OrderingFilter]
+    ordering_fields = ['created_at']
+    ordering = ['-created_at']
+
+    def get_queryset(self):
+        """Return only the current user's favorites"""
+        if getattr(self, 'swagger_fake_view', False):
+            return FavoriteIllustration.objects.none()
+        
+        user = self.request.user
+        if not user.is_authenticated:
+            return FavoriteIllustration.objects.none()
+        
+        return FavoriteIllustration.objects.filter(user=user).select_related(
+            'illustration__engine_model__manufacturer',
+            'illustration__part_category',
+            'illustration__part_subcategory',
+            'illustration__user',
+            'illustration__factory'
+        ).prefetch_related(
+            'illustration__files',
+            'illustration__applicable_car_models'
+        )
+
+    def perform_create(self, serializer):
+        """Auto-set user when creating favorite"""
+        serializer.save(user=self.request.user)
+
+    @action(detail=False, methods=['post'], url_path='toggle')
+    def toggle(self, request):
+        """Toggle favorite status for an illustration"""
+        illustration_id = request.data.get('illustration')
+        
+        if not illustration_id:
+            return Response(
+                {'error': 'illustration IDが必要です'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        
+        # Check if illustration exists
+        try:
+            illustration = Illustration.objects.get(id=illustration_id)
+        except Illustration.DoesNotExist:
+            return Response(
+                {'error': 'イラストが見つかりません'},
+                status=status.HTTP_404_NOT_FOUND
+            )
+        
+        # Check if already favorited
+        favorite = FavoriteIllustration.objects.filter(
+            user=request.user,
+            illustration=illustration
+        ).first()
+        
+        if favorite:
+            # Remove from favorites
+            favorite.delete()
+            return Response(
+                {
+                    'is_favorited': False,
+                    'message': 'お気に入りから削除しました'
+                },
+                status=status.HTTP_200_OK
+            )
+        else:
+            # Add to favorites
+            favorite = FavoriteIllustration.objects.create(
+                user=request.user,
+                illustration=illustration
+            )
+            return Response(
+                {
+                    'is_favorited': True,
+                    'favorite_id': favorite.id,
+                    'message': 'お気に入りに追加しました'
+                },
+                status=status.HTTP_201_CREATED
+            )
+
+    @action(detail=False, methods=['get'], url_path='check')
+    def check(self, request):
+        """Check if an illustration is favorited"""
+        illustration_id = request.query_params.get('illustration_id')
+        
+        if not illustration_id:
+            return Response(
+                {'error': 'illustration_idが必要です'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        
+        is_favorited = FavoriteIllustration.objects.filter(
+            user=request.user,
+            illustration_id=illustration_id
+        ).exists()
+        
+        favorite = None
+        if is_favorited:
+            favorite = FavoriteIllustration.objects.get(
+                user=request.user,
+                illustration_id=illustration_id
+            )
+        
+        return Response({
+            'is_favorited': is_favorited,
+            'favorite_id': favorite.id if favorite else None
+        })

@@ -67,6 +67,17 @@ const MobileIllustrations = () => {
 
   const { illustrations, loading, error, fetchIllustrations, deleteIllustration } = useIllustrations(filters);
 
+  // Initialize search from navigation state (when coming from MobileHome)
+  useEffect(() => {
+    if (location.state?.searchQuery) {
+      const query = location.state.searchQuery;
+      setSearchTerm(query);
+      fetchIllustrations({ search: query });
+      // Clear the state to prevent re-triggering on subsequent renders
+      navigate(location.pathname, { replace: true, state: {} });
+    }
+  }, [location.state?.searchQuery]);
+
   const handleSearch = (e) => {
     e.preventDefault();
     fetchIllustrations({ search: searchTerm });

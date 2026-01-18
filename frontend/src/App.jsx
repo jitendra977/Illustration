@@ -5,10 +5,13 @@ import { AuthProvider } from './context/AuthContext';
 import { ThemeContextProvider } from './context/ThemeContext';
 import MobileRoutes from './routes/MobileRoutes';
 
+import { Toaster } from 'react-hot-toast';
+
 function App() {
   return (
     <ThemeContextProvider>
       <CssBaseline />
+      <Toaster position="bottom-center" />
       <AuthProvider>
         <MobileRoutes />
       </AuthProvider>

@@ -279,16 +279,9 @@ const ManufacturerEngines = () => {
             <Box component="main" sx={{ maxWidth: '1280px', mx: 'auto', px: { xs: 1.5, md: 3 }, pt: 1 }}>
                 {/* Mobile-Optimized Hero */}
                 <Box component="header" sx={{ mb: { xs: 4, md: 6 } }}>
-                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1.5 }}>
-                        <Badge sx={{ bgcolor: 'primary.main', color: 'primary.contrastText' }}>日本</Badge>
-                        <Typography sx={{ color: 'text.disabled', fontSize: '10px', fontWeight: 900, textTransform: 'uppercase', letterSpacing: '0.2em' }}>
-                            設立 1937
-                        </Typography>
-                    </Box>
                     <Typography variant="h1" sx={{
                         fontSize: { xs: '3rem', md: '4.5rem' },
                         fontWeight: 900,
-                        letterSpacing: '-0.025em',
                         color: 'text.primary',
                         mb: 2,
                         lineHeight: 1

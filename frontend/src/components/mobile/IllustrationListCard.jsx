@@ -1,6 +1,7 @@
 import React from 'react';
 import { Box, Typography, IconButton, Stack, alpha, useTheme } from '@mui/material';
 import { Heart, Image as ImageIcon, FileText, File } from 'lucide-react';
+import FavoriteButton from '../illustrations/FavoriteButton';
 
 const IllustrationListCard = ({ illustration, toggleFavorite, favorites = [], onClick }) => {
   const theme = useTheme();
@@ -215,21 +216,7 @@ const IllustrationListCard = ({ illustration, toggleFavorite, favorites = [], on
             </Typography>
           </Box>
 
-          <IconButton
-            size="small"
-            onClick={(e) => { e.stopPropagation(); toggleFavorite(illustration.id, e); }}
-            sx={{
-              mt: -0.5,
-              mr: -0.5,
-              color: isFav ? 'error.main' : 'text.disabled',
-              '&:hover': {
-                color: 'error.main',
-                bgcolor: alpha(theme.palette.error.main, 0.1)
-              }
-            }}
-          >
-            <Heart size={18} fill={isFav ? theme.palette.error.main : 'none'} />
-          </IconButton>
+          <FavoriteButton illustration={illustration} />
         </Stack>
 
         {/* Footer Info */}

@@ -5,28 +5,12 @@ import {
     CircularProgress,
     useTheme,
     alpha,
-    IconButton,
-    Button,
     Grid
 } from '@mui/material';
-import { useParams, useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
+import { Search, Settings, Car, Image as ImageIcon, ChevronRight, Factory } from 'lucide-react';
 import Breadcrumbs from '../../components/navigation/Breadcrumbs';
-import { engineModelAPI, carModelAPI, manufacturerAPI } from '../../api/illustrations';
-import {
-    Search,
-    Car,
-    Image as ImageIcon,
-    ChevronRight,
-    ArrowLeft,
-    Menu,
-    Filter,
-    Activity,
-    Truck,
-    Bus
-} from 'lucide-react';
-
-// Utility for Zinc colors
-// Zinc palette from theme
+import { engineModelAPI } from '../../api/illustrations';
 
 const Badge = ({ children, sx = {}, ...props }) => (
     <Box
@@ -48,34 +32,44 @@ const Badge = ({ children, sx = {}, ...props }) => (
     </Box>
 );
 
-const CarCard = ({ car, onClick }) => {
+const EngineCard = ({ engine, onClick }) => {
     const theme = useTheme();
 
-    const getVehicleIcon = (type) => {
-        if (type?.includes('bus')) return <Bus size={20} />;
-        if (type?.includes('truck')) return <Truck size={20} />;
-        return <Car size={20} />;
+    const getFuelStyles = (type) => {
+        switch (type) {
+            case 'petrol':
+                return { bgcolor: alpha('#3b82f6', 0.1), color: '#60a5fa', border: `1px solid ${alpha('#3b82f6', 0.2)}` };
+            case 'hybrid':
+                return { bgcolor: alpha('#10b981', 0.1), color: '#34d399', border: `1px solid ${alpha('#10b981', 0.2)}` };
+            case 'diesel':
+                return { bgcolor: alpha('#f59e0b', 0.1), color: '#fbbf24', border: `1px solid ${alpha('#f59e0b', 0.2)}` };
+            case 'electric':
+                return { bgcolor: alpha('#8b5cf6', 0.1), color: '#a78bfa', border: `1px solid ${alpha('#8b5cf6', 0.2)}` };
+            case 'lpg':
+                return { bgcolor: alpha('#ec4899', 0.1), color: '#f472b6', border: `1px solid ${alpha('#ec4899', 0.2)}` };
+            default:
+                return {
+                    bgcolor: theme.palette.mode === 'dark' ? alpha('#6b7280', 0.1) : alpha('#6b7280', 0.05),
+                    color: theme.palette.mode === 'dark' ? '#9ca3af' : '#4b5563',
+                    border: `1px solid ${alpha('#6b7280', 0.2)}`
+                };
+        }
     };
 
-    const getVehicleTypeLabel = (type) => {
+    const getFuelLabel = (type) => {
         const labels = {
-            'truck_2t': '2tトラック',
-            'truck_3t': '3tトラック',
-            'truck_4t': '4tトラック',
-            'truck_10t': '10tトラック',
-            'truck_light_duty': '小型トラック',
-            'truck_medium_duty': '中型トラック',
-            'truck_heavy_duty': '大型トラック',
-            'bus': 'バス',
-            'bus_city': '路線バス',
-            'bus_highway': '高速バス'
+            'diesel': 'ディーゼル',
+            'petrol': 'ガソリン',
+            'hybrid': 'ハイブリッド',
+            'electric': '電気',
+            'lpg': 'LPG'
         };
-        return labels[type] || '乗用車';
+        return labels[type] || type;
     };
 
     return (
         <Box
-            onClick={() => onClick(car)}
+            onClick={() => onClick(engine)}
             sx={{
                 position: 'relative',
                 bgcolor: 'background.paper',
@@ -105,7 +99,7 @@ const CarCard = ({ car, onClick }) => {
                 transition: 'opacity 0.2s',
                 '.MuiBox-root:hover &': { opacity: 0.07 }
             }}>
-                <Car size={120} strokeWidth={1} />
+                <Settings size={120} strokeWidth={1} />
             </Box>
 
             <Box sx={{ flexShrink: 0 }}>
@@ -123,24 +117,28 @@ const CarCard = ({ car, onClick }) => {
                     transition: 'color 0.2s',
                     '.MuiBox-root:hover &': { color: theme.palette.primary.main }
                 }}>
-                    {getVehicleIcon(car.vehicle_type)}
+                    <Settings size={18} />
                 </Box>
             </Box>
 
             <Box sx={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
                 <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 0.5 }}>
                     <Typography variant="h6" sx={{ fontSize: '1rem', fontWeight: 700, color: 'text.primary', lineHeight: 1.2 }} noWrap>
-                        {car.name}
+                        {engine.engine_code || engine.name}
                     </Typography>
-                    <Badge sx={{ bgcolor: theme.palette.mode === 'dark' ? alpha(theme.palette.zinc[700], 0.3) : alpha(theme.palette.zinc[200], 0.5), color: 'text.secondary', ml: 1, transform: 'scale(0.85)', transformOrigin: 'right top' }}>
-                        {getVehicleTypeLabel(car.vehicle_type)}
-                    </Badge>
+                    {engine.fuel_type && (
+                        <Badge sx={{ ...getFuelStyles(engine.fuel_type), ml: 1, transform: 'scale(0.85)', transformOrigin: 'right top' }}>
+                            {getFuelLabel(engine.fuel_type)}
+                        </Badge>
+                    )}
                 </Box>
 
-                <Typography variant="body2" sx={{ color: 'text.secondary', fontSize: '0.75rem', fontWeight: 500, mb: 1 }} noWrap>
-                    {car.model_code ? `型式: ${car.model_code}` : '型式不明'}
-                    {car.chassis_code ? ` • シャーシ: ${car.chassis_code}` : ''}
-                </Typography>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 0.5 }}>
+                    <Factory size={12} color={theme.palette.text.disabled} />
+                    <Typography variant="body2" sx={{ color: 'text.secondary', fontSize: '0.75rem', fontWeight: 500 }} noWrap>
+                        {engine.manufacturer_name || 'N/A'}
+                    </Typography>
+                </Box>
 
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
                     <Box sx={{
@@ -150,9 +148,21 @@ const CarCard = ({ car, onClick }) => {
                         bgcolor: theme.palette.mode === 'dark' ? alpha(theme.palette.zinc[800], 0.4) : alpha(theme.palette.zinc[100], 0.5),
                         border: `1px solid ${theme.palette.divider}`
                     }}>
-                        <ImageIcon size={14} color={theme.palette.text.disabled} />
+                        <Car size={12} color={theme.palette.text.disabled} />
                         <Typography component="span" sx={{ fontSize: '11px', color: 'text.secondary', fontWeight: 600 }}>
-                            {car.illustration_count || 0} <Box component="span" sx={{ display: { xs: 'none', sm: 'inline' }, color: 'text.disabled', fontWeight: 400 }}>イラスト</Box>
+                            {engine.car_model_count || 0} <Box component="span" sx={{ display: { xs: 'none', sm: 'inline' }, color: 'text.disabled', fontWeight: 400 }}>車種</Box>
+                        </Typography>
+                    </Box>
+                    <Box sx={{
+                        display: 'flex', alignItems: 'center', gap: 0.75,
+                        px: 1, py: 0.5,
+                        borderRadius: 1.5,
+                        bgcolor: theme.palette.mode === 'dark' ? alpha(theme.palette.zinc[800], 0.4) : alpha(theme.palette.zinc[100], 0.5),
+                        border: `1px solid ${theme.palette.divider}`
+                    }}>
+                        <ImageIcon size={12} color={theme.palette.text.disabled} />
+                        <Typography component="span" sx={{ fontSize: '11px', color: 'text.secondary', fontWeight: 600 }}>
+                            {engine.illustration_count || 0} <Box component="span" sx={{ display: { xs: 'none', sm: 'inline' }, color: 'text.disabled', fontWeight: 400 }}>イラスト</Box>
                         </Typography>
                     </Box>
                 </Box>
@@ -173,12 +183,8 @@ const CarCard = ({ car, onClick }) => {
     );
 };
 
-const EngineCars = () => {
-    const { engineId } = useParams();
-    const location = useLocation();
-    const [engine, setEngine] = useState(null);
-    const [manufacturer, setManufacturer] = useState(null);
-    const [cars, setCars] = useState([]);
+const EngineList = () => {
+    const [engines, setEngines] = useState([]);
     const [loading, setLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState('');
     const [isScrolled, setIsScrolled] = useState(false);
@@ -188,45 +194,19 @@ const EngineCars = () => {
 
     const breadcrumbs = [
         { label: 'ホーム', path: '/' },
-        { label: 'メーカー選択', path: '/manufacturers' },
-        { label: manufacturer?.name || 'メーカー', path: manufacturer ? `/manufacturers/${manufacturer.id}/engines` : null },
-        { label: engine?.engine_code || engine?.name || 'エンジン' }
+        { label: 'エンジン選択' }
     ];
 
     useEffect(() => {
         const handleScroll = () => setIsScrolled(window.scrollY > 20);
         window.addEventListener('scroll', handleScroll);
 
-        const fetchData = async () => {
+        const fetchEngines = async () => {
             try {
                 setLoading(true);
-                const engineData = await engineModelAPI.getById(engineId);
-                setEngine(engineData);
-
-                // Recover manufacturer
-                let mf = null;
-                if (location.state?.manufacturerName) {
-                    mf = {
-                        id: location.state.manufacturerId,
-                        name: location.state.manufacturerName
-                    };
-                } else if (engineData.manufacturer) {
-                    if (typeof engineData.manufacturer === 'object') {
-                        mf = engineData.manufacturer;
-                    } else {
-                        mf = await manufacturerAPI.getById(engineData.manufacturer);
-                    }
-                }
-                setManufacturer(mf);
-
-                const carsData = await carModelAPI.getAll({
-                    manufacturer: mf?.id,
-                    engine_model: engineId
-                });
-
-                const engineCars = carsData.results || carsData;
-                setCars(engineCars);
-
+                const data = await engineModelAPI.getAll();
+                const results = data.results || data;
+                setEngines(results);
             } catch (err) {
                 console.error(err);
             } finally {
@@ -234,39 +214,36 @@ const EngineCars = () => {
             }
         };
 
-        if (engineId) fetchData();
-
+        fetchEngines();
         return () => window.removeEventListener('scroll', handleScroll);
-    }, [engineId, location.state]);
+    }, []);
 
-    const filteredCars = useMemo(() => {
-        return cars.filter(car =>
-            car.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            car.model_code?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            car.chassis_code?.toLowerCase().includes(searchTerm.toLowerCase())
+    const filteredEngines = useMemo(() => {
+        return engines.filter(e =>
+            e.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            e.engine_code?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            e.manufacturer_name?.toLowerCase().includes(searchTerm.toLowerCase())
         );
-    }, [searchTerm, cars]);
+    }, [engines, searchTerm]);
 
-    const handleCarClick = (car) => {
-        navigate(`/cars/${car.slug || car.id}/categories`, {
+    const handleEngineClick = (engine) => {
+        // Navigate to manufacturer's engines page, which will then allow navigation to cars
+        navigate(`/manufacturers/${engine.manufacturer}/engines`, {
             state: {
-                manufacturerId: manufacturer?.id,
-                manufacturerName: manufacturer?.name,
-                engineId: engineId,
-                engineCode: engine?.engine_code || engine?.name,
-                carId: car.id,
-                carName: car.name
+                manufacturerName: engine.manufacturer_name,
+                manufacturerId: engine.manufacturer,
+                preselectedEngineId: engine.id
             }
         });
     };
 
-    const handleBack = () => navigate(-1);
-
-    // Sum total views for stats (just simple count for now)
-    const totalViews = useMemo(() => {
-        return cars.reduce((acc, curr) => acc + (curr.illustration_count || 0), 0);
-    }, [cars]);
-
+    // Calculate total stats
+    const totalStats = useMemo(() => {
+        return engines.reduce((acc, curr) => ({
+            cars: acc.cars + (curr.car_model_count || 0),
+            illustrations: acc.illustrations + (curr.illustration_count || 0)
+        }), { cars: 0, illustrations: 0 });
+    }, [engines]);
 
     return (
         <Box sx={{ minHeight: '100vh', bgcolor: 'background.default', color: 'text.primary', fontFamily: 'Inter, sans-serif', pb: { xs: 12, md: 5 } }}>
@@ -287,26 +264,24 @@ const EngineCars = () => {
                 </Box>
             </Box>
 
-            <Box component="main" sx={{ maxWidth: '1280px', mx: 'auto', px: { xs: 1.5, md: 3 }, pt: 1 }}>
+            <Box component="main" sx={{ maxWidth: '1280px', mx: 'auto', px: { xs: 2, md: 3 }, pt: 1 }}>
                 {/* Hero Section */}
                 <Box component="header" sx={{ mb: { xs: 4, md: 6 } }}>
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1.5 }}>
-                        <Typography sx={{ color: 'text.disabled', fontSize: '10px', fontWeight: 900, textTransform: 'uppercase', letterSpacing: '0.2em' }}>
-                            {manufacturer?.name}
-                        </Typography>
+                        <Badge sx={{ bgcolor: alpha('#fff', 0.1), color: '#fff', border: `1px solid ${alpha('#fff', 0.1)}` }}>パワーユニット</Badge>
                     </Box>
                     <Typography variant="h1" sx={{
-                        fontSize: { xs: '3rem', md: '4.5rem' },
+                        fontSize: { xs: '2.5rem', md: '4rem' },
                         fontWeight: 900,
                         letterSpacing: '-0.025em',
                         color: 'text.primary',
                         mb: 2,
                         lineHeight: 1
                     }}>
-                        {engine?.engine_code || <CircularProgress size={40} />}
+                        エンジン
                     </Typography>
                     <Typography sx={{ color: 'text.secondary', maxWidth: '600px', fontSize: { xs: '1rem', md: '1.125rem' }, lineHeight: 1.6 }}>
-                        車種を選択して、特定の技術イラストを表示します。
+                        全メーカーのエンジンモデルから検索できます。
                     </Typography>
 
                     {/* Quick Stats Pill */}
@@ -321,32 +296,32 @@ const EngineCars = () => {
                     }}>
                         <Box sx={{ flex: 1, px: 2.5, py: 1, textAlign: 'center', borderRight: `1px solid ${theme.palette.divider}` }}>
                             <Typography sx={{ fontSize: '1.125rem', fontWeight: 700, color: 'text.primary', lineHeight: 1.1 }}>
-                                {cars.length}
+                                {engines.length}
                             </Typography>
                             <Typography sx={{ fontSize: '9px', color: 'text.secondary', textTransform: 'uppercase', fontWeight: 900, letterSpacing: '0.1em', mt: 0.5 }}>
-                                車種
+                                エンジン
                             </Typography>
                         </Box>
                         <Box sx={{ flex: 1, px: 2.5, py: 1, textAlign: 'center' }}>
                             <Typography sx={{ fontSize: '1.125rem', fontWeight: 700, color: 'text.primary', lineHeight: 1.1 }}>
-                                {totalViews}
+                                {totalStats.cars}
                             </Typography>
                             <Typography sx={{ fontSize: '9px', color: 'text.secondary', textTransform: 'uppercase', fontWeight: 900, letterSpacing: '0.1em', mt: 0.5 }}>
-                                イラスト
+                                車種
                             </Typography>
                         </Box>
                     </Box>
                 </Box>
 
                 {/* Search & Results */}
-                <Box sx={{ display: 'flex', flexDirection: { xs: 'column', sm: 'row' }, gap: 1.5, mb: 4 }}>
+                <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
                     <Box sx={{ position: 'relative', flex: 1, '&:focus-within svg': { color: 'primary.main' } }}>
                         <Box sx={{ position: 'absolute', left: 16, top: '50%', transform: 'translateY(-50%)', color: 'text.disabled', transition: 'color 0.2s', display: 'flex' }}>
                             <Search size={18} />
                         </Box>
                         <Box
                             component="input"
-                            placeholder="車種を検索..."
+                            placeholder="エンジンを検索..."
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
                             sx={{
@@ -369,54 +344,24 @@ const EngineCars = () => {
                             }}
                         />
                     </Box>
-                    <Button
-                        variant="text"
-                        startIcon={<Filter size={16} />}
-                        sx={{
-                            bgcolor: theme.palette.mode === 'dark' ? alpha(theme.palette.zinc[800], 0.5) : alpha(theme.palette.zinc[100], 0.5),
-                            color: 'text.secondary',
-                            border: `1px solid ${theme.palette.divider}`,
-                            fontWeight: 700,
-                            borderRadius: 3,
-                            px: 3,
-                            py: 1.75,
-                            textTransform: 'none',
-                            '&:hover': { bgcolor: theme.palette.mode === 'dark' ? theme.palette.zinc[800] : theme.palette.zinc[200], color: 'text.primary' }
-                        }}
-                    >
-                        フィルター
-                    </Button>
-                </Box>
 
-                {/* Content Area */}
-                {loading ? (
-                    <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', py: 12, gap: 2 }}>
-                        <CircularProgress sx={{ color: 'primary.main' }} />
-                    </Box>
-                ) : filteredCars.length > 0 ? (
-                    <Grid container spacing={{ xs: 1, md: 2 }}>
-                        {filteredCars.map((car, idx) => (
-                            <Grid item xs={12} sm={6} key={car.id}>
-                                <CarCard car={car} onClick={handleCarClick} />
-                            </Grid>
-                        ))}
-                    </Grid>
-                ) : (
-                    <Box sx={{
-                        bgcolor: alpha(theme.palette.zinc[900], 0.2),
-                        border: `1px dashed ${alpha(theme.palette.text.primary, 0.1)}`,
-                        borderRadius: 4,
-                        py: 10,
-                        textAlign: 'center'
-                    }}>
-                        <Typography variant="h6" sx={{ color: 'text.primary', fontWeight: 700, mb: 0.5 }}>
-                            「{searchTerm}」の検索結果はありません
-                        </Typography>
-                        <Typography variant="body2" sx={{ color: 'text.disabled' }}>
-                            別の検索語句を試してください。
-                        </Typography>
-                    </Box>
-                )}
+                    {loading ? (
+                        <Box display="flex" justifyContent="center" py={8}>
+                            <CircularProgress sx={{ color: 'primary.main' }} />
+                        </Box>
+                    ) : (
+                        <Grid container spacing={2} sx={{ mt: 1 }}>
+                            {filteredEngines.map((engine) => (
+                                <Grid item xs={12} sm={6} md={4} key={engine.id}>
+                                    <EngineCard
+                                        engine={engine}
+                                        onClick={handleEngineClick}
+                                    />
+                                </Grid>
+                            ))}
+                        </Grid>
+                    )}
+                </Box>
             </Box>
 
             {/* Footer */}
@@ -429,4 +374,4 @@ const EngineCars = () => {
     );
 };
 
-export default EngineCars;
+export default EngineList;

@@ -47,7 +47,7 @@ const Login = () => {
   const location = useLocation();
   const [successMessage, setSuccessMessage] = useState('');
   const { login } = useAuth();
-  const [loginType, setLoginType] = useState(0); // 0 for email, 1 for username, 2 for QR
+  const [loginType, setLoginType] = useState(0); // 0 for username, 1 for email, 2 for QR
   const [form, setForm] = useState({
     email: '',
     username: '',
@@ -84,9 +84,9 @@ const Login = () => {
   const handleTabChange = (event, newValue) => {
     setLoginType(newValue);
     if (newValue === 0) {
-      setForm({ ...form, username: '' });
-    } else if (newValue === 1) {
       setForm({ ...form, email: '' });
+    } else if (newValue === 1) {
+      setForm({ ...form, username: '' });
     }
     setErrors({});
   };
@@ -213,7 +213,7 @@ const Login = () => {
       const result = await login(credentials);
 
       if (result.success) {
-        navigate('/');
+        navigate('/how-to-use');
       } else {
         setErrors({
           general: getErrorMessage(result.error || result.originalError)
@@ -280,7 +280,7 @@ const Login = () => {
     e.preventDefault();
     setErrors({});
 
-    const validationType = loginType === 0 ? 'email' : 'username';
+    const validationType = loginType === 0 ? 'username' : 'email';
     const validationErrors = validateLoginForm(form, validationType);
 
     if (hasFormErrors(validationErrors)) {
@@ -296,15 +296,15 @@ const Login = () => {
       };
 
       if (loginType === 0) {
-        credentials.email = form.email;
-      } else {
         credentials.username = form.username;
+      } else {
+        credentials.email = form.email;
       }
 
       const result = await login(credentials);
 
       if (result.success) {
-        navigate('/');
+        navigate('/how-to-use');
       } else {
         setErrors({
           general: getErrorMessage(result.error || result.originalError)
@@ -332,7 +332,7 @@ const Login = () => {
         alignItems: 'center',
         justifyContent: 'center',
         background: 'linear-gradient(to bottom right, #0f172a, #1e1b4b, #312e81)',
-        overflow: 'auto',
+        overflow: 'hidden',
         '&::before': {
           content: '""',
           position: 'absolute',
@@ -363,8 +363,10 @@ const Login = () => {
         sx={{
           width: '100%',
           maxWidth: 480,
+          maxHeight: '100vh',
+          overflowY: 'auto',
           px: { xs: 2, sm: 3 },
-          py: { xs: 3, sm: 4 },
+          py: { xs: 2, sm: 3 },
           position: 'relative',
           zIndex: 1,
         }}
@@ -388,7 +390,7 @@ const Login = () => {
             sx={{
               background: 'linear-gradient(135deg, rgba(99, 102, 241, 0.15) 0%, rgba(139, 92, 246, 0.15) 100%)',
               borderBottom: '1px solid rgba(99, 102, 241, 0.2)',
-              p: { xs: 3, sm: 4 },
+              p: { xs: 2, sm: 3 },
               textAlign: 'center',
             }}
           >
@@ -431,9 +433,9 @@ const Login = () => {
           </Box>
 
           {/* Form Content */}
-          <Box sx={{ p: { xs: 3, sm: 4 } }}>
+          <Box sx={{ p: { xs: 2, sm: 3 } }}>
             <Box component="form" onSubmit={handleSubmit}>
-              <Stack spacing={3}>
+              <Stack spacing={2}>
                 {successMessage && (
                   <Alert
                     severity="success"
@@ -494,31 +496,31 @@ const Login = () => {
                     },
                   }}
                 >
-                  <Tab icon={<EmailOutlined sx={{ fontSize: 18 }} />} iconPosition="start" label="メール" />
                   <Tab icon={<PersonOutlined sx={{ fontSize: 18 }} />} iconPosition="start" label="ユーザー名" />
+                  <Tab icon={<EmailOutlined sx={{ fontSize: 18 }} />} iconPosition="start" label="メール" />
                   <Tab icon={<QrCodeScanner sx={{ fontSize: 18 }} />} iconPosition="start" label="QR" />
                 </Tabs>
 
-                {/* Email/Username Login Forms */}
+                {/* Username/Email Login Forms */}
                 {loginType !== 2 && (
                   <>
                     {/* Input Field */}
                     {loginType === 0 ? (
                       <TextField
-                        type="email"
-                        placeholder="your.email@example.com"
-                        value={form.email || ''}
-                        onChange={(e) => setForm({ ...form, email: e.target.value })}
-                        error={!!errors.email}
-                        helperText={errors.email}
+                        type="text"
+                        placeholder="ユーザー名"
+                        value={form.username || ''}
+                        onChange={(e) => setForm({ ...form, username: e.target.value })}
+                        error={!!errors.username}
+                        helperText={errors.username}
                         required
                         disabled={isLoading}
                         fullWidth
-                        autoComplete="email"
+                        autoComplete="username"
                         InputProps={{
                           startAdornment: (
                             <InputAdornment position="start">
-                              <EmailOutlined sx={{ color: 'rgba(255, 255, 255, 0.4)', fontSize: 20 }} />
+                              <PersonOutlined sx={{ color: 'rgba(255, 255, 255, 0.4)', fontSize: 20 }} />
                             </InputAdornment>
                           ),
                         }}
@@ -547,20 +549,20 @@ const Login = () => {
                       />
                     ) : (
                       <TextField
-                        type="text"
-                        placeholder="ユーザー名"
-                        value={form.username || ''}
-                        onChange={(e) => setForm({ ...form, username: e.target.value })}
-                        error={!!errors.username}
-                        helperText={errors.username}
+                        type="email"
+                        placeholder="your.email@example.com"
+                        value={form.email || ''}
+                        onChange={(e) => setForm({ ...form, email: e.target.value })}
+                        error={!!errors.email}
+                        helperText={errors.email}
                         required
                         disabled={isLoading}
                         fullWidth
-                        autoComplete="username"
+                        autoComplete="email"
                         InputProps={{
                           startAdornment: (
                             <InputAdornment position="start">
-                              <PersonOutlined sx={{ color: 'rgba(255, 255, 255, 0.4)', fontSize: 20 }} />
+                              <EmailOutlined sx={{ color: 'rgba(255, 255, 255, 0.4)', fontSize: 20 }} />
                             </InputAdornment>
                           ),
                         }}

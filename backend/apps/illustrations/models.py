@@ -402,3 +402,38 @@ class IllustrationFile(models.Model):
 
     def __str__(self):
         return f"{self.illustration.title} - {self.file.name}"
+
+
+# ------------------------------
+# Favorite Illustration
+# ------------------------------
+class FavoriteIllustration(models.Model):
+    """
+    User-specific favorites/bookmarks for illustrations.
+    Allows users to mark illustrations as favorites for quick access.
+    """
+    user = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name='favorite_illustrations',
+        help_text="User who favorited this illustration"
+    )
+    illustration = models.ForeignKey(
+        Illustration,
+        on_delete=models.CASCADE,
+        related_name='favorited_by',
+        help_text="The favorited illustration"
+    )
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        verbose_name = "Favorite Illustration"
+        verbose_name_plural = "Favorite Illustrations"
+        ordering = ['-created_at']
+        unique_together = ('user', 'illustration')
+        indexes = [
+            models.Index(fields=['user', '-created_at']),
+        ]
+
+    def __str__(self):
+        return f"{self.user.username} - {self.illustration.title}"

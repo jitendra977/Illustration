@@ -20,6 +20,7 @@ import { alpha } from '@mui/material/styles';
 import {
   Menu as MenuIcon,
   Home as HomeIcon,
+  Favorite as FavoriteIcon,
   Image as ImageIcon,
   Store as StoreIcon,
   DirectionsCar as CarIcon,
@@ -31,7 +32,8 @@ import {
   Refresh as RefreshIcon,
   ManageAccounts as ManageAccountsIcon,
   DarkMode as DarkModeIcon,
-  LightMode as LightModeIcon
+  LightMode as LightModeIcon,
+  Help as HelpIcon
 } from '@mui/icons-material';
 import { useAuth } from '../context/AuthContext';
 import { useColorMode } from '../context/ThemeContext';
@@ -50,7 +52,8 @@ const MobileLayout = ({ children, showHeader = true, onRefresh, refreshing = fal
     const path = location.pathname;
     if (path === '/') setBottomNavValue(0);
     else if (path.startsWith('/illustrations')) setBottomNavValue(1);
-    else if (path === '/profile') setBottomNavValue(2);
+    else if (path === '/favorites') setBottomNavValue(2);
+    else if (path === '/profile') setBottomNavValue(3);
   }, [location.pathname]);
 
   const getUserInitial = () => {
@@ -257,14 +260,64 @@ const MobileLayout = ({ children, showHeader = true, onRefresh, refreshing = fal
           </Stack>
         </Box>
         <List sx={{ flex: 1, py: 2 }}>
+          {/* How to Use - Always at top */}
+          <ListItem disablePadding>
+            <ListItemButton
+              onClick={() => { setMenuOpen(false); navigate('/how-to-use'); }}
+              sx={{
+                mx: 1.5,
+                my: 0.25,
+                borderRadius: 2,
+                '&.Mui-selected': { bgcolor: alpha(theme.palette.primary.main, 0.1) }
+              }}
+              selected={location.pathname === '/how-to-use'}
+            >
+              <ListItemIcon sx={{ minWidth: 40, color: location.pathname === '/how-to-use' ? theme.palette.primary.main : 'text.secondary' }}>
+                <HelpIcon />
+              </ListItemIcon>
+              <ListItemText
+                primary="使い方"
+                primaryTypographyProps={{
+                  fontWeight: location.pathname === '/how-to-use' ? 700 : 500,
+                  fontSize: '0.9rem'
+                }}
+              />
+            </ListItemButton>
+          </ListItem>
+
+          <ListItem disablePadding>
+            <ListItemButton
+              onClick={() => { setMenuOpen(false); navigate('/'); }}
+              sx={{
+                mx: 1.5,
+                my: 0.25,
+                borderRadius: 2,
+                '&.Mui-selected': { bgcolor: alpha(theme.palette.primary.main, 0.1) }
+              }}
+              selected={location.pathname === '/'}
+            >
+              <ListItemIcon sx={{ minWidth: 40, color: location.pathname === '/' ? theme.palette.primary.main : 'text.secondary' }}>
+                <HomeIcon />
+              </ListItemIcon>
+              <ListItemText
+                primary="ホーム"
+                primaryTypographyProps={{
+                  fontWeight: location.pathname === '/' ? 700 : 500,
+                  fontSize: '0.9rem'
+                }}
+              />
+            </ListItemButton>
+          </ListItem>
+
+          <Divider sx={{ my: 1.5, mx: 3 }} />
+
+          {/* Browse By Section */}
+          <Typography variant="caption" sx={{ px: 3, mb: 1, display: 'block', color: 'text.secondary', fontWeight: 700 }}>検索方法</Typography>
           {[
-            { label: 'ホーム', icon: <HomeIcon />, path: '/' },
-            { label: 'イラスト', icon: <ImageIcon />, path: '/illustrations' },
-            { label: 'メーカー', icon: <StoreIcon />, path: '/manufacturers' },
-            { label: '車種', icon: <CarIcon />, path: '/car-models' },
-            { label: 'エンジン', icon: <BuildIcon />, path: '/engine-models' },
-            { label: 'カテゴリー', icon: <SettingsIcon />, path: '/part-categories' },
-            { label: 'サブカテゴリー', icon: <SettingsIcon />, path: '/part-subcategories' },
+            { label: 'メーカーから', icon: <StoreIcon />, path: '/manufacturers' },
+            { label: 'エンジンから', icon: <BuildIcon />, path: '/engines' },
+            { label: '車種から', icon: <CarIcon />, path: '/cars' },
+            { label: 'カテゴリーから', icon: <SettingsIcon />, path: '/categories' },
           ].map((item, idx) => (
             <ListItem key={idx} disablePadding>
               <ListItemButton
@@ -290,6 +343,64 @@ const MobileLayout = ({ children, showHeader = true, onRefresh, refreshing = fal
               </ListItemButton>
             </ListItem>
           ))}
+
+          <Divider sx={{ my: 1.5, mx: 3 }} />
+
+          {/* Management Section */}
+          <Typography variant="caption" sx={{ px: 3, mb: 1, display: 'block', color: 'text.secondary', fontWeight: 700 }}>管理</Typography>
+          {[
+            { label: 'イラスト', icon: <ImageIcon />, path: '/illustrations' },
+            { label: '車種管理', icon: <CarIcon />, path: '/car-models' },
+            { label: 'エンジン管理', icon: <BuildIcon />, path: '/engine-models' },
+            { label: 'カテゴリー管理', icon: <SettingsIcon />, path: '/part-categories' },
+            { label: 'サブカテゴリー管理', icon: <SettingsIcon />, path: '/part-subcategories' },
+          ].map((item, idx) => {
+            const isSuperuser = user?.is_superuser;
+            const isDisabled = !isSuperuser;
+
+            return (
+              <ListItem key={idx} disablePadding>
+                <ListItemButton
+                  onClick={() => {
+                    if (isSuperuser) {
+                      setMenuOpen(false);
+                      navigate(item.path);
+                    }
+                  }}
+                  disabled={isDisabled}
+                  sx={{
+                    mx: 1.5,
+                    my: 0.25,
+                    borderRadius: 2,
+                    opacity: isDisabled ? 0.5 : 1,
+                    cursor: isDisabled ? 'not-allowed' : 'pointer',
+                    '&.Mui-selected': { bgcolor: alpha(theme.palette.primary.main, 0.1) },
+                    '&.Mui-disabled': {
+                      opacity: 0.5,
+                      pointerEvents: 'none'
+                    }
+                  }}
+                  selected={location.pathname === item.path && isSuperuser}
+                >
+                  <ListItemIcon sx={{
+                    minWidth: 40,
+                    color: location.pathname === item.path && isSuperuser ? theme.palette.primary.main : 'text.secondary',
+                    opacity: isDisabled ? 0.5 : 1
+                  }}>
+                    {item.icon}
+                  </ListItemIcon>
+                  <ListItemText
+                    primary={item.label}
+                    primaryTypographyProps={{
+                      fontWeight: location.pathname === item.path && isSuperuser ? 700 : 500,
+                      fontSize: '0.9rem'
+                    }}
+                  />
+                </ListItemButton>
+              </ListItem>
+            );
+          })}
+
 
           <Divider sx={{ my: 1.5, mx: 3 }} />
 
@@ -354,7 +465,7 @@ const MobileLayout = ({ children, showHeader = true, onRefresh, refreshing = fal
           value={bottomNavValue}
           onChange={(e, val) => {
             setBottomNavValue(val);
-            navigate(['/', '/illustrations', '/profile'][val]);
+            navigate(['/', '/illustrations', '/favorites', '/profile'][val]);
           }}
           showLabels
           sx={{
@@ -386,6 +497,7 @@ const MobileLayout = ({ children, showHeader = true, onRefresh, refreshing = fal
         >
           <BottomNavigationAction label="ホーム" icon={<HomeIcon sx={{ transition: 'all 0.2s' }} />} />
           <BottomNavigationAction label="イラスト" icon={<ImageIcon sx={{ transition: 'all 0.2s' }} />} />
+          <BottomNavigationAction label="お気に入り" icon={<FavoriteIcon sx={{ transition: 'all 0.2s' }} />} />
           <BottomNavigationAction label="会員情報" icon={<PersonIcon sx={{ transition: 'all 0.2s' }} />} />
         </BottomNavigation>
       </Paper>

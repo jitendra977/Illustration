@@ -103,6 +103,12 @@ const ManufacturerCard = ({ manufacturer, onClick }) => {
                             {manufacturer.car_model_count || 0} 車種
                         </Typography>
                     </Box>
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                        <Search size={12} color={theme.palette.text.disabled} />
+                        <Typography sx={{ fontSize: '11px', color: theme.palette.text.secondary, fontWeight: 500 }}>
+                            {manufacturer.illustration_count || 0} 図面
+                        </Typography>
+                    </Box>
                 </Box>
             </Box>
 
@@ -177,14 +183,14 @@ const ManufacturerList = () => {
     }, [manufacturers]);
 
     return (
-        <Box sx={{ minHeight: '100vh', bgcolor: 'background.default', color: 'text.primary', fontFamily: 'Inter, sans-serif', pb: { xs: 12, md: 5 } }}>
+        <Box sx={{ minHeight: '100vh', bgcolor: 'background.default', color: 'text.primary', fontFamily: 'Inter, sans-serif', pb: { xs: 12, md: 1 } }}>
             {/* Dynamic Header */}
             <Box component="nav" sx={{
                 position: 'sticky',
                 top: 0,
                 zIndex: 50,
                 transition: 'all 0.3s',
-                px: { xs: 2, md: 3 },
+                px: { xs: 2, md: 1 },
                 py: isScrolled ? 1.5 : 2,
                 bgcolor: isScrolled ? alpha(theme.palette.background.default, 0.9) : 'transparent',
                 backdropFilter: isScrolled ? 'blur(24px)' : 'none',
@@ -195,18 +201,14 @@ const ManufacturerList = () => {
                 </Box>
             </Box>
 
-            <Box component="main" sx={{ maxWidth: '1280px', mx: 'auto', px: { xs: 2, md: 3 }, pt: 1 }}>
+            <Box component="main" sx={{ maxWidth: '1280px', mx: 'auto', px: { xs: 2, md: 1 }, pt: 1 }}>
                 {/* Hero Section */}
-                <Box component="header" sx={{ mb: { xs: 4, md: 6 } }}>
-                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1.5 }}>
-                        <Badge sx={{ bgcolor: alpha('#fff', 0.1), color: '#fff', border: `1px solid ${alpha('#fff', 0.1)}` }}>グローバルDB</Badge>
-                    </Box>
+                <Box component="header" sx={{ mb: { xs: 4, md: 2 } }}>
+
                     <Typography variant="h1" sx={{
-                        fontSize: { xs: '2.5rem', md: '4rem' },
-                        fontWeight: 900,
-                        letterSpacing: '-0.025em',
+                        fontSize: { xs: '2.5rem', md: '2rem' },
+                        fontWeight: 700,
                         color: 'text.primary',
-                        mb: 2,
                         lineHeight: 1
                     }}>
                         メーカー
@@ -214,7 +216,6 @@ const ManufacturerList = () => {
                     <Typography sx={{ color: 'text.secondary', maxWidth: '600px', fontSize: { xs: '1rem', md: '1.125rem' }, lineHeight: 1.6 }}>
                         世界クラスの自動車メーカーの認定設計図と仕様書。
                     </Typography>
-
                     {/* Quick Stats Pill */}
                     <Box sx={{
                         display: 'flex',

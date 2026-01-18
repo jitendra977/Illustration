@@ -26,11 +26,14 @@ import {
   Category as CategoryIcon,
   AccessTime as AccessTimeIcon,
   Description as DescriptionIcon,
+  DirectionsCar as CarIcon,
+  Settings as SettingsIcon,
 } from '@mui/icons-material';
 import { illustrationAPI, manufacturerAPI, clearCache } from '../../api/illustrations';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import MobileIllustrationFormModal from '../../components/forms/MobileIllustrationFormModal';
+import IllustrationDetailModal from '../../components/illustrations/IllustrationDetailModal';
 import MobileLayout from '../../layouts/MobileLayout';
 import { useManufacturers, useEngineModels, usePartCategories, usePartSubCategories, useCarModels } from '../../hooks/useIllustrations';
 
@@ -52,6 +55,8 @@ const MobileHome = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [refreshing, setRefreshing] = useState(false);
   const [createModalOpen, setCreateModalOpen] = useState(false);
+  const [detailModalOpen, setDetailModalOpen] = useState(false);
+  const [selectedIllustration, setSelectedIllustration] = useState(null);
 
   const { manufacturers } = useManufacturers(1000);
   const { engineModels } = useEngineModels(null, 1000);
@@ -118,7 +123,8 @@ const MobileHome = () => {
 
   const handleSearch = () => {
     if (searchQuery.trim()) {
-      navigate(`/illustrations?search=${encodeURIComponent(searchQuery.trim())}`);
+      // Navigate to illustrations page with search query
+      navigate(`/illustrations`, { state: { searchQuery: searchQuery.trim() } });
     }
   };
 
@@ -330,21 +336,21 @@ const MobileHome = () => {
             color="primary"
           />
           <QuickActionChip
-            icon={<ImageIcon />}
-            label="全イラスト"
-            onClick={() => navigate('/illustrations')}
-            color="secondary"
-          />
-          <QuickActionChip
             icon={<StoreIcon />}
             label="メーカー"
             onClick={() => navigate('/manufacturers')}
             color="success"
           />
           <QuickActionChip
-            icon={<CategoryIcon />}
-            label="カテゴリ"
-            onClick={() => navigate('/part-categories')}
+            icon={<CarIcon />}
+            label="車種"
+            onClick={() => navigate('/cars')}
+            color="secondary"
+          />
+          <QuickActionChip
+            icon={<SettingsIcon />}
+            label="エンジン"
+            onClick={() => navigate('/engines')}
             color="info"
           />
         </Stack>
@@ -357,7 +363,10 @@ const MobileHome = () => {
               stats.recentIllustrations.slice(0, 5).map((ill) => (
                 <GlassCard
                   key={ill.id}
-                  onClick={() => navigate(`/illustrations/${ill.id}`)}
+                  onClick={() => {
+                    setSelectedIllustration(ill);
+                    setDetailModalOpen(true);
+                  }}
                   sx={{
                     '&:active': {
                       transform: 'translateY(2px)',
@@ -632,6 +641,29 @@ const MobileHome = () => {
         subCategories={subCategories}
         carModels={carModels}
       />
+
+      {selectedIllustration && (
+        <IllustrationDetailModal
+          open={detailModalOpen}
+          illustration={selectedIllustration}
+          onClose={() => {
+            setDetailModalOpen(false);
+            setSelectedIllustration(null);
+          }}
+          onUpdate={() => {
+            fetchDashboardData(true, true);
+          }}
+          onDelete={() => {
+            setDetailModalOpen(false);
+            setSelectedIllustration(null);
+            fetchDashboardData(true, true);
+          }}
+          onEdit={() => {
+            setDetailModalOpen(false);
+            // Could open edit modal here if needed
+          }}
+        />
+      )}
     </MobileLayout>
   );
 };

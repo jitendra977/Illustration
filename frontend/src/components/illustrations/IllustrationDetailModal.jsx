@@ -33,6 +33,7 @@ import PDFPreviewModal from './PDFPreviewModal';
 
 import { useAuth } from '../../context/AuthContext';
 import ConfirmDialog from '../dialog/ConfirmDialog';
+import FavoriteButton from './FavoriteButton';
 
 const IllustrationDetailModal = ({
     open,
@@ -245,9 +246,12 @@ const IllustrationDetailModal = ({
                     <Typography variant="h6" fontWeight="800">
                         イラストレーション詳細
                     </Typography>
-                    <IconButton onClick={onClose} size="small" sx={{ color: 'text.secondary' }}>
-                        <CloseIcon />
-                    </IconButton>
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                        <FavoriteButton illustration={currentIllustration} />
+                        <IconButton onClick={onClose} size="small" sx={{ color: 'text.secondary' }}>
+                            <CloseIcon />
+                        </IconButton>
+                    </Box>
                 </DialogTitle>
 
                 <DialogContent dividers sx={{ p: 2 }}>

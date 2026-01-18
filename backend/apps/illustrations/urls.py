@@ -9,6 +9,7 @@ router.register(r'part-categories', views.PartCategoryViewSet, basename='partcat
 router.register(r'part-subcategories', views.PartSubCategoryViewSet, basename='partsubcategory')
 router.register(r'illustrations', views.IllustrationViewSet, basename='illustration')
 router.register(r'illustration-files', views.IllustrationFileViewSet, basename='illustrationfile')
+router.register(r'favorites', views.FavoriteIllustrationViewSet, basename='favorite')
 
 # ✅ Register car-models LAST or use manual URLs for custom actions
 router.register(r'car-models', views.CarModelViewSet, basename='carmodel')

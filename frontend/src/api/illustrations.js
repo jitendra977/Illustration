@@ -1292,4 +1292,87 @@ export const userListAPI = {
   },
 };
 
+// ============================================================================
+// FAVORITES API
+// ============================================================================
+export const favoriteAPI = {
+  getAll: async (params = {}) => {
+    const cacheKey = getCacheKey('favorites', params);
+    const cached = getFromCache(cacheKey);
+    if (cached) return cached;
+
+    try {
+      const response = await api.get('/favorites/', { params });
+      setCache(cacheKey, response.data);
+      return response.data;
+    } catch (error) {
+      console.error('Favorite API error:', error);
+      throw {
+        error: error.response?.data?.detail || error.message || 'お気に入り一覧の取得に失敗しました',
+        details: error.response?.data
+      };
+    }
+  },
+
+  add: async (illustrationId) => {
+    try {
+      clearCache(); // Clear favorites cache
+      const response = await api.post('/favorites/toggle/', { illustration: illustrationId });
+      return response.data;
+    } catch (error) {
+      console.error('Favorite add error:', error);
+      throw {
+        error: error.response?.data?.detail || error.message || 'お気に入りの追加に失敗しました',
+        details: error.response?.data
+      };
+    }
+  },
+
+  // Also supports direct toggle if needed
+  toggle: async (illustrationId) => {
+    try {
+      clearCache(); // Clear favorites cache
+      const response = await api.post('/favorites/toggle/', { illustration: illustrationId });
+      return response.data;
+    } catch (error) {
+      console.error('Favorite toggle error:', error);
+      throw {
+        error: error.response?.data?.detail || error.message || 'お気に入りの変更に失敗しました',
+        details: error.response?.data
+      };
+    }
+  },
+
+  remove: async (favoriteId) => {
+    try {
+      clearCache(); // Clear favorites cache
+      const response = await api.delete(`/favorites/${favoriteId}/`);
+      return response.data;
+    } catch (error) {
+      console.error('Favorite remove error:', error);
+      throw {
+        error: error.response?.data?.detail || error.message || 'お気に入りの削除に失敗しました',
+        details: error.response?.data
+      };
+    }
+  },
+
+  check: async (illustrationId) => {
+    const cacheKey = `favorite-check:${illustrationId}`;
+    const cached = getFromCache(cacheKey);
+    if (cached) return cached;
+
+    try {
+      const response = await api.get('/favorites/check/', {
+        params: { illustration_id: illustrationId }
+      });
+      setCache(cacheKey, response.data);
+      return response.data;
+    } catch (error) {
+      console.error('Favorite check error:', error);
+      return { is_favorited: false, favorite_id: null };
+    }
+  }
+};
+
 export default api;

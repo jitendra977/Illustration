@@ -22,12 +22,18 @@ import MobileManufacturerEngines from '../pages/mobile/MobileManufacturerEngines
 import MobileEngineIllustrations from '../pages/mobile/MobileEngineIllustrations';
 import AdminRoute from './guards/AdminRoute';
 import MobileUserManagement from '../pages/mobile/admin/MobileUserManagement';
+import MobileFavorites from '../pages/mobile/MobileFavorites';
 import ManufacturerList from '../pages/navigation/ManufacturerList';
 import ManufacturerEngines from '../pages/navigation/ManufacturerEngines';
 import EngineCars from '../pages/navigation/EngineCars';
 import CarCategories from '../pages/navigation/CarCategories';
 import CategorySubcategories from '../pages/navigation/CategorySubcategories';
 import HierarchicalIllustrationList from '../pages/navigation/HierarchicalIllustrationList';
+import HowToUse from '../pages/mobile/HowToUse';
+import EngineList from '../pages/navigation/EngineList';
+import CarList from '../pages/navigation/CarList';
+import CategoryList from '../pages/navigation/CategoryList';
+import CategorySubcategoriesList from '../pages/navigation/CategorySubcategoriesList';
 
 const MobileRoutes = () => {
   const router = createBrowserRouter([
@@ -53,6 +59,40 @@ const MobileRoutes = () => {
     {
       path: "/verify-email",
       element: <ProtectedRoute><MobileLayout><EmailVerification /></MobileLayout></ProtectedRoute>
+    },
+    {
+      path: "/how-to-use",
+      element: <ProtectedRoute><MobileLayout><HowToUse /></MobileLayout></ProtectedRoute>
+    },
+
+    // ============================================================================
+    // ALTERNATIVE NAVIGATION ENTRY POINTS
+    // ============================================================================
+
+    // By Engine Entry Point
+    {
+      path: "/engines",
+      element: <ProtectedRoute><MobileLayout><EngineList /></MobileLayout></ProtectedRoute>
+    },
+
+    // By Car Entry Point
+    {
+      path: "/cars",
+      element: <ProtectedRoute><MobileLayout><CarList /></MobileLayout></ProtectedRoute>
+    },
+
+    // By Category Entry Point
+    {
+      path: "/categories",
+      element: <ProtectedRoute><MobileLayout><CategoryList /></MobileLayout></ProtectedRoute>
+    },
+    {
+      path: "/categories/:categoryId/subcategories",
+      element: <ProtectedRoute><MobileLayout><CategorySubcategoriesList /></MobileLayout></ProtectedRoute>
+    },
+    {
+      path: "/categories/:categoryId/subcategories/:subcategoryId/illustrations",
+      element: <ProtectedRoute><MobileLayout><HierarchicalIllustrationList /></MobileLayout></ProtectedRoute>
     },
 
     // ============================================================================
@@ -164,6 +204,14 @@ const MobileRoutes = () => {
     {
       path: "/part-subcategories/create",
       element: <ProtectedRoute><MobileLayout><MobileSubPartCategories /></MobileLayout></ProtectedRoute>
+    },
+
+    // ============================================================================
+    // FAVORITES
+    // ============================================================================
+    {
+      path: "/favorites",
+      element: <ProtectedRoute><MobileLayout><MobileFavorites /></MobileLayout></ProtectedRoute>
     },
 
     // ============================================================================
