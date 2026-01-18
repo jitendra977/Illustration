@@ -36,11 +36,17 @@ ssh "$VPS_USER@$VPS_HOST" << EOF
     echo "--- VPS: Configuring safe directory for Git ---"
     git config --global --add safe.directory "$REMOTE_PROJECT_DIR"
 
-    echo "--- VPS: Pulling latest changes from $BRANCH ---"
+    echo "--- VPS: Fetching latest changes from origin ---"
     git fetch origin
-    git checkout "$BRANCH"
-    git reset --hard "origin/$BRANCH"
-    git clean -fd
+
+    echo "--- VPS: Stashing any local changes (settings/env) ---"
+    git stash
+
+    echo "--- VPS: Pulling latest changes from $BRANCH ---"
+    git pull origin "$BRANCH"
+
+    echo "--- VPS: Restoring local changes (if any) ---"
+    git stash pop || echo "No local changes to restore."
 
     echo "--- VPS: Restarting and rebuilding containers ---"
     # Using docker compose (v2) or docker-compose (v1)
