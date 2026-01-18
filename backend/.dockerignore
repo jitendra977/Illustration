@@ -24,8 +24,10 @@ build/
 *.log
 db.sqlite3
 db.sqlite3-journal
-/media
-/staticfiles
+media/
+media_production/
+db_dump_production.sql
+staticfiles/
 
 # Environment files
 .env
