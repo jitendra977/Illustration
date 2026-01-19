@@ -34,6 +34,8 @@ import EngineList from '../pages/navigation/EngineList';
 import CarList from '../pages/navigation/CarList';
 import CategoryList from '../pages/navigation/CategoryList';
 import CategorySubcategoriesList from '../pages/navigation/CategorySubcategoriesList';
+import CommentManagement from '../pages/mobile/CommentManagement';
+
 
 const MobileRoutes = () => {
   const router = createBrowserRouter([
@@ -237,6 +239,19 @@ const MobileRoutes = () => {
         </ProtectedRoute>
       )
     },
+    {
+      path: "/mobile/admin/comments",
+      element: (
+        <ProtectedRoute>
+          <AdminRoute>
+            <MobileLayout>
+              <CommentManagement />
+            </MobileLayout>
+          </AdminRoute>
+        </ProtectedRoute>
+      )
+    },
+
   ]);
 
   return (

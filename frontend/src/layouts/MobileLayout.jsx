@@ -42,11 +42,14 @@ import {
   Help as HelpIcon,
   ExpandLess,
   ExpandMore,
-  AdminPanelSettings as AdminIcon
+  AdminPanelSettings as AdminIcon,
+  Comment as CommentIcon
 } from '@mui/icons-material';
 import { useAuth } from '../context/AuthContext';
 import { useColorMode } from '../context/ThemeContext';
 import { useNavigate, useLocation } from 'react-router-dom';
+import CommentButton from '../components/CommentButton';
+
 
 const DRAWER_WIDTH = 280;
 
@@ -395,6 +398,35 @@ const MobileLayout = ({ children, showHeader = true, onRefresh, refreshing = fal
                 <ListItemText primary="システム管理" primaryTypographyProps={{ fontSize: '0.85rem', fontWeight: 500 }} />
               </ListItemButton>
             </ListItem>
+            <ListItem disablePadding>
+              <ListItemButton
+                onClick={() => {
+                  if (user?.is_staff || user?.is_superuser) {
+                    if (!isDesktop) setMenuOpen(false);
+                    navigate('/mobile/admin/comments');
+                  }
+                }}
+                disabled={!user?.is_staff && !user?.is_superuser}
+                sx={{
+                  pl: 4,
+                  mx: 1.5,
+                  my: 0.25,
+                  borderRadius: 2,
+                  opacity: (!user?.is_staff && !user?.is_superuser) ? 0.5 : 1,
+                  cursor: (!user?.is_staff && !user?.is_superuser) ? 'not-allowed' : 'pointer',
+                  '&.Mui-disabled': {
+                    opacity: 0.5,
+                    pointerEvents: 'none'
+                  }
+                }}
+              >
+                <ListItemIcon sx={{ minWidth: 40, opacity: (!user?.is_staff && !user?.is_superuser) ? 0.5 : 1 }}>
+                  <CommentIcon />
+                </ListItemIcon>
+                <ListItemText primary="フィードバック管理" primaryTypographyProps={{ fontSize: '0.85rem', fontWeight: 500 }} />
+              </ListItemButton>
+            </ListItem>
+
           </List>
         </Collapse>
         <Divider sx={{ my: 1.5, mx: 3 }} />
@@ -519,6 +551,8 @@ const MobileLayout = ({ children, showHeader = true, onRefresh, refreshing = fal
                   />
                 </IconButton>
               )}
+
+              <CommentButton />
 
               <IconButton
                 onClick={toggleColorMode}

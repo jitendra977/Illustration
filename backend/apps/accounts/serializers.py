@@ -7,7 +7,7 @@ from django.core.exceptions import ValidationError as DjangoValidationError
 from rest_framework import serializers
 from rest_framework_simplejwt.tokens import RefreshToken
 from django.utils import timezone
-from .models import User, Factory, Role, FactoryMember
+from .models import User, Factory, Role, FactoryMember, Comment
 
 class FactorySerializer(serializers.ModelSerializer):
     class Meta:
@@ -479,3 +479,50 @@ class CustomTokenObtainPairSerializer(serializers.Serializer):
             "access": str(refresh.access_token),
             "user": user_data,
         }
+
+
+class CommentSerializer(serializers.ModelSerializer):
+    """Serializer for user feedback/comments."""
+    
+    user_email = serializers.EmailField(source='user.email', read_only=True)
+    user_name = serializers.SerializerMethodField(read_only=True)
+    
+    class Meta:
+        model = Comment
+        fields = [
+            'id', 'department_name', 'comment', 'star', 
+            'user', 'user_email', 'user_name', 'date'
+        ]
+        read_only_fields = ['id', 'date', 'user']
+    
+    def get_user_name(self, obj):
+        """Get user's full name or username."""
+        if obj.user:
+            if obj.user.first_name and obj.user.last_name:
+                return f"{obj.user.last_name} {obj.user.first_name}"
+            return obj.user.username
+        return None
+    
+    def validate_star(self, value):
+        """Validate star rating is between 1 and 5."""
+        if value < 1 or value > 5:
+            raise serializers.ValidationError(
+                "Star rating must be between 1 and 5"
+            )
+        return value
+    
+    def validate_comment(self, value):
+        """Validate comment is not empty."""
+        if not value or not value.strip():
+            raise serializers.ValidationError(
+                "Comment cannot be empty"
+            )
+        return value.strip()
+    
+    def validate_department_name(self, value):
+        """Validate department name is not empty."""
+        if not value or not value.strip():
+            raise serializers.ValidationError(
+                "Department name cannot be empty"
+            )
+        return value.strip()

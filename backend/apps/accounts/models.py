@@ -262,6 +262,52 @@ class FactoryMember(models.Model):
         ]
 
 
+# ================= COMMENT MODEL =================
+class Comment(models.Model):
+    """
+    User feedback/comment model
+    """
+    department_name = models.CharField(
+        max_length=100,
+        verbose_name="部所名",
+        help_text="Department name"
+    )
+    comment = models.TextField(
+        verbose_name="コメント",
+        help_text="Feedback comment"
+    )
+    star = models.IntegerField(
+        verbose_name="評価",
+        help_text="Star rating (1-5)",
+        choices=[(i, f"{i} Star{'s' if i > 1 else ''}") for i in range(1, 6)],
+        default=5
+    )
+    user = models.ForeignKey(
+        User,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='comments',
+        help_text="User who submitted the comment (optional)"
+    )
+    date = models.DateTimeField(
+        auto_now_add=True,
+        verbose_name="日付"
+    )
+
+    def __str__(self):
+        return f"{self.department_name} - {self.star}★ ({self.date.strftime('%Y-%m-%d')})"
+
+    class Meta:
+        verbose_name = "Comment"
+        verbose_name_plural = "Comments"
+        ordering = ['-date']
+        indexes = [
+            models.Index(fields=['-date']),
+            models.Index(fields=['department_name']),
+        ]
+
+
 # ================= SIGNALS =================
 @receiver(pre_save, sender=User)
 def delete_old_profile_image(sender, instance, **kwargs):

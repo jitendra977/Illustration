@@ -8,7 +8,7 @@ from rest_framework.decorators import action
 from rest_framework.views import APIView
 import uuid
 
-from .models import User, Factory, Role, FactoryMember
+from .models import User, Factory, Role, FactoryMember, Comment
 from .serializers import (
     UserSerializer,
     RegisterSerializer,
@@ -19,7 +19,8 @@ from .serializers import (
     AdminUserSerializer,
     FactorySerializer,
     RoleSerializer,
-    FactoryMemberSerializer
+    FactoryMemberSerializer,
+    CommentSerializer
 )
 
 
@@ -443,3 +444,28 @@ class UserListViewSet(viewsets.ReadOnlyModelViewSet):
                 model = User
                 fields = ['id', 'username', 'first_name', 'last_name']
         return SimpleUserSerializer
+
+
+class CommentViewSet(viewsets.ModelViewSet):
+    """
+    Viewset for managing user feedback/comments.
+    
+    Permissions:
+    - Anyone can create comments (AllowAny for create)
+    - Only staff/superusers can list/view comments
+    """
+    queryset = Comment.objects.all().select_related('user').order_by('-date')
+    serializer_class = CommentSerializer
+    
+    def get_permissions(self):
+        """Allow anyone to create comments, but restrict viewing to staff."""
+        if self.action == 'create':
+            return [permissions.AllowAny()]
+        return [permissions.IsAdminUser()]
+    
+    def perform_create(self, serializer):
+        """Automatically set the user if authenticated."""
+        if self.request.user.is_authenticated:
+            serializer.save(user=self.request.user)
+        else:
+            serializer.save()
