@@ -87,7 +87,14 @@ class AdminUserSerializer(serializers.ModelSerializer):
             'username': {'required': True},
         }
 
+    def validate_email(self, value):
+        """Ensure email is lowercase."""
+        return value.lower() if value else value
+
     def create(self, validated_data):
+        if 'email' in validated_data:
+            validated_data['email'] = validated_data['email'].lower()
+        
         password = validated_data.pop('password', None)
         user = User.objects.create(**validated_data)
         if password:
@@ -99,6 +106,9 @@ class AdminUserSerializer(serializers.ModelSerializer):
         return user
 
     def update(self, instance, validated_data):
+        if 'email' in validated_data:
+            validated_data['email'] = validated_data['email'].lower()
+            
         password = validated_data.pop('password', None)
         for attr, value in validated_data.items():
             setattr(instance, attr, value)
@@ -394,16 +404,16 @@ class CustomTokenObtainPairSerializer(serializers.Serializer):
         print(f"Received attrs: {attrs}")
         
         # Get credentials from request
-        username = attrs.get("username", "").strip()
-        email = attrs.get("email", "").strip()
+        username_input = attrs.get("username", "").strip()
+        email_input = attrs.get("email", "").strip()
         password = attrs.get("password")
         
-        print(f"Username: '{username}'")
-        print(f"Email: '{email}'")
+        print(f"Username Input: '{username_input}'")
+        print(f"Email Input: '{email_input}'")
         print(f"Password provided: {bool(password)}")
 
         # Validate that at least one credential is provided
-        if not username and not email:
+        if not username_input and not email_input:
             raise serializers.ValidationError(
                 "Either username or email is required"
             )
@@ -415,36 +425,45 @@ class CustomTokenObtainPairSerializer(serializers.Serializer):
 
         user = None
         
-        # Try to authenticate with email if provided
-        if email:
+        # Robust Authentication Logic:
+        # We try both inputs against both fields to handle cases where 
+        # the user pasted email into username field or browser auto-filled incorrectly.
+        
+        # 1. Try to find user by email (from either input)
+        for val in [email_input, username_input]:
+            if not val: continue
             try:
-                user_obj = User.objects.get(email=email.lower())
+                user_obj = User.objects.get(email__iexact=val) # Case-insensitive email search
                 if user_obj.check_password(password):
                     user = user_obj
-                    print(f"User authenticated with email: {user.username}")
+                    print(f"User authenticated via email match: {user.email}")
+                    break
             except User.DoesNotExist:
-                print(f"No user found with email: {email}")
                 pass
         
-        # Try to authenticate with username if provided and user not found yet
-        if not user and username:
-            try:
-                user_obj = User.objects.get(username=username)
-                if user_obj.check_password(password):
-                    user = user_obj
-                    print(f"User authenticated with username: {user.username}")
-            except User.DoesNotExist:
-                print(f"No user found with username: {username}")
-                pass
+        # 2. Try to find user by username (from either input) if not already found
+        if not user:
+            for val in [username_input, email_input]:
+                if not val: continue
+                try:
+                    user_obj = User.objects.get(username=val)
+                    if user_obj.check_password(password):
+                        user = user_obj
+                        print(f"User authenticated via username match: {user.username}")
+                        break
+                except User.DoesNotExist:
+                    pass
 
         # If still no user found, raise error
         if not user:
+            print("Login failed: Invalid credentials")
             raise serializers.ValidationError(
                 "Invalid credentials provided"
             )
 
         # Check if account is active
         if not user.is_active:
+            print(f"Login failed: Account disabled for {user.username}")
             raise serializers.ValidationError(
                 "Account is disabled. Please contact support."
             )
