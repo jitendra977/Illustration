@@ -48,13 +48,11 @@ ssh "$VPS_USER@$VPS_HOST" << EOF
     echo "--- VPS: Restoring local changes (if any) ---"
     git stash pop || echo "No local changes to restore."
 
+    echo "--- VPS: Building images (Separate from UP to reduce load) ---"
+    docker compose build --pull
+
     echo "--- VPS: Restarting and rebuilding containers ---"
-    # Using docker compose (v2) or docker-compose (v1)
-    if command -v docker > /dev/null && docker compose version > /dev/null 2>&1; then
-        docker compose up -d --build
-    else
-        docker-compose up -d --build
-    fi
+    docker compose up -d
 
     echo "✅ VPS: Deployment successful!"
 EOF
