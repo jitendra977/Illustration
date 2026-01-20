@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/usr/bin/sh
 
 set -e
 
@@ -41,10 +41,12 @@ else:
     print("✔ Admin user already exists")
 EOF
 
-echo "➡ Starting Gunicorn server..."
+echo "➡ Starting Gunicorn server with threaded workers..."
 exec gunicorn config.wsgi:application \
     --bind 0.0.0.0:8000 \
-    --workers 3 \
+    --workers 2 \
+    --threads 4 \
+    --worker-class gthread \
     --timeout 120 \
     --log-level info \
     --access-logfile - \
