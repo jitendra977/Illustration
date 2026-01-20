@@ -81,6 +81,7 @@ Desktop.ini
 *.bak
 *.swp
 *.swo
+unused_backup/
 
 
 # ========================================
