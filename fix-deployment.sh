@@ -13,30 +13,16 @@ ssh nishanaweb@nishanaweb.cloud << 'EOF'
   
   echo "📍 Current directory: $(pwd)"
   
-  # Stop containers first
-  echo "🛑 Stopping containers..."
-  docker compose down
-  
-  # Remove node_modules from Git tracking (but keep the files)
-  echo "🗑️  Removing node_modules from Git..."
-  git rm -r --cached frontend/node_modules || true
-  
-  # Commit this change
-  echo "💾 Committing the removal..."
-  git add .gitignore
-  git commit -m "chore: Remove node_modules from Git tracking" || echo "Nothing to commit"
-  
-  # Force clean any remaining conflicts
-  echo "🧹 Cleaning up..."
-  git reset --hard origin/deploy-server
-  
   # Pull latest changes
   echo "📥 Pulling latest code..."
   git pull origin deploy-server
   
-  # Rebuild containers
-  echo "🏗️  Rebuilding containers..."
-  docker compose up -d --build
+  # Rebuild containers safely
+  echo "🏗️  Building images (Separate from UP to reduce load)..."
+  docker compose build --pull
+  
+  echo "🚀 Restarting containers..."
+  docker compose up -d
   
   echo "✅ Done! Deployment should be much faster now."
 EOF
