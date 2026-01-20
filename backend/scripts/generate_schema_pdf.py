@@ -1,25 +1,26 @@
 from fpdf import FPDF
+from fpdf.enums import XPos, YPos
 
 class SchemaPDF(FPDF):
     def header(self):
         self.set_font('Helvetica', 'B', 15)
-        self.cell(0, 10, 'Illustration System - Database Schema', 0, 1, 'C')
+        self.cell(0, 10, 'Illustration System - Database Schema', border=0, new_x=XPos.LMARGIN, new_y=YPos.NEXT, align='C')
         self.ln(5)
 
     def footer(self):
         self.set_y(-15)
         self.set_font('Helvetica', 'I', 8)
-        self.cell(0, 10, f'Page {self.page_no()}', 0, 0, 'C')
+        self.cell(0, 10, f'Page {self.page_no()}', border=0, new_x=XPos.LMARGIN, new_y=YPos.NEXT, align='C')
 
     def chapter_title(self, title):
         self.set_font('Helvetica', 'B', 12)
         self.set_fill_color(200, 220, 255)
-        self.cell(0, 10, title, 0, 1, 'L', fill=True)
+        self.cell(0, 10, title, border=0, new_x=XPos.LMARGIN, new_y=YPos.NEXT, align='L', fill=True)
         self.ln(4)
 
     def model_header(self, name, description):
         self.set_font('Helvetica', 'B', 10)
-        self.cell(0, 8, f'Model: {name}', 0, 1)
+        self.cell(0, 8, f'Model: {name}', border=0, new_x=XPos.LMARGIN, new_y=YPos.NEXT)
         if description:
             self.set_font('Helvetica', 'I', 9)
             self.multi_cell(0, 5, description)
@@ -28,15 +29,17 @@ class SchemaPDF(FPDF):
     def table_header(self):
         self.set_font('Helvetica', 'B', 9)
         self.set_fill_color(240, 240, 240)
-        self.cell(40, 7, 'Field Name', 1, 0, 'L', fill=True)
-        self.cell(50, 7, 'Type / Rules', 1, 0, 'L', fill=True)
-        self.cell(0, 7, 'Description', 1, 1, 'L', fill=True)
+        self.cell(45, 7, 'Field Name', border=1, new_x=XPos.RIGHT, new_y=YPos.TOP, align='L', fill=True)
+        self.cell(50, 7, 'Type / Rules', border=1, new_x=XPos.RIGHT, new_y=YPos.TOP, align='L', fill=True)
+        self.cell(0, 7, 'Description', border=1, new_x=XPos.LMARGIN, new_y=YPos.NEXT, align='L', fill=True)
 
     def row(self, name, type_info, desc):
         self.set_font('Helvetica', '', 8)
-        self.cell(40, 6, name, 1)
-        self.cell(50, 6, type_info, 1)
-        self.multi_cell(0, 6, desc, 1)
+        # We use a fixed height for the row or use multi_cell with calculation.
+        # For simplicity, let's just make sure description is the last one on the line.
+        self.cell(45, 8, name, border=1, new_x=XPos.RIGHT, new_y=YPos.TOP)
+        self.cell(50, 8, type_info, border=1, new_x=XPos.RIGHT, new_y=YPos.TOP)
+        self.multi_cell(0, 8, desc, border=1, new_x=XPos.LMARGIN, new_y=YPos.NEXT)
 
 def generate_schema_pdf():
     pdf = SchemaPDF()
@@ -106,8 +109,9 @@ def generate_schema_pdf():
     pdf.row('file', 'FileField', 'Stored in structured folders.')
     pdf.row('file_type', 'Choices', 'Image, PDF, Other.')
     
-    pdf.output('../Illustration_Schema_Documentation.pdf')
-    print("PDF generated successfully!")
+    output_path = '/Volumes/Programming/React-Python/YAW/Illustration-System/Illustration_Schema_Documentation.pdf'
+    pdf.output(output_path)
+    print(f"PDF generated successfully at: {output_path}")
 
 if __name__ == '__main__':
     generate_schema_pdf()
