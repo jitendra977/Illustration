@@ -24,6 +24,9 @@ ssh nishanaweb@nishanaweb.cloud << 'EOF'
   echo "🚀 Restarting containers..."
   docker compose up -d
   
+  echo "🧹 Cleaning up unused Docker images..."
+  docker image prune -f
+  
   echo "✅ Done! Deployment should be much faster now."
 EOF
 

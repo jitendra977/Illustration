@@ -54,6 +54,9 @@ ssh "$VPS_USER@$VPS_HOST" << EOF
     echo "--- VPS: Restarting and rebuilding containers ---"
     docker compose up -d
 
+    echo "--- VPS: Cleaning up unused Docker images ---"
+    docker image prune -f
+
     echo "✅ VPS: Deployment successful!"
 EOF
 
