@@ -10,7 +10,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 load_dotenv(BASE_DIR / ".env")
 
 SECRET_KEY = os.getenv("SECRET_KEY", "unsafe-secret-for-dev")
-DEBUG =  "True"
+DEBUG = os.getenv("DEBUG", "True") == "True"
 FRONTEND_URL = os.getenv("FRONTEND_URL", "http://illustration.local")
 
 # ============================================
