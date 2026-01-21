@@ -6,6 +6,7 @@ import {
   partCategoryAPI,
   partSubCategoryAPI,
   illustrationAPI,
+  illustrationFileAPI,
   factoryAPI,
   userListAPI,
 } from '../api/illustrations';

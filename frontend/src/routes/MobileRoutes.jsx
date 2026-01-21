@@ -8,33 +8,33 @@ import Login from '../pages/mobile/auth/Login';
 import Register from '../pages/mobile/auth/Register';
 import ProtectedRoute from './guards/ProtectedRoute';
 import { AuthProvider } from '../context/AuthContext';
-import EmailVerification from '../pages/auth/EmailVerification';
+import EmailVerification from '../pages/mobile/auth/EmailVerification';
 import MobileLayout from '../layouts/MobileLayout';
-import MobileHome from '../pages/mobile/MobileHome';
-import MobileIllustrations from '../pages/mobile/MobileIllustrations';
-import MobileManufacturers from '../pages/mobile/MobileManufacturers';
-import MobileCarModels from '../pages/mobile/MobileCarModels';
-import MobileEngineModels from '../pages/mobile/MobileEngineModels';
-import MobileSubPartCategories from '../pages/mobile/MobilePartSubCategories';
-import MobileProfile from '../pages/mobile/MobileProfile';
-import MobilePartCategories from '../pages/mobile/MobilePartCategories';
-import MobileManufacturerEngines from '../pages/mobile/MobileManufacturerEngines';
-import MobileEngineIllustrations from '../pages/mobile/MobileEngineIllustrations';
+import MobileHome from '../pages/mobile/home/MobileHome';
+import MobileIllustrations from '../pages/mobile/illustrations/MobileIllustrations';
+import MobileManufacturers from '../pages/mobile/masters/MobileManufacturers';
+import MobileCarModels from '../pages/mobile/masters/MobileCarModels';
+import MobileEngineModels from '../pages/mobile/masters/MobileEngineModels';
+import MobileSubPartCategories from '../pages/mobile/masters/MobilePartSubCategories';
+import MobileProfile from '../pages/mobile/accounts/MobileProfile';
+import MobilePartCategories from '../pages/mobile/masters/MobilePartCategories';
+import MobileManufacturerEngines from '../pages/mobile/masters/MobileManufacturerEngines';
+import MobileEngineIllustrations from '../pages/mobile/illustrations/MobileEngineIllustrations';
 import AdminRoute from './guards/AdminRoute';
 import MobileUserManagement from '../pages/mobile/admin/MobileUserManagement';
-import MobileFavorites from '../pages/mobile/MobileFavorites';
-import ManufacturerList from '../pages/navigation/ManufacturerList';
-import ManufacturerEngines from '../pages/navigation/ManufacturerEngines';
-import EngineCars from '../pages/navigation/EngineCars';
-import CarCategories from '../pages/navigation/CarCategories';
-import CategorySubcategories from '../pages/navigation/CategorySubcategories';
-import HierarchicalIllustrationList from '../pages/navigation/HierarchicalIllustrationList';
-import HowToUse from '../pages/mobile/HowToUse';
-import EngineList from '../pages/navigation/EngineList';
-import CarList from '../pages/navigation/CarList';
-import CategoryList from '../pages/navigation/CategoryList';
-import CategorySubcategoriesList from '../pages/navigation/CategorySubcategoriesList';
-import CommentManagement from '../pages/mobile/CommentManagement';
+import MobileFavorites from '../pages/mobile/illustrations/MobileFavorites';
+import ManufacturerList from '../pages/mobile/navigation/ManufacturerList';
+import ManufacturerEngines from '../pages/mobile/navigation/ManufacturerEngines';
+import EngineCars from '../pages/mobile/navigation/EngineCars';
+import CarCategories from '../pages/mobile/navigation/CarCategories';
+import CategorySubcategories from '../pages/mobile/navigation/CategorySubcategories';
+import HierarchicalIllustrationList from '../pages/mobile/navigation/HierarchicalIllustrationList';
+import HowToUse from '../pages/mobile/help/HowToUse';
+import EngineList from '../pages/mobile/navigation/EngineList';
+import CarList from '../pages/mobile/navigation/CarList';
+import CategoryList from '../pages/mobile/navigation/CategoryList';
+import CategorySubcategoriesList from '../pages/mobile/navigation/CategorySubcategoriesList';
+import CommentManagement from '../pages/mobile/comments/CommentManagement';
 
 
 const MobileRoutes = () => {
@@ -221,7 +221,7 @@ const MobileRoutes = () => {
     // ============================================================================
     {
       path: "/profile",
-      element: <ProtectedRoute><MobileLayout><MobileProfile /></MobileLayout></ProtectedRoute>
+      element: <ProtectedRoute><MobileProfile /></ProtectedRoute>
     },
 
     // ============================================================================
@@ -232,9 +232,7 @@ const MobileRoutes = () => {
       element: (
         <ProtectedRoute>
           <AdminRoute>
-            <MobileLayout>
-              <MobileUserManagement />
-            </MobileLayout>
+            <MobileUserManagement />
           </AdminRoute>
         </ProtectedRoute>
       )

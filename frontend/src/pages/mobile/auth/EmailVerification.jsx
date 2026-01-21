@@ -14,7 +14,7 @@ import {
   Chip
 } from '@mui/material';
 import { CheckCircle, Error, Email, Refresh } from '@mui/icons-material';
-import { usersAPI } from '../../services/users';
+import { usersAPI } from '../../../services/users';
 
 const EmailVerification = () => {
   const { token } = useParams();

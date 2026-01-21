@@ -6,9 +6,9 @@ This guide contains the "No-Mistake" workflows for running, testing, and deployi
 
 | Goal | Command | Description |
 | :--- | :--- | :--- |
-| **Start / Restart** | `./dev.sh` | Safe daily restart. |
-| **Fix Hook Errors** | `./dev.sh --nuclear` | Deep clean. Deletes volumes & modules. |
-| **Deploy to VPS** | `./deploy.sh` | Pushes code & updates server automatically. |
+| **Start / Restart** | `scripts/dev.sh` | Safe daily restart. |
+| **Fix Hook Errors** | `scripts/dev.sh --nuclear` | Deep clean. Deletes volumes & modules. |
+| **Deploy to VPS** | `scripts/deploy.sh` | Pushes code & updates server automatically. |
 | **View Logs** | `docker compose logs -f` | View live server output. |
 
 ---
@@ -17,7 +17,7 @@ This guide contains the "No-Mistake" workflows for running, testing, and deployi
 ### Standard Start
 To start the application normally:
 ```bash
-./dev.sh
+scripts/dev.sh
 ```
 - Frontend: [http://localhost:5173](http://localhost:5173)
 - Backend: [http://localhost:8000](http://localhost:8000)
@@ -28,7 +28,7 @@ Follow this table to avoid "Invalid Hook Call" errors when files change.
 | If You Changed... | Do This... |
 | :--- | :--- |
 | **React Code** (`.jsx`, `.css`) | **Nothing.** Browser updates automatically. |
-| **package.json** (New Libs) | **MUST Rebuild.** Run `./dev.sh --nuclear` |
+| **package.json** (New Libs) | **MUST Rebuild.** Run `scripts/dev.sh --nuclear` |
 | **Python Code** (`views.py`) | **Nothing.** Server reloads automatically. |
 | **Database Models** | **See "Database Changes" section below** |
 
@@ -57,7 +57,7 @@ bun add axios
 cd ..
 
 # Clean rebuild (REQUIRED)
-./dev.sh --nuclear
+scripts/dev.sh --nuclear
 ```
 
 #### Scenario 2: Updating Package Versions
@@ -95,7 +95,7 @@ bun remove lodash
 **What to do next:**
 ```bash
 cd ..
-./dev.sh --nuclear
+scripts/dev.sh --nuclear
 ```
 
 #### Scenario 4: Pulling Code with New Dependencies
@@ -109,7 +109,7 @@ git pull origin deploy-server
 git diff HEAD@{1} frontend/package.json
 
 # If it changed, rebuild
-./dev.sh --nuclear
+scripts/dev.sh --nuclear
 ```
 
 ### Why the "Nuclear" Rebuild is Required
@@ -132,11 +132,11 @@ The `--nuclear` flag does these critical steps:
 | Action | Command | Rebuild Required? |
 | :--- | :--- | :--- |
 | Changed `.jsx` or `.css` files | None | ❌ No (HMR handles it) |
-| Added new package (`npm install`) | `./dev.sh --nuclear` | ✅ YES |
-| Updated package version | `./dev.sh --nuclear` | ✅ YES |
-| Removed package | `./dev.sh --nuclear` | ✅ YES |
-| Pulled code with `package.json` changes | `./dev.sh --nuclear` | ✅ YES |
-| Changed `vite.config.js` | `./dev.sh` | ⚠️ Maybe (safe rebuild recommended) |
+| Added new package (`npm install`) | `scripts/dev.sh --nuclear` | ✅ YES |
+| Updated package version | `scripts/dev.sh --nuclear` | ✅ YES |
+| Removed package | `scripts/dev.sh --nuclear` | ✅ YES |
+| Pulled code with `package.json` changes | `scripts/dev.sh --nuclear` | ✅ YES |
+| Changed `vite.config.js` | `scripts/dev.sh` | ⚠️ Maybe (safe rebuild recommended) |
 
 ### Troubleshooting
 
@@ -144,7 +144,7 @@ The `--nuclear` flag does these critical steps:
 **Cause:** Old `node_modules` cached in Docker volume  
 **Solution:**
 ```bash
-./dev.sh --nuclear
+scripts/dev.sh --nuclear
 ```
 
 #### Issue: Package installed but import fails
@@ -153,7 +153,7 @@ The `--nuclear` flag does these critical steps:
 ```bash
 # Don't install packages directly in frontend/
 # Instead, edit package.json manually, then:
-./dev.sh --nuclear
+scripts/dev.sh --nuclear
 ```
 
 #### Issue: Different versions locally vs. in Docker
@@ -162,12 +162,12 @@ The `--nuclear` flag does these critical steps:
 ```bash
 # Delete lock files and rebuild
 sudo rm -rf frontend/package-lock.json frontend/bun.lockb
-./dev.sh --nuclear
+scripts/dev.sh --nuclear
 ```
 
 ### Best Practices
 
-1. ✅ **Always use `./dev.sh --nuclear`** after `package.json` changes
+1. ✅ **Always use `scripts/dev.sh --nuclear`** after `package.json` changes
 2. ✅ **Commit `package.json` changes** before deploying
 3. ✅ **Test locally first** before pushing to production
 4. ❌ **Never install packages directly** in `frontend/` folder (use Docker)
@@ -309,7 +309,7 @@ If you see `Invalid Hook Call` or weird errors, run this to reset the environmen
 
 ### What `deploy.sh` Does (Step-by-Step)
 
-The `./deploy.sh` script automates the entire deployment process. Here's exactly what happens:
+The `scripts/deploy.sh` script automates the entire deployment process. Here's exactly what happens:
 
 #### Phase 1: Local Machine
 1. **Pushes Code to GitHub**
@@ -376,11 +376,11 @@ The script connects to `nishanaweb@nishanaweb.cloud` and executes these commands
 - ❌ Environment variables (`.env` files are stashed/restored)
 
 ### Pre-Deployment Checklist
-Before running `./deploy.sh`, ensure:
+Before running `scripts/deploy.sh`, ensure:
 
 1. ✅ **Code works locally**
    ```bash
-   ./dev.sh
+   scripts/dev.sh
    # Test at http://localhost:5173
    ```
 
@@ -403,7 +403,7 @@ Before running `./deploy.sh`, ensure:
 
 ### Running the Deployment
 ```bash
-./deploy.sh
+scripts/deploy.sh
 ```
 
 **Expected Output:**
@@ -453,7 +453,7 @@ git reset --hard origin/deploy-server
 
 # Try deployment again
 exit
-./deploy.sh
+scripts/deploy.sh
 ```
 
 #### Issue: Containers won't start after deployment
@@ -468,14 +468,14 @@ ssh nishanaweb@nishanaweb.cloud "cd /home/nishanaweb/project/Illustration && doc
 ## 🚀 2. Deployment
 ### Phase 1: Pre-Flight Check
 Before deploying, confirm it works locally.
-1. Run `./dev.sh`
+1. Run `scripts/dev.sh`
 2. Open http://localhost:5173 and check the Console (F12) for red errors.
 3. If it works, proceed.
 
 ### Phase 2: Deploy to VPS
 We use a single script to push code and update the server:
 ```bash
-./deploy.sh
+scripts/deploy.sh
 ```
 This script will:
 1. Push your local `deploy-server` branch to GitHub.
