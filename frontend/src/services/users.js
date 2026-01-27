@@ -207,6 +207,14 @@ export const usersAPI = {
           }
           return user;
         });
+      } else if (Array.isArray(data)) {
+        // Handle non-paginated response
+        return data.map(user => {
+          if (user.profile_image && !user.profile_image.startsWith('http')) {
+            user.profile_image = `${getBaseUrl()}${user.profile_image}`;
+          }
+          return user;
+        });
       }
 
       return data;

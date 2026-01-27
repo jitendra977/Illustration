@@ -110,6 +110,7 @@ class UserViewSet(viewsets.ModelViewSet):
     
     queryset = User.objects.all().order_by('-date_joined')
     permission_classes = [permissions.IsAuthenticated]
+    pagination_class = None
 
     def get_queryset(self):
         user = self.request.user
