@@ -257,25 +257,95 @@ export const AuthProvider = ({ children }) => {
       const membership = user.factory_memberships.find(m => m.factory.id === factoryId && m.is_active);
       if (membership && membership.role) {
         const role = membership.role;
+        const roleCode = role.code;
+
+        // VERIFICATION GATE: High-tier roles must be verified to exercise their privileges
+        const highTierRoles = [
+          'SUPER_ADMIN',
+          'FACTORY_MANAGER',
+          'ILLUSTRATION_ADMIN',
+          'ILLUSTRATION_EDITOR',
+          'ILLUSTRATION_VIEWER'
+        ];
+        const isHighTier = highTierRoles.includes(roleCode);
+
+        // If unverified, they are restricted to 'OWN ONLY' visibility for illustrations.
+        // Backend strictly requires verification for most operations.
+        if (isHighTier && !user.is_verified) {
+          if (permission === 'active') return true;
+          if (permission === 'verified') return false;
+          return false;
+        }
+
         switch (permission) {
           case 'manage_users': return role.can_manage_users;
           case 'manage_jobs': return role.can_manage_jobs;
           case 'view_finance': return role.can_view_finance;
           case 'edit_finance': return role.can_edit_finance;
-          case 'create_illustrations': return role.can_create_illustrations;
-          case 'edit_illustrations': return role.can_edit_illustrations;
-          case 'delete_illustrations': return role.can_delete_illustrations;
+          case 'create_illustrations':
+            // ILLUSTRATION_CONTRIBUTOR can create if active, even if unverified (per backend)
+            if (roleCode === 'ILLUSTRATION_CONTRIBUTOR') return role.can_create_illustration;
+            return role.can_create_illustration && user.is_verified;
+          case 'view_illustrations': return role.can_view_illustration;
+          case 'edit_illustrations': return role.can_edit_illustration;
+          case 'delete_illustrations': return role.can_delete_illustration;
           case 'view_all_illustrations': return role.can_view_all_factory_illustrations;
+          case 'manage_factory': return role.can_manage_factory;
+          case 'manage_all_systems': return role.can_manage_all_systems;
+          case 'manage_catalog': return role.can_manage_catalog && user.is_verified;
           default: break;
         }
       }
     }
 
+    // Check system-wide permissions across all memberships
+    // Use the pre-aggregated permissions from the backend if available
+    if (permission === 'manage_all_systems') {
+      if (user.permissions?.can_manage_all_systems) return user.is_verified;
+      const hasSystemRole = user.factory_memberships?.some(m => m.is_active && (m.role?.can_manage_all_systems || m.role_code === 'SUPER_ADMIN'));
+      return user.is_superuser || (hasSystemRole && user.is_verified);
+    }
+
+    if (permission === 'manage_users') {
+      if (user.permissions?.can_manage_users) return user.is_verified;
+      const hasPrivilege = user.factory_memberships?.some(m => m.is_active && (m.role?.can_manage_users || m.role_code === 'FACTORY_MANAGER' || m.role_code === 'SUPER_ADMIN'));
+      return user.is_superuser || (hasPrivilege && user.is_verified);
+    }
+
+    if (permission === 'manage_factory') {
+      if (user.permissions?.can_manage_factory) return user.is_verified;
+      const hasPrivilege = user.factory_memberships?.some(m => m.is_active && (m.role?.can_manage_factory || m.role_code === 'FACTORY_MANAGER' || m.role_code === 'SUPER_ADMIN'));
+      return user.is_superuser || (hasPrivilege && user.is_verified);
+    }
+
+    if (permission === 'create_illustrations') {
+      if (user.permissions?.can_create_illustration) return true; // Contributor can create if active (even unverified per backend)
+      const hasPrivilege = user.factory_memberships?.some(m => m.is_active && (m.role?.can_create_illustration || ['SUPER_ADMIN', 'FACTORY_MANAGER', 'ILLUSTRATION_ADMIN', 'ILLUSTRATION_EDITOR', 'ILLUSTRATION_CONTRIBUTOR'].includes(m.role_code)));
+      return user.is_superuser || hasPrivilege;
+    }
+
+    if (permission === 'view_illustrations' || permission === 'view_all_illustrations') {
+      if (user.permissions?.can_view_illustration || user.permissions?.can_view_all_factory_illustrations) return user.is_verified;
+      const hasPrivilege = user.factory_memberships?.some(m => m.is_active && (m.role?.can_view_illustration || m.role?.can_view_all_factory_illustrations || ['SUPER_ADMIN', 'FACTORY_MANAGER', 'ILLUSTRATION_ADMIN', 'ILLUSTRATION_EDITOR', 'ILLUSTRATION_VIEWER'].includes(m.role_code)));
+      return user.is_superuser || (hasPrivilege && user.is_verified);
+    }
+
+    // Catalog permissions (Reference data like Manufacturers, Engines, etc.)
+    // Backend AdminOrReadOnly strictly requires is_verified for SAFE_METHODS too.
+    const catalogPermissions = ['view_catalog', 'manage_catalog', 'browse_catalog'];
+    if (catalogPermissions.includes(permission)) {
+      if (!user.is_verified) return false;
+      if (permission === 'manage_catalog') {
+        return user.is_superuser || user.factory_memberships?.some(m => m.is_active && m.role?.can_manage_catalog);
+      }
+      return true; // Verified users can view/browse catalog
+    }
+
     switch (permission) {
       case 'admin':
-        return user.is_staff || user.is_superuser;
+        return (user.is_staff || user.is_superuser) && user.is_verified;
       case 'superuser':
-        return user.is_superuser;
+        return user.is_superuser && user.is_verified;
       case 'verified':
         return user.is_verified;
       case 'active':

@@ -58,6 +58,7 @@ const CreateIllustrationModal = ({ open, onClose, onSuccess, mode = 'create', il
 
   const [existingFiles, setExistingFiles] = useState([]);
   const [filesToDelete, setFilesToDelete] = useState([]);
+  const [fullIllustration, setFullIllustration] = useState(null);
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
 
@@ -91,27 +92,51 @@ const CreateIllustrationModal = ({ open, onClose, onSuccess, mode = 'create', il
 
     // 2. If in Edit mode, populate form and load dependent data
     if (mode === 'edit' && illustration) {
-      console.log('Initializing Edit Mode with:', illustration);
-
-      // Populate basic fields
+      // Populate basic fields initially from props
       setFormData({
         title: illustration.title || '',
         description: illustration.description || '',
-        manufacturer: '', // Will be set after finding the correct car model -> manufacturer map
+        manufacturer: '',
         car_model: '',
-        engine_model: illustration.engine_model || '', // ID
-        part_category: illustration.part_category || '', // ID
-        part_subcategory: illustration.part_subcategory || '', // ID
+        engine_model: illustration.engine_model || '',
+        part_category: illustration.part_category || '',
+        part_subcategory: illustration.part_subcategory || '',
         uploaded_files: []
       });
 
       setExistingFiles(illustration.files || []);
       setFilesToDelete([]);
 
-      // 3. Resolve dependencies: Engine -> Car -> Manufacturer
-      if (illustration.engine_model) {
+      // Fetch full details to ensure we have all files and permissions
+      let fullIllustration = illustration;
+      try {
+        setLoading(true);
+        const fetchedIllustration = await illustrationAPI.getById(illustration.id);
+        console.log('✅ Fetched full details for edit:', fetchedIllustration);
+        setFullIllustration(fetchedIllustration);
+        fullIllustration = fetchedIllustration;
+
+        // Update basic fields with fresh data
+        setFormData(prev => ({
+          ...prev,
+          title: fullIllustration.title || prev.title,
+          description: fullIllustration.description || prev.description,
+          engine_model: fullIllustration.engine_model || prev.engine_model,
+          part_category: fullIllustration.part_category || prev.part_category,
+          part_subcategory: fullIllustration.part_subcategory || prev.part_subcategory
+        }));
+
+        setExistingFiles(fullIllustration.files || []);
+      } catch (err) {
+        console.error('Failed to fetch full illustration details:', err);
+      } finally {
+        setLoading(false);
+      }
+
+      // 3. Resolve dependencies using fullIllustration
+      if (fullIllustration.engine_model) {
         try {
-          const engineData = await engineModelAPI.getById(illustration.engine_model);
+          const engineData = await engineModelAPI.getById(fullIllustration.engine_model);
           console.log('✅ engineData for edit:', engineData);
 
           const manufacturerId = engineData.manufacturer?.id || engineData.manufacturer;
@@ -119,9 +144,6 @@ const CreateIllustrationModal = ({ open, onClose, onSuccess, mode = 'create', il
           if (manufacturerId) {
             await fetchCarModels(manufacturerId);
 
-            // Try to find a suitable car model. 
-            // If the illustration has applicable_car_models, use the first one.
-            // Otherwise, use the first car model associated with the engine.
             let selectedCarId = '';
             if (illustration.applicable_car_models && illustration.applicable_car_models.length > 0) {
               selectedCarId = illustration.applicable_car_models[0];
@@ -141,7 +163,6 @@ const CreateIllustrationModal = ({ open, onClose, onSuccess, mode = 'create', il
             }));
           }
 
-          // 4. Load subcategories if category is present
           if (illustration.part_category) {
             await fetchSubCategories(illustration.part_category);
           }
@@ -168,6 +189,7 @@ const CreateIllustrationModal = ({ open, onClose, onSuccess, mode = 'create', il
       setCarModels([]);
       setEngineModels([]);
       setSubCategories([]);
+      setFullIllustration(null);
     }
   };
 
@@ -328,9 +350,10 @@ const CreateIllustrationModal = ({ open, onClose, onSuccess, mode = 'create', il
     }));
   };
 
-  const removeExistingFile = (fileId) => {
-    setFilesToDelete(prev => [...prev, fileId]);
-    setExistingFiles(prev => prev.filter(f => f.id !== fileId));
+  const removeExistingFile = (file) => {
+    if (!window.confirm(`ファイル「${file.title || file.file_name || 'ファイル'}」を削除してもよろしいですか？`)) return;
+    setFilesToDelete(prev => [...prev, file.id]);
+    setExistingFiles(prev => prev.filter(f => f.id !== file.id));
   };
 
   const handleSubmit = async (e) => {
@@ -375,10 +398,8 @@ const CreateIllustrationModal = ({ open, onClose, onSuccess, mode = 'create', il
         await illustrationAPI.update(illustration.id, dataToSend);
 
         // Delete removed files
-        if (filesToDelete.length > 0) {
-          for (const fileId of filesToDelete) {
-            await illustrationAPI.deleteFile(illustration.id, fileId).catch(console.error);
-          }
+        for (const fileId of filesToDelete) {
+          await illustrationAPI.deleteFile(fileId).catch(console.error);
         }
 
         // Upload new files is now handled by the update call itself if uploaded_files is included
@@ -718,9 +739,21 @@ const CreateIllustrationModal = ({ open, onClose, onSuccess, mode = 'create', il
                           {getFileIcon(file)}
                         </Box>
                         <Box sx={{ flex: 1, overflow: 'hidden' }}>
-                          <Typography variant="body2" noWrap>{file.file_name || 'File'}</Typography>
+                          <Typography variant="body2" fontWeight="700" noWrap>
+                            {file.title || file.file_name || 'File'}
+                          </Typography>
+                          {file.file_size && (
+                            <Typography variant="caption" color="text.secondary">
+                              {(file.file_size / 1024 / 1024).toFixed(2)} MB
+                            </Typography>
+                          )}
                         </Box>
-                        <IconButton size="small" color="error" onClick={() => removeExistingFile(file.id)}>
+                        <IconButton
+                          size="small"
+                          color="error"
+                          onClick={() => removeExistingFile(file)}
+                          disabled={!((fullIllustration || illustration)?.can_delete ?? true)}
+                        >
                           <DeleteIcon />
                         </IconButton>
                       </Stack>

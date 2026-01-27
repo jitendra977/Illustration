@@ -51,9 +51,7 @@ const IllustrationList = ({ illustrations, onDelete, onView, onEdit }) => {
   const isDesktop = useMediaQuery(theme.breakpoints.up('md'));
 
   const canModify = (illustration) => {
-    if (!user) return false;
-    if (user.is_superuser || user.is_staff) return true;
-    return user.id === illustration.user;
+    return illustration.can_edit ?? false;
   };
 
   const handleRowClick = (illustration) => {

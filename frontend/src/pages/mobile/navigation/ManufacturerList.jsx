@@ -11,6 +11,8 @@ import { useNavigate } from 'react-router-dom';
 import { Search, Car, Factory, ChevronRight } from 'lucide-react';
 import Breadcrumbs from '../../../components/navigation/breadcrumbs/Breadcrumbs';
 import { manufacturerAPI } from '../../../api/illustrations';
+import { useAuth } from '../../../context/AuthContext';
+import { ShieldAlert, Mail } from 'lucide-react';
 
 // Utility for Zinc colors (simulating Tailwind Zinc palette)
 // Zinc palette from theme
@@ -141,9 +143,16 @@ const ManufacturerList = () => {
         { label: 'メーカー選択' }
     ];
 
+    const { user } = useAuth();
+
     useEffect(() => {
         const handleScroll = () => setIsScrolled(window.scrollY > 20);
         window.addEventListener('scroll', handleScroll);
+
+        if (!user?.is_verified) {
+            setLoading(false);
+            return () => window.removeEventListener('scroll', handleScroll);
+        }
 
         const fetchManufacturers = async () => {
             try {
@@ -160,7 +169,7 @@ const ManufacturerList = () => {
 
         fetchManufacturers();
         return () => window.removeEventListener('scroll', handleScroll);
-    }, []);
+    }, [user?.is_verified]);
 
     const filteredManufacturers = useMemo(() => {
         return manufacturers.filter(m =>
@@ -280,6 +289,57 @@ const ManufacturerList = () => {
                     {loading ? (
                         <Box display="flex" justifyContent="center" py={8}>
                             <CircularProgress sx={{ color: 'primary.main' }} />
+                        </Box>
+                    ) : !user?.is_verified ? (
+                        <Box sx={{
+                            mt: 4,
+                            p: 4,
+                            textAlign: 'center',
+                            bgcolor: 'background.paper',
+                            borderRadius: 4,
+                            border: `1px solid ${theme.palette.divider}`,
+                        }}>
+                            <Box sx={{
+                                width: 64,
+                                height: 64,
+                                borderRadius: '20px',
+                                bgcolor: alpha(theme.palette.warning.main, 0.1),
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                mx: 'auto',
+                                mb: 2
+                            }}>
+                                <ShieldAlert size={32} color={theme.palette.warning.main} />
+                            </Box>
+                            <Typography variant="h6" fontWeight="800" gutterBottom>
+                                認証が必要です
+                            </Typography>
+                            <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
+                                カタログライブラリにアクセスするには、メールアドレスの認証を行ってください。
+                            </Typography>
+                            <Box
+                                component="button"
+                                onClick={() => navigate('/profile')}
+                                sx={{
+                                    width: '100%',
+                                    py: 1.5,
+                                    borderRadius: 3,
+                                    bgcolor: theme.palette.primary.main,
+                                    color: 'white',
+                                    border: 'none',
+                                    fontWeight: 700,
+                                    cursor: 'pointer',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    gap: 1,
+                                    '&:active': { transform: 'scale(0.98)' }
+                                }}
+                            >
+                                <Mail size={18} />
+                                認証設定へ移動
+                            </Box>
                         </Box>
                     ) : (
                         <Grid container spacing={2} sx={{ mt: 1 }}>

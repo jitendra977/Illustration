@@ -856,6 +856,19 @@ export const illustrationAPI = {
   },
 
   /**
+   * Get illustration statistics (total and own factory counts)
+   */
+  getStats: async () => {
+    try {
+      const response = await api.get('/illustrations/stats/');
+      return response.data;
+    } catch (error) {
+      console.error('Illustration stats API error:', error);
+      throw error;
+    }
+  },
+
+  /**
    * Get single illustration - includes all files
    */
   getById: async (id) => {
@@ -1033,10 +1046,10 @@ export const illustrationAPI = {
     return illustrationAPI.addFiles(id, files);
   },
 
-  deleteFile: async (illustrationId, fileId) => {
+  deleteFile: async (fileId) => {
     try {
       clearCache();
-      const response = await api.delete(`/illustrations/${illustrationId}/files/${fileId}/`);
+      const response = await api.delete(`/illustration-files/${fileId}/`);
       return response.data;
     } catch (error) {
       console.error('File delete error:', error);

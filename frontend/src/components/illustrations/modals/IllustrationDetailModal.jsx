@@ -90,7 +90,8 @@ const IllustrationDetailModal = ({
 
     const currentIllustration = fullIllustration || illustration;
 
-    const canEdit = user?.is_staff || user?.is_superuser || (user && currentIllustration && user.id === currentIllustration.user);
+    const canEdit = currentIllustration?.can_edit ?? false;
+    const canDelete = currentIllustration?.can_delete ?? false;
 
     if (!currentIllustration) return null;
 
@@ -164,7 +165,7 @@ const IllustrationDetailModal = ({
 
         setError(null);
         try {
-            await illustrationAPI.deleteFile(currentIllustration.id, fileToDelete.id);
+            await illustrationAPI.deleteFile(fileToDelete.id);
 
             // Refresh the illustration data to get updated file list
             const updatedData = await illustrationAPI.getById(currentIllustration.id);
@@ -461,28 +462,28 @@ const IllustrationDetailModal = ({
 
                 <DialogActions sx={{ p: 2, justifyContent: 'space-between' }}>
                     <Stack direction="row" spacing={1}>
+                        {canDelete && (
+                            <Button
+                                startIcon={<DeleteIcon />}
+                                color="error"
+                                onClick={handleDelete}
+                                disabled={deleting}
+                                size="small"
+                                sx={{ fontWeight: 700, textTransform: 'none' }}
+                            >
+                                削除
+                            </Button>
+                        )}
                         {canEdit && (
-                            <>
-                                <Button
-                                    startIcon={<DeleteIcon />}
-                                    color="error"
-                                    onClick={handleDelete}
-                                    disabled={deleting}
-                                    size="small"
-                                    sx={{ fontWeight: 700, textTransform: 'none' }}
-                                >
-                                    削除
-                                </Button>
-                                <Button
-                                    startIcon={<EditIcon />}
-                                    onClick={onEdit}
-                                    disabled={deleting}
-                                    size="small"
-                                    sx={{ fontWeight: 700, textTransform: 'none', color: 'text.secondary' }}
-                                >
-                                    編集
-                                </Button>
-                            </>
+                            <Button
+                                startIcon={<EditIcon />}
+                                onClick={onEdit}
+                                disabled={deleting}
+                                size="small"
+                                sx={{ fontWeight: 700, textTransform: 'none', color: 'text.secondary' }}
+                            >
+                                編集
+                            </Button>
                         )}
                     </Stack>
                     <Button

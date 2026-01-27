@@ -35,9 +35,11 @@ import IllustrationDetailModal from '../../../components/illustrations/modals/Il
 import FilterPanel from '../../../components/illustrations/list/FilterPanel';
 import IllustrationList from '../../../components/illustrations/list/IllustrationList';
 import Breadcrumbs from '../../../components/navigation/breadcrumbs/Breadcrumbs';
+import { useAuth } from '../../../context/AuthContext';
 
 const MobileIllustrations = () => {
   const theme = useTheme();
+  const { hasPermission } = useAuth();
   const location = useLocation();
   const navigate = useNavigate();
   const { id: paramId } = useParams();
@@ -192,7 +194,7 @@ const MobileIllustrations = () => {
                 let ordering = '-created_at';
                 if (value === 'oldest') ordering = 'created_at';
                 if (value === 'title') ordering = 'title';
-                if (value === 'factory') ordering = 'factory__name';
+                if (value === 'factory') ordering = '-is_own_factory,factory__name';
                 if (value === 'user') ordering = 'user__username';
                 setFilters(prev => ({ ...prev, ordering }));
               }}
@@ -277,19 +279,21 @@ const MobileIllustrations = () => {
       </Container>
 
       {/* Floating Action Button */}
-      <Fab
-        color="primary"
-        aria-label="add"
-        onClick={handleCreate}
-        sx={{
-          position: 'fixed',
-          bottom: 80, // Above bottom navigation
-          right: 16,
-          zIndex: 1000,
-        }}
-      >
-        <PlusIcon />
-      </Fab>
+      {hasPermission('create_illustrations') && (
+        <Fab
+          color="primary"
+          aria-label="add"
+          onClick={handleCreate}
+          sx={{
+            position: 'fixed',
+            bottom: 80, // Above bottom navigation
+            right: 16,
+            zIndex: 1000,
+          }}
+        >
+          <PlusIcon />
+        </Fab>
+      )}
 
       {/* Modals */}
       <CreateIllustrationModal

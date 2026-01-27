@@ -8,11 +8,8 @@ const IllustrationListCard = ({ illustration, toggleFavorite, favorites = [], on
   const theme = useTheme();
   const { user } = useAuth();
 
-  const canModify = () => {
-    if (!user) return false;
-    if (user.is_superuser || user.is_staff) return true;
-    return user.id === illustration.user;
-  };
+  const canEdit = illustration.can_edit ?? false;
+  const canDelete = illustration.can_delete ?? false;
   const zinc = theme.palette.zinc;
   const isFav = favorites.includes(illustration.id);
 
@@ -379,9 +376,9 @@ const IllustrationListCard = ({ illustration, toggleFavorite, favorites = [], on
               </IconButton>
             )}
 
-            {canModify() && (
+            {(canEdit || canDelete) && (
               <>
-                {onEdit && (
+                {canEdit && onEdit && (
                   <IconButton
                     size="small"
                     onClick={(e) => {
@@ -398,7 +395,7 @@ const IllustrationListCard = ({ illustration, toggleFavorite, favorites = [], on
                     <Edit2 size={14} />
                   </IconButton>
                 )}
-                {onDelete && (
+                {canDelete && onDelete && (
                   <IconButton
                     size="small"
                     onClick={(e) => {

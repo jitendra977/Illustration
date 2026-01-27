@@ -33,13 +33,15 @@ import {
     ExpandLess,
     ExpandMore,
     AdminPanelSettings as AdminIcon,
-    Comment as CommentIcon
+    Comment as CommentIcon,
+    Lock as LockIcon
 } from '@mui/icons-material';
+import { Tooltip } from '@mui/material';
 import { useAuth } from '../../context/AuthContext';
 import { useNavigate, useLocation } from 'react-router-dom';
 
 const Sidebar = ({ menuOpen, setMenuOpen, drawerWidth, isDesktop }) => {
-    const { user, logout } = useAuth();
+    const { user, logout, hasPermission } = useAuth();
     const navigate = useNavigate();
     const location = useLocation();
     const theme = useTheme();
@@ -54,9 +56,23 @@ const Sidebar = ({ menuOpen, setMenuOpen, drawerWidth, isDesktop }) => {
     };
 
     const getUserRole = () => {
-        if (user?.is_superuser) return 'スーパー管理者';
-        if (user?.is_staff) return '管理者';
-        return 'ユーザー';
+        let roleName = 'ユーザー';
+
+        if (hasPermission('manage_all_systems')) {
+            roleName = 'スーパー管理者';
+        } else if (hasPermission('manage_factory')) {
+            roleName = '工場管理者';
+        } else if (user?.factory_memberships) {
+            const activeRole = user.factory_memberships.find(m => m.is_active)?.role?.name;
+            if (activeRole) roleName = activeRole;
+        }
+
+        // Add verification status if unverified but has a high-tier role potentially
+        if (!user?.is_verified && (user?.is_superuser || user?.is_staff || user?.factory_memberships?.length > 0)) {
+            return `${roleName} (未認証)`;
+        }
+
+        return roleName;
     };
 
     const drawerContent = (
@@ -240,11 +256,13 @@ const Sidebar = ({ menuOpen, setMenuOpen, drawerWidth, isDesktop }) => {
                     <ListItem key={idx} disablePadding>
                         <ListItemButton
                             onClick={() => { if (!isDesktop) setMenuOpen(false); navigate(item.path); }}
+                            disabled={!user?.is_verified}
                             sx={{
                                 mx: 1.5,
                                 my: 0.25,
                                 borderRadius: 2,
-                                '&.Mui-selected': { bgcolor: alpha(theme.palette.primary.main, 0.1) }
+                                '&.Mui-selected': { bgcolor: alpha(theme.palette.primary.main, 0.1) },
+                                opacity: user?.is_verified ? 1 : 0.6
                             }}
                             selected={location.pathname === item.path}
                         >
@@ -252,11 +270,14 @@ const Sidebar = ({ menuOpen, setMenuOpen, drawerWidth, isDesktop }) => {
                                 {item.icon}
                             </ListItemIcon>
                             <ListItemText
-                                primary={item.label}
-                                primaryTypographyProps={{
-                                    fontWeight: location.pathname === item.path ? 700 : 500,
-                                    fontSize: '0.9rem'
-                                }}
+                                primary={
+                                    <Stack direction="row" alignItems="center" spacing={1}>
+                                        <Typography variant="body2" sx={{ fontWeight: location.pathname === item.path ? 700 : 500, fontSize: '0.9rem' }}>
+                                            {item.label}
+                                        </Typography>
+                                        {!user?.is_verified && <LockIcon sx={{ fontSize: 14, color: 'text.disabled' }} />}
+                                    </Stack>
+                                }
                             />
                         </ListItemButton>
                     </ListItem>
@@ -275,51 +296,65 @@ const Sidebar = ({ menuOpen, setMenuOpen, drawerWidth, isDesktop }) => {
                 <Collapse in={openManagement} timeout="auto" unmountOnExit>
                     <List component="div" disablePadding>
                         {[
-                            { label: 'イラスト', icon: <ImageIcon />, path: '/illustrations' },
-                            { label: '車種管理', icon: <CarIcon />, path: '/car-models' },
-                            { label: 'エンジン管理', icon: <BuildIcon />, path: '/engine-models' },
-                            { label: 'カテゴリー管理', icon: <SettingsIcon />, path: '/part-categories' },
-                            { label: 'サブカテゴリー管理', icon: <SettingsIcon />, path: '/part-subcategories' },
+                            {
+                                label: 'イラスト',
+                                icon: <ImageIcon />,
+                                path: '/illustrations',
+                                show: hasPermission('manage_all_systems') || hasPermission('create_illustrations')
+                            },
+                            {
+                                label: '車種管理',
+                                icon: <CarIcon />,
+                                path: '/car-models',
+                                show: hasPermission('manage_all_systems')
+                            },
+                            {
+                                label: 'エンジン管理',
+                                icon: <BuildIcon />,
+                                path: '/engine-models',
+                                show: hasPermission('manage_all_systems')
+                            },
+                            {
+                                label: 'カテゴリー管理',
+                                icon: <SettingsIcon />,
+                                path: '/part-categories',
+                                show: hasPermission('manage_all_systems')
+                            },
+                            {
+                                label: 'サブカテゴリー管理',
+                                icon: <SettingsIcon />,
+                                path: '/part-subcategories',
+                                show: hasPermission('manage_all_systems')
+                            },
                         ].map((item, idx) => {
-                            const isSuperuser = user?.is_superuser;
-                            const isDisabled = !isSuperuser;
+                            if (!item.show) return null;
 
                             return (
                                 <ListItem key={idx} disablePadding>
                                     <ListItemButton
                                         onClick={() => {
-                                            if (isSuperuser) {
-                                                if (!isDesktop) setMenuOpen(false);
-                                                navigate(item.path);
-                                            }
+                                            if (!isDesktop) setMenuOpen(false);
+                                            navigate(item.path);
                                         }}
-                                        disabled={isDisabled}
                                         sx={{
                                             pl: 4,
                                             mx: 1.5,
                                             my: 0.25,
                                             borderRadius: 2,
-                                            opacity: isDisabled ? 0.5 : 1,
-                                            cursor: isDisabled ? 'not-allowed' : 'pointer',
-                                            '&.Mui-selected': { bgcolor: alpha(theme.palette.primary.main, 0.1) },
-                                            '&.Mui-disabled': {
-                                                opacity: 0.5,
-                                                pointerEvents: 'none'
-                                            }
+                                            '&.Mui-selected': { bgcolor: alpha(theme.palette.primary.main, 0.1) }
                                         }}
-                                        selected={location.pathname === item.path && isSuperuser}
+                                        selected={location.pathname === item.path}
                                     >
                                         <ListItemIcon sx={{
                                             minWidth: 40,
-                                            color: location.pathname === item.path && isSuperuser ? theme.palette.primary.main : 'text.secondary',
-                                            opacity: isDisabled ? 0.5 : 1
+                                            color: location.pathname === item.path ? theme.palette.primary.main : 'text.secondary'
                                         }}>
                                             {item.icon}
                                         </ListItemIcon>
                                         <ListItemText
                                             primary={item.label}
                                             primaryTypographyProps={{
-                                                fontWeight: location.pathname === item.path && isSuperuser ? 700 : 500,
+                                                fontWeight: location.pathname === item.path ? 700 : 500,
                                                 fontSize: '0.85rem'
                                             }}
                                         />
@@ -343,61 +378,52 @@ const Sidebar = ({ menuOpen, setMenuOpen, drawerWidth, isDesktop }) => {
                 </ListItem>
                 <Collapse in={openSettings} timeout="auto" unmountOnExit>
                     <List component="div" disablePadding>
-                        <ListItem disablePadding>
-                            <ListItemButton
-                                onClick={() => {
-                                    if (user?.is_staff || user?.is_superuser) {
+                        {(hasPermission('manage_all_systems') || hasPermission('manage_users')) && (
+                            <ListItem disablePadding>
+                                <ListItemButton
+                                    onClick={() => {
                                         if (!isDesktop) setMenuOpen(false);
                                         navigate('/mobile/admin/users');
-                                    }
-                                }}
-                                disabled={!user?.is_staff && !user?.is_superuser}
-                                sx={{
-                                    pl: 4,
-                                    mx: 1.5,
-                                    borderRadius: 2,
-                                    opacity: (!user?.is_staff && !user?.is_superuser) ? 0.5 : 1,
-                                    cursor: (!user?.is_staff && !user?.is_superuser) ? 'not-allowed' : 'pointer',
-                                    '&.Mui-disabled': {
-                                        opacity: 0.5,
-                                        pointerEvents: 'none'
-                                    }
-                                }}
-                            >
-                                <ListItemIcon sx={{ minWidth: 40, opacity: (!user?.is_staff && !user?.is_superuser) ? 0.5 : 1 }}>
-                                    <ManageAccountsIcon />
-                                </ListItemIcon>
-                                <ListItemText primary="システム管理" primaryTypographyProps={{ fontSize: '0.85rem', fontWeight: 500 }} />
-                            </ListItemButton>
-                        </ListItem>
-                        <ListItem disablePadding>
-                            <ListItemButton
-                                onClick={() => {
-                                    if (user?.is_staff || user?.is_superuser) {
+                                    }}
+                                    sx={{
+                                        pl: 4,
+                                        mx: 1.5,
+                                        borderRadius: 2,
+                                        '&.Mui-selected': { bgcolor: alpha(theme.palette.primary.main, 0.1) }
+                                    }}
+                                    selected={location.pathname === '/mobile/admin/users'}
+                                >
+                                    <ListItemIcon sx={{ minWidth: 40 }}>
+                                        <ManageAccountsIcon />
+                                    </ListItemIcon>
+                                    <ListItemText primary="システム管理" primaryTypographyProps={{ fontSize: '0.85rem', fontWeight: 500 }} />
+                                </ListItemButton>
+                            </ListItem>
+                        )}
+
+                        {hasPermission('manage_all_systems') && (
+                            <ListItem disablePadding>
+                                <ListItemButton
+                                    onClick={() => {
                                         if (!isDesktop) setMenuOpen(false);
                                         navigate('/mobile/admin/comments');
-                                    }
-                                }}
-                                disabled={!user?.is_staff && !user?.is_superuser}
-                                sx={{
-                                    pl: 4,
-                                    mx: 1.5,
-                                    my: 0.25,
-                                    borderRadius: 2,
-                                    opacity: (!user?.is_staff && !user?.is_superuser) ? 0.5 : 1,
-                                    cursor: (!user?.is_staff && !user?.is_superuser) ? 'not-allowed' : 'pointer',
-                                    '&.Mui-disabled': {
-                                        opacity: 0.5,
-                                        pointerEvents: 'none'
-                                    }
-                                }}
-                            >
-                                <ListItemIcon sx={{ minWidth: 40, opacity: (!user?.is_staff && !user?.is_superuser) ? 0.5 : 1 }}>
-                                    <CommentIcon />
-                                </ListItemIcon>
-                                <ListItemText primary="フィードバック管理" primaryTypographyProps={{ fontSize: '0.85rem', fontWeight: 500 }} />
-                            </ListItemButton>
-                        </ListItem>
+                                    }}
+                                    sx={{
+                                        pl: 4,
+                                        mx: 1.5,
+                                        my: 0.25,
+                                        borderRadius: 2,
+                                        '&.Mui-selected': { bgcolor: alpha(theme.palette.primary.main, 0.1) }
+                                    }}
+                                    selected={location.pathname === '/mobile/admin/comments'}
+                                >
+                                    <ListItemIcon sx={{ minWidth: 40 }}>
+                                        <CommentIcon />
+                                    </ListItemIcon>
+                                    <ListItemText primary="フィードバック管理" primaryTypographyProps={{ fontSize: '0.85rem', fontWeight: 500 }} />
+                                </ListItemButton>
+                            </ListItem>
+                        )}
 
                     </List>
                 </Collapse>

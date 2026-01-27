@@ -64,6 +64,7 @@ const MobileIllustrationFormModal = ({
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [selectedManufacturer, setSelectedManufacturer] = useState('');
+  const [fullIllustration, setFullIllustration] = useState(null);
 
   // Filtered data
   const [filteredEngines, setFilteredEngines] = useState([]);
@@ -72,28 +73,44 @@ const MobileIllustrationFormModal = ({
 
   // Initialize form data for edit mode
   useEffect(() => {
-    if (mode === 'edit' && illustration) {
-      setFormData({
-        title: illustration.title || '',
-        description: illustration.description || '',
-        engine_model: illustration.engine_model || '',
-        part_category: illustration.part_category || '',
-        part_subcategory: illustration.part_subcategory || '',
-        applicable_car_models: illustration.applicable_car_models || [],
-      });
+    const initializeEditMode = async () => {
+      if (mode === 'edit' && illustration) {
+        setFormData({
+          title: illustration.title || '',
+          description: illustration.description || '',
+          engine_model: illustration.engine_model || '',
+          part_category: illustration.part_category || '',
+          part_subcategory: illustration.part_subcategory || '',
+          applicable_car_models: illustration.applicable_car_models || [],
+        });
 
-      if (illustration.files) {
-        setExistingFiles(illustration.files);
-      }
+        // Initially use what we have
+        setExistingFiles(illustration.files || []);
 
-      // Set manufacturer for filtering
-      const engine = engineModels.find(e => e.id === illustration.engine_model);
-      if (engine) {
-        setSelectedManufacturer(engine.manufacturer);
+        // Fetch full details for files and fresh data
+        try {
+          const fullData = await illustrationAPI.getById(illustration.id);
+          console.log('✅ Fetched full details for mobile edit:', fullData);
+          setFullIllustration(fullData);
+          setExistingFiles(fullData.files || []);
+
+          // Set manufacturer based on fetched engine model
+          if (fullData.engine_model_detail?.manufacturer?.id || fullData.engine_model) {
+            const mfrId = fullData.engine_model_detail?.manufacturer?.id ||
+              engineModels.find(e => e.id === fullData.engine_model)?.manufacturer;
+            if (mfrId) {
+              setSelectedManufacturer(mfrId);
+            }
+          }
+        } catch (err) {
+          console.error('Failed to fetch full details for mobile edit:', err);
+        }
+      } else {
+        resetForm();
       }
-    } else {
-      resetForm();
-    }
+    };
+
+    initializeEditMode();
   }, [mode, illustration, engineModels]);
 
   // Filter engines by manufacturer
@@ -135,8 +152,11 @@ const MobileIllustrationFormModal = ({
     setExistingFiles([]);
     setFilesToDelete([]);
     setSelectedManufacturer('');
+    setFullIllustration(null);
     setError(null);
   };
+
+  const currentIllustration = fullIllustration || illustration;
 
   const handleChange = (field, value) => {
     setFormData(prev => ({ ...prev, [field]: value }));
@@ -186,9 +206,10 @@ const MobileIllustrationFormModal = ({
     setSelectedFiles(prev => prev.filter((_, i) => i !== index));
   };
 
-  const handleRemoveExistingFile = (fileId) => {
-    setFilesToDelete(prev => [...prev, fileId]);
-    setExistingFiles(prev => prev.filter(f => f.id !== fileId));
+  const handleRemoveExistingFile = (file) => {
+    if (!window.confirm(`ファイル「${file.title || file.file_name || 'ファイル'}」を削除してもよろしいですか？`)) return;
+    setFilesToDelete(prev => [...prev, file.id]);
+    setExistingFiles(prev => prev.filter(f => f.id !== file.id));
   };
 
   const validateForm = () => {
@@ -515,16 +536,27 @@ const MobileIllustrationFormModal = ({
                         )}
                       </Box>
                       <ImageListItemBar
+                        title={file.title || file.file_name || 'ファイル'}
+                        subtitle={file.file_size ? `${(file.file_size / 1024 / 1024).toFixed(2)} MB` : ''}
                         actionIcon={
-                          <IconButton
-                            size="small"
-                            onClick={() => handleRemoveExistingFile(file.id)}
-                            sx={{ color: 'white' }}
-                          >
-                            <DeleteIcon fontSize="small" />
-                          </IconButton>
+                          (currentIllustration?.can_delete ?? true) && (
+                            <IconButton
+                              size="small"
+                              onClick={() => handleRemoveExistingFile(file)}
+                              sx={{
+                                color: 'white',
+                                bgcolor: 'rgba(255,255,255,0.1)',
+                                mr: 1,
+                                '&:hover': { bgcolor: 'rgba(255,255,255,0.2)' }
+                              }}
+                            >
+                              <DeleteIcon fontSize="small" />
+                            </IconButton>
+                          )
                         }
-                        sx={{ bgcolor: 'rgba(0,0,0,0.5)' }}
+                        sx={{
+                          background: 'linear-gradient(to top, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0.3) 70%, rgba(0,0,0,0) 100%)',
+                        }}
                       />
                     </ImageListItem>
                   ))}

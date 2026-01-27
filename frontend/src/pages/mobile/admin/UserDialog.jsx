@@ -5,6 +5,7 @@ import {
     DialogContent,
     DialogActions,
     Button,
+    Avatar,
     TextField,
     FormControlLabel,
     Switch,
@@ -19,21 +20,48 @@ import {
     Divider,
     Chip
 } from '@mui/material';
-import { Delete as DeleteIcon, Add as AddIcon, Business as BusinessIcon, Security as SecurityIcon, Lock as LockIcon } from '@mui/icons-material';
+import { Delete as DeleteIcon, Add as AddIcon, Business as BusinessIcon, Security as SecurityIcon, Lock as LockIcon, PhotoCamera } from '@mui/icons-material';
 import { factoriesAPI, rolesAPI, factoryMembersAPI } from '../../../services/users';
+import { useAuth } from '../../../context/AuthContext';
+
+const ROLE_NAME_MAP = {
+    'SUPER_ADMIN': 'スーパー管理者',
+    'FACTORY_MANAGER': '工場管理者',
+    'ILLUSTRATION_ADMIN': 'イラスト管理者',
+    'ILLUSTRATION_EDITOR': 'イラスト編集者',
+    'ILLUSTRATION_CONTRIBUTOR': 'イラスト投稿者',
+    'ILLUSTRATION_VIEWER': 'イラスト閲覧者',
+    'FEEDBACK_MANAGER': 'フィードバック管理者',
+    // Legacy mapping
+    'OWNER': '所有者',
+    'MANAGER': 'マネージャー',
+    'SUPERVISOR': 'スーパーバイザー',
+    'WORKER': '作業員',
+    'VIEWER': '閲覧者',
+    'ADMIN': '管理者'
+};
 
 const UserDialog = ({ open, onClose, user, onSave, loading: externalLoading }) => {
+    const { user: currentUser } = useAuth();
+    const isSuperAdmin = currentUser?.is_superuser;
+    const targetIsSuperAdmin = user?.is_superuser;
+    const canEditTarget = isSuperAdmin || !targetIsSuperAdmin;
+
     const [formData, setFormData] = useState({
         username: '',
         email: '',
         first_name: '',
         last_name: '',
+        phone_number: '',
         password: '',
         is_active: true,
         is_staff: false,
         is_superuser: false,
         is_verified: false,
     });
+    const [selectedImage, setSelectedImage] = useState(null);
+    const [previewUrl, setPreviewUrl] = useState('');
+
     const [memberships, setMemberships] = useState([]);
     const [factories, setFactories] = useState([]);
     const [roles, setRoles] = useState([]);
@@ -50,48 +78,6 @@ const UserDialog = ({ open, onClose, user, onSave, loading: externalLoading }) =
         confirm_password: ''
     });
     const [passwordErrors, setPasswordErrors] = useState({});
-
-    useEffect(() => {
-        if (open) {
-            fetchInitialData();
-        }
-    }, [open]);
-
-    useEffect(() => {
-        if (open) {
-            if (user) {
-                setFormData({
-                    username: user.username || '',
-                    email: user.email || '',
-                    first_name: user.first_name || '',
-                    last_name: user.last_name || '',
-                    password: '', // Not used in edit mode
-                    is_active: user.is_active ?? true,
-                    is_staff: user.is_staff ?? false,
-                    is_superuser: user.is_superuser ?? false,
-                    is_verified: user.is_verified ?? false,
-                });
-                setMemberships(user.factory_memberships || []);
-            } else {
-                setFormData({
-                    username: '',
-                    email: '',
-                    first_name: '',
-                    last_name: '',
-                    password: '',
-                    is_active: true,
-                    is_staff: false,
-                    is_superuser: false,
-                    is_verified: false,
-                });
-                setMemberships([]);
-            }
-            setErrors({});
-            setNewMember({ factory: '', role: '' });
-            setPasswordData({ new_password: '', confirm_password: '' });
-            setPasswordErrors({});
-        }
-    }, [user, open]);
 
     const fetchInitialData = async () => {
         try {
@@ -111,6 +97,61 @@ const UserDialog = ({ open, onClose, user, onSave, loading: externalLoading }) =
         } catch (error) {
             console.error("Failed to fetch roles:", error);
             setRoles([]);
+        }
+    };
+
+    useEffect(() => {
+        if (open) {
+            fetchInitialData();
+        }
+    }, [open]);
+
+    useEffect(() => {
+        if (open) {
+            if (user) {
+                setFormData({
+                    username: user.username || '',
+                    email: user.email || '',
+                    first_name: user.first_name || '',
+                    last_name: user.last_name || '',
+                    phone_number: user.phone_number || '',
+                    password: '', // Not used in edit mode
+                    is_active: user.is_active ?? true,
+                    is_staff: user.is_staff ?? false,
+                    is_superuser: user.is_superuser ?? false,
+                    is_verified: user.is_verified ?? false,
+                });
+                setMemberships(user.factory_memberships || []);
+                setPreviewUrl(user.profile_image || '');
+            } else {
+                setFormData({
+                    username: '',
+                    email: '',
+                    first_name: '',
+                    last_name: '',
+                    phone_number: '',
+                    password: '',
+                    is_active: true,
+                    is_staff: false,
+                    is_superuser: false,
+                    is_verified: false,
+                });
+                setMemberships([]);
+                setPreviewUrl('');
+            }
+            setSelectedImage(null);
+            setErrors({});
+            setNewMember({ factory: '', role: '' });
+            setPasswordData({ new_password: '', confirm_password: '' });
+            setPasswordErrors({});
+        }
+    }, [user, open]);
+
+    const handleImageChange = (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            setSelectedImage(file);
+            setPreviewUrl(URL.createObjectURL(file));
         }
     };
 
@@ -216,10 +257,24 @@ const UserDialog = ({ open, onClose, user, onSave, loading: externalLoading }) =
         setErrors({});
 
         try {
-            // For edit mode, don't include password field
-            const dataToSave = user ? { ...formData } : formData;
-            if (user) {
-                delete dataToSave.password;
+            let dataToSave;
+
+            // If image is selected, use FormData
+            if (selectedImage) {
+                const fd = new FormData();
+                Object.keys(formData).forEach(key => {
+                    if (user && key === 'password') return; // Password changed via separate dialog for existing users
+                    // Convert booleans to string for FormData (Django sometimes needs this, but usually handles 'true'/'false')
+                    fd.append(key, formData[key]);
+                });
+                fd.append('profile_image', selectedImage);
+                dataToSave = fd;
+            } else {
+                // For edit mode, don't include password field
+                dataToSave = user ? { ...formData } : formData;
+                if (user) {
+                    delete dataToSave.password;
+                }
             }
 
             await onSave(user?.id, dataToSave);
@@ -239,10 +294,44 @@ const UserDialog = ({ open, onClose, user, onSave, loading: externalLoading }) =
                     <DialogTitle sx={{ fontWeight: 800 }}>{user ? 'Edit User' : 'Create New User'}</DialogTitle>
                     <DialogContent dividers>
                         {errors.detail && <Alert severity="error" sx={{ mb: 2 }}>{errors.detail}</Alert>}
+                        {!canEditTarget && (
+                            <Alert severity="warning" sx={{ mb: 2, fontWeight: 700 }}>
+                                スーパー管理者のアカウントは編集できません。
+                            </Alert>
+                        )}
 
                         <Grid container spacing={3}>
                             {/* Basic Info */}
+                            {/* Basic Info */}
                             <Grid item xs={12} md={6}>
+                                <Box display="flex" flexDirection="column" alignItems="center" mb={3}>
+                                    <Box position="relative">
+                                        <Avatar
+                                            src={previewUrl}
+                                            sx={{ width: 100, height: 100, mb: 1, border: '1px solid #ddd' }}
+                                        />
+                                        <IconButton
+                                            color="primary"
+                                            aria-label="upload picture"
+                                            component="label"
+                                            size="small"
+                                            sx={{
+                                                position: 'absolute',
+                                                bottom: 5,
+                                                right: -5,
+                                                bgcolor: 'background.paper',
+                                                boxShadow: 2,
+                                                '&:hover': { bgcolor: 'background.paper' },
+                                                display: isSuperAdmin ? 'flex' : 'none'
+                                            }}
+                                        >
+                                            <input hidden accept="image/*" type="file" onChange={handleImageChange} disabled={!isSuperAdmin} />
+                                            <PhotoCamera fontSize="small" />
+                                        </IconButton>
+                                    </Box>
+                                    <Typography variant="caption" color="text.secondary">プロフィール画像</Typography>
+                                </Box>
+
                                 <Typography variant="subtitle2" color="primary" gutterBottom sx={{ fontWeight: 700 }}>基本情報</Typography>
                                 <Stack spacing={2}>
                                     <TextField
@@ -255,6 +344,7 @@ const UserDialog = ({ open, onClose, user, onSave, loading: externalLoading }) =
                                         onChange={handleChange}
                                         error={!!errors.username}
                                         helperText={errors.username}
+                                        InputProps={{ readOnly: true }}
                                     />
                                     <TextField
                                         name="email"
@@ -267,6 +357,18 @@ const UserDialog = ({ open, onClose, user, onSave, loading: externalLoading }) =
                                         onChange={handleChange}
                                         error={!!errors.email}
                                         helperText={errors.email}
+                                        InputProps={{ readOnly: true }}
+                                    />
+                                    <TextField
+                                        name="phone_number"
+                                        label="Phone Number"
+                                        fullWidth
+                                        size="small"
+                                        value={formData.phone_number}
+                                        onChange={handleChange}
+                                        error={!!errors.phone_number}
+                                        helperText={errors.phone_number}
+                                        InputProps={{ readOnly: true }}
                                     />
                                     <Stack direction="row" spacing={2}>
                                         <TextField
@@ -276,6 +378,7 @@ const UserDialog = ({ open, onClose, user, onSave, loading: externalLoading }) =
                                             size="small"
                                             value={formData.first_name}
                                             onChange={handleChange}
+                                            InputProps={{ readOnly: true }}
                                         />
                                         <TextField
                                             name="last_name"
@@ -284,6 +387,7 @@ const UserDialog = ({ open, onClose, user, onSave, loading: externalLoading }) =
                                             size="small"
                                             value={formData.last_name}
                                             onChange={handleChange}
+                                            InputProps={{ readOnly: true }}
                                         />
                                     </Stack>
 
@@ -311,6 +415,7 @@ const UserDialog = ({ open, onClose, user, onSave, loading: externalLoading }) =
                                             onClick={() => setPasswordDialogOpen(true)}
                                             fullWidth
                                             sx={{ borderRadius: 2 }}
+                                            disabled={!isSuperAdmin}
                                         >
                                             パスワードを変更
                                         </Button>
@@ -321,19 +426,19 @@ const UserDialog = ({ open, onClose, user, onSave, loading: externalLoading }) =
                                 <Paper variant="outlined" sx={{ p: 2, borderRadius: 2 }}>
                                     <Stack spacing={1}>
                                         <FormControlLabel
-                                            control={<Switch checked={formData.is_active} onChange={handleChange} name="is_active" color="primary" size="small" />}
+                                            control={<Switch checked={formData.is_active} onChange={handleChange} name="is_active" color="primary" size="small" disabled={!isSuperAdmin} />}
                                             label={<Typography variant="body2">Active Account</Typography>}
                                         />
                                         <FormControlLabel
-                                            control={<Switch checked={formData.is_verified} onChange={handleChange} name="is_verified" color="success" size="small" />}
+                                            control={<Switch checked={formData.is_verified} onChange={handleChange} name="is_verified" color="success" size="small" disabled={!isSuperAdmin} />}
                                             label={<Typography variant="body2">Email Verified</Typography>}
                                         />
                                         <FormControlLabel
-                                            control={<Switch checked={formData.is_staff} onChange={handleChange} name="is_staff" color="warning" size="small" />}
+                                            control={<Switch checked={formData.is_staff} onChange={handleChange} name="is_staff" color="warning" size="small" disabled={!isSuperAdmin} />}
                                             label={<Typography variant="body2">Staff Status (Admin Access)</Typography>}
                                         />
                                         <FormControlLabel
-                                            control={<Switch checked={formData.is_superuser} onChange={handleChange} name="is_superuser" color="error" size="small" />}
+                                            control={<Switch checked={formData.is_superuser} onChange={handleChange} name="is_superuser" color="error" size="small" disabled={!isSuperAdmin} />}
                                             label={<Typography variant="body2">Superuser Status (ROOT)</Typography>}
                                         />
                                     </Stack>
@@ -389,7 +494,7 @@ const UserDialog = ({ open, onClose, user, onSave, loading: externalLoading }) =
                                                     <IconButton
                                                         color="primary"
                                                         onClick={handleAddMembership}
-                                                        disabled={!newMember.factory || !newMember.role || isLoading}
+                                                        disabled={!newMember.factory || !newMember.role || isLoading || !isSuperAdmin || !canEditTarget}
                                                     >
                                                         <AddIcon />
                                                     </IconButton>
@@ -404,29 +509,35 @@ const UserDialog = ({ open, onClose, user, onSave, loading: externalLoading }) =
                                                     所属している工場はありません。
                                                 </Typography>
                                             ) : (
-                                                memberships.map((m) => (
-                                                    <Paper key={m.id} variant="outlined" sx={{ p: 1.5, borderRadius: 2, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                                                        <Box>
-                                                            <Stack direction="row" spacing={1} alignItems="center">
-                                                                <BusinessIcon fontSize="small" color="action" />
-                                                                <Typography variant="body2" fontWeight="bold">{m.factory_name || m.factory?.name}</Typography>
-                                                            </Stack>
-                                                            <Stack direction="row" spacing={1} alignItems="center" sx={{ mt: 0.5 }}>
-                                                                <SecurityIcon fontSize="small" color="action" />
-                                                                <Chip
-                                                                    label={`${m.role_name || m.role?.name}${m.role_code || m.role?.code ? ` (${m.role_code || m.role?.code})` : ''}`}
-                                                                    size="small"
-                                                                    variant="outlined"
-                                                                    color="primary"
-                                                                    sx={{ height: 20, fontSize: '0.7rem' }}
-                                                                />
-                                                            </Stack>
-                                                        </Box>
-                                                        <IconButton size="small" color="error" onClick={() => handleRemoveMembership(m.id)} disabled={isLoading}>
-                                                            <DeleteIcon fontSize="small" />
-                                                        </IconButton>
-                                                    </Paper>
-                                                ))
+                                                memberships.map((m) => {
+                                                    const roleCode = m.role_code || m.role?.code;
+                                                    const originalName = m.role_name || m.role?.name;
+                                                    const displayName = ROLE_NAME_MAP[roleCode] || originalName;
+
+                                                    return (
+                                                        <Paper key={m.id} variant="outlined" sx={{ p: 1.5, borderRadius: 2, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                                                            <Box>
+                                                                <Stack direction="row" spacing={1} alignItems="center">
+                                                                    <BusinessIcon fontSize="small" color="action" />
+                                                                    <Typography variant="body2" fontWeight="bold">{m.factory_name || m.factory?.name}</Typography>
+                                                                </Stack>
+                                                                <Stack direction="row" spacing={1} alignItems="center" sx={{ mt: 0.5 }}>
+                                                                    <SecurityIcon fontSize="small" color="action" />
+                                                                    <Chip
+                                                                        label={`${displayName}${roleCode ? ` (${roleCode})` : ''}`}
+                                                                        size="small"
+                                                                        variant="outlined"
+                                                                        color="primary"
+                                                                        sx={{ height: 20, fontSize: '0.7rem' }}
+                                                                    />
+                                                                </Stack>
+                                                            </Box>
+                                                            <IconButton size="small" color="error" onClick={() => handleRemoveMembership(m.id)} disabled={isLoading || !isSuperAdmin || !canEditTarget}>
+                                                                <DeleteIcon fontSize="small" />
+                                                            </IconButton>
+                                                        </Paper>
+                                                    )
+                                                })
                                             )}
                                         </Stack>
                                     </Box>
@@ -436,9 +547,11 @@ const UserDialog = ({ open, onClose, user, onSave, loading: externalLoading }) =
                     </DialogContent>
                     <DialogActions sx={{ px: 3, py: 2 }}>
                         <Button onClick={onClose} disabled={isLoading} color="inherit">キャンセル</Button>
-                        <Button type="submit" variant="contained" disabled={isLoading} sx={{ borderRadius: 2, fontWeight: 700 }}>
-                            {isLoading ? '保存中...' : 'ユーザー情報を保存'}
-                        </Button>
+                        {isSuperAdmin && canEditTarget && (
+                            <Button type="submit" variant="contained" disabled={isLoading} sx={{ borderRadius: 2, fontWeight: 700 }}>
+                                {isLoading ? '保存中...' : 'ユーザー情報を保存'}
+                            </Button>
+                        )}
                     </DialogActions>
                 </form>
             </Dialog>

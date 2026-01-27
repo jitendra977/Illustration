@@ -37,6 +37,7 @@ import {
 } from '@mui/icons-material';
 import { illustrationAPI, manufacturerAPI, carModelAPI, engineModelAPI } from '../../../api/illustrations';
 import IllustrationDetailModal from '../../../components/illustrations/modals/IllustrationDetailModal';
+import CreateIllustrationModal from '../../../components/illustrations/forms/CreateIllustrationModal';
 
 const MobileSearch = () => {
   const [searchQuery, setSearchQuery] = useState('');
@@ -44,6 +45,7 @@ const MobileSearch = () => {
   const [loading, setLoading] = useState(false);
   const [selectedIllustration, setSelectedIllustration] = useState(null);
   const [modalOpen, setModalOpen] = useState(false);
+  const [editModalOpen, setEditModalOpen] = useState(false);
   const [hasSearched, setHasSearched] = useState(false);
   const theme = useTheme();
 
@@ -231,6 +233,12 @@ const MobileSearch = () => {
   const handleDelete = (deletedId) => {
     // Remove deleted illustration from results
     setIllustrations(prev => prev.filter(ill => ill.id !== deletedId));
+  };
+
+  const handleEdit = (illustration) => {
+    setSelectedIllustration(illustration);
+    setModalOpen(false);
+    setEditModalOpen(true);
   };
 
   return (
@@ -662,6 +670,18 @@ const MobileSearch = () => {
         illustration={selectedIllustration}
         onUpdate={handleUpdate}
         onDelete={handleDelete}
+        onEdit={() => handleEdit(selectedIllustration)}
+      />
+
+      <CreateIllustrationModal
+        open={editModalOpen}
+        onClose={() => setEditModalOpen(false)}
+        onSuccess={() => {
+          setEditModalOpen(false);
+          handleSearch();
+        }}
+        mode="edit"
+        illustration={selectedIllustration}
       />
     </>
   );

@@ -37,6 +37,10 @@ import {
 import { useIllustrations } from '../../../hooks/useIllustrations';
 import { manufacturerAPI, engineModelAPI } from '../../../api/illustrations';
 import IllustrationDetailModal from '../../../components/illustrations/modals/IllustrationDetailModal';
+import CreateIllustrationModal from '../../../components/illustrations/forms/CreateIllustrationModal';
+import { useAuth } from '../../../context/AuthContext';
+import { Add as AddIcon } from '@mui/icons-material';
+import { Fab } from '@mui/material';
 
 const MobileEngineIllustrations = () => {
   const { id: manufacturerId, engineId } = useParams();
@@ -53,6 +57,8 @@ const MobileEngineIllustrations = () => {
 
   const [selectedIllustration, setSelectedIllustration] = useState(null);
   const [detailModalOpen, setDetailModalOpen] = useState(false);
+  const [editModalOpen, setEditModalOpen] = useState(false);
+  const { user, hasPermission } = useAuth();
 
   const {
     illustrations,
@@ -209,6 +215,17 @@ const MobileEngineIllustrations = () => {
     loadIllustrations();
     setDetailModalOpen(false);
     showSnackbar('イラストを削除しました', 'success');
+  };
+
+  const handleEdit = (illustration) => {
+    setSelectedIllustration(illustration);
+    setDetailModalOpen(false);
+    setEditModalOpen(true);
+  };
+
+  const handleCreate = () => {
+    setSelectedIllustration(null);
+    setEditModalOpen(true);
   };
 
   const IllustrationCard = ({ illustration }) => (
@@ -530,7 +547,39 @@ const MobileEngineIllustrations = () => {
           onClose={handleCloseDetailModal}
           onUpdate={handleDetailModalUpdate}
           onDelete={handleDetailModalDelete}
+          onEdit={() => handleEdit(selectedIllustration)}
         />
+      )}
+
+      {/* Edit/Create Modal */}
+      <CreateIllustrationModal
+        open={editModalOpen}
+        onClose={() => setEditModalOpen(false)}
+        onSuccess={() => {
+          setEditModalOpen(false);
+          loadIllustrations();
+          showSnackbar('イラストを更新しました', 'success');
+        }}
+        mode={selectedIllustration ? 'edit' : 'create'}
+        illustration={selectedIllustration}
+      />
+
+      {/* Add Illustration FAB */}
+      {(hasPermission('manage_all_systems') || user?.permissions?.can_create_illustration) && (
+        <Fab
+          color="primary"
+          aria-label="add"
+          onClick={handleCreate}
+          sx={{
+            position: 'fixed',
+            bottom: 24,
+            right: 24,
+            zIndex: 1000,
+            boxShadow: 4
+          }}
+        >
+          <AddIcon />
+        </Fab>
       )}
 
       {/* Snackbar */}

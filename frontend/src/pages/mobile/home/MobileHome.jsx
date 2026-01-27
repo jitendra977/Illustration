@@ -45,6 +45,9 @@ const MobileHome = () => {
 
   const [stats, setStats] = useState({
     totalIllustrations: 0,
+    ownFactoryIllustrations: 0,
+    totalFactories: 0,
+    totalUsers: 0,
     totalManufacturers: 0,
     recentIllustrations: [],
     topManufacturers: [],
@@ -76,10 +79,38 @@ const MobileHome = () => {
     else setStats(prev => ({ ...prev, loading: true }));
 
     try {
-      const [illustrationsRes, topManufacturersRes, allIllustrationsRes] = await Promise.all([
+      // If user is not verified, backend AdminOrReadOnly will 403 on manufacturers.
+      // We skip fetching catalog-wide stats for unverified users.
+      if (!user?.is_verified) {
+        const [illustrationsRes, statsRes] = await Promise.all([
+          illustrationAPI.getAll({
+            limit: 5,
+            ordering: '-created_at',
+            include_files: true
+          }),
+          illustrationAPI.getStats()
+        ]);
+
+        setStats({
+          totalIllustrations: statsRes.total_illustrations || illustrationsRes.count || 0,
+          ownFactoryIllustrations: statsRes.own_factory_illustrations || 0,
+          totalFactories: statsRes.total_factories || 0,
+          totalUsers: statsRes.total_users || 0,
+          totalManufacturers: 0,
+          recentIllustrations: illustrationsRes.results || [],
+          topManufacturers: [],
+          topCategories: [],
+          loading: false,
+          error: null,
+        });
+        return;
+      }
+
+      const [illustrationsRes, topManufacturersRes, allIllustrationsRes, statsRes] = await Promise.all([
         illustrationAPI.getAll({ limit: 5, ordering: '-created_at', include_files: true }),
         manufacturerAPI.getAll({ limit: 8, ordering: '-illustration_count' }),
-        illustrationAPI.getAll({ limit: 20, include_files: false })
+        illustrationAPI.getAll({ limit: 20, include_files: false }),
+        illustrationAPI.getStats()
       ]);
 
       const categoryCount = {};
@@ -95,7 +126,10 @@ const MobileHome = () => {
         .map(([name, count]) => ({ name, count }));
 
       setStats({
-        totalIllustrations: allIllustrationsRes.count || 0,
+        totalIllustrations: statsRes?.total_illustrations ?? allIllustrationsRes.count ?? 0,
+        ownFactoryIllustrations: statsRes?.own_factory_illustrations ?? 0,
+        totalFactories: statsRes?.total_factories ?? 0,
+        totalUsers: statsRes?.total_users ?? 0,
         totalManufacturers: topManufacturersRes.count || 0,
         recentIllustrations: illustrationsRes.results || [],
         topManufacturers: topManufacturersRes.results || [],
@@ -229,6 +263,63 @@ const MobileHome = () => {
       refreshing={refreshing}
     >
       <Container maxWidth="sm" sx={{ px: 2, pb: 12 }}>
+        {/* VERIFICATION WARNING */}
+        {!user?.is_verified && (
+          <Box sx={{
+            mt: 2,
+            p: 2,
+            borderRadius: '16px',
+            background: theme.palette.mode === 'dark'
+              ? alpha(theme.palette.warning.main, 0.1)
+              : alpha(theme.palette.warning.light, 0.2),
+            border: `1px solid ${alpha(theme.palette.warning.main, 0.3)}`,
+            display: 'flex',
+            flexDirection: 'column',
+            gap: 1
+          }}>
+            <Stack direction="row" spacing={1.5} alignItems="center">
+              <Box sx={{
+                width: 40,
+                height: 40,
+                borderRadius: '12px',
+                bgcolor: alpha(theme.palette.warning.main, 0.1),
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center'
+              }}>
+                <AccessTimeIcon sx={{ color: 'warning.main' }} />
+              </Box>
+              <Box>
+                <Typography variant="body2" fontWeight="800" color="warning.main">
+                  アカウント未認証
+                </Typography>
+                <Typography variant="caption" color="text.secondary" fontWeight="500">
+                  カタログを閲覧するにはメール認証が必要です。
+                </Typography>
+              </Box>
+            </Stack>
+            <Box
+              component="button"
+              onClick={() => navigate('/profile')}
+              sx={{
+                width: '100%',
+                py: 1,
+                mt: 0.5,
+                borderRadius: '10px',
+                bgcolor: 'warning.main',
+                color: 'white',
+                border: 'none',
+                fontWeight: 700,
+                fontSize: '0.8rem',
+                cursor: 'pointer',
+                '&:active': { transform: 'scale(0.98)' }
+              }}
+            >
+              認証設定へ
+            </Box>
+          </Box>
+        )}
+
         {/* HERO SECTION */}
         <Box sx={{ mt: 2, mb: 3 }}>
           <Box sx={{
@@ -266,22 +357,49 @@ const MobileHome = () => {
                 </Typography>
               </Stack>
 
-              <Stack direction="row" spacing={3}>
-                <Box>
-                  <Typography variant="h4" fontWeight="900" sx={{ color: 'primary.light' }}>
+              <Stack
+                direction="row"
+                spacing={1}
+                sx={{
+                  mt: 1,
+                  width: '100%',
+                  justifyContent: 'space-between',
+                  alignItems: 'center'
+                }}
+              >
+                <Box sx={{ textAlign: 'center', flex: 1 }}>
+                  <Typography variant="h5" fontWeight="900" sx={{ color: 'primary.light', fontSize: { xs: '1.25rem', sm: '1.6rem' } }}>
                     {stats.totalIllustrations.toLocaleString()}
                   </Typography>
-                  <Typography variant="caption" sx={{ opacity: 0.6, textTransform: 'uppercase', fontWeight: 700, letterSpacing: '0.05em' }}>
-                    Illustrations
+                  <Typography variant="caption" sx={{ opacity: 0.6, fontSize: '0.65rem', fontWeight: 700 }}>
+                    全イラスト
                   </Typography>
                 </Box>
-                <Divider orientation="vertical" flexItem sx={{ borderColor: 'rgba(255,255,255,0.1)' }} />
-                <Box>
-                  <Typography variant="h4" fontWeight="900" sx={{ color: 'secondary.light' }}>
-                    {stats.totalManufacturers}
+                <Divider orientation="vertical" flexItem sx={{ borderColor: 'rgba(255,255,255,0.1)', height: 24, my: 'auto' }} />
+                <Box sx={{ textAlign: 'center', flex: 1 }}>
+                  <Typography variant="h5" fontWeight="900" sx={{ color: 'secondary.light', fontSize: { xs: '1.25rem', sm: '1.6rem' } }}>
+                    {stats.ownFactoryIllustrations.toLocaleString()}
                   </Typography>
-                  <Typography variant="caption" sx={{ opacity: 0.6, textTransform: 'uppercase', fontWeight: 700, letterSpacing: '0.05em' }}>
-                    Manufacturers
+                  <Typography variant="caption" sx={{ opacity: 0.6, fontSize: '0.65rem', fontWeight: 700 }}>
+                    自社イラスト
+                  </Typography>
+                </Box>
+                <Divider orientation="vertical" flexItem sx={{ borderColor: 'rgba(255,255,255,0.1)', height: 24, my: 'auto' }} />
+                <Box sx={{ textAlign: 'center', flex: 1 }}>
+                  <Typography variant="h5" fontWeight="900" sx={{ color: 'success.light', fontSize: { xs: '1.25rem', sm: '1.6rem' } }}>
+                    {stats.totalFactories.toLocaleString()}
+                  </Typography>
+                  <Typography variant="caption" sx={{ opacity: 0.6, fontSize: '0.65rem', fontWeight: 700 }}>
+                    全工場
+                  </Typography>
+                </Box>
+                <Divider orientation="vertical" flexItem sx={{ borderColor: 'rgba(255,255,255,0.1)', height: 24, my: 'auto' }} />
+                <Box sx={{ textAlign: 'center', flex: 1 }}>
+                  <Typography variant="h5" fontWeight="900" sx={{ color: 'info.light', fontSize: { xs: '1.25rem', sm: '1.6rem' } }}>
+                    {stats.totalUsers.toLocaleString()}
+                  </Typography>
+                  <Typography variant="caption" sx={{ opacity: 0.6, fontSize: '0.65rem', fontWeight: 700 }}>
+                    全ユーザー
                   </Typography>
                 </Box>
               </Stack>
