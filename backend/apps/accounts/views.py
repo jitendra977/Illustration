@@ -23,10 +23,7 @@ from .serializers import (
     CommentSerializer
 )
 
-
-class PermissionDeniedException(Exception):
-    """Custom exception for permission denied scenarios."""
-    pass
+from .permissions import IsSuperAdmin, IsFactoryManager, CanManageUsers, CanManageFactory, CanManageRoles, CanManageFeedback
 
 
 def user_permission_required(action_type=None):
@@ -54,10 +51,10 @@ def user_permission_required(action_type=None):
             if user.is_superuser:
                 return func(viewset, request, *args, **kwargs)
             
-            if user.is_staff and user.is_active:
+            if user.is_active and user.can_manage_users():
                 if action_type == 'delete':
                     return Response(
-                        {"detail": "Staff members cannot delete users"}, 
+                        {"detail": "User deletion is restricted to Super Admins"}, 
                         status=status.HTTP_403_FORBIDDEN
                     )
                 return func(viewset, request, *args, **kwargs)
@@ -114,6 +111,23 @@ class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all().order_by('-date_joined')
     permission_classes = [permissions.IsAuthenticated]
 
+    def get_queryset(self):
+        user = self.request.user
+        if not user.is_authenticated or not user.is_active or not user.is_verified:
+            return User.objects.none()
+            
+        if user.is_superuser:
+            return User.objects.all().order_by('-created_at')
+            
+        # For non-superusers, only show users in factories they can manage
+        # and EXPLICITLY HIDE superusers
+        manageable_factories = user.get_factories_with_permission('can_manage_users')
+        return User.objects.filter(
+            factory_memberships__factory__in=manageable_factories,
+            factory_memberships__is_active=True,
+            is_superuser=False
+        ).distinct().order_by('-created_at')
+
     def get_serializer_class(self):
         """Return appropriate serializer based on action."""
         serializer_map = {
@@ -126,8 +140,8 @@ class UserViewSet(viewsets.ModelViewSet):
             'resend_verification': serializers.Serializer,  # No data needed for resend
         }
         
-        # Use AdminUserSerializer for staff members
-        if self.request.user and self.request.user.is_staff:
+        # Use AdminUserSerializer for those who can manage users
+        if self.request.user and (self.request.user.is_superuser or self.request.user.can_manage_users()):
             return AdminUserSerializer
             
         return serializer_map.get(self.action, UserSerializer)
@@ -386,9 +400,25 @@ class FactoryViewSet(viewsets.ModelViewSet):
     pagination_class = None
 
     def get_permissions(self):
-        if self.action in ['create', 'update', 'partial_update', 'destroy']:
-            return [permissions.IsAdminUser()]
+        if self.action in ['create', 'destroy']:
+            return [IsSuperAdmin()]
+        if self.action in ['update', 'partial_update']:
+            return [IsFactoryManager()]
         return super().get_permissions()
+
+    def get_queryset(self):
+        user = self.request.user
+        if not user.is_authenticated or not user.is_verified:
+            return Factory.objects.none()
+            
+        if user.is_superuser or (user.is_verified and user.can_view_all_illustrations()):
+            return Factory.objects.all().order_by('name')
+        
+        # Non-privileged users only see factories they are members of
+        return Factory.objects.filter(
+            members__user=user,
+            members__is_active=True
+        ).distinct().order_by('name')
 
 class RoleViewSet(viewsets.ModelViewSet):
     """
@@ -396,7 +426,8 @@ class RoleViewSet(viewsets.ModelViewSet):
     """
     queryset = Role.objects.all().order_by('name')
     serializer_class = RoleSerializer
-    permission_classes = [permissions.IsAdminUser]
+    def get_permissions(self):
+        return [CanManageRoles()]
     pagination_class = None
 
 class FactoryMemberViewSet(viewsets.ModelViewSet):
@@ -405,11 +436,21 @@ class FactoryMemberViewSet(viewsets.ModelViewSet):
     """
     queryset = FactoryMember.objects.all().select_related('user', 'factory', 'role')
     serializer_class = FactoryMemberSerializer
-    permission_classes = [permissions.IsAdminUser]
-    pagination_class = None
+    def get_permissions(self):
+        return [CanManageUsers()]
 
     def get_queryset(self):
+        user = self.request.user
+        if not user.is_authenticated or not user.is_verified:
+            return FactoryMember.objects.none()
+            
         queryset = super().get_queryset()
+        
+        if not user.is_superuser:
+            # Filter to only show memberships user is allowed to manage
+            manageable_factories = user.get_active_memberships().values_list('factory_id', flat=True)
+            queryset = queryset.filter(factory_id__in=manageable_factories)
+            
         user_id = self.request.query_params.get('user')
         factory_id = self.request.query_params.get('factory')
         
@@ -429,7 +470,21 @@ class UserListViewSet(viewsets.ReadOnlyModelViewSet):
     pagination_class = None
 
     def get_queryset(self):
-        queryset = User.objects.filter(is_active=True).order_by('username')
+        user = self.request.user
+        if not user.is_authenticated or not user.is_active or not user.is_verified:
+            return User.objects.none()
+            
+        if user.is_superuser:
+            return User.objects.filter(is_active=True).order_by('username')
+            
+        # Filter users in factories the user belongs to
+        user_factories = user.get_active_memberships().values_list('factory_id', flat=True)
+        queryset = User.objects.filter(
+            is_active=True,
+            factory_memberships__factory__in=user_factories,
+            factory_memberships__is_active=True
+        ).distinct().order_by('username')
+
         factory_id = self.request.query_params.get('factory')
         if factory_id:
             queryset = queryset.filter(
@@ -457,11 +512,25 @@ class CommentViewSet(viewsets.ModelViewSet):
     queryset = Comment.objects.all().select_related('user').order_by('-date')
     serializer_class = CommentSerializer
     
+    def get_queryset(self):
+        """
+        Feedback visibility rules.
+        """
+        user = self.request.user
+        if not user.is_authenticated or not user.is_active or not user.is_verified:
+            return Comment.objects.none()
+            
+        if user.is_system_admin():
+            return Comment.objects.all()
+            
+        return Comment.objects.filter(user=user)
+    
     def get_permissions(self):
-        """Allow anyone to create comments, but restrict viewing to staff."""
+        """Allow anyone to create comments, but restrict viewing/managing to authorized users."""
         if self.action == 'create':
             return [permissions.AllowAny()]
-        return [permissions.IsAdminUser()]
+        
+        return [CanManageFeedback()]
     
     def perform_create(self, serializer):
         """Automatically set the user if authenticated."""

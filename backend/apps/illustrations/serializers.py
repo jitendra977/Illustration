@@ -177,9 +177,29 @@ class IllustrationFileSerializer(serializers.ModelSerializer):
 
 
 # ------------------------------
+# Mixins
+# ------------------------------
+class IllustrationPermissionMixin:
+    """Mixin to add permission flags to illustrations"""
+    def get_can_edit(self, obj):
+        """Return True if the current user can edit this illustration"""
+        request = self.context.get('request')
+        if not request or not request.user.is_authenticated:
+            return False
+        return request.user.can_edit_illustration(obj)
+
+    def get_can_delete(self, obj):
+        """Return True if the current user can delete this illustration"""
+        request = self.context.get('request')
+        if not request or not request.user.is_authenticated:
+            return False
+        return request.user.can_delete_illustration(obj)
+
+
+# ------------------------------
 # Illustration Serializer (List/Create/Update)
 # ------------------------------
-class IllustrationSerializer(serializers.ModelSerializer):
+class IllustrationSerializer(IllustrationPermissionMixin, serializers.ModelSerializer):
     # File uploads
     uploaded_files = serializers.ListField(
         child=serializers.FileField(),
@@ -210,6 +230,13 @@ class IllustrationSerializer(serializers.ModelSerializer):
     # First file (conditional)
     first_file = serializers.SerializerMethodField(read_only=True)
     
+    # Files (conditional)
+    files = serializers.SerializerMethodField(read_only=True)
+    
+    # Permission flags
+    can_edit = serializers.SerializerMethodField(read_only=True)
+    can_delete = serializers.SerializerMethodField(read_only=True)
+    
     class Meta:
         model = Illustration
         fields = [
@@ -221,7 +248,8 @@ class IllustrationSerializer(serializers.ModelSerializer):
             'title', 'description',
             'applicable_car_models',
             'created_at', 'updated_at',
-            'uploaded_files', 'file_count', 'first_file'
+            'uploaded_files', 'files', 'file_count', 'first_file',
+            'can_edit', 'can_delete'
         ]
         read_only_fields = [
             'id', 'user', 'user_name', 'factory', 'factory_name',
@@ -229,7 +257,8 @@ class IllustrationSerializer(serializers.ModelSerializer):
             'manufacturer_id', 'manufacturer_name', 'manufacturer_slug',
             'part_category_name', 'part_category_slug',
             'part_subcategory_name', 'part_subcategory_slug',
-            'created_at', 'updated_at', 'file_count'
+            'created_at', 'updated_at', 'file_count',
+            'can_edit', 'can_delete'
         ]
     
     def get_file_count(self, obj):
@@ -281,12 +310,22 @@ class IllustrationSerializer(serializers.ModelSerializer):
         if first_file:
             return IllustrationFileSerializer(first_file, context=self.context).data
         return None
+    
+    def get_files(self, obj):
+        """Return all files if include_files is True"""
+        include_files = self.context.get('include_files', False)
+        if not include_files:
+            return []
+            
+        # Use prefetched or all
+        files_qs = obj.files.all()
+        return IllustrationFileSerializer(files_qs, many=True, context=self.context).data
 
 
 # ------------------------------
 # Illustration Detail Serializer
 # ------------------------------
-class IllustrationDetailSerializer(serializers.ModelSerializer):
+class IllustrationDetailSerializer(IllustrationPermissionMixin, serializers.ModelSerializer):
     # Files
     files = IllustrationFileSerializer(many=True, read_only=True)
     
@@ -301,6 +340,10 @@ class IllustrationDetailSerializer(serializers.ModelSerializer):
     part_subcategory_detail = serializers.SerializerMethodField()
     applicable_car_models_detail = serializers.SerializerMethodField()
     
+    # Permission flags
+    can_edit = serializers.SerializerMethodField(read_only=True)
+    can_delete = serializers.SerializerMethodField(read_only=True)
+    
     class Meta:
         model = Illustration
         fields = [
@@ -311,7 +354,7 @@ class IllustrationDetailSerializer(serializers.ModelSerializer):
             'title', 'description',
             'applicable_car_models', 'applicable_car_models_detail',
             'created_at', 'updated_at',
-            'files'
+            'files', 'can_edit', 'can_delete'
         ]
     
     def get_engine_model_detail(self, obj):

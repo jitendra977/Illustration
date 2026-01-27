@@ -25,11 +25,10 @@ from .serializers import (
 )
 
 from .permissions import (
-    IsAdminOrReadOnly,
-    IsAdminOrOwner,
-    IsAuthenticatedAndActive,
-    IsVerifiedUser,
-    IsVerifiedStaff,
+    AdminOrReadOnly,
+    AdminOrOwner,
+    AuthenticatedAndActive,
+    IllustrationPermission,
 )
 
 from .pagination import DefaultPagination
@@ -40,7 +39,7 @@ from .pagination import DefaultPagination
 # ========================================
 
 class ManufacturerViewSet(viewsets.ModelViewSet):
-    permission_classes = [IsAdminOrReadOnly]
+    permission_classes = [AdminOrReadOnly]
     filter_backends = [filters.SearchFilter, filters.OrderingFilter]
     search_fields = ['slug', 'name']
     ordering_fields = ['name']
@@ -65,7 +64,7 @@ class ManufacturerViewSet(viewsets.ModelViewSet):
 # ========================================
 
 class EngineModelViewSet(viewsets.ModelViewSet):
-    permission_classes = [IsAdminOrReadOnly]
+    permission_classes = [AdminOrReadOnly]
     pagination_class = None
     filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
     filterset_fields = ['manufacturer', 'fuel_type']
@@ -104,7 +103,7 @@ class EngineModelViewSet(viewsets.ModelViewSet):
 # ========================================
 
 class CarModelViewSet(viewsets.ModelViewSet):
-    permission_classes = [IsAdminOrReadOnly]
+    permission_classes = [AdminOrReadOnly]
     filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
     filterset_fields = ['manufacturer', 'vehicle_type']
     search_fields = ['name', 'manufacturer__name', 'model_code', 'chassis_code']
@@ -158,7 +157,7 @@ class CarModelViewSet(viewsets.ModelViewSet):
 
 class PartCategoryViewSet(viewsets.ModelViewSet):
     serializer_class = PartCategorySerializer
-    permission_classes = [IsAdminOrReadOnly]
+    permission_classes = [AdminOrReadOnly]
     pagination_class = None
     filter_backends = [filters.SearchFilter, filters.OrderingFilter]
     search_fields = ['name', 'description', 'slug']
@@ -201,7 +200,7 @@ class PartCategoryViewSet(viewsets.ModelViewSet):
 
 class PartSubCategoryViewSet(viewsets.ModelViewSet):
     serializer_class = PartSubCategorySerializer
-    permission_classes = [IsAdminOrReadOnly]
+    permission_classes = [AdminOrReadOnly]
     pagination_class = None
     filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
     filterset_fields = ['part_category']
@@ -244,7 +243,7 @@ class PartSubCategoryViewSet(viewsets.ModelViewSet):
 # Illustrations - FACTORY BASED ACCESS
 # ========================================
 class IllustrationViewSet(viewsets.ModelViewSet):
-    permission_classes = [IsAuthenticatedAndActive]
+    permission_classes = [AuthenticatedAndActive, IllustrationPermission]
     pagination_class = DefaultPagination
     filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
     filterset_fields = [
@@ -257,27 +256,16 @@ class IllustrationViewSet(viewsets.ModelViewSet):
         'applicable_car_models'
     ]
     search_fields = ['title', 'description']
-    ordering_fields = ['created_at', 'updated_at', 'title', 'factory__name', 'user__username']
+    ordering_fields = ['created_at', 'updated_at', 'title', 'factory__name', 'user__username', 'is_own_factory']
     ordering = ['-created_at']
-
-    def get_permissions(self):
-        """
-        Read (list, retrieve): All authenticated users (read-only for normal users)
-        Write (create, update, delete): Staff or superuser only
-        """
-        if self.action in ['list', 'retrieve']:
-            # Validated users can view illustrations
-            return [IsVerifiedUser()]
-        # Create, update, delete require staff status
-        if self.action in ['create', 'update', 'partial_update', 'destroy', 'upload_file', 'delete_file']:
-            return [IsVerifiedStaff()]  # Changed from IsVerifiedUser to IsVerifiedStaff
-        return [IsVerifiedUser()]
 
     def get_queryset(self):
         if getattr(self, 'swagger_fake_view', False):
             return Illustration.objects.none()
 
-        # ⭐ NEW: Check if we should include files from query params
+        user = self.request.user
+
+        # Check if we should include files from query params
         include_files = self.request.query_params.get('include_files', 'false').lower() == 'true'
 
         # Base queryset with optimized joins
@@ -291,10 +279,29 @@ class IllustrationViewSet(viewsets.ModelViewSet):
         ).prefetch_related(
             'applicable_car_models',
             'applicable_car_models__manufacturer'
-        ).annotate(file_count=Count('files', distinct=True))
+        ).annotate(
+            file_count=Count('files', distinct=True)
+        )
+        
+        # Annotate with own factory status for sorting
+        if user and user.is_authenticated:
+            user_factories = user.get_active_memberships().values_list('factory_id', flat=True)
+            from django.db.models import Case, When, Value, IntegerField
+            qs = qs.annotate(
+                is_own_factory=Case(
+                    When(factory_id__in=user_factories, then=Value(1)),
+                    default=Value(0),
+                    output_field=IntegerField(),
+                )
+            )
+        else:
+            from django.db.models import Value, IntegerField
+            qs = qs.annotate(is_own_factory=Value(0, output_field=IntegerField()))
 
-        # ⭐ NEW: Only prefetch files if explicitly requested or on detail view
+        # Only prefetch files if explicitly requested or on detail view
         if self.action == 'retrieve' or include_files:
+            from django.db.models import Prefetch
+            from .models import IllustrationFile
             qs = qs.prefetch_related(
                 Prefetch(
                     'files',
@@ -302,15 +309,20 @@ class IllustrationViewSet(viewsets.ModelViewSet):
                 )
             )
 
-        user = self.request.user
-
-        # Not authenticated - no access
-        if not user.is_authenticated:
+        if not user.is_authenticated or not user.is_active:
             return qs.none()
-
-        # ⭐ NEW: All authenticated users can VIEW all illustrations
-        # No factory filtering - everyone sees everything (read-only for normal users)
-        # Write permissions are controlled by get_permissions()
+            
+        if user.is_superuser:
+            pass # Superuser sees all
+        elif user.is_verified and user.can_view_all_illustrations():
+            pass # High-tier verified users (Manager, Admin, Viewer, etc.) see all
+        else:
+            # Restricted visibility (Contributor or Unverified)
+            # 1. Users can always see their own illustrations
+            # 2. They can also see any illustration within factories they are members of
+            user_factories = user.get_active_memberships().values_list('factory_id', flat=True)
+            from django.db.models import Q
+            qs = qs.filter(Q(factory_id__in=user_factories) | Q(user=user))
 
         # Apply filtering from query params for navigation hierarchy
         manufacturer_id = self.request.query_params.get('manufacturer')
@@ -357,7 +369,7 @@ class IllustrationViewSet(viewsets.ModelViewSet):
         
         # Ensure user has at least one active factory
         active_memberships = user.get_active_memberships()
-        if not active_memberships.exists() and not user.is_staff:
+        if not active_memberships.exists() and not user.is_superuser:
             from rest_framework.exceptions import ValidationError
             raise ValidationError({'factory': 'あなたはどの工場にも割り当てられていません'})
         
@@ -365,12 +377,17 @@ class IllustrationViewSet(viewsets.ModelViewSet):
         factory = None
         if 'factory' in self.request.data:
             factory_id = self.request.data['factory']
-            # Security check: Does user belong to this factory?
-            if not active_memberships.filter(factory_id=factory_id).exists() and not user.is_staff:
-                from rest_framework.exceptions import ValidationError
-                raise ValidationError({'factory': '指定された工場へのアクセス権がありません'})
             from apps.accounts.models import Factory
-            factory = Factory.objects.get(id=factory_id)
+            try:
+                factory = Factory.objects.get(id=factory_id)
+            except Factory.DoesNotExist:
+                from rest_framework.exceptions import ValidationError
+                raise ValidationError({'factory': '指定された工場が見つかりません'})
+
+            # Security check: Does user have permission in this SPECIFIC factory?
+            if not user.can_create_illustration(factory):
+                from rest_framework.exceptions import ValidationError
+                raise ValidationError({'factory': '指定された工場でイラストを作成する権限がありません'})
         else:
             first_membership = active_memberships.first()
             if first_membership:
@@ -378,16 +395,52 @@ class IllustrationViewSet(viewsets.ModelViewSet):
         
         serializer.save(user=user, factory=factory)
 
-    @action(detail=True, methods=['post'], permission_classes=[IsVerifiedUser])
+    @action(detail=False, methods=['get'])
+    def stats(self, request):
+        """Return total and own factory illustration counts, plus factories and users"""
+        user = request.user
+        if not user.is_authenticated:
+            return Response({'error': 'Not authenticated'}, status=status.HTTP_401_UNAUTHORIZED)
+            
+        from apps.accounts.models import Factory, User
+        
+        # Get accessible illustrations
+        qs = self.get_queryset()
+        
+        total_count = qs.count()
+        
+        # Get user's active factories
+        active_memberships = user.get_active_memberships()
+        user_factories = active_memberships.values_list('factory_id', flat=True)
+        own_factory_count = qs.filter(factory_id__in=user_factories).count()
+        
+        # Total Factories (All factories in the system)
+        total_factories = Factory.objects.count()
+        
+        # Total Users
+        if user.is_superuser:
+            total_users = User.objects.count()
+        else:
+            # Users in user's factories
+            total_users = User.objects.filter(
+                factory_memberships__factory_id__in=user_factories,
+                factory_memberships__is_active=True
+            ).distinct().count()
+            
+        res_data = {
+            'total_illustrations': total_count,
+            'own_factory_illustrations': own_factory_count,
+            'total_factories': total_factories,
+            'total_users': total_users
+        }
+        print(f"DEBUG STATS for user {user.email}: {res_data}")
+        return Response(res_data)
+
+    @action(detail=True, methods=['post'])
     def add_files(self, request, pk=None):
         illustration = self.get_object()
         
-        # Check permission: use the helper method on User model
-        if not request.user.can_edit_illustration(illustration) and not request.user.is_staff:
-            return Response(
-                {'error': 'このイラストレーションへのアクセス権がありません'},
-                status=status.HTTP_403_FORBIDDEN
-            )
+        # Permissions are handled by IllustrationPermission via get_object()
         
         files = request.FILES.getlist('files')
 
@@ -413,17 +466,12 @@ class IllustrationViewSet(viewsets.ModelViewSet):
             status=status.HTTP_201_CREATED
         )
     
-    @action(detail=True, methods=['delete'], url_path='files/(?P<file_id>[^/.]+)', permission_classes=[IsVerifiedUser])
+    @action(detail=True, methods=['delete'], url_path='files/(?P<file_id>[^/.]+)')
     def delete_file(self, request, pk=None, file_id=None):
         """Delete a specific file from an illustration"""
         illustration = self.get_object()
         
-        # Check permission: use the helper method on User model
-        if not request.user.can_edit_illustration(illustration) and not request.user.is_staff:
-            return Response(
-                {'error': 'このイラストレーションへのアクセス権がありません'},
-                status=status.HTTP_403_FORBIDDEN
-            )
+        # Permissions are handled by IllustrationPermission via get_object()
         
         try:
             file = IllustrationFile.objects.get(id=file_id, illustration=illustration)
@@ -442,7 +490,7 @@ class IllustrationViewSet(viewsets.ModelViewSet):
 # ========================================
 class IllustrationFileViewSet(viewsets.ModelViewSet):
     serializer_class = IllustrationFileSerializer
-    permission_classes = [IsAuthenticatedAndActive]  # Always require auth
+    permission_classes = [AuthenticatedAndActive]
     pagination_class = DefaultPagination
     filter_backends = [DjangoFilterBackend, filters.OrderingFilter]
     filterset_fields = ['illustration', 'file_type']
@@ -455,9 +503,7 @@ class IllustrationFileViewSet(viewsets.ModelViewSet):
         """
         if self.action == 'preview':
             return [AllowAny()]
-        if self.action in ['create', 'update', 'partial_update', 'destroy', 'download']:
-            return [IsAuthenticatedAndActive(), IsVerifiedUser()]
-        return [IsAuthenticatedAndActive()]
+        return [AuthenticatedAndActive(), IllustrationPermission()]
 
     def get_queryset(self):
         if getattr(self, 'swagger_fake_view', False):
@@ -468,23 +514,22 @@ class IllustrationFileViewSet(viewsets.ModelViewSet):
             'illustration__factory',
             'illustration__engine_model__manufacturer'
         )
-
-        user = self.request.user
-
-        # ⭐ Allow access to preview for everyone
+        
+        # Allow access to preview for everyone
         if self.action == 'preview':
             return qs
 
-        # Not authenticated - no access for other actions
-        if not user.is_authenticated:
+        user = self.request.user
+        
+        # Base requirements: Must be authenticated and active
+        if not user.is_authenticated or not user.is_active:
             return qs.none()
-        
-        # Verified users (including staff) can see all files
-        if user.is_verified or user.is_staff:
+            
+        if user.is_verified and (user.is_system_admin() or user.can_view_all_illustrations()):
             return qs
-        
-        # Unverified users see nothing
-        return qs.none()
+        else:
+            # ROLE-BASED FILTERING (Strict ownership for Contributors/Unverified)
+            return qs.filter(illustration__user=user)
 
     @action(detail=True, methods=['get'], permission_classes=[AllowAny])
     def preview(self, request, pk=None):
@@ -578,7 +623,7 @@ class IllustrationFileViewSet(viewsets.ModelViewSet):
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR
             )
 
-    @action(detail=True, methods=['get'], permission_classes=[IsAuthenticatedAndActive])
+    @action(detail=True, methods=['get'], permission_classes=[AuthenticatedAndActive])
     def download(self, request, pk=None):
         """Download file"""
         try:
@@ -698,22 +743,35 @@ class IllustrationFileViewSet(viewsets.ModelViewSet):
 class FavoriteIllustrationViewSet(viewsets.ModelViewSet):
     """ViewSet for managing user favorites"""
     serializer_class = FavoriteIllustrationSerializer
-    permission_classes = [IsAuthenticatedAndActive]
+    permission_classes = [AuthenticatedAndActive]
     pagination_class = DefaultPagination
     filter_backends = [filters.OrderingFilter]
     ordering_fields = ['created_at']
     ordering = ['-created_at']
 
     def get_queryset(self):
-        """Return only the current user's favorites"""
+        """Return only the current user's favorites that they still have permission to view"""
         if getattr(self, 'swagger_fake_view', False):
             return FavoriteIllustration.objects.none()
         
         user = self.request.user
-        if not user.is_authenticated:
+        if not user.is_authenticated or not user.is_verified:
             return FavoriteIllustration.objects.none()
         
-        return FavoriteIllustration.objects.filter(user=user).select_related(
+        from django.db.models import Q
+        qs = FavoriteIllustration.objects.filter(user=user)
+        
+        # Unified Visibility Logic for favorites:
+        # Only show favorites where the user still has permission to view the illustration
+        if not (user.is_verified and user.can_view_all_illustrations()):
+            user_factories = user.get_active_memberships().values_list('factory_id', flat=True)
+            qs = qs.filter(
+                Q(illustration__user=user) |
+                Q(illustration__factory_id__in=user_factories) |
+                Q(illustration__factory__isnull=True)
+            )
+
+        return qs.select_related(
             'illustration__engine_model__manufacturer',
             'illustration__part_category',
             'illustration__part_subcategory',
@@ -722,7 +780,7 @@ class FavoriteIllustrationViewSet(viewsets.ModelViewSet):
         ).prefetch_related(
             'illustration__files',
             'illustration__applicable_car_models'
-        )
+        ).distinct()
 
     def get_serializer_context(self):
         context = super().get_serializer_context()
@@ -749,6 +807,12 @@ class FavoriteIllustrationViewSet(viewsets.ModelViewSet):
         # Check if illustration exists
         try:
             illustration = Illustration.objects.get(id=illustration_id)
+            # Check permission
+            if not request.user.can_view_illustration(illustration):
+                 return Response(
+                    {'error': 'イラストが見つかりません'},
+                    status=status.HTTP_404_NOT_FOUND
+                )
         except Illustration.DoesNotExist:
             return Response(
                 {'error': 'イラストが見つかりません'},

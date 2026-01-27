@@ -24,6 +24,12 @@ class ManufacturerAdmin(admin.ModelAdmin):
     list_filter = ['name']
     ordering = ['name']
     
+    def has_module_permission(self, request):
+        return request.user.is_superuser
+
+    def has_view_permission(self, request, obj=None):
+        return request.user.is_superuser
+    
     def get_queryset(self, request):
         qs = super().get_queryset(request)
         return qs.annotate(
@@ -54,6 +60,12 @@ class EngineModelAdmin(admin.ModelAdmin):
     list_filter = ['manufacturer', 'fuel_type']
     search_fields = ['name', 'engine_code', 'manufacturer__name']
     raw_id_fields = ['manufacturer']
+    
+    def has_module_permission(self, request):
+        return request.user.is_superuser
+
+    def has_view_permission(self, request, obj=None):
+        return request.user.is_superuser
     
     fieldsets = (
         ('Basic Information', {
@@ -98,6 +110,12 @@ class CarModelAdmin(admin.ModelAdmin):
         'year_range', 'model_code', 'chassis_code',
         'engine_count', 'slug'
     ]
+    
+    def has_module_permission(self, request):
+        return request.user.is_superuser
+
+    def has_view_permission(self, request, obj=None):
+        return request.user.is_superuser
     list_filter = ['manufacturer', 'vehicle_type']
     search_fields = ['name', 'manufacturer__name', 'model_code', 'chassis_code']
     prepopulated_fields = {'slug': ('name',)}
@@ -164,6 +182,12 @@ class PartCategoryAdmin(admin.ModelAdmin):
     prepopulated_fields = {'slug': ('name',)}
     ordering = ['order', 'name']
     
+    def has_module_permission(self, request):
+        return request.user.is_superuser
+
+    def has_view_permission(self, request, obj=None):
+        return request.user.is_superuser
+    
     fieldsets = (
         ('Basic Information', {
             'fields': ('name', 'slug', 'order')
@@ -211,6 +235,12 @@ class PartSubCategoryAdmin(admin.ModelAdmin):
     prepopulated_fields = {'slug': ('name',)}
     raw_id_fields = ['part_category']
     ordering = ['part_category__order', 'order', 'name']
+    
+    def has_module_permission(self, request):
+        return request.user.is_superuser
+
+    def has_view_permission(self, request, obj=None):
+        return request.user.is_superuser
     
     fieldsets = (
         ('Basic Information', {
@@ -303,6 +333,12 @@ class IllustrationAdmin(admin.ModelAdmin):
     date_hierarchy = 'created_at'
     inlines = [IllustrationFileInline]
     readonly_fields = ['user', 'factory', 'created_at', 'updated_at']
+    
+    def has_module_permission(self, request):
+        return request.user.is_superuser
+
+    def has_view_permission(self, request, obj=None):
+        return request.user.is_superuser
     
     fieldsets = (
         ('Basic Information', {
@@ -445,6 +481,12 @@ class IllustrationFileAdmin(admin.ModelAdmin):
     readonly_fields = ['file_type', 'uploaded_at', 'file_preview_large']
     date_hierarchy = 'uploaded_at'
     
+    def has_module_permission(self, request):
+        return request.user.is_superuser
+
+    def has_view_permission(self, request, obj=None):
+        return request.user.is_superuser
+    
     fieldsets = (
         ('File Information', {
             'fields': ('illustration', 'file', 'file_type', 'file_preview_large')
@@ -533,6 +575,12 @@ class FavoriteIllustrationAdmin(admin.ModelAdmin):
     raw_id_fields = ['user', 'illustration']
     date_hierarchy = 'created_at'
     readonly_fields = ['created_at']
+    
+    def has_module_permission(self, request):
+        return request.user.is_superuser
+
+    def has_view_permission(self, request, obj=None):
+        return request.user.is_superuser
     
     def get_queryset(self, request):
         qs = super().get_queryset(request)

@@ -354,6 +354,22 @@ def illustration_file_path(instance, filename):
     )
 
 
+def submitted_illustration_path(instance, filename):
+    """
+    Generate upload path for submitted/edited illustrations:
+    submitted_illustrations/UserID/filename_uuid.ext
+    """
+    ext = filename.split('.')[-1]
+    unique_filename = f"{uuid.uuid4()}.{ext}"
+    
+    return os.path.join(
+        "submitted_illustrations",
+        str(instance.user.id),
+        unique_filename
+    )
+
+
+
 # ------------------------------
 # Illustration File (Multi-file)
 # ------------------------------

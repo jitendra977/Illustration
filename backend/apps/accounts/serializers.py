@@ -19,10 +19,14 @@ class RoleSerializer(serializers.ModelSerializer):
         model = Role
         fields = [
             'id', 'name', 'code', 
+            'can_manage_all_systems',
+            'can_manage_factory',
             'can_manage_users', 'can_manage_jobs', 
             'can_view_finance', 'can_edit_finance',
-            'can_create_illustrations', 'can_edit_illustrations', 
-            'can_delete_illustrations', 'can_view_all_factory_illustrations'
+            'can_manage_catalog', 'can_manage_feedback',
+            'can_create_illustration', 'can_view_illustration',
+            'can_edit_illustration', 'can_delete_illustration', 
+            'can_view_all_factory_illustrations'
         ]
 
 class FactoryMemberSerializer(serializers.ModelSerializer):
@@ -47,19 +51,65 @@ class UserSerializer(serializers.ModelSerializer):
     updated_at = serializers.DateTimeField(format="%Y-%m-%d %H:%M:%S", read_only=True)
     date_joined = serializers.DateTimeField(format="%Y-%m-%d %H:%M:%S", read_only=True)
     
+    permissions = serializers.SerializerMethodField()
+
     class Meta:
         model = User
         fields = [
             'id', 'username', 'email', 'factory_memberships', 'first_name', 'last_name',
             'is_active', 'is_staff', 'is_superuser', 'date_joined',
             'phone_number', 'profile_image', 'groups', 'user_permissions',
-            'is_verified', 'created_at', 'updated_at', 'last_login'
+            'is_verified', 'created_at', 'updated_at', 'last_login', 'permissions'
         ]
         read_only_fields = [
             'id', 'is_staff', 'is_superuser', 'date_joined',
             'groups', 'user_permissions', 'is_verified', 'last_login', 
             'created_at', 'updated_at',
         ]
+
+    def get_permissions(self, obj):
+        # Aggregate permissions from all active factory memberships
+        active_memberships = obj.get_active_memberships()
+        permissions = {
+            'can_manage_all_systems': obj.is_superuser,
+            'can_manage_factory': False,
+            'can_manage_users': False,
+            'can_manage_jobs': False,
+            'can_view_finance': False,
+            'can_edit_finance': False,
+            'can_manage_catalog': obj.is_superuser,
+            'can_manage_feedback': obj.is_superuser,
+            'can_create_illustration': False,
+            'can_view_illustration': False,
+            'can_edit_illustration': False,
+            'can_delete_illustration': False,
+            'can_view_all_factory_illustrations': False,
+        }
+        
+        # Super Admins get everything
+        if obj.is_superuser:
+            for k in permissions:
+                permissions[k] = True
+            return permissions
+
+        for m in active_memberships:
+            role = m.role
+            if not role: continue
+            permissions['can_manage_all_systems'] |= role.can_manage_all_systems
+            permissions['can_manage_factory'] |= role.can_manage_factory
+            permissions['can_manage_users'] |= role.can_manage_users
+            permissions['can_manage_jobs'] |= role.can_manage_jobs
+            permissions['can_view_finance'] |= role.can_view_finance
+            permissions['can_edit_finance'] |= role.can_edit_finance
+            permissions['can_manage_catalog'] |= role.can_manage_catalog
+            permissions['can_manage_feedback'] |= role.can_manage_feedback
+            permissions['can_create_illustration'] |= role.can_create_illustration
+            permissions['can_view_illustration'] |= role.can_view_illustration
+            permissions['can_edit_illustration'] |= role.can_edit_illustration
+            permissions['can_delete_illustration'] |= role.can_delete_illustration
+            permissions['can_view_all_factory_illustrations'] |= role.can_view_all_factory_illustrations
+            
+        return permissions
 
 class AdminUserSerializer(serializers.ModelSerializer):
     """Serializer for admin user management (full control)."""
@@ -72,6 +122,7 @@ class AdminUserSerializer(serializers.ModelSerializer):
     )
 
     factory_memberships = FactoryMemberSerializer(many=True, read_only=True)
+    permissions = serializers.SerializerMethodField()
 
     class Meta:
         model = User
@@ -79,13 +130,57 @@ class AdminUserSerializer(serializers.ModelSerializer):
             'id', 'username', 'email', 'first_name', 'last_name',
             'is_active', 'is_staff', 'is_superuser', 'is_verified', 
             'phone_number', 'profile_image', 'password',
-            'date_joined', 'last_login', 'factory_memberships'
+            'date_joined', 'last_login', 'factory_memberships', 'permissions'
         ]
         read_only_fields = ['id', 'date_joined', 'last_login']
         extra_kwargs = {
             'email': {'required': True},
             'username': {'required': True},
         }
+
+    def get_permissions(self, obj):
+        # We can reuse the same method from UserSerializer if we wanted but simple repeat for now
+        # Actually I'll just refetch because this helps with Admin view
+        active_memberships = obj.get_active_memberships()
+        permissions = {
+            'can_manage_all_systems': obj.is_superuser,
+            'can_manage_factory': False,
+            'can_manage_users': False,
+            'can_manage_jobs': False,
+            'can_view_finance': False,
+            'can_edit_finance': False,
+            'can_manage_catalog': obj.is_superuser,
+            'can_manage_feedback': obj.is_superuser,
+            'can_create_illustration': False,
+            'can_view_illustration': False,
+            'can_edit_illustration': False,
+            'can_delete_illustration': False,
+            'can_view_all_factory_illustrations': False,
+        }
+        
+        if obj.is_superuser:
+            for k in permissions:
+                permissions[k] = True
+            return permissions
+
+        for m in active_memberships:
+            role = m.role
+            if not role: continue
+            permissions['can_manage_all_systems'] |= role.can_manage_all_systems
+            permissions['can_manage_factory'] |= role.can_manage_factory
+            permissions['can_manage_users'] |= role.can_manage_users
+            permissions['can_manage_jobs'] |= role.can_manage_jobs
+            permissions['can_view_finance'] |= role.can_view_finance
+            permissions['can_edit_finance'] |= role.can_edit_finance
+            permissions['can_manage_catalog'] |= role.can_manage_catalog
+            permissions['can_manage_feedback'] |= role.can_manage_feedback
+            permissions['can_create_illustration'] |= role.can_create_illustration
+            permissions['can_view_illustration'] |= role.can_view_illustration
+            permissions['can_edit_illustration'] |= role.can_edit_illustration
+            permissions['can_delete_illustration'] |= role.can_delete_illustration
+            permissions['can_view_all_factory_illustrations'] |= role.can_view_all_factory_illustrations
+            
+        return permissions
 
     def validate_email(self, value):
         """Ensure email is lowercase."""
@@ -104,6 +199,40 @@ class AdminUserSerializer(serializers.ModelSerializer):
             user.set_password(User.objects.make_random_password())
         user.save()
         return user
+
+    def validate(self, attrs):
+        """
+        Enforce restrictions on sensitive fields.
+        Only superusers can modify account status flags.
+        """
+        request = self.context.get('request')
+        user = request.user if request else None
+        
+        # Guard against non-superusers modifying sensitive status flags
+        if user and not user.is_superuser:
+            sensitive_fields = ['is_active', 'is_staff', 'is_superuser', 'is_verified']
+            for field in sensitive_fields:
+                if field in attrs:
+                    # Check if the value is actually changing relative to current instance
+                    if self.instance and getattr(self.instance, field) != attrs[field]:
+                        raise serializers.ValidationError({
+                            field: "Only super-admins can modify account status flags."
+                        })
+                    # If it's a new user (create), we also restrict these flags to default or superuser-only
+                    elif not self.instance:
+                        # Allow setting defaults (usually False) but not True if not superuser
+                        if attrs[field]: # if trying to set to True
+                            raise serializers.ValidationError({
+                                field: "Only super-admins can set account status flags for new users."
+                            })
+
+        # Protect Superusers from being modified by non-superusers
+        if self.instance and self.instance.is_superuser and user and not user.is_superuser:
+            raise serializers.ValidationError({
+                "non_field_errors": "Superuser accounts can only be modified by other Superusers."
+            })
+
+        return attrs
 
     def update(self, instance, validated_data):
         if 'email' in validated_data:

@@ -58,34 +58,61 @@ class Role(models.Model):
     """
     Defines permission levels for factory members
     """
-    OWNER = 'OWNER'
-    MANAGER = 'MANAGER'
-    SUPERVISOR = 'SUPERVISOR'
-    WORKER = 'WORKER'
-    VIEWER = 'VIEWER'
+    SUPER_ADMIN = 'SUPER_ADMIN'
+    FACTORY_MANAGER = 'FACTORY_MANAGER'
+    ILLUSTRATION_ADMIN = 'ILLUSTRATION_ADMIN'
+    ILLUSTRATION_EDITOR = 'ILLUSTRATION_EDITOR'
+    ILLUSTRATION_CONTRIBUTOR = 'ILLUSTRATION_CONTRIBUTOR'
+    ILLUSTRATION_VIEWER = 'ILLUSTRATION_VIEWER'
 
     ROLE_CODES = [
-        (OWNER, 'Owner'),
-        (MANAGER, 'Manager'),
-        (SUPERVISOR, 'Supervisor'),
-        (WORKER, 'Worker'),
-        (VIEWER, 'Viewer'),
+        (SUPER_ADMIN, 'Super Admin'),
+        (FACTORY_MANAGER, 'Factory Manager'),
+        (ILLUSTRATION_ADMIN, 'Illustration Admin'),
+        (ILLUSTRATION_EDITOR, 'Illustration Editor'),
+        (ILLUSTRATION_CONTRIBUTOR, 'Illustration Contributor'),
+        (ILLUSTRATION_VIEWER, 'Illustration Viewer'),
     ]
 
     code = models.CharField(
-        max_length=20,
+        max_length=50,
         unique=True
     )
     name = models.CharField(max_length=50)
     
-    # Permissions
+    # System Permissions (Super Admin)
+    can_manage_all_systems = models.BooleanField(
+        default=False,
+        help_text="Full system access - can manage all factories and all data"
+    )
+    
+    # Factory Management Permissions (Factory Manager)
+    can_manage_factory = models.BooleanField(
+        default=False,
+        help_text="Can manage factory operations and settings"
+    )
     can_manage_users = models.BooleanField(default=False)
     can_manage_jobs = models.BooleanField(default=False)
     can_view_finance = models.BooleanField(default=False)
     can_edit_finance = models.BooleanField(default=False)
-    can_create_illustrations = models.BooleanField(default=False)
-    can_edit_illustrations = models.BooleanField(default=False)
-    can_delete_illustrations = models.BooleanField(default=False)
+    
+    # Catalog Management
+    can_manage_catalog = models.BooleanField(
+        default=False,
+        help_text="Can manage manufacturers, car models, engine models, and categories"
+    )
+    
+    # Feedback/Comment Management
+    can_manage_feedback = models.BooleanField(
+        default=False,
+        help_text="Can view and manage user feedback and comments"
+    )
+
+    # Illustration Permissions
+    can_create_illustration = models.BooleanField(default=False)
+    can_view_illustration = models.BooleanField(default=False)
+    can_edit_illustration = models.BooleanField(default=False)
+    can_delete_illustration = models.BooleanField(default=False)
     can_view_all_factory_illustrations = models.BooleanField(default=False)
 
     def __str__(self):
@@ -168,53 +195,288 @@ class User(AbstractUser):
 
     def get_role_in_factory(self, factory):
         """Get user's role in a specific factory"""
-        try:
-            membership = self.factory_memberships.get(factory=factory, is_active=True)
-            return membership.role
-        except FactoryMember.DoesNotExist:
+        if not factory:
             return None
+            
+        membership = self.factory_memberships.filter(
+            factory=factory, 
+            is_active=True
+        ).select_related('role').first()
+        return membership.role if membership else None
+
+    def has_any_factory_permission(self, permission_name):
+        """Check if user has a permission in ANY active factory membership"""
+        if self.is_superuser:
+            return True
+        return self.get_active_memberships().filter(**{f'role__{permission_name}': True}).exists()
+
+    def get_factories_with_permission(self, permission_name):
+        """
+        Return a queryset of Factory objects where the user has a specific permission.
+        Superusers get all factories.
+        """
+        return self.get_factories_with_any_permission([permission_name])
+
+    def get_factories_with_any_permission(self, permission_names):
+        """
+        Return a queryset of Factory objects where the user has ANY of the specified permissions.
+        Superusers get all factories.
+        """
+        from .models import Factory
+        if self.is_superuser:
+            return Factory.objects.all()
+            
+        # Build Q object for any of the permissions on the Role
+        from django.db.models import Q
+        perm_q = Q()
+        for perm in permission_names:
+            perm_q |= Q(**{f'role__{perm}': True})
+            
+        # Filter memberships first to get accurate factory IDs for THIS user
+        factory_ids = self.factory_memberships.filter(
+            perm_q,
+            is_active=True
+        ).values_list('factory_id', flat=True)
+            
+        return Factory.objects.filter(id__in=factory_ids)
+
+    def has_role(self, role_code, factory=None):
+        """
+        Check if user has a specific role code.
+        Requires user to be active and verified.
+        Superusers bypass this.
+        """
+        if not self.is_active:
+            return False
+            
+        # Role-specific verification requirement
+        if role_code in [Role.SUPER_ADMIN, Role.FACTORY_MANAGER, Role.ILLUSTRATION_ADMIN, Role.ILLUSTRATION_EDITOR, Role.ILLUSTRATION_VIEWER]:
+            if not self.is_verified:
+                return False
+
+        if self.is_superuser:
+            return True
+            
+        if factory:
+            return self.get_active_memberships().filter(
+                factory=factory,
+                role__code=role_code
+            ).exists()
+            
+        return self.get_active_memberships().filter(
+            role__code=role_code
+        ).exists()
+
+    def has_any_role(self, role_codes, factory=None):
+        """Check if user has any of the specified role codes (requires active/verified)"""
+        if not self.is_active:
+            return False
+            
+        # Check if any of the roles require verification
+        requires_verification = any(rc in [Role.SUPER_ADMIN, Role.FACTORY_MANAGER, Role.ILLUSTRATION_ADMIN, Role.ILLUSTRATION_EDITOR, Role.ILLUSTRATION_VIEWER] for rc in role_codes)
+        if requires_verification and not self.is_verified:
+            return False
+            
+        if self.is_superuser:
+            return True
+            
+        if factory:
+            return self.get_active_memberships().filter(
+                factory=factory,
+                role__code__in=role_codes
+            ).exists()
+            
+        return self.get_active_memberships().filter(
+            role__code__in=role_codes
+        ).exists()
 
     def has_permission_in_factory(self, factory, permission):
         """
         Check if user has a specific permission in a factory
-        permission: 'can_manage_users', 'can_create_illustrations', etc.
         """
+        if not self.is_active:
+            return False
+            
         role = self.get_role_in_factory(factory)
-        if role:
-            return getattr(role, permission, False)
+        if not role:
+            return False
+            
+        # Role-specific verification requirement for high-tier roles
+        if role.code in [Role.SUPER_ADMIN, Role.FACTORY_MANAGER, Role.ILLUSTRATION_ADMIN, Role.ILLUSTRATION_EDITOR, Role.ILLUSTRATION_VIEWER]:
+            if not self.is_verified:
+                return False
+                
+        return getattr(role, permission, False)
+
+    # ================= ILLUSTRATION PERMISSIONS =================
+    
+    def can_view_all_illustrations(self):
+        """
+        Checks if the user has any role that grants 'View All' privilege.
+        Roles: SUPER_ADMIN, FACTORY_MANAGER, ILLUSTRATION_ADMIN, ILLUSTRATION_EDITOR, ILLUSTRATION_VIEWER
+        (Must be active and verified as per user request)
+        """
+        if not self.is_active or not self.is_verified:
+            return False
+            
+        return self.has_any_role([
+            Role.SUPER_ADMIN,
+            Role.FACTORY_MANAGER,
+            Role.ILLUSTRATION_ADMIN,
+            Role.ILLUSTRATION_EDITOR,
+            Role.ILLUSTRATION_VIEWER
+        ])
+
+    def can_create_illustration(self, factory):
+        """
+        Check if user can create illustrations in a specific factory.
+        Roles: SUPER_ADMIN, FACTORY_MANAGER, ILLUSTRATION_ADMIN, ILLUSTRATION_CONTRIBUTOR
+        Requirement:
+        - Must be active.
+        - High-tier roles (Admin, Manager) MUST be verified.
+        - Contributors can create if active (per user's 'need' list excluding them).
+        """
+        if not self.is_active:
+            return False
+            
+        if self.is_superuser:
+            return self.is_verified
+            
+        role = self.get_role_in_factory(factory)
+        if not role:
+            return False
+            
+        # Check if this specific role requires verification
+        if role.code in [Role.SUPER_ADMIN, Role.FACTORY_MANAGER, Role.ILLUSTRATION_ADMIN]:
+            if not self.is_verified:
+                return False
+                
+        return role.can_create_illustration
+    
+    def can_view_illustration(self, illustration):
+        """
+        Check if user can view a specific illustration.
+        Rules:
+        1. Owner can always view if ACTIVE.
+        2. High-tier roles can view if ACTIVE and VERIFIED.
+        """
+        if not self.is_active:
+            return False
+
+        # Rule 1: Owner can always view if active
+        if illustration.user_id == self.id:
+            return True
+            
+        # Higher roles need verification to browse others' data
+        if not self.is_verified:
+            return False
+
+        if self.is_superuser:
+            return True
+        
+        # Check if user has ANY role that allows 'View All'
+        if self.can_view_all_illustrations():
+            return True
+        
+        # Rule 3: Check factory-based permissions
+        if illustration.factory:
+            role = self.get_role_in_factory(illustration.factory)
+            if role:
+                # Can view all factory illustrations or specific view perm
+                if role.can_view_all_factory_illustrations or role.can_view_illustration:
+                    return True
+        
         return False
 
     def can_edit_illustration(self, illustration):
         """
-        Check if user can edit a specific illustration
-        - User can edit their own illustrations
-        - User with can_edit_illustrations permission can edit any illustration in their factory
+        Check if user can edit a specific illustration.
+        Rules:
+        1. Superuser: Global Access.
+        2. Must be active. Non-owners usually need verification.
+        3. Must have an active role in the illustration's factory.
+        4. In that factory:
+           - Role allows 'can_edit_illustration' 
+           - OR User is the owner
         """
-        # Check if user is the creator
-        if illustration.user_id == self.id:
-            return True
-        
-        # Check if user has factory-wide edit permission
-        if illustration.factory:
-            return self.has_permission_in_factory(illustration.factory, 'can_edit_illustrations')
-        
-        return False
+        if not self.is_active: return False
+        if self.is_superuser: return True
+        if not self.is_verified and illustration.user_id != self.id: return False
+
+        if not illustration.factory:
+            return illustration.user_id == self.id
+
+        role = self.get_role_in_factory(illustration.factory)
+        if not role: return False
+            
+        return role.can_edit_illustration or illustration.user_id == self.id
 
     def can_delete_illustration(self, illustration):
         """
-        Check if user can delete a specific illustration
-        - User can delete their own illustrations
-        - User with can_delete_illustrations permission can delete any illustration in their factory
+        Check if user can delete a specific illustration.
+        Similar to edit, but uses can_delete_illustration permission.
         """
-        # Check if user is the creator
-        if illustration.user_id == self.id:
-            return True
-        
-        # Check if user has factory-wide delete permission
-        if illustration.factory:
-            return self.has_permission_in_factory(illustration.factory, 'can_delete_illustrations')
-        
-        return False
+        if not self.is_active: return False
+        if self.is_superuser: return True
+        if not self.is_verified and illustration.user_id != self.id: return False
+
+        if not illustration.factory:
+            return illustration.user_id == self.id
+
+        role = self.get_role_in_factory(illustration.factory)
+        if not role: return False
+            
+        return role.can_delete_illustration or illustration.user_id == self.id
+
+    def can_manage_catalog(self):
+        """
+        Check if user has permission to manage catalog data (Manufacturer, Engine, etc.)
+        Requires active and verified account.
+        """
+        if not self.is_active or not self.is_verified:
+            return False
+        return self.is_superuser or self.has_any_factory_permission('can_manage_catalog')
+
+    def can_manage_feedback(self):
+        """
+        Check if user has permission to manage feedback/comments.
+        Requires active and verified account.
+        """
+        if not self.is_active or not self.is_verified:
+            return False
+        return self.is_superuser or self.has_any_factory_permission('can_manage_feedback')
+
+    def is_system_admin(self):
+        """Check if user is a superuser or has global system management role (must be active and verified)"""
+        if not self.is_active or not self.is_verified:
+            return False
+        return self.is_superuser or self.can_manage_all_systems()
+
+    def can_manage_all_systems(self):
+        """Check if user has global system management permission in any factory"""
+        return self.has_any_factory_permission('can_manage_all_systems')
+
+    def can_manage_users(self):
+        """Check if user can manage users (requires active/verified)"""
+        if not self.is_active or not self.is_verified:
+            return False
+        return self.is_superuser or self.has_any_role([Role.SUPER_ADMIN, Role.FACTORY_MANAGER])
+
+    def can_manage_factory(self):
+        """Check if user can manage factory settings (requires active/verified)"""
+        if not self.is_active or not self.is_verified:
+            return False
+        return self.is_superuser or self.has_any_role([Role.SUPER_ADMIN, Role.FACTORY_MANAGER])
+
+    def can_manage_jobs(self):
+        """Check if user can manage illustration/upload jobs (requires active/verified)"""
+        if not self.is_active or not self.is_verified:
+            return False
+        return self.is_superuser or self.has_any_role([
+            Role.SUPER_ADMIN, 
+            Role.FACTORY_MANAGER,
+            Role.ILLUSTRATION_ADMIN
+        ])
 
     def __str__(self):
         return self.email

@@ -15,8 +15,60 @@ class FactoryMemberInline(admin.TabularInline):
 # ================= ROLE ADMIN =================
 @admin.register(Role)
 class RoleAdmin(admin.ModelAdmin):
-    list_display = ('name', 'code', 'can_manage_users', 'can_manage_jobs', 'can_create_illustrations')
+    list_display = (
+        'name', 
+        'code', 
+        'can_manage_all_systems',
+        'can_manage_factory',
+        'can_create_illustration',
+        'can_edit_illustration',
+        'can_delete_illustration',
+    )
+    list_filter = (
+        'can_manage_all_systems',
+        'can_manage_factory',
+        'can_create_illustration',
+        'can_view_illustration',
+        'can_edit_illustration',
+        'can_delete_illustration',
+    )
     search_fields = ('name', 'code')
+    
+    def has_module_permission(self, request):
+        return request.user.is_superuser
+
+    def has_view_permission(self, request, obj=None):
+        return request.user.is_superuser
+    
+    fieldsets = (
+        ('Basic Information', {
+            'fields': ('code', 'name')
+        }),
+        ('System Permissions', {
+            'fields': ('can_manage_all_systems',),
+            'description': 'Super Admin level permissions'
+        }),
+        ('Factory Management', {
+            'fields': (
+                'can_manage_factory',
+                'can_manage_users',
+                'can_manage_jobs',
+                'can_view_finance',
+                'can_edit_finance',
+            ),
+            'description': 'Factory Manager level permissions'
+        }),
+        ('Illustration Permissions', {
+            'fields': (
+                'can_create_illustration',
+                'can_view_illustration',
+                'can_edit_illustration',
+                'can_delete_illustration',
+                'can_view_all_factory_illustrations',
+            ),
+            'description': 'Illustration-specific permissions'
+        }),
+    )
 
 
 # ================= FACTORY ADMIN =================
@@ -25,6 +77,12 @@ class FactoryAdmin(admin.ModelAdmin):
     list_display = ('name', 'address', 'member_count', 'created_at')
     search_fields = ('name', 'address')
     ordering = ('name',)
+    
+    def has_module_permission(self, request):
+        return request.user.is_superuser
+
+    def has_view_permission(self, request, obj=None):
+        return request.user.is_superuser
     inlines = [FactoryMemberInline]
 
     def member_count(self, obj):
@@ -66,6 +124,12 @@ class CustomUserAdmin(UserAdmin):
     )
 
     ordering = ('-created_at',)
+    
+    def has_module_permission(self, request):
+        return request.user.is_superuser
+
+    def has_view_permission(self, request, obj=None):
+        return request.user.is_superuser
 
     readonly_fields = (
         'profile_image_preview',
