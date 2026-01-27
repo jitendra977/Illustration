@@ -2,7 +2,7 @@ from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 from django.utils.html import format_html
 from django.urls import reverse
-from .models import User, Factory, Role, FactoryMember
+from .models import User, Factory, Role, FactoryMember, ActivityLog
 
 
 # ================= INLINES =================
@@ -242,3 +242,30 @@ class CustomUserAdmin(UserAdmin):
         count = queryset.update(is_verified=True, verification_token=None)
         self.message_user(request, f"{count} users marked as verified.")
     mark_verified.short_description = "Mark selected users as verified"
+# ================= ACTIVITY LOG ADMIN =================
+@admin.register(ActivityLog)
+class ActivityLogAdmin(admin.ModelAdmin):
+    list_display = (
+        'timestamp',
+        'username',
+        'action',
+        'model_name',
+        'object_repr',
+        'ip_address',
+        'success',
+    )
+    list_filter = ('action', 'model_name', 'success', 'timestamp', 'factory')
+    search_fields = ('username', 'description', 'object_repr', 'ip_address')
+    ordering = ('-timestamp',)
+    
+    def has_add_permission(self, request):
+        return False
+
+    def has_change_permission(self, request, obj=None):
+        return False
+
+    def has_delete_permission(self, request, obj=None):
+        return False
+
+    def has_module_permission(self, request):
+        return request.user.is_superuser

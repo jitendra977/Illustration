@@ -9,7 +9,8 @@ from .views import (
     UserListViewSet,
     RoleViewSet,
     FactoryMemberViewSet,
-    CommentViewSet
+    CommentViewSet,
+    ActivityLogViewSet
 )
 
 router = DefaultRouter()
@@ -19,6 +20,7 @@ router.register(r'roles', RoleViewSet, basename='roles')
 router.register(r'factory-members', FactoryMemberViewSet, basename='factory-members')
 router.register(r'users-list', UserListViewSet, basename='users-list')
 router.register(r'comments', CommentViewSet, basename='comments')
+router.register(r'activity-logs', ActivityLogViewSet, basename='activity-logs')
 
 
 

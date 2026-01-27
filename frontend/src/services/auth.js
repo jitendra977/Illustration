@@ -70,9 +70,17 @@ export const authAPI = {
     }
   },
 
-  logout: () => {
-    localStorage.removeItem('access_token');
-    localStorage.removeItem('refresh_token');
+  logout: async () => {
+    try {
+      // Attempt to notify backend for logging
+      await api.post('auth/users/logout/');
+    } catch (error) {
+      console.warn('Backend logout notification failed:', error);
+    } finally {
+      // Always clear local storage
+      localStorage.removeItem('access_token');
+      localStorage.removeItem('refresh_token');
+    }
   },
 
   // Additional auth methods

@@ -2,13 +2,14 @@
 from functools import wraps
 from django.contrib.auth import authenticate
 from django.shortcuts import get_object_or_404
+from django.db.models import Q
 from rest_framework import viewsets, permissions, status, serializers
 from rest_framework.response import Response
 from rest_framework.decorators import action
 from rest_framework.views import APIView
 import uuid
 
-from .models import User, Factory, Role, FactoryMember, Comment
+from .models import User, Factory, Role, FactoryMember, Comment, ActivityLog
 from .serializers import (
     UserSerializer,
     RegisterSerializer,
@@ -20,10 +21,12 @@ from .serializers import (
     FactorySerializer,
     RoleSerializer,
     FactoryMemberSerializer,
-    CommentSerializer
+    CommentSerializer,
+    ActivityLogSerializer
 )
 
 from .permissions import IsSuperAdmin, IsFactoryManager, CanManageUsers, CanManageFactory, CanManageRoles, CanManageFeedback
+from .utils.activity_logger import log_activity
 
 
 def user_permission_required(action_type=None):
@@ -86,6 +89,19 @@ class CustomTokenObtainPairView(APIView):
         
         try:
             serializer.is_valid(raise_exception=True)
+            user = serializer.user
+            
+            # Log successful login
+            log_activity(
+                request=request,
+                user=user,
+                action='LOGIN',
+                model_name='User',
+                object_id=user.id,
+                object_repr=user.username,
+                description=f"User {user.username} logged in successfully"
+            )
+            
             return Response(serializer.validated_data, status=status.HTTP_200_OK)
         except serializers.ValidationError as e:
             return Response(e.detail, status=status.HTTP_400_BAD_REQUEST)
@@ -139,6 +155,7 @@ class UserViewSet(viewsets.ModelViewSet):
             'profile': UpdateUserSerializer if self.request.method == 'PUT' else UserSerializer,
             'verify_email': EmailVerificationSerializer,
             'resend_verification': serializers.Serializer,  # No data needed for resend
+            'logout': serializers.Serializer,
         }
         
         # Use AdminUserSerializer for those who can manage users
@@ -175,6 +192,17 @@ class UserViewSet(viewsets.ModelViewSet):
         user = serializer.save()
         user_data = UserSerializer(user).data
         
+        # Log successful registration
+        log_activity(
+            request=request,
+            user=user,
+            action='CREATE',
+            model_name='User',
+            object_id=user.id,
+            object_repr=user.username,
+            description=f"New user registered: {user.username}"
+        )
+        
         return Response({
             'user': user_data,
             'message': 'Registration successful! Please check your email to verify your account.',
@@ -206,6 +234,17 @@ class UserViewSet(viewsets.ModelViewSet):
         serializer.is_valid(raise_exception=True)
         serializer.save()
 
+        # Log profile update
+        log_activity(
+            request=request,
+            user=request.user,
+            action='UPDATE',
+            model_name='User',
+            object_id=request.user.id,
+            object_repr=request.user.username,
+            description=f"User {request.user.username} updated their profile"
+        )
+
         return Response(UserSerializer(request.user).data)
 
     
@@ -235,15 +274,67 @@ class UserViewSet(viewsets.ModelViewSet):
         user.set_password(serializer.validated_data['new_password'])
         user.save()
 
+        # Log password change
+        log_activity(
+            request=request,
+            user=user,
+            action='UPDATE',
+            model_name='User',
+            object_id=user.id,
+            object_repr=user.username,
+            description=f"User {user.username} changed their password"
+        )
+
         return Response({
             'message': 'Password updated successfully',
             'detail': 'Please log in again with your new password.'
         }, status=status.HTTP_200_OK)
 
+    @action(
+        detail=False, 
+        methods=['post'], 
+        permission_classes=[permissions.IsAuthenticated]
+    )
+    def logout(self, request):
+        """
+        Log out the current user and record the event.
+        """
+        user = request.user
+        log_activity(
+            request=request,
+            user=user,
+            action='LOGOUT',
+            model_name='User',
+            object_id=user.id,
+            object_repr=user.username,
+            description=f"User {user.username} logged out"
+        )
+        return Response({
+            'message': 'Logout successful',
+            'detail': 'You have been successfully logged out.'
+        }, status=status.HTTP_200_OK)
+
     @user_permission_required(action_type='delete')
     def destroy(self, request, *args, **kwargs):
         """Delete user account (superusers only)."""
-        return super().destroy(request, *args, **kwargs)
+        instance = self.get_object()
+        user_repr = instance.username
+        user_id = instance.id
+        
+        response = super().destroy(request, *args, **kwargs)
+        
+        # Log deletion
+        log_activity(
+            request=request,
+            user=request.user,
+            action='DELETE',
+            model_name='User',
+            object_id=user_id,
+            object_repr=user_repr,
+            description=f"Admin {request.user.username} deleted user {user_repr}"
+        )
+        
+        return response
 
     def perform_create(self, serializer):
         """Set password when creating user via admin API."""
@@ -251,6 +342,32 @@ class UserViewSet(viewsets.ModelViewSet):
         if 'password' in self.request.data:
             user.set_password(self.request.data['password'])
             user.save()
+            
+        # Log creation by admin
+        log_activity(
+            request=self.request,
+            user=self.request.user,
+            action='CREATE',
+            model_name='User',
+            object_id=user.id,
+            object_repr=user.username,
+            description=f"Admin {self.request.user.username} created user {user.username}"
+        )
+
+    def perform_update(self, serializer):
+        """Log updates to user accounts."""
+        user = serializer.save()
+        
+        # Log update by admin/manager
+        log_activity(
+            request=self.request,
+            user=self.request.user,
+            action='UPDATE',
+            model_name='User',
+            object_id=user.id,
+            object_repr=user.username,
+            description=f"User {user.username} updated"
+        )
             
     # ======================== Email Verification System ========================
     @action(detail=False, methods=['post', 'get'], permission_classes=[permissions.AllowAny])
@@ -400,6 +517,51 @@ class FactoryViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticated]
     pagination_class = None
 
+    def perform_create(self, serializer):
+        """Log factory creation."""
+        factory = serializer.save()
+        log_activity(
+            request=self.request,
+            user=self.request.user,
+            action='CREATE',
+            model_name='Factory',
+            object_id=factory.id,
+            object_repr=factory.name,
+            description=f"Factory {factory.name} created"
+        )
+
+    def perform_update(self, serializer):
+        """Log factory update."""
+        factory = serializer.save()
+        log_activity(
+            request=self.request,
+            user=self.request.user,
+            action='UPDATE',
+            model_name='Factory',
+            object_id=factory.id,
+            object_repr=factory.name,
+            description=f"Factory {factory.name} updated"
+        )
+
+    def destroy(self, request, *args, **kwargs):
+        """Log factory deletion."""
+        instance = self.get_object()
+        factory_repr = instance.name
+        factory_id = instance.id
+        
+        response = super().destroy(request, *args, **kwargs)
+        
+        log_activity(
+            request=request,
+            user=request.user,
+            action='DELETE',
+            model_name='Factory',
+            object_id=factory_id,
+            object_repr=factory_repr,
+            description=f"Factory {factory_repr} deleted"
+        )
+        return response
+
     def get_permissions(self):
         if self.action in ['create', 'destroy']:
             return [IsSuperAdmin()]
@@ -431,6 +593,51 @@ class RoleViewSet(viewsets.ModelViewSet):
         return [CanManageRoles()]
     pagination_class = None
 
+    def perform_create(self, serializer):
+        """Log role creation."""
+        role = serializer.save()
+        log_activity(
+            request=self.request,
+            user=self.request.user,
+            action='CREATE',
+            model_name='Role',
+            object_id=role.id,
+            object_repr=role.name,
+            description=f"Role {role.name} created"
+        )
+
+    def perform_update(self, serializer):
+        """Log role update."""
+        role = serializer.save()
+        log_activity(
+            request=self.request,
+            user=self.request.user,
+            action='UPDATE',
+            model_name='Role',
+            object_id=role.id,
+            object_repr=role.name,
+            description=f"Role {role.name} updated"
+        )
+
+    def destroy(self, request, *args, **kwargs):
+        """Log role deletion."""
+        instance = self.get_object()
+        role_repr = instance.name
+        role_id = instance.id
+        
+        response = super().destroy(request, *args, **kwargs)
+        
+        log_activity(
+            request=request,
+            user=request.user,
+            action='DELETE',
+            model_name='Role',
+            object_id=role_id,
+            object_repr=role_repr,
+            description=f"Role {role_repr} deleted"
+        )
+        return response
+
 class FactoryMemberViewSet(viewsets.ModelViewSet):
     """
     Viewset for managing factory memberships.
@@ -439,6 +646,51 @@ class FactoryMemberViewSet(viewsets.ModelViewSet):
     serializer_class = FactoryMemberSerializer
     def get_permissions(self):
         return [CanManageUsers()]
+
+    def perform_create(self, serializer):
+        """Log membership creation."""
+        member = serializer.save()
+        log_activity(
+            request=self.request,
+            user=self.request.user,
+            action='CREATE',
+            model_name='FactoryMember',
+            object_id=member.id,
+            object_repr=f"{member.user.username} in {member.factory.name}",
+            description=f"User {member.user.username} added to factory {member.factory.name} with role {member.role.name}"
+        )
+
+    def perform_update(self, serializer):
+        """Log membership update."""
+        member = serializer.save()
+        log_activity(
+            request=self.request,
+            user=self.request.user,
+            action='UPDATE',
+            model_name='FactoryMember',
+            object_id=member.id,
+            object_repr=f"{member.user.username} in {member.factory.name}",
+            description=f"Membership for {member.user.username} in {member.factory.name} updated"
+        )
+
+    def destroy(self, request, *args, **kwargs):
+        """Log membership deletion."""
+        instance = self.get_object()
+        member_repr = f"{instance.user.username} in {instance.factory.name}"
+        member_id = instance.id
+        
+        response = super().destroy(request, *args, **kwargs)
+        
+        log_activity(
+            request=request,
+            user=request.user,
+            action='DELETE',
+            model_name='FactoryMember',
+            object_id=member_id,
+            object_repr=member_repr,
+            description=f"User removed from factory membership: {member_repr}"
+        )
+        return response
 
     def get_queryset(self):
         user = self.request.user
@@ -532,10 +784,147 @@ class CommentViewSet(viewsets.ModelViewSet):
             return [permissions.AllowAny()]
         
         return [CanManageFeedback()]
-    
+
     def perform_create(self, serializer):
-        """Automatically set the user if authenticated."""
-        if self.request.user.is_authenticated:
-            serializer.save(user=self.request.user)
+        """Log feedback submission and set user if authenticated."""
+        user = self.request.user if self.request.user.is_authenticated else None
+        
+        # Save with user if authenticated
+        if user:
+            comment = serializer.save(user=user)
         else:
-            serializer.save()
+            comment = serializer.save()
+        
+        log_activity(
+            request=self.request,
+            user=user,
+            action='CREATE',
+            model_name='Comment',
+            object_id=comment.id,
+            object_repr=f"Feedback by {comment.name or 'Anonymous'}",
+            description=f"New feedback submitted by {comment.name or 'Anonymous'}"
+        )
+
+    def destroy(self, request, *args, **kwargs):
+        """Log feedback deletion."""
+        instance = self.get_object()
+        comment_repr = f"Feedback by {instance.name or 'Anonymous'}"
+        comment_id = instance.id
+        
+        response = super().destroy(request, *args, **kwargs)
+        
+        log_activity(
+            request=request,
+            user=request.user,
+            action='DELETE',
+            model_name='Comment',
+            object_id=comment_id,
+            object_repr=comment_repr,
+            description=f"Administrative deletion of feedback: {comment_repr}"
+        )
+        return response
+
+
+class ActivityLogViewSet(viewsets.ReadOnlyModelViewSet):
+    """
+    ViewSet for activity logs (read-only).
+    
+    Features:
+    - Filtering by user, action, model, date range
+    - Full-text search across descriptions
+    - Statistics endpoint
+    - Permission-based access control
+    """
+    queryset = ActivityLog.objects.all().select_related('user', 'factory')
+    serializer_class = ActivityLogSerializer
+    permission_classes = [permissions.IsAuthenticated]
+    
+    def get_queryset(self):
+        """
+        Filter activity logs based on user permissions.
+        Superusers see all logs, others see only their own.
+        """
+        user = self.request.user
+        if not user.is_authenticated or not user.is_active or not user.is_verified:
+            return ActivityLog.objects.none()
+        
+        queryset = super().get_queryset()
+        
+        # Superusers see everything
+        if user.is_superuser:
+            pass  # Keep full queryset
+        elif user.can_manage_users():
+            # Users who can manage users see logs from their factories
+            user_factories = user.get_active_memberships().values_list('factory_id', flat=True)
+            queryset = queryset.filter(
+                Q(factory__in=user_factories) | Q(user=user)
+            )
+        else:
+            # Regular users only see their own logs
+            queryset = queryset.filter(user=user)
+        
+        # Filter by user
+        user_id = self.request.query_params.get('user_id')
+        if user_id:
+            queryset = queryset.filter(user_id=user_id)
+        
+        # Filter by action
+        action = self.request.query_params.get('action')
+        if action:
+            queryset = queryset.filter(action=action)
+        
+        # Filter by model
+        model_name = self.request.query_params.get('model')
+        if model_name:
+            queryset = queryset.filter(model_name=model_name)
+        
+        # Filter by date range
+        start_date = self.request.query_params.get('start_date')
+        end_date = self.request.query_params.get('end_date')
+        if start_date:
+            queryset = queryset.filter(timestamp__gte=start_date)
+        if end_date:
+            queryset = queryset.filter(timestamp__lte=end_date)
+        
+        # Search
+        search = self.request.query_params.get('search')
+        if search:
+            from django.db.models import Q
+            queryset = queryset.filter(
+                Q(description__icontains=search) |
+                Q(object_repr__icontains=search) |
+                Q(username__icontains=search)
+            )
+        
+        return queryset
+    
+    @action(detail=False, methods=['get'])
+    def stats(self, request):
+        """Get activity statistics"""
+        from django.db.models import Count
+        from django.utils import timezone
+        from datetime import timedelta
+        
+        # Get base queryset (respects user permissions)
+        queryset = self.get_queryset()
+        
+        # Last 30 days
+        thirty_days_ago = timezone.now() - timedelta(days=30)
+        
+        stats_data = {
+            'total_activities': queryset.count(),
+            'activities_last_30_days': queryset.filter(
+                timestamp__gte=thirty_days_ago
+            ).count(),
+            'by_action': list(queryset.values('action', 'action_display').annotate(
+                count=Count('id')
+            ).order_by('-count')),
+            'top_users': list(queryset.values('username').annotate(
+                count=Count('id')
+            ).order_by('-count')[:10]),
+            'by_model': list(queryset.values('model_name').annotate(
+                count=Count('id')
+            ).order_by('-count')),
+        }
+        
+        return Response(stats_data)
