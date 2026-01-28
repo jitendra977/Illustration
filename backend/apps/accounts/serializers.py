@@ -7,7 +7,7 @@ from django.core.exceptions import ValidationError as DjangoValidationError
 from rest_framework import serializers
 from rest_framework_simplejwt.tokens import RefreshToken
 from django.utils import timezone
-from .models import User, Factory, Role, FactoryMember, Comment
+from .models import User, Factory, Role, FactoryMember, Comment, ActivityLog
 
 class FactorySerializer(serializers.ModelSerializer):
     class Meta:
@@ -590,6 +590,9 @@ class CustomTokenObtainPairSerializer(serializers.Serializer):
                 "Invalid credentials provided"
             )
 
+        # Store user for access by view
+        self.user = user
+
         # Check if account is active
         if not user.is_active:
             print(f"Login failed: Account disabled for {user.username}")
@@ -674,3 +677,22 @@ class CommentSerializer(serializers.ModelSerializer):
                 "Department name cannot be empty"
             )
         return value.strip()
+
+
+class ActivityLogSerializer(serializers.ModelSerializer):
+    """Serializer for activity logs (read-only)."""
+    
+    user_display = serializers.CharField(source='username', read_only=True)
+    action_display = serializers.CharField(source='get_action_display', read_only=True)
+    factory_name = serializers.CharField(source='factory.name', read_only=True, allow_null=True)
+    
+    class Meta:
+        model = ActivityLog
+        fields = [
+            'id', 'user', 'user_display', 'username', 'timestamp',
+            'action', 'action_display', 'model_name', 'object_id', 'object_repr',
+            'description', 'changes', 'ip_address', 'user_agent',
+            'endpoint', 'method', 'success', 'error_message', 
+            'factory', 'factory_name'
+        ]
+        read_only_fields = fields  # All fields are read-only for audit trail

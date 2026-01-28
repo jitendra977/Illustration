@@ -18,14 +18,7 @@ export default defineConfig(({ mode }) => {
     server: {
       port: 5173,
       host: true,
-      allowedHosts: [
-        'localhost',
-        '192.168.0.92',
-        '.local',
-        'illustration.local',
-        'yaw.nishanaweb.cloud',
-        'yaw-frontend',
-      ],
+      allowedHosts: true,
       proxy: {
         '/api': {
           target: (env.VITE_API_BASE_URL && env.VITE_API_BASE_URL.startsWith('http')) ? env.VITE_API_BASE_URL : 'http://yaw-backend:8000',

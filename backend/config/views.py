@@ -23,7 +23,7 @@ def api_root(request):
             'car_models': '/api/car-models/',
             'part_categories': '/api/part-categories/',
         },
-        'frontend_url': settings.FRONTEND_URL if hasattr(settings, 'FRONTEND_URL') else 'https://yaw.nishanaweb.cloud',
+        'frontend_url': settings.FRONTEND_URL if hasattr(settings, 'FRONTEND_URL') else 'http://localhost:3000',
         'note': 'This is an API-only backend. Please access the frontend application for the web interface.'
     })
 

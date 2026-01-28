@@ -20,13 +20,13 @@ COPY . .
 
 # Set build-time environment variables for Vite
 # These will be baked into the build
-ARG VITE_API_URL=https://api.yaw.nishanaweb.cloud/api
-ARG VITE_API_BASE_URL=https://api.yaw.nishanaweb.cloud/api
+ARG VITE_API_URL=/api
+ARG VITE_API_BASE_URL=/api
 ARG VITE_APP_NAME="Yaw Illustration"
-ARG VITE_APP_URL=https://yaw.nishanaweb.cloud
+ARG VITE_APP_URL=/
 ARG VITE_ENV=production
-ARG VITE_MEDIA_URL=https://api.yaw.nishanaweb.cloud/media
-ARG VITE_STATIC_URL=https://api.yaw.nishanaweb.cloud/static
+ARG VITE_MEDIA_URL=/media
+ARG VITE_STATIC_URL=/static
 
 ENV VITE_API_URL=$VITE_API_URL
 ENV VITE_API_BASE_URL=$VITE_API_BASE_URL

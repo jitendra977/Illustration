@@ -1,0 +1,18 @@
+#!/usr/bin/expect -f
+set timeout 60
+set passphrase "jitu"
+set host "nishanaweb.cloud"
+set user "nishanaweb"
+
+spawn ssh "$user@$host" "cd ~/project/Illustration && git log -n 3 --oneline && echo '--- Container Status ---' && docker compose ps && echo '--- Backend Logs ---' && docker compose logs yaw-backend --tail 20"
+expect {
+    "Enter passphrase for key*" {
+        send "$passphrase\r"
+        exp_continue
+    }
+    "password:" {
+        send "$passphrase\r"
+        exp_continue
+    }
+    eof
+}

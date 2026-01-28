@@ -524,6 +524,128 @@ class FactoryMember(models.Model):
         ]
 
 
+# ================= ACTIVITY LOG MODEL =================
+class ActivityLog(models.Model):
+    """Tracks all user activities and API calls for audit trail"""
+    
+    ACTION_CHOICES = [
+        ('CREATE', 'Created'),
+        ('UPDATE', 'Updated'),
+        ('DELETE', 'Deleted'),
+        ('VIEW', 'Viewed'),
+        ('LOGIN', 'Logged In'),
+        ('LOGOUT', 'Logged Out'),
+        ('DOWNLOAD', 'Downloaded'),
+        ('UPLOAD', 'Uploaded'),
+        ('EXPORT', 'Exported'),
+        ('IMPORT', 'Imported'),
+    ]
+    
+    # Who & When
+    user = models.ForeignKey(
+        User,
+        on_delete=models.SET_NULL,
+        null=True,
+        related_name='activities',
+        help_text="User who performed the action"
+    )
+    username = models.CharField(
+        max_length=150,
+        help_text="Backup username in case user is deleted"
+    )
+    timestamp = models.DateTimeField(
+        auto_now_add=True,
+        db_index=True,
+        help_text="When the action occurred"
+    )
+    
+    # What
+    action = models.CharField(
+        max_length=20,
+        choices=ACTION_CHOICES,
+        db_index=True,
+        help_text="Type of action performed"
+    )
+    model_name = models.CharField(
+        max_length=100,
+        db_index=True,
+        help_text="Name of the model affected (e.g., Illustration, User)"
+    )
+    object_id = models.CharField(
+        max_length=100,
+        null=True,
+        blank=True,
+        help_text="ID of the object affected"
+    )
+    object_repr = models.CharField(
+        max_length=200,
+        help_text="Human-readable representation of the object"
+    )
+    
+    # Details
+    description = models.TextField(
+        blank=True,
+        help_text="Human-readable description of the action"
+    )
+    changes = models.JSONField(
+        null=True,
+        blank=True,
+        help_text="Before/after values for updates"
+    )
+    
+    # Request Info
+    ip_address = models.GenericIPAddressField(
+        null=True,
+        blank=True,
+        help_text="IP address of the request"
+    )
+    user_agent = models.TextField(
+        blank=True,
+        help_text="User agent string from the request"
+    )
+    endpoint = models.CharField(
+        max_length=500,
+        help_text="API endpoint called"
+    )
+    method = models.CharField(
+        max_length=10,
+        help_text="HTTP method (GET, POST, PUT, DELETE)"
+    )
+    
+    # Status
+    success = models.BooleanField(
+        default=True,
+        help_text="Whether the action completed successfully"
+    )
+    error_message = models.TextField(
+        blank=True,
+        help_text="Error message if action failed"
+    )
+    
+    # Optional: Factory context
+    factory = models.ForeignKey(
+        Factory,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='activity_logs',
+        help_text="Factory context if applicable"
+    )
+    
+    class Meta:
+        ordering = ['-timestamp']
+        verbose_name = "Activity Log"
+        verbose_name_plural = "Activity Logs"
+        indexes = [
+            models.Index(fields=['-timestamp', 'user']),
+            models.Index(fields=['model_name', '-timestamp']),
+            models.Index(fields=['action', '-timestamp']),
+        ]
+    
+    def __str__(self):
+        return f"{self.username} {self.get_action_display()} {self.model_name} at {self.timestamp}"
+
+
 # ================= COMMENT MODEL =================
 class Comment(models.Model):
     """

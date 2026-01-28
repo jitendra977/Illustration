@@ -711,9 +711,9 @@ class IllustrationFileViewSet(viewsets.ModelViewSet):
             
             # CORS headers
             origin = request.META.get('HTTP_ORIGIN', '')
-            allowed_origins = ['https://yaw.nishanaweb.cloud', 'https://api.yaw.nishanaweb.cloud']
+            from django.conf import settings
             
-            if origin in allowed_origins:
+            if origin in settings.CORS_ALLOWED_ORIGINS:
                 response['Access-Control-Allow-Origin'] = origin
                 response['Access-Control-Allow-Credentials'] = 'true'
                 response['Access-Control-Expose-Headers'] = 'Content-Disposition, Content-Length'
