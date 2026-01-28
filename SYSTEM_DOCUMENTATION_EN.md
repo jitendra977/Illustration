@@ -21,6 +21,26 @@ The system is composed of two primary components, Frontend and Backend, managed 
     -   `.env` (in each directory): Stores environment variables such as database credentials and API endpoints.
     -   `/docker-compose.yml`: Defines the container orchestration for the entire system.
 
+#### Backend .env Example
+```env
+DEBUG=False
+SECRET_KEY=your-secret-key
+DB_ENGINE=django.db.backends.mysql
+DB_NAME=illustration_db
+DB_USER=root
+DB_PASSWORD=your-password
+DB_HOST=localhost
+DB_PORT=3306
+FRONTEND_URL=https://your-frontend-domain.com
+```
+
+#### Frontend .env Example
+```env
+VITE_API_URL=https://your-api-domain.com/api
+VITE_APP_NAME="Yaw Illustration"
+VITE_ENV=production
+```
+
 ## 2) Database Information
 
 The system utilizes **MySQL 8.0** as its core relational database.

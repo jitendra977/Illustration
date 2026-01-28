@@ -21,6 +21,26 @@
     -   各ディレクトリの `.env`: 環境変数（DB接続、API通信先など）を保持。
     -   `/docker-compose.yml`: システム全体のコンテナオーケストレーションを定義。
 
+#### バックエンド .env 例 (Backend Example)
+```env
+DEBUG=False
+SECRET_KEY=your-secret-key
+DB_ENGINE=django.db.backends.mysql
+DB_NAME=illustration_db
+DB_USER=root
+DB_PASSWORD=your-password
+DB_HOST=localhost
+DB_PORT=3306
+FRONTEND_URL=https://your-frontend-domain.com
+```
+
+#### フロントエンド .env 例 (Frontend Example)
+```env
+VITE_API_URL=https://your-api-domain.com/api
+VITE_APP_NAME="Yaw Illustration"
+VITE_ENV=production
+```
+
 ## 2) データベース情報 (Database Information)
 
 **MySQL 8.0** を中核としたリレーショナルデータベース構成です。
