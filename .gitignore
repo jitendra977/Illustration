@@ -22,9 +22,14 @@ static/
 logs/
 
 # Local settings
-/.env
 .env
+.env.local
+.env.ci
+.env.production
+.env.*
 *.env
+backend/.env*
+frontend/.env*
 
 # Migrations (keep __init__.py only)
 */migrations/*.py
@@ -80,4 +85,45 @@ Desktop.ini
 *.bak
 *.swp
 *.swo
-*.yml
+unused_backup/
+
+
+# ========================================
+# .gitignore (UPDATE - ROOT)
+# ========================================
+# Add to existing .gitignore
+
+# Docker volumes
+mysql/data/
+
+# Logs
+*.log
+
+# Scripts
+start.sh
+stop.sh
+restart.sh
+logs.sh
+docker-compose.ci.yml
+docker-data/
+docker-compose.local.yml
+recompose.sh
+recompose.sh
+.env.local
+.env.*.local
+*.dev
+*.dev.sh
+*.local
+*.local.sh  
+
+backend/.env.local
+backend/.env.dev
+
+frontend/.env
+frontend/.env.local
+frontend/.env.dev
+
+# Production/Backup Media
+backend/media_production/
+backend/db_dump_production.sql
+*.pdf
