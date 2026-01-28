@@ -22,10 +22,14 @@ static/
 logs/
 
 # Local settings
-/.env
-backend/media/
-backend/staticfiles/
+.env
+.env.local
+.env.ci
+.env.production
+.env.*
 *.env
+backend/.env*
+frontend/.env*
 
 # Migrations (keep __init__.py only)
 */migrations/*.py
