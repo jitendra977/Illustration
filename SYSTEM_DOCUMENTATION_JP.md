@@ -37,6 +37,15 @@ FRONTEND_URL=https://your-frontend-domain.com
 DJANGO_SUPERUSER_USERNAME=admin
 DJANGO_SUPERUSER_EMAIL=admin@example.com
 DJANGO_SUPERUSER_PASSWORD=your-secure-password
+
+# メール設定 (Email Service)
+EMAIL_HOST=smtp.gmail.com
+EMAIL_PORT=587
+EMAIL_USE_TLS=True
+EMAIL_HOST_USER=your-email@gmail.com
+EMAIL_HOST_PASSWORD=your-app-password
+DEFAULT_FROM_EMAIL=your-email@gmail.com
+SUPPORT_EMAIL=support@your-domain.com
 ```
 
 #### フロントエンド .env 例 (Frontend Example)
