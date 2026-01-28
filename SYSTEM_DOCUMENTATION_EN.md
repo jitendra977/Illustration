@@ -32,6 +32,11 @@ DB_PASSWORD=your-password
 DB_HOST=localhost
 DB_PORT=3306
 FRONTEND_URL=https://your-frontend-domain.com
+
+# Superuser Automation
+DJANGO_SUPERUSER_USERNAME=admin
+DJANGO_SUPERUSER_EMAIL=admin@example.com
+DJANGO_SUPERUSER_PASSWORD=your-secure-password
 ```
 
 #### Frontend .env Example

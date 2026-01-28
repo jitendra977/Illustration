@@ -9,8 +9,14 @@ from dotenv import load_dotenv
 BASE_DIR = Path(__file__).resolve().parent.parent
 load_dotenv(BASE_DIR / ".env")
 
-SECRET_KEY = os.getenv("SECRET_KEY", "unsafe-secret-for-dev")
-DEBUG = os.getenv("DEBUG", "True") == "True"
+SECRET_KEY = os.getenv("SECRET_KEY")
+DEBUG = os.getenv("DEBUG", "False") == "True"
+
+if not SECRET_KEY and not DEBUG:
+    raise ValueError("SECRET_KEY environment variable is required in production!")
+elif not SECRET_KEY:
+    SECRET_KEY = "unsafe-secret-for-dev-only"
+
 FRONTEND_URL = os.getenv("FRONTEND_URL", "http://illustration.local")
 
 # ============================================
