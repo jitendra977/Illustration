@@ -8,10 +8,10 @@ set -e
 # ==========================================
 # CONFIGURATION
 # ==========================================
-# VPS SSH Details (Please fill these if they are different)
-VPS_USER="nishanaweb"                       # Change if necessary
-VPS_HOST="nishanaweb.cloud"       # Based on your browser URL
-REMOTE_PROJECT_DIR="/home/nishanaweb/project/Illustration" # Path on the VPS
+# VPS SSH Details (Overridable via environment variables)
+VPS_USER="${VPS_USER:-nishanaweb}"
+VPS_HOST="${VPS_HOST:-nishanaweb.cloud}"
+REMOTE_PROJECT_DIR="${REMOTE_PROJECT_DIR:-/home/nishanaweb/project/Illustration}"
 BRANCH="deploy-server"                # The branch to deploy
 
 # ==========================================

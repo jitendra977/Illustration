@@ -7,15 +7,21 @@ echo "🔧 Fixing slow deployment issue on server..."
 echo "This will remove frontend/node_modules from Git tracking"
 echo ""
 
+# Configuration
+VPS_USER="${VPS_USER:-nishanaweb}"
+VPS_HOST="${VPS_HOST:-nishanaweb.cloud}"
+REMOTE_PROJECT_DIR="${REMOTE_PROJECT_DIR:-/home/nishanaweb/project/Illustration}"
+BRANCH="${BRANCH:-deploy-server}"
+
 # SSH into server and fix the issue
-ssh nishanaweb@nishanaweb.cloud << 'EOF'
-  cd /home/nishanaweb/project/Illustration
+ssh "$VPS_USER@$VPS_HOST" << EOF
+  cd "$REMOTE_PROJECT_DIR"
   
   echo "📍 Current directory: $(pwd)"
   
   # Pull latest changes
   echo "📥 Pulling latest code..."
-  git pull origin deploy-server
+  git pull origin "$BRANCH"
   
   # Rebuild containers safely
   echo "🏗️  Building images (Separate from UP to reduce load)..."

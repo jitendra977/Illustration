@@ -1,8 +1,8 @@
 #!/usr/bin/expect -f
 set timeout 60
-set passphrase "jitu"
-set host "nishanaweb.cloud"
-set user "nishanaweb"
+set passphrase "[env TEST_PASSWORD jitu]"
+set host "[env VPS_HOST nishanaweb.cloud]"
+set user "[env VPS_USER nishanaweb]"
 
 spawn ssh "$user@$host" "cd ~/project/Illustration && git log -n 3 --oneline && echo '--- Container Status ---' && docker compose ps && echo '--- Backend Logs ---' && docker compose logs yaw-backend --tail 20"
 expect {
