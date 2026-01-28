@@ -72,6 +72,9 @@ The system utilizes **MySQL 8.0** as its core relational database.
 The system is containerized with Docker to ensure stability and consistent behavior across environments.
 
 -   **Hosting**: Hostinger VPS
+    -   User: `nishanaweb`
+    -   Host: `nishanaweb.cloud`
+    -   Project Directory: `/home/nishanaweb/project/Illustration`
 -   **Runtime Environment**:
     -   **Python**: 3.11-slim (Optimized for performance and security)
     -   **Bun**: 1.0 (Modern, fast Node.js-compatible runtime)

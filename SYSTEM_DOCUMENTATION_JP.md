@@ -72,6 +72,9 @@ VITE_ENV=production
 安定性とスケーラビリティを考慮し、Dockerコンテナ環境を採用しています。
 
 -   **ホスティング**: Hostinger VPS
+    -   ユーザー: `nishanaweb`
+    -   ホスト: `nishanaweb.cloud`
+    -   プロジェクトディレクトリ: `/home/nishanaweb/project/Illustration`
 -   **ランタイム環境**:
     -   **Python**: 3.11-slim (軽量・高速なベースイメージ)
     -   **Bun**: 1.0 (Node.js互換の最新ランタイム)
