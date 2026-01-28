@@ -71,11 +71,18 @@ VITE_ENV=production
 
 安定性とスケーラビリティを考慮し、Dockerコンテナ環境を採用しています。
 
--   **ホスティング**: Hostinger VPS
-    -   ユーザー: `nishanaweb`
-    -   ホスト: `nishanaweb.cloud`
+-   **ホスティング環境**: Hostinger VPS
+    -   所在地: インドネシア - ジャカルタ (Indonesia - Jakarta)
+    -   ユーザー: `root` (システム管理), `nishanaweb` (デプロイ用)
+    -   IPv4: `148.230.97.39`
+    -   ホスト名: `srv1134152.hstgr.cloud`
     -   プロジェクトディレクトリ: `/home/nishanaweb/project/Illustration`
--   **ランタイム環境**:
+-   **ハードウェア構成**:
+    -   プラン: KVM 1
+    -   CPU: 1 Core
+    -   メモリ: 4 GB
+    -   ディスク: 50 GB NVMe
+-   **OS**: Ubuntu 25.10 (Docker環境)
     -   **Python**: 3.11-slim (軽量・高速なベースイメージ)
     -   **Bun**: 1.0 (Node.js互換の最新ランタイム)
     -   **Nginx**: Alpine版 (Webサーバ・リバースプロキシ)

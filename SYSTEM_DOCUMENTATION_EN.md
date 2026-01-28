@@ -71,11 +71,18 @@ The system utilizes **MySQL 8.0** as its core relational database.
 
 The system is containerized with Docker to ensure stability and consistent behavior across environments.
 
--   **Hosting**: Hostinger VPS
-    -   User: `nishanaweb`
-    -   Host: `nishanaweb.cloud`
+-   **Hosting Environment**: Hostinger VPS
+    -   Location: Indonesia - Jakarta
+    -   User: `root` (Admin), `nishanaweb` (Deployment)
+    -   IPv4: `148.230.97.39`
+    -   Hostname: `srv1134152.hstgr.cloud`
     -   Project Directory: `/home/nishanaweb/project/Illustration`
--   **Runtime Environment**:
+-   **Hardware Specs**:
+    -   Plan: KVM 1
+    -   CPU: 1 Core
+    -   Memory: 4 GB
+    -   Disk Space: 50 GB NVMe
+-   **OS**: Ubuntu 25.10 (Docker Environment)
     -   **Python**: 3.11-slim (Optimized for performance and security)
     -   **Bun**: 1.0 (Modern, fast Node.js-compatible runtime)
     -   **Nginx**: Alpine-based (Web server & Reverse Proxy)
