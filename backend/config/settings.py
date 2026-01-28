@@ -23,6 +23,8 @@ FRONTEND_URL = os.getenv("FRONTEND_URL", "http://illustration.local")
 # ALLOWED HOSTS - Complete list
 # ============================================
 ALLOWED_HOSTS = [
+    'api.illustration.local',
+    'illustration.local',
     'yaw-backend',
     'localhost',
     '127.0.0.1',
@@ -274,6 +276,8 @@ CORS_EXPOSE_HEADERS = [
 ]
 
 CSRF_TRUSTED_ORIGINS = [
+    'http://illustration.local',
+    'http://api.illustration.local',
     'http://localhost:3000',
     'http://127.0.0.1:3000',
 ]
