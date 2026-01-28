@@ -71,12 +71,7 @@ The system utilizes **MySQL 8.0** as its core relational database.
 
 The system is containerized with Docker to ensure stability and consistent behavior across environments.
 
--   **Hosting Environment**: Hostinger VPS
-    -   Location: Indonesia - Jakarta
-    -   User: `root` (Admin), `nishanaweb` (Deployment)
-    -   IPv4: `148.230.97.39`
-    -   Hostname: `srv1134152.hstgr.cloud`
-    -   Project Directory: `/home/nishanaweb/project/Illustration`
+-   **Hosting Environment**: Hostinger VPS (KVM 1)
 -   **Hardware Specs**:
     -   Plan: KVM 1
     -   CPU: 1 Core
@@ -125,6 +120,12 @@ The system implements multiple layers of security to protect sensitive corporate
 
 ### Audit & Transparency
 -   **Activity Logging (Audit Trail)**: Every critical action (who, when, from which IP, and what was changed) is automatically recorded, providing high transparency and accountability for system operations.
+
+### External API Integrations
+Dependency on external services is kept to a minimum to ensure system autonomy and ease of self-hosting.
+-   **UI Avatars (`ui-avatars.com`)**: Generates default user avatars based on initials when no profile picture is uploaded.
+-   **SMTP Service**: Used for sending system notification emails. Can be integrated with any SMTP provider via environment variables.
+-   **JSQR (Local Usage)**: Used for QR code scanning in the browser; processing is performed locally without sending data to external servers.
 
 ### Infrastructure Isolation
 -   **Docker Containerization**: The architecture isolates the application, database, and web server into independent containers, minimizing the potential impact of a single-point failure or security breach.
