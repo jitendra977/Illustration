@@ -72,6 +72,7 @@ The system utilizes **MySQL 8.0** as its core relational database.
 The system is containerized with Docker to ensure stability and consistent behavior across environments.
 
 -   **Hosting Environment**: Hostinger VPS (KVM 1)
+-   **Proxy Management**: **Nginx Proxy Manager (NPM)** is used for handling SSL certificates (Let's Encrypt) and routing traffic to the internal Docker containers.
 -   **Hardware Specs**:
     -   Plan: KVM 1
     -   CPU: 1 Core

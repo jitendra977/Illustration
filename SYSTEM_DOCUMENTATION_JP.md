@@ -72,6 +72,7 @@ VITE_ENV=production
 安定性とスケーラビリティを考慮し、Dockerコンテナ環境を採用しています。
 
 -   **ホスティング環境**: Hostinger VPS (KVM 1)
+-   **プロキシ管理**: **Nginx Proxy Manager (NPM)** を採用。SSL証明書（Let's Encrypt）の自動更新および各コンテナへの流量制御を管理。
 -   **ハードウェア構成**:
     -   CPU: 1 Core
     -   メモリ: 4 GB
