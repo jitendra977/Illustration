@@ -8,7 +8,8 @@ A comprehensive automotive illustration and management system built with **Djang
 All project documentation is centralized in the [**`documents/`**](./documents/) directory.
 
 ### 🚀 Getting Started
--   **[Installation Guide](./documents/en/INSTALLATION.md)** - 5-minute setup (Docker, .env config).
+-   **[Installation Guide](./documents/en/INSTALLATION.md)** - Local setup (Docker, .env config).
+-   **[Server Deployment](./documents/en/SERVER_INSTALLATION.md)** - Production VPS setup & NPM.
 -   **[Development Guide](./documents/en/DEVELOPMENT.md)** - Daily workflows (Hot-reloading, Migrations).
 
 ### 📐 Specification & Structure

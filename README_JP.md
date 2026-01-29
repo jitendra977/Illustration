@@ -8,8 +8,9 @@
 すべてのプロジェクトドキュメントは [**`documents/`**](./documents/) ディレクトリに集約されています。
 
 ### 🚀 はじめに
--   **[セットアップガイド](./documents/jp/INSTALLATION.md)** - 5分で完了するセットアップ（Docker、.env 設定）。
--   **[開発ガイド](./documents/jp/DEVELOPMENT.md)** - 日常的なワークフロー（ホットリロード、マイグレーション）。
+-   **[セットアップガイド](./documents/jp/INSTALLATION.md)** - ローカル設定（Docker, .env）。
+-   **[サーバーデプロイ](./documents/jp/SERVER_INSTALLATION.md)** - 本番VPS設定 & NPM。
+-   **[開発ガイド](./documents/jp/DEVELOPMENT.md)** - 日常的なワークフロー。
 
 ### 📐 仕様と構造
 -   **[プロジェクト構造](./documents/jp/PROJECT_STRUCTURE.md)** - 詳細なファイルマップ。

@@ -3,7 +3,7 @@
 This is the high-level roadmap for the **Illustration System** project. 
 
 > [!TIP]
-> **Getting Started?** See the [**Installation Guide**](INSTALLATION.md) for first-time setup.
+> **Getting Started?** See the [**Installation Guide**](INSTALLATION.md) or [**Server Deployment Guide**](SERVER_INSTALLATION.md).
 
 ---
 
