@@ -4,8 +4,8 @@
 echo "=== Production Frontend Login Diagnostic ==="
 echo ""
 
-API_URL="${API_URL:-https://api.yaw.example.com}"
-FRONTEND_URL="${FRONTEND_URL:-https://yaw.example.com}"
+API_URL="${API_URL}"
+FRONTEND_URL="${FRONTEND_URL}"
 
 echo "1. Testing API Endpoint Accessibility..."
 curl -s -o /dev/null -w "Status: %{http_code}\n" "$API_URL/api/"
@@ -18,8 +18,8 @@ if [ -z "$TEST_PASSWORD" ]; then
   exit 1
 fi
 
-TEST_EMAIL="${TEST_EMAIL:-admin@gmail.com}"
-TEST_USERNAME="${TEST_USERNAME:-admin}"
+TEST_EMAIL="${TEST_EMAIL}"
+TEST_USERNAME="${TEST_USERNAME}"
 
 echo "2. Testing Login Endpoint..."
 curl -s -X POST "$API_URL/api/auth/login/" \
