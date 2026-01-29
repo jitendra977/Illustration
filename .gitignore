@@ -105,6 +105,8 @@ stop.sh
 restart.sh
 logs.sh
 docker-compose.ci.yml
+# Docker
+.docker-data/
 docker-data/
 docker-compose.local.yml
 recompose.sh
