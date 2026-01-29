@@ -1,4 +1,5 @@
 # 🚜 YAW Illustration System
+[**English**] | [**日本語**](./README_JP.md)
 
 A comprehensive automotive illustration and management system built with **Django REST Framework** and **React (Vite)**, fully containerized with **Docker**.
 
@@ -24,10 +25,11 @@ All project documentation is centralized in the [**`documents/`**](./documents/)
 | Component | Technology |
 | :--- | :--- |
 | **Backend** | Python 3.11, Django 4.x, Django REST Framework |
-| **Frontend** | React 18, Vite, Bun 1.0, Material UI (MUI) |
+| **Frontend** | React 18, Vite, Bun 1.x, Material UI (MUI) |
 | **Database** | MySQL 8.0 |
 | **Orchestration** | Docker, Docker Compose |
 | **Reverse Proxy** | Nginx Proxy Manager (NPM) |
+| **Package Manager** | Bun (Frontend), Pip (Backend) |
 
 ---
 

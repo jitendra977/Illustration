@@ -1,4 +1,5 @@
 # 🛠 セットアップガイド
+[**日本語**] | [**English**](../en/INSTALLATION.md)
 
 Dockerがインストールされた環境（Local Mac/Windows/Linux、またはクラウドVPS）で **Illustration System** をゼロからセットアップするための手順です。
 
@@ -101,3 +102,10 @@ docker compose up -d --build
   docker compose -f docker-compose.local.yml down -v
   ```
 - **CSRF エラー**: バックエンド設定の `CSRF_TRUSTED_ORIGINS_EXTRA` が正しいか再度確認してください。
+
+---
+### 📍 ナビゲーション
+- [**メイン README**](../../README_JP.md)
+- [**プロジェクト構造**](PROJECT_STRUCTURE.md)
+- [**開発ガイド**](DEVELOPMENT.md)
+- [**サーバーデプロイ**](SERVER_INSTALLATION.md)

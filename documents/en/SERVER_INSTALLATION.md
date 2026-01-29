@@ -1,4 +1,5 @@
 # 🚀 Production Server Installation Guide
+[**English**] | [**日本語**](../jp/SERVER_INSTALLATION.md)
 
 This guide provides a professional checklist for deploying the **Illustration System** to a production VPS (Ubuntu/Linux) using Docker and Nginx Proxy Manager.
 
@@ -42,11 +43,27 @@ DB_ROOT_PASSWORD=your_secure_root_password
 DB_HOST=mysql_db
 DB_PORT=3306
 
-# Superuser Initial Setup
-DJANGO_SUPERUSER_USERNAME=admin
+# Frontend Build Arguments (REQUIRED for Docker build)
+VITE_API_URL=https://api.yourdomain.com/api
+VITE_API_BASE_URL=https://api.yourdomain.com/api
+VITE_APP_NAME="Yaw Illustration"
+VITE_MEDIA_URL=https://api.yourdomain.com/media
+VITE_STATIC_URL=https://api.yourdomain.com/static
 ```
 
-### 2. Backend Directory (`backend/.env.local`)
+> [!TIP]
+> The `frontend` directory contains a `.env.production` file, but it is **ignored** by Docker build (via `.dockerignore`). You MUST define these variables in the root `.env` file so they are passed as build arguments.
+>
+> **Configuration Note**: Ensure your `docker-compose.yml` is configured to blindly pass these arguments to the frontend build context:
+> ```yaml
+> build:
+>   args:
+>     - VITE_API_URL=${VITE_API_URL}
+>     - VITE_MEDIA_URL=${VITE_MEDIA_URL}
+>     # ... etc
+> ```
+
+### 2. Backend Directory (`backend/.env`)
 ```env
 # Security
 SECRET_KEY=your_generated_random_secret_string
@@ -60,13 +77,23 @@ DJANGO_SUPERUSER_PASSWORD=your_secure_db_password
 # Domain Settings
 ALLOWED_HOSTS_EXTRA=api.yourdomain.com,yourdomain.com
 CSRF_TRUSTED_ORIGINS_EXTRA=https://api.yourdomain.com,https://yourdomain.com
+CORS_ALLOWED_ORIGINS_EXTRA=https://yourdomain.com
+FRONTEND_URL=https://yourdomain.com
+
+# Email Service (SMTP)
+# Example: Google SMTP
+EMAIL_BACKEND=django.core.mail.backends.smtp.EmailBackend
+EMAIL_HOST=smtp.gmail.com
+EMAIL_PORT=587
+EMAIL_USE_TLS=True
+EMAIL_HOST_USER=your-email@gmail.com
+EMAIL_HOST_PASSWORD=your-app-password
+DEFAULT_FROM_EMAIL=your-email@gmail.com
+SUPPORT_EMAIL=support@yourdomain.com
 ```
 
-### 3. Frontend Directory (`frontend/.env.local`)
-```env
-VITE_API_URL=https://api.yourdomain.com/api
-VITE_APP_NAME="Yaw Illustration"
-```
+> [!NOTE]
+> The backend container specifically looks for `backend/.env`. Ensure you do not name it `.env.local` in production.
 
 ---
 
@@ -117,3 +144,10 @@ If you are using **Nginx Proxy Manager (NPM)**:
 -   **Update Code**: `git pull && docker compose up -d --build`
 -   **Logs**: `docker compose logs -f`
 -   **Database Backup**: `docker exec mysql_db mysqldump -u root -p yaw_db > backup.sql`
+
+---
+### 📍 Navigation
+- [**Main README**](../../README.md)
+- [**Installation Guide**](INSTALLATION.md)
+- [**Project Structure**](PROJECT_STRUCTURE.md)
+- [**Development Guide**](DEVELOPMENT.md)

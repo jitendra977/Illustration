@@ -1,4 +1,5 @@
 # 🛠 Installation Guide
+[**English**] | [**日本語**](../jp/INSTALLATION.md)
 
 Follow these steps to set up the **Illustration System** from scratch on any Docker-enabled environment (Local Mac/Windows/Linux or a Cloud VPS).
 
@@ -101,3 +102,10 @@ docker compose up -d --build
   docker compose -f docker-compose.local.yml down -v
   ```
 - **CSRF Errors**: Double-check your `CSRF_TRUSTED_ORIGINS_EXTRA` in the backend configuration.
+
+---
+### 📍 Navigation
+- [**Main README**](../../README.md)
+- [**Project Structure**](PROJECT_STRUCTURE.md)
+- [**Development Guide**](DEVELOPMENT.md)
+- [**Server Deployment**](SERVER_INSTALLATION.md)

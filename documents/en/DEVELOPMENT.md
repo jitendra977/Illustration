@@ -1,4 +1,5 @@
 # 📘 YAW Illustration System - Development Guide
+[**English**] | [**日本語**](../jp/DEVELOPMENT.md)
 
 This guide contains the "No-Mistake" workflows for running, testing, and developing within the application.
 
@@ -489,3 +490,10 @@ This script will:
 ### Phase 3: Verification
 - Open [https://yaw.nishanaweb.cloud/](https://yaw.nishanaweb.cloud/)
 - Verify the update is live.
+
+---
+### 📍 Navigation
+- [**Main README**](../../README.md)
+- [**Installation Guide**](INSTALLATION.md)
+- [**Project Structure**](PROJECT_STRUCTURE.md)
+- [**Server Deployment**](SERVER_INSTALLATION.md)

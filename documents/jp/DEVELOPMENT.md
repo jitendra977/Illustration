@@ -1,9 +1,10 @@
 # 📘 YAW イラストレーションシステム - 開発ガイド
+[**日本語**] | [**English**](../en/DEVELOPMENT.md)
 
 このガイドには、アプリケーションの実行、テスト、開発のための「ミスのない」ワークフローが含まれています。
 
 > [!IMPORTANT]
-> 初回セットアップと環境変数の設定については、[**セットアップガイド**](./INSTALLATION_JP.md)を参照してください。
+> 初回セットアップと環境変数の設定については、[**セットアップガイド**](./INSTALLATION.md)を参照してください。
 
 ## ⚡ クイックスクリプト (チートシート)
 
@@ -64,3 +65,10 @@ scripts/deploy.sh
 ```
 
 デプロイ後、[https://yaw.nishanaweb.cloud/](https://yaw.nishanaweb.cloud/) で変更が反映されているか確認してください。
+
+---
+### 📍 ナビゲーション
+- [**メイン README**](../../README_JP.md)
+- [**セットアップガイド**](INSTALLATION.md)
+- [**プロジェクト構造**](PROJECT_STRUCTURE.md)
+- [**サーバーデプロイ**](SERVER_INSTALLATION.md)

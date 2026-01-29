@@ -1,4 +1,5 @@
 # Detailed System Documentation
+[**English**] | [**日本語**](../jp/SYSTEM_DOCUMENTATION.md)
 
 This document provides detailed answers to the four specific questions requested by the DX Promotion Section.
 
@@ -94,7 +95,13 @@ The system is containerized with Docker to ensure stability and consistent behav
 -   **External Services/APIs**:
     -   Frontend URL: `https://yaw.nishanaweb.cloud`
     -   API URL: `https://api.yaw.nishanaweb.cloud`
-    -   Static/Media Files: Served securely via Nginx.
+    -   Static/Media Files: Served securely via Nginx with permission checks.
+
+### Infrastructure Automation (`scripts/`)
+The project includes a suite of automation tools to ensure consistent deployment and maintenance:
+- **`deploy.sh`**: Automates the Git pull, build, and container restart process on the production VPS.
+- **`backup-prep.sh`**: Configures local database dumps and prepares media assets for cloud synchronization.
+- **`rclone.conf`**: Used for off-site backups to Google Drive.
 
 ## 4) Documentation & Operations
 
@@ -126,7 +133,10 @@ The system implements multiple layers of security to protect sensitive corporate
 -   **CORS & Allowed Hosts**: Strict filtering of incoming requests to ensure only authorized domains can interact with the API.
 
 ### Audit & Transparency
--   **Activity Logging (Audit Trail)**: Every critical action (who, when, from which IP, and what was changed) is automatically recorded, providing high transparency and accountability for system operations.
+-   **Activity Logging (Audit Trail)**: Every critical action (who, when, from which IP, and what was changed) is automatically recorded.
+    - **IP Geo-Logging**: Tracks the origin of administrative actions for security audits.
+    - **Model-Level Tracking**: Records changes to specific database objects, creating a "time-machine" of catalog edits.
+- **Detailed Error Logging**: Production errors are captured with a unique Traceback ID, allowing developers to debug issues without exposing sensitive data in the browser.
 
 ### External API Integrations
 Dependency on external services is kept to a minimum to ensure system autonomy and ease of self-hosting.
@@ -136,3 +146,10 @@ Dependency on external services is kept to a minimum to ensure system autonomy a
 
 ### Infrastructure Isolation
 -   **Docker Containerization**: The architecture isolates the application, database, and web server into independent containers, minimizing the potential impact of a single-point failure or security breach.
+
+---
+### 📍 Navigation
+- [**Main README**](../../README.md)
+- [**Installation Guide**](INSTALLATION.md)
+- [**Project Structure**](PROJECT_STRUCTURE.md)
+- [**Development Guide**](DEVELOPMENT.md)
