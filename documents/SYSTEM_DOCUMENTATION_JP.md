@@ -99,11 +99,8 @@ VITE_ENV=production
 ## 4) ドキュメント・運用 (Documentation & Operations)
 
 ### セットアップ手順 (New Server)
-1.  **環境準備**: Docker および Docker Compose をサーバーにインストール。
-2.  **コード取得**: 弊社リポジトリよりクローン。
-3.  **設定**: `.env` ファイルにDB接続情報やAPIキーを設定。
-4.  **起動**: `docker-compose up -d --build` を実行。
-5.  **初期化**: `docker exec` を使用し、DBマイグレーションと管理者ユーザー作成を実行。
+詳細なセットアップ手順については、以下のガイドを参照してください。
+👉 [**セットアップガイド (INSTALLATION.md)**](./INSTALLATION.md)
 
 ### 管理権限
 -   **システム管理**: `https://api.yaw.nishanaweb.cloud/admin/` より全データの管理が可能。

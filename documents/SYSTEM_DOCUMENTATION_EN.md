@@ -99,11 +99,8 @@ The system is containerized with Docker to ensure stability and consistent behav
 ## 4) Documentation & Operations
 
 ### Setup Guide (New Server)
-1.  **Preparation**: Install Docker and Docker Compose on the server.
-2.  **Get Code**: Clone the repository to the desired directory.
-3.  **Configure**: Set up the `.env` files with appropriate DB credentials and API keys.
-4.  **Launch**: Run `docker-compose up -d --build` to start all services.
-5.  **Initialize**: Use `docker exec` to run database migrations and create the initial superuser.
+For a complete, foolproof setup guide, please refer to:
+👉 [**Installation Guide (INSTALLATION.md)**](./INSTALLATION.md)
 
 ### Administrative Access
 -   **System Admin**: Full data management is available at `https://api.yaw.nishanaweb.cloud/admin/`.

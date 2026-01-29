@@ -2,6 +2,9 @@
 
 This is the high-level roadmap for the **Illustration System** project. 
 
+> [!TIP]
+> **Getting Started?** See the [**Installation Guide**](documents/INSTALLATION.md) for first-time setup.
+
 Detailed file-level documentation for each specific environment can be found in their respective directories.
 
 ---
@@ -31,6 +34,7 @@ Automation tools for deployment and local setup.
 -   `docker-compose.local.yml` - Local development orchestration (with Hot-Reload).
 -   `.env` - **[LOCAL ONLY]** Root secrets (Database, Passwords).
 -   `.gitignore` - Defines what stays private from Git.
+-   `documents/INSTALLATION.md` - **First-time setup guide.**
 -   `documents/SYSTEM_DOCUMENTATION_EN.md` - Technical overview (English).
 -   `documents/SYSTEM_DOCUMENTATION_JP.md` - Technical overview (Japanese).
 -   `documents/DEVELOPMENT.md` - Local setup and contribution guide.

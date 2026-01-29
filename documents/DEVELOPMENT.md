@@ -1,6 +1,9 @@
 # 📘 YAW Illustration System - Development Guide
 
-This guide contains the "No-Mistake" workflows for running, testing, and deploying the application.
+This guide contains the "No-Mistake" workflows for running, testing, and developing within the application.
+
+> [!IMPORTANT]
+> For first-time setup and environment variable configuration, please see the [**Installation Guide**](./INSTALLATION.md).
 
 ## ⚡ Quick Scripts (Cheat Sheet)
 
@@ -103,7 +106,7 @@ If someone else added packages and you pulled their code:
 
 ```bash
 # After git pull
-git pull origin deploy-server
+git pull origin main
 
 # Check if package.json changed
 git diff HEAD@{1} frontend/package.json
@@ -314,9 +317,9 @@ The `scripts/deploy.sh` script automates the entire deployment process. Here's e
 #### Phase 1: Local Machine
 1. **Pushes Code to GitHub**
    ```bash
-   git push origin deploy-server
+   git push origin main
    ```
-   - Uploads your local commits to the `deploy-server` branch on GitHub
+   - Uploads your local commits to the `main` branch on GitHub
    - This ensures the VPS can pull the latest code
 
 #### Phase 2: Remote VPS (via SSH)
@@ -348,9 +351,9 @@ The script connects to `nishanaweb@nishanaweb.cloud` and executes these commands
 
 6. **Pull Latest Code**
    ```bash
-   git pull origin deploy-server
+   git pull origin main
    ```
-   - Applies the latest code from the `deploy-server` branch
+   - Applies the latest code from the `main` branch
 
 7. **Restore Local Changes**
    ```bash
@@ -391,7 +394,7 @@ Before running `scripts/deploy.sh`, ensure:
 
 3. ✅ **You're on the correct branch**
    ```bash
-   git branch  # Should show "* deploy-server"
+   git branch  # Should show "* main"
    ```
 
 4. ✅ **Database migrations are created** (if you changed models)
@@ -409,14 +412,14 @@ scripts/deploy.sh
 **Expected Output:**
 ```
 🚀 Starting deployment flow...
-📦 Pushing changes to origin/deploy-server...
+📦 Pushing changes to origin/main...
 🌐 Connecting to VPS: nishanaweb.cloud...
 --- VPS: Navigating to project directory ---
 --- VPS: Fetching latest changes from origin ---
---- VPS: Pulling latest changes from deploy-server ---
+--- VPS: Pulling latest changes from main ---
 --- VPS: Restarting and rebuilding containers ---
 ✅ VPS: Deployment successful!
-🎉 Deployment complete for branch deploy-server!
+🎉 Deployment complete for branch main!
 ```
 
 ### Post-Deployment Verification
@@ -449,7 +452,7 @@ ssh nishanaweb@nishanaweb.cloud
 cd /home/nishanaweb/project/Illustration
 
 # Force reset to match GitHub (DANGER: loses server-only changes)
-git reset --hard origin/deploy-server
+git reset --hard origin/main
 
 # Try deployment again
 exit
@@ -478,7 +481,7 @@ We use a single script to push code and update the server:
 scripts/deploy.sh
 ```
 This script will:
-1. Push your local `deploy-server` branch to GitHub.
+1. Push your local `main` branch to GitHub.
 2. SSH into `yaw.nishanaweb.cloud`.
 3. Pull the code.
 4. Rebuild the containers on the server.
