@@ -8,13 +8,13 @@ A comprehensive automotive illustration and management system built with **Djang
 All project documentation is centralized in the [**`documents/`**](./documents/) directory.
 
 ### 🚀 Getting Started
--   **[Installation Guide](./documents/INSTALLATION.md)** - 5-minute setup (Docker, .env config).
--   **[Development Guide](./documents/DEVELOPMENT.md)** - Daily workflows (Hot-reloading, Migrations).
+-   **[Installation Guide](./documents/en/INSTALLATION.md)** - 5-minute setup (Docker, .env config).
+-   **[Development Guide](./documents/en/DEVELOPMENT.md)** - Daily workflows (Hot-reloading, Migrations).
 
 ### 📐 Specification & Structure
--   **[Project Structure](./documents/PROJECT_STRUCTURE.md)** - Deep-level file map.
--   **[System Documentation (EN)](./documents/SYSTEM_DOCUMENTATION_EN.md)** - Technical specification.
--   **[システム詳細仕様書 (JP)](./documents/SYSTEM_DOCUMENTATION_JP.md)** - 日本語版テクニカルドキュメント.
+-   **[Project Structure](./documents/en/PROJECT_STRUCTURE.md)** - Deep-level file map.
+-   **[System Documentation (EN)](./documents/en/SYSTEM_DOCUMENTATION.md)** - Technical specification.
+-   **[システム詳細仕様書 (JP)](./documents/jp/SYSTEM_DOCUMENTATION.md)** - 日本語版テクニカルドキュメント.
 
 ---
 
@@ -40,7 +40,7 @@ All project documentation is centralized in the [**`documents/`**](./documents/)
 ---
 
 ## 🤝 Contribution
-Please refer to the [**Development Guide**](./documents/DEVELOPMENT.md) before submitting pull requests. All code resides on the `main` branch.
+Please refer to the [**Development Guide**](./documents/en/DEVELOPMENT.md) before submitting pull requests. All code resides on the `main` branch.
 
 ---
 

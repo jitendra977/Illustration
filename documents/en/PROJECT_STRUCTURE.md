@@ -3,9 +3,7 @@
 This is the high-level roadmap for the **Illustration System** project. 
 
 > [!TIP]
-> **Getting Started?** See the [**Installation Guide**](documents/INSTALLATION.md) for first-time setup.
-
-Detailed file-level documentation for each specific environment can be found in their respective directories.
+> **Getting Started?** See the [**Installation Guide**](INSTALLATION.md) for first-time setup.
 
 ---
 
@@ -21,23 +19,18 @@ Contains the user interface, routing, and design system.
 - **Path**: `/frontend`
 - **Details**: See [frontend/STRUCTURE.md](frontend/STRUCTURE.md)
 
-### 🛠️ [Infrastructure & Scripts](file:///Volumes/Programming/React-Python/YAW/Illustration-System/scripts/)
+### 🛠️ [Infrastructure & Scripts](../../scripts/)
 Automation tools for deployment and local setup.
 - **Path**: `/scripts`
 - **Key Files**: `deploy.sh`, `dev.sh`, `fix-deployment.sh`
 
 ---
 
-## 📄 Root Configuration Files
+## 📄 Configuration Files
 
--   `docker-compose.yml` - Production/Staging orchestration.
--   `docker-compose.local.yml` - Local development orchestration (with Hot-Reload).
--   `.env` - **[LOCAL ONLY]** Root secrets (Database, Passwords).
--   `.gitignore` - Defines what stays private from Git.
--   `documents/INSTALLATION.md` - **First-time setup guide.**
--   `documents/SYSTEM_DOCUMENTATION_EN.md` - Technical overview (English).
--   `documents/SYSTEM_DOCUMENTATION_JP.md` - Technical overview (Japanese).
--   `documents/DEVELOPMENT.md` - Local setup and contribution guide.
+-   `INSTALLATION.md` - **First-time setup guide.**
+-   `SYSTEM_DOCUMENTATION.md` - Technical specification.
+-   `DEVELOPMENT.md` - Local setup and contribution guide.
 
 ---
 
