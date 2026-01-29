@@ -130,3 +130,4 @@ backend/media_production/
 backend/db_dump_production.sql
 *.pdf
 *.exp
+vps_verification.txt

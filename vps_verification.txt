@@ -1,11 +1,0 @@
-spawn ssh nishanaweb@nishanaweb.cloud cd ~/project/Illustration && git log -n 5 --oneline && echo "--- PS ---" && docker compose ps
-Enter passphrase for key '/Users/jitendrakhadka/.ssh/id_ed25519': 
-3343255b frontend permission and file management changes
-ac705a88 permission based system
-f7b79de0 home page corrected
-8e42b26f Fix DEBUG setting to read from environment variable
-6d043945 frontend structure change
---- PS ---
-NAME           IMAGE                       COMMAND                  SERVICE        CREATED          STATUS                    PORTS
-yaw-backend    illustration-yaw-backend    "/app/entrypoint.sh"     yaw-backend    40 seconds ago   Up 37 seconds (healthy)   0.0.0.0:8000->8000/tcp, [::]:8000->8000/tcp
-yaw-frontend   illustration-yaw-frontend   "/docker-entrypoint.…"   yaw-frontend   38 seconds ago   Up 37 seconds             0.0.0.0:3000->80/tcp, [::]:3000->80/tcp
