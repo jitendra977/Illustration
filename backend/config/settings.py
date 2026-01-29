@@ -33,7 +33,7 @@ ALLOWED_HOSTS = [
 
 # Load origins from environment variable
 if os.getenv("ALLOWED_HOSTS"):
-    hosts = [host.strip() for host in os.getenv("ALLOWED_HOSTS").split(",")]
+    hosts = [host.strip() for host in os.getenv("ALLOWED_HOSTS").split(",") if host.strip()]
     ALLOWED_HOSTS += hosts
 
 # Append extra hosts from environment variable
@@ -284,12 +284,12 @@ CSRF_TRUSTED_ORIGINS = [
 
 # Append origins from environment variable
 if os.getenv("CSRF_TRUSTED_ORIGINS"):
-    origins = [origin.strip() for origin in os.getenv("CSRF_TRUSTED_ORIGINS").split(",")]
+    origins = [origin.strip() for origin in os.getenv("CSRF_TRUSTED_ORIGINS").split(",") if origin.strip()]
     CSRF_TRUSTED_ORIGINS += origins
 
 # Append extra CSRF origins from environment variable
 if os.getenv("CSRF_TRUSTED_ORIGINS_EXTRA"):
-    extra_csrf = [origin.strip() for origin in os.getenv("CSRF_TRUSTED_ORIGINS_EXTRA").split(",")]
+    extra_csrf = [origin.strip() for origin in os.getenv("CSRF_TRUSTED_ORIGINS_EXTRA").split(",") if origin.strip()]
     CSRF_TRUSTED_ORIGINS += extra_csrf
 
 # ============================================
