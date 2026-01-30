@@ -30,6 +30,7 @@ import CarCategories from '../pages/mobile/navigation/CarCategories';
 import CategorySubcategories from '../pages/mobile/navigation/CategorySubcategories';
 import HierarchicalIllustrationList from '../pages/mobile/navigation/HierarchicalIllustrationList';
 import HowToUse from '../pages/mobile/help/HowToUse';
+import LoginHelp from '../pages/mobile/help/LoginHelp';
 import EngineList from '../pages/mobile/navigation/EngineList';
 import CarList from '../pages/mobile/navigation/CarList';
 import CategoryList from '../pages/mobile/navigation/CategoryList';
@@ -65,6 +66,10 @@ const MobileRoutes = () => {
     {
       path: "/how-to-use",
       element: <ProtectedRoute><MobileLayout><HowToUse /></MobileLayout></ProtectedRoute>
+    },
+    {
+      path: "/login-help",
+      element: <LoginHelp />
     },
 
     // ============================================================================

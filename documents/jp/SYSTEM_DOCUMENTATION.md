@@ -16,8 +16,10 @@
     -   特徴: 自動化されたRESTful API (Django Rest Framework) を提供。
 -   **フロントエンド (React/Bun)**:
     -   ディレクトリ: `/frontend`
-    -   管理ファイル: `package.json` (依存関係), `vite.config.js` (ビルド設定)
+    -   管理ファイル: `package.json` (依存関係), `vite.config.js` (ビルド設定), `nginx.conf` (内部Webサーバー)
     -   特徴: 高速なBunランタイムを使用し、ViteでビルドされたSPA。
+    -   **内部Webサーバー**: フロントエンドコンテナは内部的にNginx (`frontend/nginx.conf`) を使用して静的ファイルを配信し、SPAルーティング（404エラーを `index.html` にリダイレクト）を処理します。また、`X-Frame-Options` や `X-Content-Type-Options` などのセキュリティヘッダーも適用します。
+        > **注記**: これはDockerイメージ (`nginx:alpine`) に内包されているため、ホスト上への **Nginxの手動インストールは不要** です。
 -   **設定ファイル**:
     ```text
     /opt/illustration-system/
@@ -74,8 +76,6 @@
 ### インフラ自動化 (`scripts/`)
 運用の安定性を高めるため、以下の自動化用スクリプトが用意されています。
 - **`deploy.sh`**: Gitのプル、ビルド、コンテナの再起動を一括実行。
-- **`backup-prep.sh`**: データベースのダンプおよびメディアファイルのバックアップ準備を実行。
-- **`rclone.conf`**: Google Driveへの外部バックアップ同期用。
 
 ## 4) ドキュメント・運用 (Documentation & Operations)
 

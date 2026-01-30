@@ -16,8 +16,10 @@ The system is composed of two primary components, Frontend and Backend, managed 
     -   Features: Provides a robust RESTful API using Django Rest Framework.
 -   **Frontend (React/Bun)**:
     -   Directory: `/frontend`
-    -   Key Files: `package.json` (Dependencies), `vite.config.js` (Build configuration)
+    -   Key Files: `package.json` (Dependencies), `vite.config.js` (Build configuration), `nginx.conf` (Internal Web Server)
     -   Features: A Single Page Application (SPA) built with Vite and powered by the high-performance Bun runtime.
+    -   **Internal Web Server**: The frontend container uses an internal Nginx (`frontend/nginx.conf`) to serve static assets and handle SPA routing (redirecting 404s to `index.html`). It also applies security headers like `X-Frame-Options` and `X-Content-Type-Options`.
+        > **Note**: This is bundled within the Docker image (`nginx:alpine`), so **no manual Nginx installation is required** on the host.
 -   **Configuration Files**:
     ```text
     /opt/illustration-system/
@@ -74,8 +76,6 @@ The system is containerized with Docker to ensure stability and consistent behav
 ### Infrastructure Automation (`scripts/`)
 The project includes a suite of automation tools to ensure consistent deployment and maintenance:
 - **`deploy.sh`**: Automates the Git pull, build, and container restart process on the production VPS.
-- **`backup-prep.sh`**: Configures local database dumps and prepares media assets for cloud synchronization.
-- **`rclone.conf`**: Used for off-site backups to Google Drive.
 
 ## 4) Documentation & Operations
 

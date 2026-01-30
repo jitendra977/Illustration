@@ -102,16 +102,16 @@ const HowToUse = () => {
     );
 
     return (
-        <Container maxWidth="md" sx={{ py: { xs: 3, md: 6 } }}>
+        <Container maxWidth="md" sx={{ py: { xs: 2, md: 6 }, px: { xs: 2, sm: 3 } }}>
 
             {/* Header */}
-            <Box sx={{ mb: 6, textAlign: 'center', position: 'relative' }}>
+            <Box sx={{ mb: { xs: 3, md: 6 }, textAlign: 'center', position: 'relative' }}>
                 <IconButton
                     onClick={() => navigate('/')}
                     sx={{
                         position: 'absolute',
-                        top: -10,
-                        right: 0,
+                        top: { xs: -8, sm: -10 },
+                        right: { xs: -8, sm: 0 },
                         bgcolor: 'background.paper',
                         boxShadow: 1,
                         zIndex: 10,
@@ -120,11 +120,31 @@ const HowToUse = () => {
                 >
                     <CloseIcon />
                 </IconButton>
-                <Chip label="初心者向けガイド" color="primary" size="small" sx={{ mb: 2, fontWeight: 'bold' }} />
-                <Typography variant="h4" fontWeight="900" gutterBottom sx={{ background: 'linear-gradient(45deg, #2196F3 30%, #21CBF3 90%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
+                <Chip label="初心者向けガイド" color="primary" size="small" sx={{ mb: 2, fontWeight: 'bold', fontSize: { xs: '0.75rem', sm: '0.8125rem' } }} />
+                <Typography
+                    variant="h4"
+                    fontWeight="900"
+                    gutterBottom
+                    sx={{
+                        background: 'linear-gradient(45deg, #2196F3 30%, #21CBF3 90%)',
+                        WebkitBackgroundClip: 'text',
+                        WebkitTextFillColor: 'transparent',
+                        fontSize: { xs: '1.75rem', sm: '2.125rem' },
+                        px: { xs: 4, sm: 0 }
+                    }}
+                >
                     YAW アプリの使い方
                 </Typography>
-                <Typography variant="body1" color="text.secondary" sx={{ maxWidth: 600, mx: 'auto' }}>
+                <Typography
+                    variant="body1"
+                    color="text.secondary"
+                    sx={{
+                        maxWidth: 600,
+                        mx: 'auto',
+                        fontSize: { xs: '0.875rem', sm: '1rem' },
+                        px: { xs: 1, sm: 0 }
+                    }}
+                >
                     YAW（楽天検索丸）へようこそ。このガイドでは、イラストの検索から管理まで、アプリの基本的な使い方をステップバイステップで解説します。
                 </Typography>
             </Box>

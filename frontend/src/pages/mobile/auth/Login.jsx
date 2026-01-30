@@ -39,6 +39,7 @@ import {
   QrCodeScanner,
   Close,
   CameraAlt,
+  HelpOutline,
 } from '@mui/icons-material';
 
 const Login = () => {
@@ -700,6 +701,27 @@ const Login = () => {
                         'ログイン'
                       )}
                     </Button>
+
+                    {/* Login Help Link */}
+                    <Box sx={{ textAlign: 'center', mt: 2 }}>
+                      <Link
+                        href="/login-help"
+                        underline="none"
+                        sx={{
+                          color: '#818cf8',
+                          fontSize: '0.875rem',
+                          fontWeight: 500,
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          gap: 0.5,
+                          '&:hover': { color: '#a5b4fc' },
+                        }}
+                      >
+                        <HelpOutline sx={{ fontSize: 18 }} />
+                        ログインできない方はこちら
+                      </Link>
+                    </Box>
                   </>
                 )}
 
