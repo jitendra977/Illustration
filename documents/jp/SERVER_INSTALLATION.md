@@ -83,6 +83,7 @@ VITE_STATIC_URL=https://api.yourdomain.com/static
 # セキュリティ設定
 SECRET_KEY=ランダムな長い文字列
 DEBUG=False
+SECURE_SSL_REDIRECT=False  # 重要: 内部SSLリダイレクトを無効化 (NginxがSSLを処理するため)
 
 # 管理者ログイン情報
 DJANGO_SUPERUSER_USERNAME=admin
@@ -130,21 +131,38 @@ docker compose exec yaw-backend python manage.py createsuperuser --noinput
 ---
 
 ## 🌍 5. リバースプロキシの設定 (Nginx Proxy Manager)
-**Nginx Proxy Manager (NPM)** を使用する場合の推奨設定：
+**Nginx Proxy Manager (NPM)** を使用すると、SSL化とルーティングが容易になります。以下の **2つ** のプロキシホストを設定してください。
 
-1.  **フロントエンド プロキシ**:
-    -   Domain: `yourdomain.com`
-    -   Scheme: `http`
-    -   Forward Host: `サーバーのIP`
-    -   Forward Port: `5173` (またはマッピングしたポート)
-2.  **バックエンド プロキシ**:
-    -   Domain: `api.yourdomain.com`
-    -   Scheme: `http`
-    -   Forward Host: `サーバーのIP`
-    -   Forward Port: `8000`
+### A. バックエンド用 プロキシホスト (API)
+APIへの直接アクセスや管理画面へのアクセスを処理します。
+-   **Domain Names**: `api.yourdomain.com`
+-   **Scheme**: `http`
+-   **Forward Hostname / IP**: `yaw-backend` (またはサーバーIP)
+-   **Forward Port**: `8000`
+-   **SSL**: 新しい Let's Encrypt 証明書を取得 (Force SSL, HTTP/2 Support を有効化)。
 
-> [!IMPORTANT]
-> **SSL (Let's Encrypt)** を有効にし、**Websockets Support** をオンにしてください。
+### B. フロントエンド用 プロキシホスト (メインサイト)
+Reactアプリケーションを表示し、CORSエラーやメソッドエラーを防ぐためにAPIリクエストを転送します。
+-   **Domain Names**: `yourdomain.com`
+-   **Scheme**: `http`
+-   **Forward Hostname / IP**: `yaw-frontend` (またはサーバーIP)
+-   **Forward Port**: `80`
+-   **SSL**: 新しい Let's Encrypt 証明書を取得 (Force SSL, HTTP/2 Support を有効化)。
+
+#### ⚠️ 重要: フロントエンドのカスタムロケーション設定
+**フロントエンド用プロキシホスト**の **"Custom Locations"** タブに、以下の設定を**必ず**追加してください。これにより、相対パスでのAPIリクエスト（`/api/...`）がバックエンドコンテナに正しくルーティングされます。
+
+**Location**: `/api/`
+-   **Scheme**: `http`
+-   **Forward Host**: `yaw-backend`
+-   **Forward Port**: `8000`
+-   **歯車アイコン (詳細設定)**:
+    ```nginx
+    proxy_set_header Host $host;
+    proxy_set_header X-Real-IP $remote_addr;
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    proxy_set_header X-Forwarded-Proto $scheme;
+    ```
 
 ---
 

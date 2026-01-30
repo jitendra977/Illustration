@@ -83,6 +83,7 @@ VITE_STATIC_URL=https://api.yourdomain.com/static
 # Security
 SECRET_KEY=your_generated_random_secret_string
 DEBUG=False
+SECURE_SSL_REDIRECT=False  # IMPORTANT: Disable internal SSL redirect (Nginx handles SSL)
 
 # Superuser Credentials
 DJANGO_SUPERUSER_USERNAME=admin
@@ -130,21 +131,38 @@ docker compose exec yaw-backend python manage.py createsuperuser --noinput
 ---
 
 ## 🌍 5. Reverse Proxy (Nginx Proxy Manager)
-If you are using **Nginx Proxy Manager (NPM)**:
+Using **Nginx Proxy Manager (NPM)** simplifies SSL and routing. You need **two** Proxy Hosts:
 
-1.  **Frontend Proxy**:
-    -   Domain: `yourdomain.com`
-    -   Scheme: `http`
-    -   Forward Host: `SERVER_IP`
-    -   Forward Port: `5173` (or mapped port)
-2.  **Backend Proxy**:
-    -   Domain: `api.yourdomain.com`
-    -   Scheme: `http`
-    -   Forward Host: `SERVER_IP`
-    -   Forward Port: `8000`
+### A. Backend Proxy Host (API)
+This handles direct API calls and admin access.
+-   **Domain Names**: `api.yourdomain.com`
+-   **Scheme**: `http`
+-   **Forward Hostname / IP**: `yaw-backend` (or server IP)
+-   **Forward Port**: `8000`
+-   **SSL**: Request a new Let's Encrypt Certificate (Enable Force SSL, HTTP/2 Support).
 
-> [!IMPORTANT]
-> Ensure **SSL (Let's Encrypt)** is enabled in NPM and **Websockets Support** is turned on.
+### B. Frontend Proxy Host (Main Site)
+This handles the React application and proxies API calls to prevent CORS/Method errors.
+-   **Domain Names**: `yourdomain.com`
+-   **Scheme**: `http`
+-   **Forward Hostname / IP**: `yaw-frontend` (or server IP)
+-   **Forward Port**: `80`
+-   **SSL**: Request a new Let's Encrypt Certificate (Enable Force SSL, HTTP/2 Support).
+
+#### ⚠️ CRITICAL: Custom Locations for Frontend
+You **MUST** add the following block in the **"Custom Locations"** tab of the **Frontend Proxy Host**. This ensures relative API requests (`/api/...`) are routed correctly to the backend container.
+
+**Location**: `/api/`
+-   **Scheme**: `http`
+-   **Forward Host**: `yaw-backend`
+-   **Forward Port**: `8000`
+-   **Gear Icon (Advanced Config)**:
+    ```nginx
+    proxy_set_header Host $host;
+    proxy_set_header X-Real-IP $remote_addr;
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    proxy_set_header X-Forwarded-Proto $scheme;
+    ```
 
 ---
 
