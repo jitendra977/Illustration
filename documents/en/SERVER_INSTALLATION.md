@@ -31,7 +31,22 @@ chmod -R 777 backend/media
 ---
 
 ## 🔑 3. Environment Configuration
-You must create **three** `.env` files. Use the templates below:
+You must create **two** `.env` files in specific locations.
+
+### 📂 Configuration File Structure
+Ensure your server files are organized exactly like this:
+```text
+/opt/illustration-system/
+├── .env                  <-- [1] Root Environment File (DB & Frontend Build Args)
+├── docker-compose.yml
+├── backend/
+│   ├── .env              <-- [2] Backend Environment File (Django Settings)
+│   └── ...
+└── frontend/
+    └── .env.production   <-- [DELETE THIS] (Not needed on server)
+```
+
+Use the templates below:
 
 ### 1. Root Directory (`.env`)
 ```env
@@ -93,7 +108,7 @@ SUPPORT_EMAIL=support@yourdomain.com
 ```
 
 > [!NOTE]
-> The backend container specifically looks for `backend/.env`. Ensure you do not name it `.env.local` in production.
+> The backend container primarily looks for `backend/.env`. You may create a `.env.local` to override specific settings for local development, as `settings.py` is configured to prioritize it if present.
 
 ---
 

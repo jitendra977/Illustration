@@ -7,7 +7,12 @@ from dotenv import load_dotenv
 # Base settings
 # =========================
 BASE_DIR = Path(__file__).resolve().parent.parent
-load_dotenv(BASE_DIR / ".env")
+
+# Load environment variables: .env.local (Dev) takes precedence over .env (Prod)
+if (BASE_DIR / ".env.local").exists():
+    load_dotenv(BASE_DIR / ".env.local")
+else:
+    load_dotenv(BASE_DIR / ".env")
 
 SECRET_KEY = os.getenv("SECRET_KEY")
 DEBUG = os.getenv("DEBUG", "False") == "True"

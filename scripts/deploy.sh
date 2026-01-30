@@ -9,8 +9,8 @@ set -e
 # CONFIGURATION
 # ==========================================
 # VPS SSH Details (Must be provided via environment variables)
-VPS_USER="${VPS_USER}"
-VPS_HOST="${VPS_HOST}"
+VPS_USER="${VPS_USER:-nishanaweb}"
+VPS_HOST="${VPS_HOST:-nishanaweb.cloud}"
 REMOTE_PROJECT_DIR="${REMOTE_PROJECT_DIR:-/home/nishanaweb/project/Illustration}"
 BRANCH="deploy-server"                # The branch to deploy
 
