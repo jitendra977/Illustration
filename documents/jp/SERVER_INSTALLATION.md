@@ -88,7 +88,7 @@ SECURE_SSL_REDIRECT=False  # 重要: 内部SSLリダイレクトを無効化 (Ng
 # 管理者ログイン情報
 DJANGO_SUPERUSER_USERNAME=admin
 DJANGO_SUPERUSER_EMAIL=admin@yourdomain.com
-DJANGO_SUPERUSER_PASSWORD=DBパスワードと一致させる
+DJANGO_SUPERUSER_PASSWORD=強力な管理者パスワード
 
 # ドメイン設定
 ALLOWED_HOSTS_EXTRA=api.yourdomain.com,yourdomain.com

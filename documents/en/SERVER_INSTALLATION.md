@@ -88,7 +88,7 @@ SECURE_SSL_REDIRECT=False  # IMPORTANT: Disable internal SSL redirect (Nginx han
 # Superuser Credentials
 DJANGO_SUPERUSER_USERNAME=admin
 DJANGO_SUPERUSER_EMAIL=admin@yourdomain.com
-DJANGO_SUPERUSER_PASSWORD=your_secure_db_password
+DJANGO_SUPERUSER_PASSWORD=your_secure_admin_password
 
 # Domain Settings
 ALLOWED_HOSTS_EXTRA=api.yourdomain.com,yourdomain.com
