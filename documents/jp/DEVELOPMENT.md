@@ -4,7 +4,7 @@
 このガイドには、アプリケーションの実行、テスト、開発のための「ミスのない」ワークフローが含まれています。
 
 > [!IMPORTANT]
-> 初回セットアップと環境変数の設定については、[**セットアップガイド**](./INSTALLATION.md)を参照してください。
+> 初回セットアップと環境変数の設定については、[**ローカルセットアップガイド**](./LOCAL_INSTALLATION.md)を参照してください。
 
 ## ⚡ クイックスクリプト (チートシート)
 
@@ -69,6 +69,6 @@ scripts/deploy.sh
 ---
 ### 📍 ナビゲーション
 - [**メイン README**](../../README_JP.md)
-- [**セットアップガイド**](INSTALLATION.md)
+- [**ローカルセットアップガイド**](LOCAL_INSTALLATION.md)
 - [**プロジェクト構造**](PROJECT_STRUCTURE.md)
 - [**サーバーデプロイ**](SERVER_INSTALLATION.md)

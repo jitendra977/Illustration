@@ -43,6 +43,6 @@ Automation tools for deployment and local setup.
 ---
 ### 📍 Navigation
 - [**Main README**](../../README.md)
-- [**Installation Guide**](INSTALLATION.md)
+- [**Installation Guide**](LOCAL_INSTALLATION.md)
 - [**Development Guide**](DEVELOPMENT.md)
 - [**Server Deployment**](SERVER_INSTALLATION.md)

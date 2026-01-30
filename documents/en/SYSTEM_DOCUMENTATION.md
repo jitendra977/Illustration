@@ -19,42 +19,16 @@ The system is composed of two primary components, Frontend and Backend, managed 
     -   Key Files: `package.json` (Dependencies), `vite.config.js` (Build configuration)
     -   Features: A Single Page Application (SPA) built with Vite and powered by the high-performance Bun runtime.
 -   **Configuration Files**:
-    -   `.env` (in each directory): Stores environment variables such as database credentials and API endpoints.
-    -   `/docker-compose.yml`: Defines the container orchestration for the entire system.
+    ```text
+    /opt/illustration-system/
+    ├── .env                  <-- [1] Root Environment File (DB & Frontend Build Args)
+    ├── docker-compose.yml
+    └── backend/
+        └── .env              <-- [2] Backend Environment File (Django Settings)
+    ```
 
-#### Backend .env Example
-```env
-DEBUG=False
-SECRET_KEY=your-secret-key
-DB_ENGINE=django.db.backends.mysql
-DB_NAME=illustration_db
-DB_USER=root
-DB_PASSWORD=your-password
-DB_HOST=localhost
-DB_PORT=3306
-FRONTEND_URL=https://your-frontend-domain.com
 
-# Superuser Automation
-DJANGO_SUPERUSER_USERNAME=admin
-DJANGO_SUPERUSER_EMAIL=admin@example.com
-DJANGO_SUPERUSER_PASSWORD=your-secure-password
-
-# Email Service Settings
-EMAIL_HOST=smtp.gmail.com
-EMAIL_PORT=587
-EMAIL_USE_TLS=True
-EMAIL_HOST_USER=your-email@gmail.com
-EMAIL_HOST_PASSWORD=your-app-password
-DEFAULT_FROM_EMAIL=your-email@gmail.com
-SUPPORT_EMAIL=support@your-domain.com
-```
-
-#### Frontend .env Example
-```env
-VITE_API_URL=https://your-api-domain.com/api
-VITE_APP_NAME="Yaw Illustration"
-VITE_ENV=production
-```
+> 📝 **Configuration Details**: For complete `.env` templates and detailed configuration instructions, please refer to the [**Environment Configuration**](./SERVER_INSTALLATION.md#-3-environment-configuration) section in the Server Installation Guide.
 
 ## 2) Database Information
 
@@ -107,7 +81,7 @@ The project includes a suite of automation tools to ensure consistent deployment
 
 ### Setup Guide (New Server)
 For a complete, foolproof setup guide, please refer to:
-👉 [**Installation Guide (INSTALLATION.md)**](./INSTALLATION.md)
+👉 [**Local Installation Guide (LOCAL_INSTALLATION.md)**](./LOCAL_INSTALLATION.md)
 
 ### Administrative Access
 -   **System Admin**: Full data management is available at `https://api.yaw.nishanaweb.cloud/admin/`.
@@ -150,6 +124,6 @@ Dependency on external services is kept to a minimum to ensure system autonomy a
 ---
 ### 📍 Navigation
 - [**Main README**](../../README.md)
-- [**Installation Guide**](INSTALLATION.md)
+- [**Local Installation Guide**](LOCAL_INSTALLATION.md)
 - [**Project Structure**](PROJECT_STRUCTURE.md)
 - [**Development Guide**](DEVELOPMENT.md)

@@ -494,6 +494,6 @@ This script will:
 ---
 ### 📍 Navigation
 - [**Main README**](../../README.md)
-- [**Installation Guide**](INSTALLATION.md)
+- [**Installation Guide**](LOCAL_INSTALLATION.md)
 - [**Project Structure**](PROJECT_STRUCTURE.md)
 - [**Server Deployment**](SERVER_INSTALLATION.md)

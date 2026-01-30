@@ -5,7 +5,7 @@
 
 > [!TIP]
 > **はじめての方へ** 
-> 初回のセットアップについては、[**セットアップガイド**](INSTALLATION.md) または [**サーバーデプロイガイド**](SERVER_INSTALLATION.md)を参照してください。
+> 初回のセットアップについては、[**ローカルセットアップガイド**](LOCAL_INSTALLATION.md) または [**サーバーデプロイガイド**](SERVER_INSTALLATION.md)を参照してください。
 
 ---
 
@@ -30,7 +30,7 @@ REST API、データベースモデル、および管理ロジックが含まれ
 
 ## 📄 構成ファイル
 
--   `INSTALLATION.md` - **セットアップガイド。**
+-   `LOCAL_INSTALLATION.md` - **ローカルセットアップガイド。**
 -   `SYSTEM_DOCUMENTATION.md` - 技術概要。
 -   `DEVELOPMENT.md` - ローカルセットアップと貢献ガイド。
 
@@ -44,6 +44,6 @@ REST API、データベースモデル、および管理ロジックが含まれ
 ---
 ### 📍 ナビゲーション
 - [**メイン README**](../../README_JP.md)
-- [**セットアップガイド**](INSTALLATION.md)
+- [**ローカルセットアップガイド**](LOCAL_INSTALLATION.md)
 - [**開発ガイド**](DEVELOPMENT.md)
 - [**サーバーデプロイ**](SERVER_INSTALLATION.md)

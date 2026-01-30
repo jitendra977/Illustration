@@ -3,6 +3,18 @@
 
 このドキュメントは、**Illustration System** を本番環境（Ubuntu/Linux VPS）にデプロイし、Docker と Nginx Proxy Manager (NPM) を利用して運用するためのプロフェッショナルな手順書です。
 
+
+---
+
+## 📑 目次
+1.  [前提条件](#-1-前提条件)
+2.  [インフラの準備](#-2-インフラの準備)
+3.  [環境変数の設定](#-3-環境変数の設定)
+4.  [デプロイの実行](#-4-デプロイの実行)
+5.  [リバースプロキシの設定 (Nginx Proxy Manager)](#-5-リバースプロキシの設定-nginx-proxy-manager)
+6.  [動作確認](#-6-動作確認)
+7.  [メンテナンス](#-7-メンテナンス)
+
 ---
 
 ## 📋 1. 前提条件
@@ -43,7 +55,6 @@ chmod -R 777 backend/media
 │   ├── .env              <-- [2] バックエンド設定ファイル (Django設定)
 │   └── ...
 └── frontend/
-    └── .env.production   <-- [削除推奨] (サーバー上では不要)
 ```
 
 以下のテンプレートを使用してください：
@@ -67,7 +78,7 @@ VITE_STATIC_URL=https://api.yourdomain.com/static
 ```
 
 > [!TIP]
-> `frontend` ディレクトリ内には `.env.production` が存在しますが、Dockerビルド時（`.dockerignore`により）**無視されます**。これらの変数は必ずルートの `.env` で定義し、ビルド引数として渡す必要があります。
+> フロントエンドの環境変数はルートディレクトリの `.env` ファイルで管理されます。これらはビルド引数として渡されるため、必ずルートの `.env` で定義してください。
 >
 > **設定上の注意**: `docker-compose.yml` 側でこれらの引数を明示的に渡す設定が必要です：
 > ```yaml
@@ -140,6 +151,39 @@ APIへの直接アクセスや管理画面へのアクセスを処理します�
 -   **Forward Hostname / IP**: `yaw-backend` (またはサーバーIP)
 -   **Forward Port**: `8000`
 -   **SSL**: 新しい Let's Encrypt 証明書を取得 (Force SSL, HTTP/2 Support を有効化)。
+-   **歯車アイコン (詳細設定)**:
+    ```nginx
+    proxy_set_header Host $host;
+    proxy_set_header X-Real-IP $remote_addr;
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    proxy_set_header X-Forwarded-Proto $scheme;
+
+    # ロングリクエストのタイムアウト延長
+    proxy_read_timeout 300;
+    proxy_connect_timeout 300;
+    proxy_send_timeout 300;
+
+    # プロフィール画像などの大容量アップロードを許可
+    client_max_body_size 50M;
+
+    # メディアファイルを明示的に処理
+    location /media/ {
+        proxy_pass http://yaw-backend:8000/media/;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+
+    # 静的ファイルを明示的に処理
+    location /static/ {
+        proxy_pass http://yaw-backend:8000/static/;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+    ```
 
 ### B. フロントエンド用 プロキシホスト (メインサイト)
 Reactアプリケーションを表示し、CORSエラーやメソッドエラーを防ぐためにAPIリクエストを転送します。
@@ -180,7 +224,7 @@ Reactアプリケーションを表示し、CORSエラーやメソッドエラ�
 
 ---
 ### 📍 ナビゲーション
-- [**メイン README**](../../README_JP.md)
-- [**セットアップガイド**](INSTALLATION.md)
-- [**プロジェクト構造**](PROJECT_STRUCTURE.md)
-- [**開発ガイド**](DEVELOPMENT.md)
+- [**🏠 メイン README**](../../README_JP.md)
+- [**💻 開発ガイド**](DEVELOPMENT.md)
+- [**🏗️ プロジェクト構造**](PROJECT_STRUCTURE.md)
+- [**📦 ローカルセットアップガイド**](LOCAL_INSTALLATION.md)

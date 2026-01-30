@@ -19,42 +19,16 @@
     -   管理ファイル: `package.json` (依存関係), `vite.config.js` (ビルド設定)
     -   特徴: 高速なBunランタイムを使用し、ViteでビルドされたSPA。
 -   **設定ファイル**:
-    -   各ディレクトリの `.env`: 環境変数（DB接続、API通信先など）を保持。
-    -   `/docker-compose.yml`: システム全体のコンテナオーケストレーションを定義。
+    ```text
+    /opt/illustration-system/
+    ├── .env                  <-- [1] ルート設定ファイル (DB接続 & フロントエンドビルド引数)
+    ├── docker-compose.yml
+    └── backend/
+        └── .env              <-- [2] バックエンド設定ファイル (Django設定)
+    ```
 
-#### バックエンド .env 例 (Backend Example)
-```env
-DEBUG=False
-SECRET_KEY=your-secret-key
-DB_ENGINE=django.db.backends.mysql
-DB_NAME=illustration_db
-DB_USER=root
-DB_PASSWORD=your-password
-DB_HOST=localhost
-DB_PORT=3306
-FRONTEND_URL=https://your-frontend-domain.com
 
-# 管理者自動作成用 (Superuser Automation)
-DJANGO_SUPERUSER_USERNAME=admin
-DJANGO_SUPERUSER_EMAIL=admin@example.com
-DJANGO_SUPERUSER_PASSWORD=your-secure-password
-
-# メール設定 (Email Service)
-EMAIL_HOST=smtp.gmail.com
-EMAIL_PORT=587
-EMAIL_USE_TLS=True
-EMAIL_HOST_USER=your-email@gmail.com
-EMAIL_HOST_PASSWORD=your-app-password
-DEFAULT_FROM_EMAIL=your-email@gmail.com
-SUPPORT_EMAIL=support@your-domain.com
-```
-
-#### フロントエンド .env 例 (Frontend Example)
-```env
-VITE_API_URL=https://your-api-domain.com/api
-VITE_APP_NAME="Yaw Illustration"
-VITE_ENV=production
-```
+> 📝 **設定の詳細**: 環境変数の完全なテンプレートや詳細な設定手順については、サーバーインストールガイドの [**環境変数の設定**](../jp/SERVER_INSTALLATION.md#-3-環境変数の設定) セクションを参照してください。
 
 ## 2) データベース情報 (Database Information)
 
@@ -107,7 +81,7 @@ VITE_ENV=production
 
 ### セットアップ手順 (New Server)
 詳細なセットアップ手順については、以下のガイドを参照してください。
-👉 [**セットアップガイド (INSTALLATION.md)**](./INSTALLATION.md)
+👉 [**ローカルセットアップガイド (LOCAL_INSTALLATION.md)**](./LOCAL_INSTALLATION.md)
 
 ### 管理権限
 -   **システム管理**: `https://api.yaw.nishanaweb.cloud/admin/` より全データの管理が可能。
@@ -150,6 +124,6 @@ VITE_ENV=production
 ---
 ### 📍 ナビゲーション
 - [**メイン README**](../../README_JP.md)
-- [**セットアップガイド**](INSTALLATION.md)
+- [**ローカルセットアップガイド**](LOCAL_INSTALLATION.md)
 - [**プロジェクト構造**](PROJECT_STRUCTURE.md)
 - [**開発ガイド**](DEVELOPMENT.md)

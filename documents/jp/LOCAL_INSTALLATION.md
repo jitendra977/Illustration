@@ -1,5 +1,5 @@
-# 🛠 セットアップガイド
-[**日本語**] | [**English**](../en/INSTALLATION.md)
+# 🛠 ローカル環境構築・セットアップガイド
+[**日本語**] | [**English**](../en/LOCAL_INSTALLATION.md)
 
 Dockerがインストールされた環境（Local Mac/Windows/Linux、またはクラウドVPS）で **Illustration System** をゼロからセットアップするための手順です。
 

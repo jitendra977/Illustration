@@ -3,6 +3,18 @@
 
 This guide provides a professional checklist for deploying the **Illustration System** to a production VPS (Ubuntu/Linux) using Docker and Nginx Proxy Manager.
 
+
+---
+
+## 📑 Table of Contents
+1.  [Prerequisites](#-1-prerequisites)
+2.  [Infrastructure Setup](#-2-infrastructure-setup)
+3.  [Environment Configuration](#-3-environment-configuration)
+4.  [Deployment](#-4-deployment)
+5.  [Reverse Proxy (Nginx Proxy Manager)](#-5-reverse-proxy-nginx-proxy-manager)
+6.  [Verification](#-6-verification)
+7.  [Maintenance](#-7-maintenance)
+
 ---
 
 ## 📋 1. Prerequisites
@@ -43,7 +55,6 @@ Ensure your server files are organized exactly like this:
 │   ├── .env              <-- [2] Backend Environment File (Django Settings)
 │   └── ...
 └── frontend/
-    └── .env.production   <-- [DELETE THIS] (Not needed on server)
 ```
 
 Use the templates below:
@@ -67,7 +78,7 @@ VITE_STATIC_URL=https://api.yourdomain.com/static
 ```
 
 > [!TIP]
-> The `frontend` directory contains a `.env.production` file, but it is **ignored** by Docker build (via `.dockerignore`). You MUST define these variables in the root `.env` file so they are passed as build arguments.
+> Frontend environment variables are handled by the root `.env` file. You MUST define these variables in the root `.env` file so they are passed as build arguments.
 >
 > **Configuration Note**: Ensure your `docker-compose.yml` is configured to blindly pass these arguments to the frontend build context:
 > ```yaml
@@ -140,6 +151,39 @@ This handles direct API calls and admin access.
 -   **Forward Hostname / IP**: `yaw-backend` (or server IP)
 -   **Forward Port**: `8000`
 -   **SSL**: Request a new Let's Encrypt Certificate (Enable Force SSL, HTTP/2 Support).
+-   **Gear Icon (Advanced Config)**:
+    ```nginx
+    proxy_set_header Host $host;
+    proxy_set_header X-Real-IP $remote_addr;
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    proxy_set_header X-Forwarded-Proto $scheme;
+
+    # Increase timeout for long requests
+    proxy_read_timeout 300;
+    proxy_connect_timeout 300;
+    proxy_send_timeout 300;
+
+    # Allow larger file uploads for profile images
+    client_max_body_size 50M;
+
+    # Explicitly handle media files
+    location /media/ {
+        proxy_pass http://yaw-backend:8000/media/;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+
+    # Explicitly handle static files
+    location /static/ {
+        proxy_pass http://yaw-backend:8000/static/;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+    ```
 
 ### B. Frontend Proxy Host (Main Site)
 This handles the React application and proxies API calls to prevent CORS/Method errors.
@@ -180,7 +224,7 @@ You **MUST** add the following block in the **"Custom Locations"** tab of the **
 
 ---
 ### 📍 Navigation
-- [**Main README**](../../README.md)
-- [**Installation Guide**](INSTALLATION.md)
-- [**Project Structure**](PROJECT_STRUCTURE.md)
-- [**Development Guide**](DEVELOPMENT.md)
+- [**🏠 Main README**](../../README.md)
+- [**💻 Development Guide**](DEVELOPMENT.md)
+- [**🏗️ Project Structure**](PROJECT_STRUCTURE.md)
+- [**📦 Local Installation Guide**](LOCAL_INSTALLATION.md)

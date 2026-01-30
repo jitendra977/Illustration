@@ -1,5 +1,5 @@
-# 🛠 Installation Guide
-[**English**] | [**日本語**](../jp/INSTALLATION.md)
+# 🛠 Local Installation Guide
+[**English**] | [**日本語**](../jp/LOCAL_INSTALLATION.md)
 
 Follow these steps to set up the **Illustration System** from scratch on any Docker-enabled environment (Local Mac/Windows/Linux or a Cloud VPS).
 

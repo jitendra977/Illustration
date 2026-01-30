@@ -36,12 +36,10 @@ import os
 from django.contrib.auth import get_user_model
 User = get_user_model()
 username = os.getenv("DJANGO_SUPERUSER_USERNAME", "admin")
-email = os.getenv("DJANGO_SUPERUSER_EMAIL")
-password = os.getenv("DJANGO_SUPERUSER_PASSWORD")
+email = os.getenv("DJANGO_SUPERUSER_EMAIL", "admin@example.com")
+password = os.getenv("DJANGO_SUPERUSER_PASSWORD", "adminpass")
 
-if not email or not password:
-    print("⚠ Skipping superuser creation: DJANGO_SUPERUSER_EMAIL or DJANGO_SUPERUSER_PASSWORD not set.")
-elif not User.objects.filter(username=username).exists():
+if not User.objects.filter(username=username).exists():
     User.objects.create_superuser(username, email, password)
     print(f"✔ Admin user '{username}' created")
 else:
